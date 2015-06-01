@@ -1,5 +1,5 @@
 package ru.p3tr0vich.fuel;
-
+// TODO: change color of selected item in spinners and popup menu
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -44,8 +44,8 @@ public class ActivityMain extends AppCompatActivity implements
         mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.filter_years, R.layout.toolbar_spinner_item_actionbar);
-        adapter.setDropDownViewResource(R.layout.toolbar_spinner_item_dropdown);
+                R.array.filter_years, R.layout.toolbar_spinner_item);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
         mToolbarSpinner.setAdapter(adapter);
 

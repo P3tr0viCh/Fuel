@@ -20,7 +20,7 @@
         tools:text="@string/list_item_date" />
 
     <View
-        style="@style/DividerHorizontal"
+        style="@style/AppTheme.Divider.Horizontal"
         android:layout_marginBottom="4dp"
         android:layout_marginLeft="@dimen/activity_record_horizontal_margin"
         android:layout_marginRight="@dimen/activity_record_horizontal_margin" />

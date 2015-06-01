@@ -104,7 +104,7 @@
 
     <View
         android:id="@+id/divider1"
-        style="@style/DividerHorizontal"
+        style="@style/AppTheme.Divider.Horizontal"
         android:layout_marginBottom="4dp"
         android:layout_marginLeft="@dimen/activity_calc_horizontal_margin"
         android:layout_marginRight="@dimen/activity_calc_horizontal_margin"
@@ -162,7 +162,7 @@
 
     <View
         android:id="@+id/divider2"
-        style="@style/DividerHorizontal"
+        style="@style/AppTheme.Divider.Horizontal"
         android:layout_marginBottom="4dp"
         android:layout_marginLeft="@dimen/activity_calc_horizontal_margin"
         android:layout_marginRight="@dimen/activity_calc_horizontal_margin"

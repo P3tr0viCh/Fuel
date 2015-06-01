@@ -5,7 +5,7 @@
     android:layout_height="24dp"
     android:drawablePadding="8dp"
     android:gravity="center_vertical|start"
-    android:paddingLeft="@dimen/abc_action_bar_default_padding_material"
-    android:paddingRight="4dp"
-    android:textColor="#ffffffff"
+    android:paddingEnd="@dimen/abc_action_bar_default_padding_material"
+    android:paddingStart="@dimen/abc_action_bar_default_padding_material"
+    android:textColor="@color/icons"
     android:textSize="@dimen/abc_text_size_title_material_toolbar" />

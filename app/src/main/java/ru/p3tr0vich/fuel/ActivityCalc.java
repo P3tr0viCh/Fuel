@@ -66,12 +66,6 @@ public class ActivityCalc extends AppCompatActivity implements
         mEditPrice = (EditText) findViewById(R.id.editPrice);
         mEditCons = (EditText) findViewById(R.id.editCons);
 
-        TextView textDistance = (TextView) findViewById(R.id.textDistance);
-        TextView textCost = (TextView) findViewById(R.id.textCost);
-        TextView textVolume = (TextView) findViewById(R.id.textVolume);
-        TextView textPrice = (TextView) findViewById(R.id.textPrice);
-        TextView textCons = (TextView) findViewById(R.id.textCons);
-
         mSpinnerCons = (Spinner) findViewById(R.id.spinnerCons);
         mSpinnerSeason = (Spinner) findViewById(R.id.spinnerSeason);
 
@@ -79,12 +73,12 @@ public class ActivityCalc extends AppCompatActivity implements
         mLayoutConsEmpty = (LinearLayout) findViewById(R.id.layoutConsEmpty);
 
         ArrayAdapter<CharSequence> adapterCons = ArrayAdapter.createFromResource(this,
-                R.array.spinner_consumption, android.R.layout.simple_spinner_item);
+                R.array.spinner_consumption, R.layout.spinner_item);
         adapterCons.setDropDownViewResource(R.layout.spinner_dropdown_item);
         mSpinnerCons.setAdapter(adapterCons);
 
         ArrayAdapter<CharSequence> adapterSeason = ArrayAdapter.createFromResource(this,
-                R.array.spinner_season, android.R.layout.simple_spinner_item);
+                R.array.spinner_season, R.layout.spinner_item);
         adapterSeason.setDropDownViewResource(R.layout.spinner_dropdown_item);
         mSpinnerSeason.setAdapter(adapterSeason);
 
@@ -103,6 +97,12 @@ public class ActivityCalc extends AppCompatActivity implements
         mCalculating = true;
 
         loadPrefs();
+
+        TextView textDistance = (TextView) findViewById(R.id.textDistance);
+        TextView textCost = (TextView) findViewById(R.id.textCost);
+        TextView textVolume = (TextView) findViewById(R.id.textVolume);
+        TextView textPrice = (TextView) findViewById(R.id.textPrice);
+        TextView textCons = (TextView) findViewById(R.id.textCons);
 
         textDistance.setOnClickListener(this);
         textCost.setOnClickListener(this);

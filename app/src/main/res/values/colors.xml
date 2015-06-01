@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--Palette colors Blue Grey -->
-    <!--Color primary 500 from palette colors -->
+    <!-- Palette colors Blue Grey -->
+    <!-- Color primary 500 from palette colors -->
     <color name="primary">#607D8B</color>
-    <!--Color primary dark 700 from palette colors -->
+    <!-- Color primary dark 700 from palette colors -->
     <color name="primary_dark">#455A64</color>
-    <!--Color primary 500 from palette colors -->
+    <!-- Color primary 500 from palette colors -->
     <color name="accent">#607D8B</color>
 
     <color name="primary_light">#CFD8DC</color>
@@ -20,4 +20,10 @@
 
     <color name="button_text">#FFFFFF</color>
     <color name="edit_error">#FF0000</color>
+
+    <color name="menu_item_pressed">#DEDEDE</color>
+
+    <!-- Replace colors in ThemeOverlay.AppCompat.Light for ToolBar and Widget.AppCompat.PopupMenu-->
+    <color name="background_material_light">@color/window_background</color>
+    <color name="primary_text_default_material_light">@color/primary_text</color>
 </resources>

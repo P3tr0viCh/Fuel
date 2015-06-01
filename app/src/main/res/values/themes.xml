@@ -10,12 +10,10 @@
 
         <item name="android:textColorPrimary">@color/primary_text</item>
 
-        <item name="popupMenuStyle">@style/PopupMenu</item>
+        <item name="popupMenuStyle">@style/AppTheme.PopupMenu</item>
 
         <!-- TODO: Баг. Добавлено в стиль каждой кнопки вручную -->
         <!-- <item name="android:buttonStyle">@style/AppTheme.Button</item> -->
-
-        <!-- <item name="actionModeBackground">@drawable/actionmode_background</item> -->
 
         <item name="android:selectableItemBackground">@drawable/apptheme_list_selector_holo_light
         </item>

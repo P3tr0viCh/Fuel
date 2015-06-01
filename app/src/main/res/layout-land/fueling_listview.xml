@@ -27,16 +27,16 @@
         android:id="@+id/progressWheelFueling"
         android:layout_width="@dimen/progress_wheel_fueling_size"
         android:layout_height="@dimen/progress_wheel_fueling_size"
+        android:layout_above="@+id/layoutTotal"
+        android:layout_alignTop="@+id/listViewFueling"
         android:layout_centerInParent="true"
         android:visibility="gone"
         wheel:matProg_barColor="@color/primary"
-        wheel:matProg_progressIndeterminate="true"
-        android:layout_alignTop="@+id/listViewFueling"
-        android:layout_above="@+id/layoutTotal" />
+        wheel:matProg_progressIndeterminate="true" />
 
     <View
         android:id="@+id/divider"
-        style="@style/DividerHorizontal"
+        style="@style/AppTheme.Divider.Horizontal"
         android:layout_above="@+id/layoutTotal" />
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"

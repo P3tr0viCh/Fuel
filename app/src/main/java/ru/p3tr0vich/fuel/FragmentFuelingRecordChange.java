@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -28,7 +29,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
     private FuelingRecord mFuelingRecord;
 
-    private TextView mTextDate;
+    private Button mButtonDate;
     private EditText mEditCost;
     private EditText mEditVolume;
     private EditText mEditTotal;
@@ -40,10 +41,10 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
         setHasOptionsMenu(true);
 
-        mTextDate   = (TextView) view.findViewById(R.id.tvDate);
-        mEditCost   = (EditText) view.findViewById(R.id.editCost);
+        mButtonDate = (Button) view.findViewById(R.id.btnDate);
+        mEditCost = (EditText) view.findViewById(R.id.editCost);
         mEditVolume = (EditText) view.findViewById(R.id.editVolume);
-        mEditTotal  = (EditText) view.findViewById(R.id.editTotal);
+        mEditTotal = (EditText) view.findViewById(R.id.editTotal);
 
         Intent intent = getActivity().getIntent();
 
@@ -70,9 +71,9 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 mDate = Functions.sqliteToDate(mFuelingRecord.getSQLiteDate());
         }
 
-        Functions.floatToText(mEditCost,   mFuelingRecord.getCost(), false);
+        Functions.floatToText(mEditCost, mFuelingRecord.getCost(), false);
         Functions.floatToText(mEditVolume, mFuelingRecord.getVolume(), false);
-        Functions.floatToText(mEditTotal,  mFuelingRecord.getTotal(), false);
+        Functions.floatToText(mEditTotal, mFuelingRecord.getTotal(), false);
 
         if (savedInstanceState != null)
             mDate = (Date) savedInstanceState.getSerializable(INTENT_EXTRA);
@@ -80,25 +81,16 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
         updateDate();
 
-        mTextDate.setOnClickListener(new View.OnClickListener() {
+        mButtonDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-/*                Bundle args = new Bundle();
-
-                args.putSerializable(Const.INTENT_EXTRA_DATE, mDate);
-
-                DialogFragment dialogDate = new FragmentDialogDate();
-                dialogDate.setArguments(args);
-                dialogDate.setTargetFragment(FragmentFuelingRecordChange.this, FragmentDialogDate.REQUEST_CODE);
-                dialogDate.show(getFragmentManager(), Const.DIALOG_TAG_DATE);*/
-
                 FragmentDialogDate.show(FragmentFuelingRecordChange.this, mDate);
             }
         });
 
-        TextView textCost       = (TextView) view.findViewById(R.id.textCost);
-        TextView textVolume     = (TextView) view.findViewById(R.id.textVolume);
-        TextView textTotal      = (TextView) view.findViewById(R.id.textTotal);
+        TextView textCost = (TextView) view.findViewById(R.id.textCost);
+        TextView textVolume = (TextView) view.findViewById(R.id.textVolume);
+        TextView textTotal = (TextView) view.findViewById(R.id.textTotal);
 
         textCost.setOnClickListener(this);
         textVolume.setOnClickListener(this);
@@ -127,7 +119,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     }
 
     private void updateDate() {
-        mTextDate.setText(Functions.dateToString(mDate, true));
+        mButtonDate.setText(Functions.dateToString(mDate, true));
     }
 
     @Override
@@ -148,7 +140,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 SharedPreferences.Editor editor = sPref.edit();
 
-                editor.putFloat(getString(R.string.pref_last_total),  mFuelingRecord.getTotal());
+                editor.putFloat(getString(R.string.pref_last_total), mFuelingRecord.getTotal());
 
                 editor.apply();
 
@@ -168,10 +160,17 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     public void onClick(View v) {
         EditText edit;
         switch (v.getId()) {
-            case R.id.textCost:     edit = mEditCost;   break;
-            case R.id.textVolume:   edit = mEditVolume; break;
-            case R.id.textTotal:    edit = mEditTotal;  break;
-            default: return;
+            case R.id.textCost:
+                edit = mEditCost;
+                break;
+            case R.id.textVolume:
+                edit = mEditVolume;
+                break;
+            case R.id.textTotal:
+                edit = mEditTotal;
+                break;
+            default:
+                return;
         }
         Functions.showKeyboard(edit);
     }

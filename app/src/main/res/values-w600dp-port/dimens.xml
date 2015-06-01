@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">64dp</dimen>
+    <dimen name="activity_record_horizontal_margin">140dp</dimen>
+    <dimen name="activity_calc_horizontal_margin">140dp</dimen>
+
+    <dimen name="toolbar_height">64dp</dimen>
+</resources>

@@ -1,0 +1,79 @@
+import java.text.Format
+import java.text.SimpleDateFormat
+
+apply plugin: 'com.android.application'
+
+def getDate() {
+    Format formatter = new SimpleDateFormat("yyyy.MM.dd");
+    return formatter.format(new Date());
+}
+
+Properties props = new Properties()
+props.load(new FileInputStream(file("c:\\Android\\Keystore\\ru.p3tr0vich.fuel.properties")))
+
+android {
+    signingConfigs {
+        debug {
+            keyAlias 'ru.p3tr0vich.fuel'
+            keyPassword props['keyPassword']
+            storeFile file(props['storeFile'])
+            storePassword props['storePassword']
+        }
+        release {
+            keyAlias 'ru.p3tr0vich.fuel'
+            keyPassword props['keyPassword']
+            storeFile file(props['storeFile'])
+            storePassword props['storePassword']
+        }
+    }
+    compileSdkVersion 22
+    buildToolsVersion '23.0.0 rc1'
+    defaultConfig {
+        applicationId "ru.p3tr0vich.fuel"
+        minSdkVersion 17
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+        buildConfigField "String", "BUILD_DATE", "new String(\"" + getDate() + "\")"
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            //noinspection GroovyAssignabilityCheck
+            signingConfig signingConfigs.debug
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //noinspection GroovyAssignabilityCheck
+            signingConfig signingConfigs.release
+
+            applicationVariants.all { variant ->
+                appendVersionName(variant, defaultConfig)
+            }
+        }
+    }
+    productFlavors {
+    }
+}
+
+@SuppressWarnings("GroovyAssignabilityCheck")
+def appendVersionName(variant, defaultConfig) {
+    variant.outputs.each { output ->
+        if (output.zipAlign) {
+            def file = output.outputFile
+            def fileName = file.name.replace("app-release.apk", defaultConfig.applicationId + "-release-" + defaultConfig.versionName + ".apk")
+            output.outputFile = new File(file.parent, fileName)
+        }
+
+        def file = output.packageApplication.outputFile
+        def fileName = file.name.replace("app-release.apk", defaultConfig.applicationId + "-release-" + defaultConfig.versionName + "v.apk")
+        output.packageApplication.outputFile = new File(file.parent, fileName)
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile project(':libs:fab')
+    compile project(':libs:materialish-progress')
+}

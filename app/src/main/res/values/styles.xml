@@ -1,0 +1,42 @@
+<resources>
+
+    <style name="DividerHorizontal">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/divider</item>
+    </style>
+
+    <style name="DividerVertical">
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/divider</item>
+    </style>
+
+    <style name="PopupMenu" parent="@style/Widget.AppCompat.Light.PopupMenu">
+        <item name="android:dropDownVerticalOffset">-48dp</item>
+    </style>
+
+    <style name="TextStyleForLists" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextStyleForTexts" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextStyleForTextsCaption" parent="@style/TextAppearance.AppCompat.Caption" />
+
+    <style name="TextStyleForTextsEmpty" parent="@style/TextAppearance.AppCompat.Small">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/edit_error</item>
+    </style>
+
+    <style name="AppTheme.Button" parent="@style/Widget.AppCompat.Button">
+        <item name="android:textColor">@color/button_text</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:minWidth">96dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:background">@drawable/material_button</item>
+    </style>
+</resources>

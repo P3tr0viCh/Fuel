@@ -1,0 +1,21 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutMain"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ActivityMain"
+    tools:menu="menu_main">
+
+    <include
+        android:id="@+id/toolbarMain"
+        layout="@layout/toolbar" />
+
+    <fragment
+        android:id="@+id/fragmentFueling"
+        android:name="ru.p3tr0vich.fuel.FragmentFueling"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="false"
+        android:layout_below="@+id/toolbarMain"
+        tools:layout="@layout/fueling_listview" />
+</RelativeLayout>

@@ -1,0 +1,236 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ru.p3tr0vich.fuel.ActivityCalc"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbarCalc"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_calc_horizontal_margin"
+        android:paddingRight="@dimen/activity_calc_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="110dp"
+                    android:layout_height="48dp"
+                    android:textAppearance="@style/TextStyleForTexts"
+                    android:text="@string/text_distance"
+                    android:id="@+id/textDistance"
+                    android:labelFor="@id/editDistance"
+                    android:gravity="center_vertical" />
+
+                <EditText
+                    android:imeOptions="actionDone|flagNoExtractUi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:id="@+id/editDistance"
+                    android:inputType="number"
+                    android:selectAllOnFocus="false"
+                    android:textAppearance="@style/TextStyleForTexts" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnMaps"
+                style="@style/AppTheme.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_calc_map" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="110dp"
+                    android:layout_height="48dp"
+                    android:textAppearance="@style/TextStyleForTexts"
+                    android:text="@string/text_cost"
+                    android:id="@+id/textCost"
+                    android:labelFor="@id/editCost"
+                    android:gravity="center_vertical" />
+
+                <EditText
+                    android:imeOptions="actionDone|flagNoExtractUi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:id="@+id/editCost"
+                    android:inputType="numberDecimal"
+                    android:selectAllOnFocus="false"
+                    android:textAppearance="@style/TextStyleForTexts" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="110dp"
+                    android:layout_height="48dp"
+                    android:textAppearance="@style/TextStyleForTexts"
+                    android:text="@string/text_volume"
+                    android:id="@+id/textVolume"
+                    android:labelFor="@id/editVolume"
+                    android:gravity="center_vertical" />
+
+                <EditText
+                    android:imeOptions="actionDone|flagNoExtractUi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:id="@+id/editVolume"
+                    android:inputType="numberDecimal"
+                    android:selectAllOnFocus="false"
+                    android:textAppearance="@style/TextStyleForTexts" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View style="@style/DividerVertical"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="110dp"
+                    android:layout_height="48dp"
+                    android:textAppearance="@style/TextStyleForTexts"
+                    android:text="@string/text_price"
+                    android:id="@+id/textPrice"
+                    android:labelFor="@id/editPrice"
+                    android:gravity="center_vertical" />
+
+                <EditText
+                    android:imeOptions="actionDone|flagNoExtractUi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:ems="10"
+                    android:id="@+id/editPrice"
+                    android:selectAllOnFocus="false"
+                    android:textAppearance="@style/TextStyleForTexts" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="false"
+                android:id="@+id/layoutPriceEmpty"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="-8dp">
+
+                <Space
+                    android:layout_width="110dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextStyleForTextsEmpty"
+                    android:text="@string/text_empty_price"
+                    android:layout_marginLeft="4dp" />
+            </LinearLayout>
+
+            <View style="@style/DividerHorizontal"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Spinner
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:id="@+id/spinnerCons"
+                    android:layout_weight="1"
+                    android:spinnerMode="dropdown"
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+
+                <Spinner
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:id="@+id/spinnerSeason"
+                    android:layout_weight="1"
+                    android:spinnerMode="dropdown"
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="110dp"
+                    android:layout_height="48dp"
+                    android:textAppearance="@style/TextStyleForTexts"
+                    android:text="@string/text_consumption"
+                    android:id="@+id/textCons"
+                    android:labelFor="@id/editCons"
+                    android:gravity="center_vertical" />
+
+                <EditText
+                    android:imeOptions="actionDone|flagNoExtractUi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:ems="10"
+                    android:id="@+id/editCons"
+                    android:selectAllOnFocus="false"
+                    android:textAppearance="@style/TextStyleForTexts" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="false"
+                android:id="@+id/layoutConsEmpty"
+                android:layout_marginTop="-8dp">
+
+                <Space
+                    android:layout_width="110dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextStyleForTextsEmpty"
+                    android:layout_marginLeft="4dp"
+                    android:text="@string/text_empty_cons" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

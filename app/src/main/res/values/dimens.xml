@@ -1,0 +1,15 @@
+<resources>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="toolbar_height">56dp</dimen>
+
+    <dimen name="activity_record_horizontal_margin">16dp</dimen>
+    <dimen name="activity_calc_horizontal_margin">16dp</dimen>
+
+    <dimen name="listview_footer_height">28dp</dimen>
+
+    <dimen name="progress_wheel_fueling_size">80dp</dimen>
+    <dimen name="progress_wheel_total_size_phone">36dp</dimen>
+    <dimen name="progress_wheel_total_size_tablet">24dp</dimen>
+</resources>

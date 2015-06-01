@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tvDate"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/text_date"
+        android:clickable="false"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_weight="4"
+        android:gravity="center_vertical">
+    </TextView>
+
+    <TextView
+        android:id="@+id/tvCost"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/text_cost"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_weight="5"
+        android:gravity="center_vertical">
+    </TextView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/text_volume"
+        android:id="@+id/tvVolume"
+        android:layout_weight="5"
+        android:gravity="center_vertical" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/text_total"
+        android:id="@+id/tvTotal"
+        android:layout_weight="5"
+        android:gravity="center_vertical" />
+
+
+    <Space
+        android:layout_width="48dp"
+        android:layout_height="24dp"
+        android:id="@+id/spMenu" />
+</LinearLayout>

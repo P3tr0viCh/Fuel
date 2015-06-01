@@ -1,0 +1,141 @@
+<resources>
+    <string name="app_name">Учёт топлива</string>
+    <string name="title_activity_calc">Калькулятор</string>
+    <string name="title_activity_prefs">Настройки</string>
+    <string name="title_activity_backup">Резервная копия</string>
+    <string name="title_activity_yandex_map">Расстояние</string>
+    <string name="title_activity_yandex_map_add">: %d км</string>
+
+    <string name="title_message_error">Ошибка</string>
+
+    <string name="about_version">Версия</string>
+    <string name="about_copyright" translatable="false">© П3тр0виЧъ</string>
+    <string name="about_disclaimer">
+        Приложение предоставляется на основе принципов «КАК ЕСТЬ» без каких-либо гарантий,
+        то есть вы используете его на собственный риск и соглашаетесь с тем, что разработчик данного приложения
+        не несёт никакой ответственности перед вами за какой-либо ущерб, включая потерю данных.
+    </string>
+
+    <string name="action_calc">Калькулятор</string>
+    <string name="action_backup">Резервная копия</string>
+    <string name="action_settings">Настройки</string>
+    <string name="action_about">О программе</string>
+    <string name="action_save">Сохранить</string>
+
+    <string name="list_item_date">29 марта 1981</string>
+    <string name="list_item_cost">500</string>
+    <string name="list_item_volume">16.37</string>
+    <string name="list_item_total">12345</string>
+    <string name="list_item_menu_update">Изменить</string>
+    <string name="list_item_menu_delete">Удалить</string>
+
+    <string name="text_date">Дата</string>
+    <string name="text_cost">Стоимость</string>
+    <string name="text_volume">Объём</string>
+    <string name="text_total">Пробег</string>
+    <string name="text_price">Цена за литр</string>
+    <string name="text_distance">Расстояние</string>
+    <string name="text_consumption">Расход</string>
+    <string name="text_sum">Итого</string>
+
+    <string name="text_backup_directory">Расположение файла</string>
+    <string name="text_backup_file">Имя файла</string>
+
+    <string name="text_empty_price">Укажите стоимость литра топлива</string>
+    <string name="text_empty_cons">Укажите расход топлива</string>
+
+    <string name="text_error_webview">Ошибка: %s</string>
+
+    <string name="dialog_caption_add">Новая запись</string>
+    <string name="dialog_caption_update">Изменение записи</string>
+    <string name="dialog_caption_load_from_xml">Предупреждение</string>
+
+    <string name="dialog_btn_ok">OK</string>
+    <string name="dialog_btn_delete">УДАЛИТЬ</string>
+    <string name="dialog_btn_cancel">ОТМЕНА</string>
+    <string name="dialog_btn_done">ГОТОВО</string>
+    <string name="dialog_btn_load">ЗАГРУЗИТЬ</string>
+
+    <string name="btn_backup_save">Сохранить</string>
+    <string name="btn_backup_load">Загрузить</string>
+
+    <string name="btn_calc_map">Подсчитать на Яндекс.Карты</string>
+
+    <string name="message_dialog_delete">Удалить запись с датой\n%s?</string>
+    <string name="message_dialog_load_from_xml">Загрузить данные из файла XML?\nИмеющиеся в базе данных записи будут безвозвратно удалены</string>
+    <string name="message_progress_save">Подождите, выполняется сохранение в файл…</string>
+    <string name="message_progress_load">Подождите, выполняется чтение файла…</string>
+
+    <string name="message_error_mkdirs">Не удалось создать каталог\n\"%s\"</string>
+    <string name="message_error_dir_not_exists">Каталог \"%s\" не существует</string>
+    <string name="message_error_file_not_exists">Файл \"%1$s\" в каталоге \"%2$s\" не существует</string>
+    <string name="message_error_create_xml">Не удалось перевести записи из базы данных в формат XML</string>
+    <string name="message_error_parse_xml">Неверный формат файла</string>
+    <string name="message_error_read_file">Не удалось прочитать файл</string>
+    <string name="message_error_create_file">Не удалось создать файл \"%1$s\" в каталоге \"%2$s\"</string>
+    <string name="message_error_save_file">Не удалось сохранить файл \"%1$s\" в каталоге \"%2$s\"</string>
+
+    <string name="message_error_no_internet">Отсутствует подключение к Интернет</string>
+
+    <string name="message_save_file_ok">Файл сохранён</string>
+    <string name="message_load_file_ok">Данные из файла загружены</string>
+
+    <string name="year_current">Текущий год</string>
+    <string name="year_all">Все записи</string>
+    <string-array name="filter_years">
+        <item>@string/year_current</item>
+        <item>@string/year_all</item>
+    </string-array>
+
+    <string name="city">Город</string>
+    <string name="highway">Трасса</string>
+    <string name="mixed">Смешанный</string>
+    <string-array name="spinner_consumption">
+        <item>@string/city</item>
+        <item>@string/highway</item>
+        <item>@string/mixed</item>
+    </string-array>
+
+    <string name="summer">Лето</string>
+    <string name="winter">Зима</string>
+    <string-array name="spinner_season">
+        <item>@string/summer</item>
+        <item>@string/winter</item>
+    </string-array>
+
+    <string name="pref_header_def">Заправка по умолчанию</string>
+    <string name="pref_header_summary_def">Значения стоимости и объёма для новых записей</string>
+    <string name="pref_header_cons">Расход топлива</string>
+    <string name="pref_header_summary_cons">Расход топлива в различных режимах</string>
+
+    <string name="pref_summary_cost">Стоимость заправки по умолчанию для новых записей</string>
+    <string name="pref_summary_volume">Объём заправки по умолчанию для новых записей</string>
+
+    <string name="pref_summary_summer">Настройка расхода летом</string>
+    <string name="pref_summary_summer_city">Расход летом в городе</string>
+    <string name="pref_summary_summer_highway">Расход летом на трассе</string>
+    <string name="pref_summary_summer_mixed">Расход летом в смешанном режиме</string>
+    <string name="pref_summary_winter">Настройка расхода зимой</string>
+    <string name="pref_summary_winter_city">Расход зимой в городе</string>
+    <string name="pref_summary_winter_highway">Расход зимой на трассе</string>
+    <string name="pref_summary_winter_mixed">Расход зимой в смешанном режиме</string>
+
+    <string name="pref_def_cost" translatable="false">default cost</string>
+    <string name="pref_def_volume" translatable="false">default volume</string>
+    <string name="pref_last_total" translatable="false">last total</string>
+
+    <string name="pref_summer_city" translatable="false">summer city</string>
+    <string name="pref_summer_highway" translatable="false">summer highway</string>
+    <string name="pref_summer_mixed" translatable="false">summer mixed</string>
+
+    <string name="pref_winter_city" translatable="false">winter city</string>
+    <string name="pref_winter_highway" translatable="false">winter highway</string>
+    <string name="pref_winter_mixed" translatable="false">winter mixed</string>
+
+    <string name="pref_category" translatable="false">category</string>
+    <string name="pref_category_defaults" translatable="false">category_defaults</string>
+    <string name="pref_category_cons" translatable="false">category_cons</string>
+
+    <string name="yandex_map_start_search_control_placeholder_content">Адрес начала маршрута</string>
+    <string name="yandex_map_finish_search_control_placeholder_content">Адрес конца маршрута</string>
+</resources>

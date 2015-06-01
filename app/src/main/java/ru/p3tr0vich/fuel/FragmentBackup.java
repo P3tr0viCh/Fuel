@@ -1,0 +1,158 @@
+package ru.p3tr0vich.fuel;
+
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+
+public class FragmentBackup extends Fragment {
+
+    private DatabaseBackupXmlHelper mDatabaseBackupXmlHelper;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        FragmentDialogProgress fragmentDialogProgress =
+                (FragmentDialogProgress) getFragmentManager().findFragmentByTag(FragmentDialogProgress.DIALOG_TAG);
+        FragmentDialogQuestion fragmentDialogQuestion =
+                (FragmentDialogQuestion) getFragmentManager().findFragmentByTag(FragmentDialogQuestion.DIALOG_TAG);
+
+        Log.d("XXX", "FragmentBackup -- onCreate: fragmentDialogProgress != null " + Boolean.toString(fragmentDialogProgress != null));
+
+        if (fragmentDialogProgress != null)
+            fragmentDialogProgress.setTargetFragment(this, FragmentDialogProgress.REQUEST_CODE);
+        if (fragmentDialogQuestion != null)
+            fragmentDialogQuestion.setTargetFragment(this, FragmentDialogQuestion.REQUEST_CODE);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        Log.d("XXX", "FragmentBackup -- onCreateView");
+
+        View v = inflater.inflate(R.layout.fragment_backup, container, false);
+
+        mDatabaseBackupXmlHelper = new DatabaseBackupXmlHelper();
+
+        TextView mTextDirectory = (TextView) v.findViewById(R.id.textDirectory);
+        TextView mTextFile = (TextView) v.findViewById(R.id.textFile);
+
+        mTextDirectory.setText(mDatabaseBackupXmlHelper.getExternalDirectory().toString());
+        mTextFile.setText(mDatabaseBackupXmlHelper.getFileName().toString());
+
+        Button btnSave = (Button) v.findViewById(R.id.btnSave);
+        Button btnLoad = (Button) v.findViewById(R.id.btnLoad);
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveToXml();
+            }
+        });
+
+        btnLoad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadFromXml();
+            }
+        });
+
+        return v;
+    }
+
+    private void startOperationXml(boolean doSave) {
+        Log.d("XXX", "FragmentBackup -- startOperationXml");
+
+        FragmentDialogProgress.show(this, mDatabaseBackupXmlHelper, doSave);
+    }
+
+    private void stopOperationXml(DatabaseBackupXmlHelper.Result result) {
+        String resultMessage;
+
+        switch (result) {
+            case RESULT_SAVE_OK:
+                resultMessage = "File '" + mDatabaseBackupXmlHelper.getFileName() + "' save in '" +
+                        mDatabaseBackupXmlHelper.getExternalDirectory() + "' without errors";
+                break;
+            case RESULT_LOAD_OK:
+                resultMessage = "File '" + mDatabaseBackupXmlHelper.getFileName() + "' load from '" +
+                        mDatabaseBackupXmlHelper.getExternalDirectory() + "' without errors";
+                break;
+            case ERROR_MKDIRS:
+                resultMessage = getString(R.string.message_error_mkdirs, mDatabaseBackupXmlHelper.getExternalDirectory());
+                break;
+            case ERROR_CREATE_XML:
+                resultMessage = getString(R.string.message_error_create_xml);
+                break;
+            case ERROR_CREATE_FILE:
+                resultMessage = getString(R.string.message_error_create_file,
+                        mDatabaseBackupXmlHelper.getFileName(),
+                        mDatabaseBackupXmlHelper.getExternalDirectory());
+                break;
+            case ERROR_SAVE_FILE:
+                resultMessage = getString(R.string.message_error_save_file,
+                        mDatabaseBackupXmlHelper.getFileName(),
+                        mDatabaseBackupXmlHelper.getExternalDirectory());
+                break;
+            case ERROR_DIR_NOT_EXISTS:
+                resultMessage = getString(R.string.message_error_dir_not_exists, mDatabaseBackupXmlHelper.getExternalDirectory());
+                break;
+            case ERROR_FILE_NOT_EXISTS:
+                resultMessage = getString(R.string.message_error_file_not_exists,
+                        mDatabaseBackupXmlHelper.getFileName(),
+                        mDatabaseBackupXmlHelper.getExternalDirectory());
+                break;
+            case ERROR_READ_FILE:
+                resultMessage = getString(R.string.message_error_read_file);
+                break;
+            case ERROR_PARSE_XML:
+                resultMessage = getString(R.string.message_error_parse_xml);
+                break;
+            default:
+                return;
+        }
+
+        Log.d("XXX", "FragmentBackup -- stopOperationXml: " + resultMessage);
+
+        if (result == DatabaseBackupXmlHelper.Result.RESULT_SAVE_OK)
+            Toast.makeText(getActivity(), getString(R.string.message_save_file_ok), Toast.LENGTH_SHORT).show();
+        else if (result == DatabaseBackupXmlHelper.Result.RESULT_LOAD_OK) {
+            Toast.makeText(getActivity(), getString(R.string.message_load_file_ok), Toast.LENGTH_SHORT).show();
+            getActivity().setResult(Activity.RESULT_OK);
+        } else
+            FragmentDialogMessage.showMessage(this, getString(R.string.title_message_error), resultMessage);
+    }
+
+    private void saveToXml() {
+        startOperationXml(true);
+    }
+
+    private void loadFromXml() { // TODO: Сохранять старые в old
+        FragmentDialogQuestion.show(this, getString(R.string.dialog_caption_load_from_xml),
+                getString(R.string.message_dialog_load_from_xml), getString(R.string.dialog_btn_load));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("XXX", "FragmentBackup -- onActivityResult");
+
+        if (resultCode != Activity.RESULT_OK) return;
+
+        switch (requestCode) {
+            case FragmentDialogProgress.REQUEST_CODE:
+                stopOperationXml(FragmentDialogProgress.getResult(data));
+                break;
+            case FragmentDialogQuestion.REQUEST_CODE:
+                startOperationXml(false);
+        }
+    }
+}

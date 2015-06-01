@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:stretchColumns="*"
+    android:id="@+id/ltMain"
+    android:padding="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ltTop">
+
+        <ImageView android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@mipmap/ic_launcher"
+            tools:ignore="contentDescription"
+            android:layout_gravity="start|center"
+            android:id="@+id/imageAbout"
+            android:scaleType="center" />
+
+        <TextView android:id="@+id/textAboutAppName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/imageAbout"
+            android:gravity="start"
+            android:layout_marginBottom="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textAboutVersion"
+            android:layout_below="@+id/textAboutAppName"
+            android:layout_alignStart="@+id/textAboutAppName"
+            android:text="@string/about_version"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textAboutDate"
+            android:layout_toEndOf="@+id/textAboutVersion"
+            android:layout_below="@+id/textAboutAppName"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:text="@string/list_item_date"
+            android:layout_marginStart="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:text="@string/about_copyright"
+            android:id="@+id/textAboutCopyright"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentStart="false"
+            android:layout_below="@+id/textAboutVersion"
+            android:layout_alignStart="@+id/textAboutAppName"
+            android:layout_marginTop="8dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ltTop">
+
+        <View style="@style/DividerHorizontal"
+            android:id="@+id/view"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp" />
+
+        <TextView android:id="@+id/textAboutDisclaimer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/about_disclaimer"
+            android:gravity="fill_horizontal"
+            android:textSize="12sp"
+            android:layout_below="@+id/view" />
+    </RelativeLayout>
+
+</RelativeLayout>

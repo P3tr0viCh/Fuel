@@ -1,0 +1,28 @@
+apply plugin: 'com.android.library'
+
+repositories {
+    mavenCentral()
+}
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion '23.0.0 rc1'
+
+    defaultConfig {
+        minSdkVersion 17
+        targetSdkVersion 22
+        versionName "1.3.0"
+        versionCode 13
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.android.support:recyclerview-v7:22.2.0'
+}

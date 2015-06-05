@@ -57,8 +57,7 @@
         android:layout_alignParentTop="false"
         android:layout_below="@+id/textFile"
         android:text="@string/btn_backup_save"
-        android:layout_marginRight="4dp"
-        style="@style/AppTheme.Button" />
+        android:layout_marginRight="4dp" />
 
     <Button
         android:id="@+id/btnLoad"
@@ -67,7 +66,6 @@
         android:layout_alignTop="@+id/btnSave"
         android:layout_toEndOf="@+id/btnSave"
         android:text="@string/btn_backup_load"
-        android:layout_marginLeft="4dp"
-        style="@style/AppTheme.Button" />
+        android:layout_marginLeft="4dp" />
 
 </RelativeLayout>

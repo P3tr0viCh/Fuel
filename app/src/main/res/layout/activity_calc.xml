@@ -40,7 +40,6 @@
 
     <Button
         android:id="@+id/btnMaps"
-        style="@style/AppTheme.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_record_horizontal_margin"

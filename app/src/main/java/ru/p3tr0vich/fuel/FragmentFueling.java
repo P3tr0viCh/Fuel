@@ -15,7 +15,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -308,8 +307,7 @@ public class FragmentFueling extends Fragment implements
                     }
                 }
         );
-        MenuInflater inflater = popupMenu.getMenuInflater();
-        inflater.inflate(R.menu.menu_fueling, popupMenu.getMenu());
+        popupMenu.inflate(R.menu.menu_fueling);
         popupMenu.show();
     }
 
@@ -356,7 +354,7 @@ public class FragmentFueling extends Fragment implements
             mRecordChangeListener = (RecordChangeListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() +
-                    " must implement onFilterChangeListener, onRecordChangeListener");
+                    " must implement FilterChangeListener, RecordChangeListener");
         }
     }
 }

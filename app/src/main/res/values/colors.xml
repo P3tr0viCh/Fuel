@@ -21,7 +21,7 @@
     <color name="button_text">#FFFFFF</color>
     <color name="edit_error">#FF0000</color>
 
-    <color name="menu_item_pressed">#DEDEDE</color>
+    <color name="menu_item_pressed">#FF33B5E5</color>
 
     <!-- Replace colors in ThemeOverlay.AppCompat.Light for ToolBar and Widget.AppCompat.PopupMenu-->
     <color name="background_material_light">@color/window_background</color>

@@ -5,6 +5,4 @@
     <dimen name="activity_calc_horizontal_margin">220dp</dimen>
 
     <dimen name="toolbar_height">64dp</dimen>
-
-    <dimen name="menu_item_margin">24dp</dimen>
 </resources>

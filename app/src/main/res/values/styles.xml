@@ -27,6 +27,10 @@
         <item name="android:background">@drawable/apptheme_material_button</item>
     </style>
 
+    <style name="AppTheme.DatePickerButton" parent="@style/Base.Widget.AppCompat.Spinner.Underlined">
+        <item name="android:paddingRight">24dp</item>
+    </style>
+
     <style name="TextStyleForLists" parent="@style/TextAppearance.AppCompat.Body1">
         <item name="android:textSize">16sp</item>
     </style>
@@ -37,7 +41,7 @@
 
     <style name="TextStyleForTextsCaption" parent="@style/TextAppearance.AppCompat.Caption" />
 
-    <style name="TextStyleForTextsEmpty" parent="@style/TextAppearance.AppCompat.Small">
+    <style name="TextStyleForTextsError" parent="@style/TextAppearance.AppCompat.Small">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/edit_error</item>
     </style>

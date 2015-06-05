@@ -159,7 +159,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="@string/text_empty_price"
-                    android:textAppearance="@style/TextStyleForTextsEmpty" />
+                    android:textAppearance="@style/TextStyleForTextsError" />
             </LinearLayout>
 
             <View
@@ -231,7 +231,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="@string/text_empty_cons"
-                    android:textAppearance="@style/TextStyleForTextsEmpty" />
+                    android:textAppearance="@style/TextStyleForTextsError" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

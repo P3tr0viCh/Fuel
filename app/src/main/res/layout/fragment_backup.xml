@@ -16,7 +16,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:text="@string/text_backup_directory"
-        android:textAppearance="@style/TextStyleForTextsCaption" />
+        android:textAppearance="@style/AppTheme.TextAppearance.Caption" />
 
     <TextView
         android:id="@+id/textDirectory"
@@ -26,7 +26,7 @@
         android:layout_below="@+id/textDirectoryCaption"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
-        android:textAppearance="@style/TextStyleForTexts"
+        android:textAppearance="@style/AppTheme.TextAppearance.Texts"
         tools:text="Directory" />
 
     <TextView
@@ -36,7 +36,7 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/textDirectory"
         android:text="@string/text_backup_file"
-        android:textAppearance="@style/TextStyleForTextsCaption" />
+        android:textAppearance="@style/AppTheme.TextAppearance.Caption" />
 
     <TextView
         android:id="@+id/textFile"
@@ -46,7 +46,7 @@
         android:layout_below="@+id/textFileCaption"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
-        android:textAppearance="@style/TextStyleForTexts"
+        android:textAppearance="@style/AppTheme.TextAppearance.Texts"
         tools:text="File_name.xml" />
 
     <Button

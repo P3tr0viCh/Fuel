@@ -60,7 +60,7 @@
             android:clickable="false"
             android:gravity="center_vertical"
             android:text="@string/text_sum"
-            android:textAppearance="@style/TextStyleForLists" />
+            android:textAppearance="@style/AppTheme.TextAppearance.Lists" />
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -78,7 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textAppearance="@style/TextStyleForLists"
+                android:textAppearance="@style/AppTheme.TextAppearance.Lists"
                 tools:text="@string/list_item_cost" />
 
             <TextView
@@ -86,7 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textAppearance="@style/TextStyleForLists"
+                android:textAppearance="@style/AppTheme.TextAppearance.Lists"
                 tools:text="@string/list_item_volume" />
 
             <TextView
@@ -94,7 +94,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textAppearance="@style/TextStyleForLists" />
+                android:textAppearance="@style/AppTheme.TextAppearance.Lists" />
         </LinearLayout>
 
         <Space

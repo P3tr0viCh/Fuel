@@ -16,7 +16,7 @@
         android:clickable="true"
         android:gravity="center"
         android:text=""
-        android:textAppearance="@style/TextStyleForTexts"
+        android:textAppearance="@style/AppTheme.TextAppearance.Texts"
         tools:text="@string/list_item_date"
         android:textColor="@color/primary_text" />
 
@@ -40,7 +40,7 @@
             android:gravity="center_vertical"
             android:labelFor="@+id/editCost"
             android:text="@string/text_cost"
-            android:textAppearance="@style/TextStyleForTexts" />
+            android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
 
         <EditText
             android:id="@+id/editCost"
@@ -50,7 +50,7 @@
             android:imeOptions="actionNext|flagNoExtractUi"
             android:inputType="numberDecimal"
             android:selectAllOnFocus="false"
-            android:textAppearance="@style/TextStyleForTexts" />
+            android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
     </LinearLayout>
 
     <LinearLayout
@@ -67,7 +67,7 @@
             android:gravity="center_vertical"
             android:labelFor="@+id/editVolume"
             android:text="@string/text_volume"
-            android:textAppearance="@style/TextStyleForTexts" />
+            android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
 
         <EditText
             android:id="@+id/editVolume"
@@ -77,7 +77,7 @@
             android:imeOptions="actionNext|flagNoExtractUi"
             android:inputType="numberDecimal"
             android:selectAllOnFocus="false"
-            android:textAppearance="@style/TextStyleForTexts" />
+            android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
     </LinearLayout>
 
     <LinearLayout
@@ -94,7 +94,7 @@
             android:gravity="center_vertical"
             android:labelFor="@+id/editTotal"
             android:text="@string/text_total"
-            android:textAppearance="@style/TextStyleForTexts" />
+            android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
 
         <EditText
             android:id="@+id/editTotal"
@@ -104,6 +104,6 @@
             android:imeOptions="actionDone|flagNoExtractUi"
             android:inputType="number"
             android:selectAllOnFocus="false"
-            android:textAppearance="@style/TextStyleForTexts" />
+            android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
     </LinearLayout>
 </LinearLayout>

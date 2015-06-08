@@ -11,13 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+
+import java.lang.reflect.Method;
 
 public class ActivityMain extends AppCompatActivity implements
         FragmentFueling.FilterChangeListener,
@@ -36,49 +36,37 @@ public class ActivityMain extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Functions.sApplicationContext = this.getApplicationContext();
+
         Toolbar toolbarMain = (Toolbar) findViewById(R.id.toolbarMain);
         setSupportActionBar(toolbarMain);
-        //noinspection ConstantConditions
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        //noinspection ConstantConditions
         mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.filter_years, R.layout.toolbar_spinner_item);
-        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        Functions.addSpinnerInToolbar(getSupportActionBar(), mToolbarSpinner, toolbarMain,
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        Log.d("XXX", "ActivityMain -- onItemSelected");
 
-        mToolbarSpinner.setAdapter(adapter);
+                        Const.FilterMode filterMode;
+                        switch (position) {
+                            case 0:
+                                filterMode = Const.FilterMode.CURRENT_YEAR;
+                                break;
+                            default:
+                                filterMode = Const.FilterMode.ALL;
+                        }
+                        FragmentFueling fragmentFueling = (FragmentFueling) getFragmentManager().findFragmentById(R.id.fragmentFueling);
+                        fragmentFueling.setFilterMode(filterMode);
+                    }
 
-        int px = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 56, getResources().getDisplayMetrics()));
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
 
-        mToolbarSpinner.setDropDownVerticalOffset(-px);
-
-        toolbarMain.addView(mToolbarSpinner);
-
-        mToolbarSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("XXX", "ActivityMain -- onItemSelected");
-
-                Const.FilterMode filterMode;
-                switch (position) {
-                    case 0:
-                        filterMode = Const.FilterMode.CURRENT_YEAR;
-                        break;
-                    default:
-                        filterMode = Const.FilterMode.ALL;
-                }
-                FragmentFueling fragmentFueling = (FragmentFueling) getFragmentManager().findFragmentById(R.id.fragmentFueling);
-                fragmentFueling.setFilterMode(filterMode);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        Functions.sApplicationContext = this.getApplicationContext();
+                    }
+                });
 
         mLoadingStatusReceiver = new BroadcastReceiver() {
             @Override
@@ -116,10 +104,30 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
+    protected boolean onPrepareOptionsPanel(View view, Menu menu) {
+        if (menu != null) {
+            if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
+                try {
+                    Method m = menu.getClass().getDeclaredMethod(
+                            "setOptionalIconsVisible", boolean.class);
+                    m.setAccessible(true);
+                    m.invoke(menu, true);
+                } catch (Exception e) {
+                    //
+                }
+            }
+        }
+        return super.onPrepareOptionsPanel(view, menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_calc:
                 ActivityCalc.start(this);
+                return true;
+            case R.id.action_average:
+                ActivityAverage.start(this);
                 return true;
             case R.id.action_backup:
                 ActivityBackup.start(this);

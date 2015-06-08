@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
+import java.lang.reflect.Field;
 import java.util.Calendar;
 
 public class FragmentFueling extends Fragment implements
@@ -289,6 +290,18 @@ public class FragmentFueling extends Fragment implements
         final long id = (long) v.getTag();
 
         PopupMenu popupMenu = new PopupMenu(getActivity(), v);
+        popupMenu.inflate(R.menu.menu_fueling);
+
+        Object menuHelper = null;
+        try {
+            Field fMenuHelper = PopupMenu.class.getDeclaredField("mPopup");
+            fMenuHelper.setAccessible(true);
+            menuHelper = fMenuHelper.get(popupMenu);
+            menuHelper.getClass().getDeclaredMethod("setForceShowIcon", boolean.class).invoke(menuHelper, true);
+        } catch (Exception e) {
+            //
+        }
+
         popupMenu.setOnMenuItemClickListener(
                 new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -307,8 +320,24 @@ public class FragmentFueling extends Fragment implements
                     }
                 }
         );
-        popupMenu.inflate(R.menu.menu_fueling);
+
         popupMenu.show();
+
+        try {
+            if (menuHelper == null) return;
+
+            Field fListPopup = menuHelper.getClass().getDeclaredField("mPopup");
+            fListPopup.setAccessible(true);
+            Object listPopup = fListPopup.get(menuHelper);
+            Class<?> listPopupClass = listPopup.getClass();
+
+            // TODO: up more
+            listPopupClass.getDeclaredMethod("setVerticalOffset", int.class).invoke(listPopup, -v.getHeight());
+
+            listPopupClass.getDeclaredMethod("show").invoke(listPopup);
+        } catch (Exception e) {
+            //
+        }
     }
 
     @Override

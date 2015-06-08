@@ -15,7 +15,7 @@
     </style>
 
     <style name="AppTheme.PopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
-        <item name="android:dropDownVerticalOffset">-48dp</item>
+        <!-- <item name="android:dropDownVerticalOffset">-48dp</item> -->
     </style>
 
     <style name="AppTheme.Button" parent="@style/Widget.AppCompat.Button">
@@ -31,17 +31,21 @@
         <item name="android:paddingRight">24dp</item>
     </style>
 
-    <style name="TextStyleForLists" parent="@style/TextAppearance.AppCompat.Body1">
+    <style name="AppTheme.TextAppearance.Body" parent="@style/TextAppearance.AppCompat.Body1">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="TextStyleForTexts" parent="@style/TextAppearance.AppCompat.Body1">
-        <item name="android:textSize">16sp</item>
+    <style name="AppTheme.TextAppearance.Lists" parent="@style/AppTheme.TextAppearance.Body" />
+
+    <style name="AppTheme.TextAppearance.Texts" parent="@style/AppTheme.TextAppearance.Body" />
+
+    <style name="AppTheme.TextAppearance.Caption" parent="@style/TextAppearance.AppCompat.Caption" />
+
+    <style name="AppTheme.TextAppearance.Display" parent="@style/TextAppearance.AppCompat.Display1">
+        <item name="android:textColor">@color/accent</item>
     </style>
 
-    <style name="TextStyleForTextsCaption" parent="@style/TextAppearance.AppCompat.Caption" />
-
-    <style name="TextStyleForTextsError" parent="@style/TextAppearance.AppCompat.Small">
+    <style name="AppTheme.TextAppearance.ErrorValue" parent="@style/TextAppearance.AppCompat.Small">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/edit_error</item>
     </style>

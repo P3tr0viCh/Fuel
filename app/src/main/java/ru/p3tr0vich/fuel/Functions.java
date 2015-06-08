@@ -3,11 +3,18 @@ package ru.p3tr0vich.fuel;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 
@@ -42,8 +49,7 @@ class Functions {
 
     public static String dateToString(Date date, boolean withYear) {
         int flags = DateUtils.FORMAT_SHOW_DATE;
-        if (withYear) flags = flags | DateUtils.FORMAT_SHOW_YEAR;
-        else flags = flags | DateUtils.FORMAT_NO_YEAR;
+        flags = withYear ? flags | DateUtils.FORMAT_SHOW_YEAR : flags | DateUtils.FORMAT_NO_YEAR;
         return DateUtils.formatDateTime(sApplicationContext, date.getTime(), flags);
     }
 
@@ -64,7 +70,7 @@ class Functions {
     }
 
     public static float textToFloat(String text) {
-        if ((text == null) || (text.length() == 0)) return 0;
+        if (TextUtils.isEmpty(text)) return 0;
         try {
             return Float.parseFloat(text);
         } catch (Exception e) {
@@ -129,5 +135,25 @@ class Functions {
                         return true;
         }
         return false;
+    }
+
+    public static void addSpinnerInToolbar(ActionBar actionBar, Spinner spinner,
+                                           Toolbar toolbar, AdapterView.OnItemSelectedListener listener) {
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(sApplicationContext,
+                R.array.filter_years, R.layout.toolbar_spinner_item);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+
+        spinner.setAdapter(adapter);
+
+        int px = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                Const.TOOLBAR_SPINNER_DROPDOWN_OFFSET, sApplicationContext.getResources().getDisplayMetrics()));
+
+        spinner.setDropDownVerticalOffset(-px);
+
+        toolbar.addView(spinner);
+
+        spinner.setOnItemSelectedListener(listener);
     }
 }

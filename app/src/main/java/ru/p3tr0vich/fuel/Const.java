@@ -9,6 +9,8 @@ class Const {
     static final String PREF_CONS = "consumption";
     static final String PREF_SEASON = "season";
 
+    static final int TOOLBAR_SPINNER_DROPDOWN_OFFSET = 56; // TODO: Magic number
+
     enum RecordAction {ADD, UPDATE, DELETE}
 
     enum FilterMode {CURRENT_YEAR, ALL}

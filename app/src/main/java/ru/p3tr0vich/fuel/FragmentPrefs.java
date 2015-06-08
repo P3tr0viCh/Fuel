@@ -7,6 +7,7 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,7 @@ public class FragmentPrefs extends PreferenceFragment implements SharedPreferenc
             } else if (category.equals(getString(R.string.pref_category_cons))) {
                 addPreferencesFromResource(R.xml.prefs_cons);
             }
-        } else  addPreferencesFromResource(R.xml.prefs_cons);
+        } else addPreferencesFromResource(R.xml.prefs_cons);
     }
 
     @Override
@@ -45,7 +46,8 @@ public class FragmentPrefs extends PreferenceFragment implements SharedPreferenc
 
             summary = (String) editPref.getSummary();
             text = editPref.getText();
-            if ((text == null) || (text.length()) == 0) text = "0";
+
+            if (TextUtils.isEmpty(text)) text = "0";
 
             int i = summary.lastIndexOf(" (");
             if (i != -1) summary = summary.substring(0, i);

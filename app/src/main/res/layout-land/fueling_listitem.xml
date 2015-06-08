@@ -14,7 +14,7 @@
         android:clickable="false"
         android:gravity="center_vertical"
         android:text=""
-        android:textAppearance="@style/TextStyleForLists"
+        android:textAppearance="@style/AppTheme.TextAppearance.Lists"
         tools:text="@string/list_item_date" />
 
     <TextView
@@ -24,7 +24,7 @@
         android:layout_weight="5"
         android:gravity="center_vertical"
         android:text=""
-        android:textAppearance="@style/TextStyleForLists"
+        android:textAppearance="@style/AppTheme.TextAppearance.Lists"
         tools:text="@string/list_item_cost" />
 
     <TextView
@@ -34,7 +34,7 @@
         android:layout_weight="5"
         android:gravity="center_vertical"
         android:text=""
-        android:textAppearance="@style/TextStyleForLists"
+        android:textAppearance="@style/AppTheme.TextAppearance.Lists"
         tools:text="@string/list_item_volume" />
 
     <TextView
@@ -44,7 +44,7 @@
         android:layout_weight="5"
         android:gravity="center_vertical"
         android:text=""
-        android:textAppearance="@style/TextStyleForLists"
+        android:textAppearance="@style/AppTheme.TextAppearance.Lists"
         tools:text="@string/list_item_total" />
 
     <ImageButton

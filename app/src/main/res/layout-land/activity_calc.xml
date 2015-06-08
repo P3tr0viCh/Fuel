@@ -35,7 +35,7 @@
                     android:gravity="center_vertical"
                     android:labelFor="@id/editDistance"
                     android:text="@string/text_distance"
-                    android:textAppearance="@style/TextStyleForTexts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
 
                 <EditText
                     android:id="@+id/editDistance"
@@ -45,7 +45,7 @@
                     android:imeOptions="actionDone|flagNoExtractUi"
                     android:inputType="number"
                     android:selectAllOnFocus="false"
-                    android:textAppearance="@style/TextStyleForTexts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
             </LinearLayout>
 
             <Button
@@ -66,7 +66,7 @@
                     android:gravity="center_vertical"
                     android:labelFor="@id/editCost"
                     android:text="@string/text_cost"
-                    android:textAppearance="@style/TextStyleForTexts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
 
                 <EditText
                     android:id="@+id/editCost"
@@ -76,7 +76,7 @@
                     android:imeOptions="actionDone|flagNoExtractUi"
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="false"
-                    android:textAppearance="@style/TextStyleForTexts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
             </LinearLayout>
 
             <LinearLayout
@@ -91,7 +91,7 @@
                     android:gravity="center_vertical"
                     android:labelFor="@id/editVolume"
                     android:text="@string/text_volume"
-                    android:textAppearance="@style/TextStyleForTexts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
 
                 <EditText
                     android:id="@+id/editVolume"
@@ -101,7 +101,7 @@
                     android:imeOptions="actionDone|flagNoExtractUi"
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="false"
-                    android:textAppearance="@style/TextStyleForTexts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
             </LinearLayout>
         </LinearLayout>
 
@@ -128,7 +128,7 @@
                     android:gravity="center_vertical"
                     android:labelFor="@id/editPrice"
                     android:text="@string/text_price"
-                    android:textAppearance="@style/TextStyleForTexts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
 
                 <EditText
                     android:id="@+id/editPrice"
@@ -138,7 +138,7 @@
                     android:imeOptions="actionDone|flagNoExtractUi"
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="false"
-                    android:textAppearance="@style/TextStyleForTexts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
             </LinearLayout>
 
             <LinearLayout
@@ -159,7 +159,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="@string/text_empty_price"
-                    android:textAppearance="@style/TextStyleForTextsError" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.ErrorValue" />
             </LinearLayout>
 
             <View
@@ -201,7 +201,7 @@
                     android:gravity="center_vertical"
                     android:labelFor="@id/editCons"
                     android:text="@string/text_consumption"
-                    android:textAppearance="@style/TextStyleForTexts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
 
                 <EditText
                     android:id="@+id/editCons"
@@ -211,7 +211,7 @@
                     android:imeOptions="actionDone|flagNoExtractUi"
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="false"
-                    android:textAppearance="@style/TextStyleForTexts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
             </LinearLayout>
 
             <LinearLayout
@@ -231,7 +231,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="@string/text_empty_cons"
-                    android:textAppearance="@style/TextStyleForTextsError" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.ErrorValue" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

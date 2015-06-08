@@ -5,6 +5,5 @@
     android:layout_height="@dimen/toolbar_height"
     android:background="@color/primary"
     android:minHeight="@dimen/toolbar_height"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />

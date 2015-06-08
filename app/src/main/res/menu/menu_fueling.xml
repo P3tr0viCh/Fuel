@@ -1,16 +1,12 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ActivityMain">
-
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_fueling_update"
-        android:title="@string/list_item_menu_update"
+        android:icon="@drawable/ic_pen_black_24dp"
         android:orderInCategory="100"
-        app:showAsAction="never" />
+        android:title="@string/list_item_menu_update" />
     <item
         android:id="@+id/action_fueling_delete"
-        android:title="@string/list_item_menu_delete"
+        android:icon="@drawable/ic_delete_black_24dp"
         android:orderInCategory="200"
-        app:showAsAction="never" />
+        android:title="@string/list_item_menu_delete" />
 </menu>

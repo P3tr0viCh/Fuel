@@ -4,23 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="72dp"
     android:descendantFocusability="blocksDescendants"
-    android:orientation="horizontal">
-
-    <ImageButton
-        android:id="@+id/ibMenu"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="false"
-        android:layout_centerVertical="true"
-        android:adjustViewBounds="false"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:scaleType="center"
-        android:src="@drawable/ic_more_vert_black_24dp"
-        tools:ignore="ContentDescription" />
+    android:orientation="horizontal"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp">
 
     <TextView
         android:id="@+id/tvDate"
@@ -76,4 +62,19 @@
             tools:text="@string/list_item_total" />
     </LinearLayout>
 
+    <ImageButton
+        android:id="@+id/ibMenu"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="false"
+        android:layout_centerVertical="true"
+        android:adjustViewBounds="false"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:scaleType="center"
+        android:src="@drawable/ic_more_vert_black_24dp"
+        tools:ignore="ContentDescription" />
 </RelativeLayout>

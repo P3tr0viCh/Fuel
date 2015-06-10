@@ -40,11 +40,6 @@
             android:configChanges="screenSize|orientation"
             android:label="@string/title_activity_yandex_map"
             android:parentActivityName=".ActivityCalc" />
-        <activity
-            android:name=".ActivityAverage"
-            android:label="@string/title_activity_average"
-            android:parentActivityName=".ActivityMain" >
-        </activity>
     </application>
 
 </manifest>

@@ -33,7 +33,6 @@ public class FragmentFueling extends Fragment implements
     private static final String KEY_FILTER_MODE = "KEY_FILTER_MODE";
 
     private static final int LOADER_LIST_ID = 0;
-    private static final int LOADER_TOTAL_ID = 1;
 
     private FuelingDBHelper db;
     private FuelingCursorAdapter mFuelingCursorAdapter;
@@ -47,10 +46,8 @@ public class FragmentFueling extends Fragment implements
 
     private ProgressWheel mProgressWheelFueling;
 
-    private TextView mTextCost;
-    private TextView mTextVolume;
-
-    private ProgressWheel mProgressWheelTotal;
+    private TextView mTextAverage;
+    private TextView mTextSumCost;
 
     private long mSelectedId = 0; // TODO: HACK
 
@@ -60,7 +57,7 @@ public class FragmentFueling extends Fragment implements
     @SuppressLint("InflateParams")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("XXX", "FragmentFueling -- onCreateView");
+        Log.d(Const.LOG_TAG, "FragmentFueling -- onCreateView");
 
         View view = inflater.inflate(R.layout.fueling_listview, container, false);
 
@@ -71,10 +68,8 @@ public class FragmentFueling extends Fragment implements
 
         mProgressWheelFueling = (ProgressWheel) view.findViewById(R.id.progressWheelFueling);
 
-        mTextCost = (TextView) view.findViewById(R.id.tvCost);
-        mTextVolume = (TextView) view.findViewById(R.id.tvVolume);
-
-        mProgressWheelTotal = (ProgressWheel) view.findViewById(R.id.progressWheelTotal);
+        mTextAverage = (TextView) view.findViewById(R.id.tvAverage);
+        mTextSumCost = (TextView) view.findViewById(R.id.tvSumCost);
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -93,7 +88,7 @@ public class FragmentFueling extends Fragment implements
 
         outState.putSerializable(KEY_FILTER_MODE, mFilterMode);
 
-        Log.d("XXX", "FragmentFueling -- onSaveInstanceState");
+        Log.d(Const.LOG_TAG, "FragmentFueling -- onSaveInstanceState");
     }
 
     @Override
@@ -116,17 +111,16 @@ public class FragmentFueling extends Fragment implements
         mListViewFueling.setAdapter(mFuelingCursorAdapter);
 
         if (savedInstanceState == null) {
-            Log.d("XXX", "FragmentFueling -- onActivityCreated: savedInstanceState == null");
+            Log.d(Const.LOG_TAG, "FragmentFueling -- onActivityCreated: savedInstanceState == null");
 
             doSetFilterMode(Const.FilterMode.CURRENT_YEAR);
         } else {
-            Log.d("XXX", "FragmentFueling -- onActivityCreated: savedInstanceState != null");
+            Log.d(Const.LOG_TAG, "FragmentFueling -- onActivityCreated: savedInstanceState != null");
 
             doSetFilterMode((Const.FilterMode) savedInstanceState.getSerializable(KEY_FILTER_MODE));
         }
 
         getLoaderManager().initLoader(LOADER_LIST_ID, null, this);
-        getLoaderManager().initLoader(LOADER_TOTAL_ID, null, this);
     }
 
     private void doSetFilterMode(Const.FilterMode filterMode) {
@@ -137,14 +131,13 @@ public class FragmentFueling extends Fragment implements
     }
 
     public boolean setFilterMode(Const.FilterMode filterMode) {
-        Log.d("XXX", "FragmentFueling -- setFilterMode");
+        Log.d(Const.LOG_TAG, "FragmentFueling -- setFilterMode");
         if (mFilterMode != filterMode) {
-            Log.d("XXX", "FragmentFueling -- setFilterMode: mFilterMode != filterMode");
+            Log.d(Const.LOG_TAG, "FragmentFueling -- setFilterMode: mFilterMode != filterMode");
 
             doSetFilterMode(filterMode);
 
             getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
-            getLoaderManager().restartLoader(LOADER_TOTAL_ID, null, this);
 
             return false;
         } else return true;
@@ -180,7 +173,7 @@ public class FragmentFueling extends Fragment implements
 
         @Override
         public Cursor loadInBackground() {
-            Log.d("XXX", "FragmentFueling -- loadInBackground");
+            Log.d(Const.LOG_TAG, "FragmentFueling -- loadInBackground");
 
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(LOADER_LIST_ID, true));
 
@@ -194,48 +187,55 @@ public class FragmentFueling extends Fragment implements
         }
     }
 
-    static class FuelingTotalCursorLoader extends CursorLoader {
-
-        private final Context mContext;
-        private final Const.FilterMode mFilterMode;
-
-        public FuelingTotalCursorLoader(Context context, Const.FilterMode filterMode) {
-            super(context);
-            mContext = context;
-            mFilterMode = filterMode;
-        }
-
-        @Override
-        public Cursor loadInBackground() {
-            Log.d("XXX", "FragmentFuelingTotal -- loadInBackground");
-
-            LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(LOADER_TOTAL_ID, true));
-
-            FuelingDBHelper dbHelper = new FuelingDBHelper(mContext);
-            dbHelper.setFilterMode(mFilterMode);
-/*            try {
-                TimeUnit.MILLISECONDS.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
-            try {
-                return dbHelper.getTotalCursor();
-            } finally {
-                LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(LOADER_TOTAL_ID, false));
-            }
-        }
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_LIST_ID:
                 return new FuelingCursorLoader(getActivity().getApplicationContext(), mFilterMode);
-            case LOADER_TOTAL_ID:
-                return new FuelingTotalCursorLoader(getActivity().getApplicationContext(), mFilterMode);
             default:
                 return null;
         }
+    }
+
+    private void calcTotal(Cursor data) {
+        float costSum = 0, volumeSum = 0;
+        float volume, total, firstTotal = 0, lastTotal = 0, average;
+
+        int columnCost = data.getColumnIndex(FuelingDBHelper.COLUMN_COST);
+        int columnVolume = data.getColumnIndex(FuelingDBHelper.COLUMN_VOLUME);
+        int columnTotal = data.getColumnIndex(FuelingDBHelper.COLUMN_TOTAL);
+
+        boolean completeData = true; // Во всех записях указаны объём заправки и текущий пробег
+
+        if (data.moveToFirst()) do {
+            costSum += data.getFloat(columnCost);
+
+            if (completeData) {
+                volume = data.getFloat(columnVolume);
+                total = data.getFloat(columnTotal);
+                if (volume == 0 || total == 0) completeData = false;
+                else {
+                    // Сортировка записей по дате в обратном порядке
+                    // isFirst -- последняя заправка
+                    if (data.isFirst()) lastTotal = total;
+                    else {
+                        // Последний (isFirst) объём заправки не нужен -- неизвестно, сколько на ней будет пробег
+                        volumeSum += volume;
+                        if (data.isLast()) firstTotal = total;
+                    }
+                }
+            }
+        } while (data.moveToNext());
+
+        if (completeData) {
+            Log.d(Const.LOG_TAG, "lastTotal == " + lastTotal + ", firstTotal == " + firstTotal +
+                    ", volumeSum == " + volumeSum);
+            average = (lastTotal - firstTotal) / volumeSum;
+        } else
+            average = 0; // TODO
+
+        mTextAverage.setText(Functions.floatToString(average));
+        mTextSumCost.setText(Functions.floatToString(costSum));
     }
 
     @Override
@@ -245,15 +245,9 @@ public class FragmentFueling extends Fragment implements
                 mFuelingCursorAdapter.swapCursor(data);
                 selectItemById(mSelectedId);
 
-                Log.d("XXX", "FragmentFueling -- onLoadFinished: LOADER_LIST_ID");
-                break;
-            case LOADER_TOTAL_ID:
-                if (data.moveToFirst()) {
-                    mTextCost.setText(Functions.floatToString(data.getFloat(0)));
-                    mTextVolume.setText(Functions.floatToString(data.getFloat(1)));
-                }
+                Log.d(Const.LOG_TAG, "FragmentFueling -- onLoadFinished: LOADER_LIST_ID");
 
-                Log.d("XXX", "FragmentFueling -- onLoadFinished: LOADER_TOTAL_ID");
+                calcTotal(data);
                 break;
         }
     }
@@ -268,7 +262,6 @@ public class FragmentFueling extends Fragment implements
 
     public void updateAfterChange() {
         getLoaderManager().getLoader(LOADER_LIST_ID).forceLoad();
-        getLoaderManager().getLoader(LOADER_TOTAL_ID).forceLoad();
     }
 
     public void addRecord(FuelingRecord fuelingRecord) {
@@ -299,7 +292,7 @@ public class FragmentFueling extends Fragment implements
             menuHelper = fMenuHelper.get(popupMenu);
             menuHelper.getClass().getDeclaredMethod("setForceShowIcon", boolean.class).invoke(menuHelper, true);
         } catch (Exception e) {
-            //
+            Log.d(Const.LOG_TAG, "Error setForceShowIcon: " + e.getMessage());
         }
 
         popupMenu.setOnMenuItemClickListener(
@@ -361,8 +354,6 @@ public class FragmentFueling extends Fragment implements
             case LOADER_LIST_ID:
                 Functions.setProgressWheelVisible(mProgressWheelFueling, visible);
                 break;
-            case LOADER_TOTAL_ID:
-                Functions.setProgressWheelVisible(mProgressWheelTotal, visible);
         }
     }
 

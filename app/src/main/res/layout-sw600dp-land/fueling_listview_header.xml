@@ -3,50 +3,50 @@
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:descendantFocusability="blocksDescendants"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp">
 
     <TextView
         android:id="@+id/tvDate"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/text_date"
-        android:clickable="false"
-        android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_weight="4"
-        android:gravity="center_vertical">
-    </TextView>
+        android:clickable="false"
+        android:gravity="center_vertical"
+        android:text="@string/text_date"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
     <TextView
         android:id="@+id/tvCost"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="5"
+        android:gravity="center_vertical"
         android:text="@string/text_cost"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_weight="5"
-        android:gravity="center_vertical">
-    </TextView>
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/text_volume"
         android:id="@+id/tvVolume"
-        android:layout_weight="5"
-        android:gravity="center_vertical" />
-
-    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/text_total"
-        android:id="@+id/tvTotal"
         android:layout_weight="5"
-        android:gravity="center_vertical" />
+        android:gravity="center_vertical"
+        android:text="@string/text_volume"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+    <TextView
+        android:id="@+id/tvTotal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="5"
+        android:gravity="center_vertical"
+        android:text="@string/text_total"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
 
     <Space
+        android:id="@+id/spMenu"
         android:layout_width="48dp"
-        android:layout_height="24dp"
-        android:id="@+id/spMenu" />
+        android:layout_height="24dp" />
 </LinearLayout>

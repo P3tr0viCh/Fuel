@@ -126,9 +126,6 @@ public class ActivityMain extends AppCompatActivity implements
             case R.id.action_calc:
                 ActivityCalc.start(this);
                 return true;
-            case R.id.action_average:
-                ActivityAverage.start(this);
-                return true;
             case R.id.action_backup:
                 ActivityBackup.start(this);
                 return true;

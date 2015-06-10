@@ -1,64 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
+    android:layout_height="40dp"
     android:descendantFocusability="blocksDescendants"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp">
 
     <TextView
         android:id="@+id/tvDate"
         android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:text="@string/text_date"
-        android:clickable="false"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_alignParentTop="true"
+        android:layout_height="20dp"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/spMenu"
-        android:gravity="center_vertical">
-    </TextView>
+        android:clickable="false"
+        android:gravity="center_vertical"
+        android:text="@string/text_date"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_marginLeft="16dp"
+        android:layout_height="20dp"
         android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tvDate"
+        android:layout_marginLeft="16dp"
         android:layout_toLeftOf="@+id/spMenu"
         android:gravity="center_vertical"
-        android:id="@+id/linearLayout"
-        android:layout_below="@+id/tvDate">
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tvCost"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/text_cost"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_weight="1">
-        </TextView>
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/text_volume"
             android:id="@+id/tvVolume"
-            android:layout_weight="1" />
-
-        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/text_total"
+            android:layout_weight="1"
+            android:text="@string/text_volume"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+        <TextView
             android:id="@+id/tvTotal"
-            android:layout_weight="1" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/text_total"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
     </LinearLayout>
 
     <Space
+        android:id="@+id/spMenu"
         android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_centerVertical="true"
+        android:layout_height="match_parent"
         android:layout_alignParentRight="true"
-        android:id="@+id/spMenu" />
+        android:layout_centerVertical="true" />
 </RelativeLayout>

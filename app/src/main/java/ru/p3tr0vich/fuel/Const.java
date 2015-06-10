@@ -11,6 +11,8 @@ class Const {
 
     static final int TOOLBAR_SPINNER_DROPDOWN_OFFSET = 56; // TODO: Magic number
 
+    static final String LOG_TAG = "XXX";
+
     enum RecordAction {ADD, UPDATE, DELETE}
 
     enum FilterMode {CURRENT_YEAR, ALL}

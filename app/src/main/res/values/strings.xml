@@ -39,8 +39,8 @@
     <string name="text_distance">Расстояние</string>
     <string name="text_consumption">Расход</string>
     <string name="text_sum">Сумма</string>
-
-    <string name="text_average">Средний расход за указанный период</string>
+    <string name="text_average_cons">Средний расход</string>
+    <string name="text_sum_cost">Сумма стоимости</string>
 
     <string name="text_backup_directory">Расположение файла</string>
     <string name="text_backup_file">Имя файла</string>

@@ -27,7 +27,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String SELECT_SUM = "SELECT SUM(" +
             COLUMN_COST + "), SUM(" + COLUMN_VOLUME + ") FROM " + TABLE_NAME;
     private static final String WHERE = " WHERE ";
-    private static final String ORDER_BY_DATE = " ORDER BY " + COLUMN_DATETIME + " DESC";
+    private static final String ORDER_BY_DATE = " ORDER BY " + COLUMN_DATETIME + " DESC, " + COLUMN_TOTAL + " DESC";
 
     private static final String IN_CURRENT_YEAR = " BETWEEN '%1$d-01-01' AND '%1$d-12-31'";
 

@@ -10,7 +10,8 @@
 
     <include
         android:id="@+id/toolbarAdd"
-        layout="@layout/toolbar" />
+        layout="@layout/toolbar"
+        tools:ignore="InconsistentLayout" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -32,7 +33,8 @@
             android:headerDividersEnabled="true"
             tools:listfooter="@layout/fueling_listview_footer"
             tools:listheader="@layout/fueling_listview_header"
-            tools:listitem="@layout/fueling_listitem" />
+            tools:listitem="@layout/fueling_listitem"
+            android:choiceMode="none" />
 
         <com.pnikosis.materialishprogress.ProgressWheel
             android:id="@+id/progressWheelFueling"

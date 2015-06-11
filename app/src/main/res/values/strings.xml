@@ -5,7 +5,6 @@
     <string name="title_activity_backup">Резервная копия</string>
     <string name="title_activity_yandex_map">Расстояние</string>
     <string name="title_activity_yandex_map_add">: %d км</string>
-    <string name="title_activity_average">Средний расход</string>
 
     <string name="title_message_error">Ошибка</string>
 
@@ -19,7 +18,6 @@
 
     <string name="action_calc">Калькулятор</string>
     <string name="action_backup">Резервная копия</string>
-    <string name="action_average">Средний расход</string>
     <string name="action_settings">Настройки</string>
     <string name="action_about">О программе</string>
     <string name="action_save">Сохранить</string>
@@ -38,7 +36,6 @@
     <string name="text_price">Цена за литр</string>
     <string name="text_distance">Расстояние</string>
     <string name="text_consumption">Расход</string>
-    <string name="text_sum">Сумма</string>
     <string name="text_average_cons">Средний расход</string>
     <string name="text_sum_cost">Сумма стоимости</string>
 

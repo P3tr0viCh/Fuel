@@ -25,7 +25,9 @@ import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class FragmentFueling extends Fragment implements
         View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -175,14 +177,14 @@ public class FragmentFueling extends Fragment implements
         public Cursor loadInBackground() {
             Log.d(Const.LOG_TAG, "FragmentFueling -- loadInBackground");
 
-            LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(LOADER_LIST_ID, true));
+            LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(true));
 
             FuelingDBHelper dbHelper = new FuelingDBHelper(mContext);
             dbHelper.setFilterMode(mFilterMode);
             try {
                 return dbHelper.getAllCursor();
             } finally {
-                LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(LOADER_LIST_ID, false));
+                LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(false));
             }
         }
     }
@@ -197,9 +199,21 @@ public class FragmentFueling extends Fragment implements
         }
     }
 
+    class VolumeAndTotal {
+        final float volume;
+        final float total;
+
+        VolumeAndTotal(float v, float t) {
+            volume = v;
+            total = t;
+        }
+    }
+
     private void calcTotal(Cursor data) {
         float costSum = 0, volumeSum = 0;
         float volume, total, firstTotal = 0, lastTotal = 0, average;
+
+        int averageCount;
 
         int columnCost = data.getColumnIndex(FuelingDBHelper.COLUMN_COST);
         int columnVolume = data.getColumnIndex(FuelingDBHelper.COLUMN_VOLUME);
@@ -207,12 +221,17 @@ public class FragmentFueling extends Fragment implements
 
         boolean completeData = true; // Во всех записях указаны объём заправки и текущий пробег
 
+        List<VolumeAndTotal> volumeAndTotals = new ArrayList<>();
+
         if (data.moveToFirst()) do {
             costSum += data.getFloat(columnCost);
 
+            volume = data.getFloat(columnVolume);
+            total = data.getFloat(columnTotal);
+
+            volumeAndTotals.add(new VolumeAndTotal(volume, total));
+
             if (completeData) {
-                volume = data.getFloat(columnVolume);
-                total = data.getFloat(columnTotal);
                 if (volume == 0 || total == 0) completeData = false;
                 else {
                     // Сортировка записей по дате в обратном порядке
@@ -227,12 +246,25 @@ public class FragmentFueling extends Fragment implements
             }
         } while (data.moveToNext());
 
-        if (completeData) {
-            Log.d(Const.LOG_TAG, "lastTotal == " + lastTotal + ", firstTotal == " + firstTotal +
-                    ", volumeSum == " + volumeSum);
-            average = (lastTotal - firstTotal) / volumeSum;
-        } else
-            average = 0; // TODO
+        if (completeData)
+            average = (volumeSum / (lastTotal - firstTotal)) * 100;
+        else {
+            average = 0;
+            averageCount = 0;
+            for (int i = 0; i < volumeAndTotals.size() - 1; i++) {
+                lastTotal = volumeAndTotals.get(i).total;
+                if (lastTotal != 0) {
+                    volume = volumeAndTotals.get(i + 1).volume;
+                    total = volumeAndTotals.get(i + 1).total;
+                    if (volume != 0 && total != 0) {
+                        average += (volume / (lastTotal - total)) * 100;
+                        averageCount++;
+                    }
+                }
+            }
+
+            average = averageCount != 0 ? average / averageCount : 0;
+        }
 
         mTextAverage.setText(Functions.floatToString(average));
         mTextSumCost.setText(Functions.floatToString(costSum));
@@ -324,8 +356,8 @@ public class FragmentFueling extends Fragment implements
             Object listPopup = fListPopup.get(menuHelper);
             Class<?> listPopupClass = listPopup.getClass();
 
-            // TODO: up more
-            listPopupClass.getDeclaredMethod("setVerticalOffset", int.class).invoke(listPopup, -v.getHeight());
+            // Magic number
+            listPopupClass.getDeclaredMethod("setVerticalOffset", int.class).invoke(listPopup, -v.getHeight() - 8);
 
             listPopupClass.getDeclaredMethod("show").invoke(listPopup);
         } catch (Exception e) {
@@ -349,12 +381,8 @@ public class FragmentFueling extends Fragment implements
         mSelectedId = 0;
     }
 
-    public void setProgressBarVisible(int loaderId, boolean visible) {
-        switch (loaderId) {
-            case LOADER_LIST_ID:
-                Functions.setProgressWheelVisible(mProgressWheelFueling, visible);
-                break;
-        }
+    public void setProgressBarVisible(boolean visible) {
+        Functions.setProgressWheelVisible(mProgressWheelFueling, visible);
     }
 
     public interface FilterChangeListener {

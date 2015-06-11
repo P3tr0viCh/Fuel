@@ -10,8 +10,6 @@
     <dimen name="listview_footer_height">28dp</dimen>
 
     <dimen name="progress_wheel_fueling_size">80dp</dimen>
-    <dimen name="progress_wheel_total_size_phone">36dp</dimen>
-    <dimen name="progress_wheel_total_size_tablet">24dp</dimen>
 
     <dimen name="menu_item_margin">16dp</dimen>
 </resources>

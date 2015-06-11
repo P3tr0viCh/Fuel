@@ -24,8 +24,6 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String TABLE_NAME = "fuelling";
 
     private static final String SELECT_ALL = "SELECT * FROM " + TABLE_NAME;
-    private static final String SELECT_SUM = "SELECT SUM(" +
-            COLUMN_COST + "), SUM(" + COLUMN_VOLUME + ") FROM " + TABLE_NAME;
     private static final String WHERE = " WHERE ";
     private static final String ORDER_BY_DATE = " ORDER BY " + COLUMN_DATETIME + " DESC, " + COLUMN_TOTAL + " DESC";
 
@@ -199,15 +197,5 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         db.close();
 
         return fuelingRecords;
-    }
-
-    public Cursor getTotalCursor() {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        String sql = SELECT_SUM + filterModeToSql() + ORDER_BY_DATE;
-
-        Log.d("XXX", "FuelingDBHelper -- getTotalCursor (sql == " + sql + ")");
-
-        return db.rawQuery(sql, null);
     }
 }

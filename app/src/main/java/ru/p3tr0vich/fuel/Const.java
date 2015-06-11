@@ -9,7 +9,7 @@ class Const {
     static final String PREF_CONS = "consumption";
     static final String PREF_SEASON = "season";
 
-    static final int TOOLBAR_SPINNER_DROPDOWN_OFFSET = 56; // TODO: Magic number
+    static final int TOOLBAR_SPINNER_DROPDOWN_OFFSET = 56; // Magic number
 
     static final String LOG_TAG = "XXX";
 

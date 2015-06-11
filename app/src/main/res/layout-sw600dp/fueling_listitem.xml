@@ -6,7 +6,9 @@
     android:descendantFocusability="blocksDescendants"
     android:orientation="horizontal"
     android:paddingEnd="16dp"
-    android:paddingStart="16dp">
+    android:paddingStart="16dp"
+    android:clickable="false"
+    android:background="@color/window_background">
 
     <TextView
         android:id="@+id/tvDate"

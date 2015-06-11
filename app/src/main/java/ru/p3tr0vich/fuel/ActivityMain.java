@@ -24,7 +24,6 @@ public class ActivityMain extends AppCompatActivity implements
         FragmentFueling.RecordChangeListener {
 
     private static final String ACTION_LOADING = "ru.p3tr0vich.fuel.ACTION_LOADING";
-    private static final String EXTRA_LOADER_ID = "ru.p3tr0vich.fuel.EXTRA_LOADER_ID";
     private static final String EXTRA_LOADING = "ru.p3tr0vich.fuel.EXTRA_LOADING";
 
     private Spinner mToolbarSpinner;
@@ -71,11 +70,10 @@ public class ActivityMain extends AppCompatActivity implements
         mLoadingStatusReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                int loaderId = intent.getIntExtra(EXTRA_LOADER_ID, 0);
                 boolean visible = intent.getBooleanExtra(EXTRA_LOADING, false);
 
                 FragmentFueling fragmentFueling = (FragmentFueling) getFragmentManager().findFragmentById(R.id.fragmentFueling);
-                fragmentFueling.setProgressBarVisible(loaderId, visible);
+                fragmentFueling.setProgressBarVisible(visible);
             }
         };
         LocalBroadcastManager.getInstance(this).registerReceiver(mLoadingStatusReceiver,
@@ -90,9 +88,8 @@ public class ActivityMain extends AppCompatActivity implements
         super.onDestroy();
     }
 
-    public static Intent getLoadingBroadcast(int loaderId, boolean startLoading) {
+    public static Intent getLoadingBroadcast(boolean startLoading) {
         Intent intent = new Intent(ACTION_LOADING);
-        intent.putExtra(EXTRA_LOADER_ID, loaderId);
         intent.putExtra(EXTRA_LOADING, startLoading);
         return intent;
     }

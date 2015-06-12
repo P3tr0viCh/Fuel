@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import java.util.Date;
 
@@ -88,13 +87,9 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
             }
         });
 
-        TextView textCost = (TextView) view.findViewById(R.id.textCost);
-        TextView textVolume = (TextView) view.findViewById(R.id.textVolume);
-        TextView textTotal = (TextView) view.findViewById(R.id.textTotal);
-
-        textCost.setOnClickListener(this);
-        textVolume.setOnClickListener(this);
-        textTotal.setOnClickListener(this);
+        view.findViewById(R.id.textCost).setOnClickListener(this);
+        view.findViewById(R.id.textVolume).setOnClickListener(this);
+        view.findViewById(R.id.textTotal).setOnClickListener(this);
 
         return view;
     }
@@ -114,7 +109,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     }
 
     private void setDate(Date date) {
-        this.mDate = date;
+        mDate = date;
         updateDate();
     }
 
@@ -137,19 +132,14 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 mFuelingRecord.setVolume(Functions.editTextToFloat(mEditVolume));
                 mFuelingRecord.setTotal(Functions.editTextToFloat(mEditTotal));
 
-                SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                SharedPreferences.Editor editor = sPref.edit();
+                PreferenceManager.getDefaultSharedPreferences(getActivity())
+                        .edit()
+                        .putFloat(getString(R.string.pref_last_total), mFuelingRecord.getTotal())
+                        .apply();
 
-                editor.putFloat(getString(R.string.pref_last_total), mFuelingRecord.getTotal());
-
-                editor.apply();
-
-                Intent intent = new Intent();
-
-                intent.putExtra(ActivityFuelingRecordChange.INTENT_EXTRA_ACTION, mRecordAction.ordinal());
-                intent.putExtra(ActivityFuelingRecordChange.INTENT_EXTRA_DATA, mFuelingRecord);
-
-                getActivity().setResult(Activity.RESULT_OK, intent);
+                getActivity().setResult(Activity.RESULT_OK, new Intent()
+                        .putExtra(ActivityFuelingRecordChange.INTENT_EXTRA_ACTION, mRecordAction.ordinal())
+                        .putExtra(ActivityFuelingRecordChange.INTENT_EXTRA_DATA, mFuelingRecord));
                 getActivity().finish();
                 return true;
         }

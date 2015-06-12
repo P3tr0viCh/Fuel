@@ -135,10 +135,7 @@ public class ActivityYandexMap extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                Intent intent = new Intent();
-                intent.putExtra(INTENT_DISTANCE, mDistance);
-
-                setResult(RESULT_OK, intent);
+                setResult(RESULT_OK, new Intent().putExtra(INTENT_DISTANCE, mDistance));
                 finish();
                 return true;
         }

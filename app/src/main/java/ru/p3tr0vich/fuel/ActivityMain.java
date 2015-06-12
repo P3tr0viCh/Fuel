@@ -15,9 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 
 public class ActivityMain extends AppCompatActivity implements
         FragmentFueling.FilterChangeListener,
@@ -27,18 +29,25 @@ public class ActivityMain extends AppCompatActivity implements
     private static final String EXTRA_LOADING = "ru.p3tr0vich.fuel.EXTRA_LOADING";
 
     private Spinner mToolbarSpinner;
+    private Toolbar mToolbarMainDates;
 
     private BroadcastReceiver mLoadingStatusReceiver;
+
+    private boolean abbrevMonth;
+    private boolean dateFromClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        abbrevMonth = getResources().getDimension(R.dimen.abbrev_month) != 0;
         Functions.sApplicationContext = this.getApplicationContext();
 
         Toolbar toolbarMain = (Toolbar) findViewById(R.id.toolbarMain);
         setSupportActionBar(toolbarMain);
+
+        mToolbarMainDates = (Toolbar) findViewById(R.id.toolbarMainDates);
 
         //noinspection ConstantConditions
         mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
@@ -47,16 +56,12 @@ public class ActivityMain extends AppCompatActivity implements
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        Log.d("XXX", "ActivityMain -- onItemSelected");
+                        Log.d(Const.LOG_TAG, "ActivityMain -- onItemSelected");
 
-                        Const.FilterMode filterMode;
-                        switch (position) {
-                            case 0:
-                                filterMode = Const.FilterMode.CURRENT_YEAR;
-                                break;
-                            default:
-                                filterMode = Const.FilterMode.ALL;
-                        }
+                        FuelingDBHelper.FilterMode filterMode = Functions.positionToFilterMode(position);
+
+                        setToolbarDatesVisible(filterMode == FuelingDBHelper.FilterMode.DATES);
+
                         FragmentFueling fragmentFueling = (FragmentFueling) getFragmentManager().findFragmentById(R.id.fragmentFueling);
                         fragmentFueling.setFilterMode(filterMode);
                     }
@@ -66,6 +71,12 @@ public class ActivityMain extends AppCompatActivity implements
 
                     }
                 });
+
+        FragmentFueling fragmentFueling = (FragmentFueling) getFragmentManager().findFragmentById(R.id.fragmentFueling);
+        FuelingDBHelper.Filter filter = fragmentFueling.getFilter();
+
+        updateFilterDate(true, filter.dateFrom);
+        updateFilterDate(false, filter.dateTo);
 
         mLoadingStatusReceiver = new BroadcastReceiver() {
             @Override
@@ -79,7 +90,30 @@ public class ActivityMain extends AppCompatActivity implements
         LocalBroadcastManager.getInstance(this).registerReceiver(mLoadingStatusReceiver,
                 new IntentFilter(ACTION_LOADING));
 
-        Log.d("XXX", "ActivityMain -- onCreate");
+        findViewById(R.id.btnDateFrom).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDateDialog(true);
+            }
+        });
+
+        findViewById(R.id.btnDateTo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDateDialog(false);
+            }
+        });
+
+        Log.d(Const.LOG_TAG, "ActivityMain -- onCreate");
+    }
+
+    private void showDateDialog(boolean dateFrom) {
+        dateFromClicked = dateFrom;
+
+        FragmentFueling fragmentFueling = (FragmentFueling) getFragmentManager().findFragmentById(R.id.fragmentFueling);
+        Date date = dateFromClicked ? fragmentFueling.getFilter().dateFrom : fragmentFueling.getFilter().dateTo;
+
+        FragmentDialogDate.show(this, date);
     }
 
     @Override
@@ -136,6 +170,10 @@ public class ActivityMain extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+    private void setToolbarDatesVisible(boolean visible) {
+        mToolbarMainDates.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     @Override
     public void onRecordChange(Const.RecordAction recordAction, FuelingRecord fuelingRecord) {
         if (recordAction != Const.RecordAction.DELETE)
@@ -175,21 +213,27 @@ public class ActivityMain extends AppCompatActivity implements
             case ActivityBackup.REQUEST_CODE:
                 fragmentFueling.updateAfterChange();
                 break;
+            case FragmentDialogDate.REQUEST_CODE:
+                Date date = FragmentDialogDate.getDate(data);
+                if (dateFromClicked) fragmentFueling.setFilterDateFrom(date);
+                else fragmentFueling.setFilterDateTo(date);
+                updateFilterDate(dateFromClicked, date);
         }
     }
 
-    @Override
-    public void onFilterChange(Const.FilterMode filterMode) {
-        Log.d("XXX", "ActivityMain -- onFilterChange");
 
-        int position;
-        switch (filterMode) {
-            case CURRENT_YEAR:
-                position = 0;
-                break;
-            default:
-                position = 1;
-        }
+    private void updateFilterDate(boolean dateFrom, Date date) {
+        int buttonId = dateFrom ? R.id.btnDateFrom : R.id.btnDateTo;
+        Button button = (Button) findViewById(buttonId);
+        button.setText(Functions.dateToString(date, true, abbrevMonth));
+    }
+
+    @Override
+    public void onFilterChange(FuelingDBHelper.FilterMode filterMode) {
+        Log.d(Const.LOG_TAG, "ActivityMain -- onFilterChange");
+
+        int position = Functions.filterModeToPosition(filterMode);
+
         if (position != mToolbarSpinner.getSelectedItemPosition())
             mToolbarSpinner.setSelection(position);
     }

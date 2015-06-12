@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,23 +42,17 @@ public class FragmentBackup extends Fragment {
 
         mDatabaseBackupXmlHelper = new DatabaseBackupXmlHelper();
 
-        TextView mTextDirectory = (TextView) v.findViewById(R.id.textDirectory);
-        TextView mTextFile = (TextView) v.findViewById(R.id.textFile);
+        ((TextView) v.findViewById(R.id.textDirectory)).setText(mDatabaseBackupXmlHelper.getExternalDirectory().toString());
+        ((TextView) v.findViewById(R.id.textFile)).setText(mDatabaseBackupXmlHelper.getFileName().toString());
 
-        mTextDirectory.setText(mDatabaseBackupXmlHelper.getExternalDirectory().toString());
-        mTextFile.setText(mDatabaseBackupXmlHelper.getFileName().toString());
-
-        Button btnSave = (Button) v.findViewById(R.id.btnSave);
-        Button btnLoad = (Button) v.findViewById(R.id.btnLoad);
-
-        btnSave.setOnClickListener(new View.OnClickListener() {
+        v.findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveToXml();
             }
         });
 
-        btnLoad.setOnClickListener(new View.OnClickListener() {
+        v.findViewById(R.id.btnLoad).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadFromXml();

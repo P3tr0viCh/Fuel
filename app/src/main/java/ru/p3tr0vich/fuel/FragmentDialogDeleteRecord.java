@@ -35,31 +35,30 @@ public class FragmentDialogDeleteRecord extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
         final FuelingRecord mFuelingRecord = getArguments().getParcelable(INTENT_EXTRA_ACTION);
 
         assert mFuelingRecord != null;
 
-        builder.setMessage(getString(R.string.message_dialog_delete,
-                Functions.sqliteToString(mFuelingRecord.getSQLiteDate(), true)));
+        return new AlertDialog.Builder(getActivity())
+                .setMessage(getString(R.string.message_dialog_delete,
+                        Functions.sqliteToString(mFuelingRecord.getSQLiteDate(), true)))
 
-        builder.setPositiveButton(R.string.dialog_btn_delete, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                ActivityMain activityMain = (ActivityMain) getActivity();
+                .setPositiveButton(R.string.dialog_btn_delete, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        ActivityMain activityMain = (ActivityMain) getActivity();
 
-                Intent intent = new Intent();
-                intent.putExtra(INTENT_EXTRA_DATA, mFuelingRecord);
+                        Intent intent = new Intent();
+                        intent.putExtra(INTENT_EXTRA_DATA, mFuelingRecord);
 
-                activityMain.onActivityResult(REQUEST_CODE, Activity.RESULT_OK, intent);
-            }
-        });
+                        activityMain.onActivityResult(REQUEST_CODE, Activity.RESULT_OK, intent);
+                    }
+                })
 
-        builder.setNegativeButton(R.string.dialog_btn_cancel, null);
-        builder.setCancelable(true);
+                .setNegativeButton(R.string.dialog_btn_cancel, null)
+                .setCancelable(true)
 
-        return builder.create();
+                .create();
     }
 
     @Override

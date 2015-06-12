@@ -117,6 +117,7 @@ public class DatabaseBackupXmlHelper {
         serializer.attribute("", WORKBOOK_XMLNS_X, WORKBOOK_XMLNS_X_ATTR);
         serializer.attribute("", WORKBOOK_XMLNS_SS, WORKBOOK_XMLNS_SS_ATTR);
         serializer.attribute("", WORKBOOK_XMLNS_HTML, WORKBOOK_XMLNS_HTML_ATTR);
+        // Скобки не нужны, но без них реформат кода сбивает всё в кучу
         {
             serializer.startTag("", STYLES);
             {

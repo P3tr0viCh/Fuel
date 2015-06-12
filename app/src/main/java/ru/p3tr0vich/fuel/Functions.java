@@ -47,10 +47,15 @@ class Functions {
         return date;
     }
 
-    public static String dateToString(Date date, boolean withYear) {
+    public static String dateToString(Date date, boolean withYear, boolean abbrevMonth) {
         int flags = DateUtils.FORMAT_SHOW_DATE;
         flags = withYear ? flags | DateUtils.FORMAT_SHOW_YEAR : flags | DateUtils.FORMAT_NO_YEAR;
+        if (abbrevMonth) flags = flags | DateUtils.FORMAT_ABBREV_MONTH;
         return DateUtils.formatDateTime(sApplicationContext, date.getTime(), flags);
+    }
+
+    public static String dateToString(Date date, boolean withYear) {
+        return dateToString(date, withYear, false);
     }
 
     public static String sqliteToString(String sqlDate, boolean withYear) {
@@ -88,9 +93,7 @@ class Functions {
     }
 
     public static void floatToText(EditText edit, float value, boolean showZero) {
-        if (showZero) edit.setText(floatToString(value));
-        else if (value == 0) edit.setText("");
-        else edit.setText(floatToString(value));
+        edit.setText(showZero ? floatToString(value) : value == 0 ? "" : floatToString(value));
     }
 
     public static int getCurrentYear() {
@@ -122,6 +125,28 @@ class Functions {
         if (i == Const.RecordAction.ADD.ordinal()) return Const.RecordAction.ADD;
         else if (i == Const.RecordAction.UPDATE.ordinal()) return Const.RecordAction.UPDATE;
         else return Const.RecordAction.DELETE;
+    }
+
+    public static FuelingDBHelper.FilterMode positionToFilterMode(int position) {
+        switch (position) {
+            case 0:
+                return FuelingDBHelper.FilterMode.CURRENT_YEAR;
+            case 1:
+                return FuelingDBHelper.FilterMode.DATES;
+            default:
+                return FuelingDBHelper.FilterMode.ALL;
+        }
+    }
+
+    public static int filterModeToPosition(FuelingDBHelper.FilterMode filterMode) {
+        switch (filterMode) {
+            case CURRENT_YEAR:
+                return 0;
+            case DATES:
+                return 1;
+            default:
+                return 2;
+        }
     }
 
     public static boolean isInternetConnected() {

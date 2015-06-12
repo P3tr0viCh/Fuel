@@ -83,8 +83,10 @@
 
     <string name="year_current">Текущий год</string>
     <string name="year_all">Все записи</string>
+    <string name="date_filter">Период</string>
     <string-array name="filter_years">
         <item>@string/year_current</item>
+        <item>@string/date_filter</item>
         <item>@string/year_all</item>
     </string-array>
 
@@ -136,6 +138,9 @@
     <string name="pref_category" translatable="false">category</string>
     <string name="pref_category_defaults" translatable="false">category_defaults</string>
     <string name="pref_category_cons" translatable="false">category_cons</string>
+
+    <string name="pref_filter_date_from" translatable="false">filter date from</string>
+    <string name="pref_filter_date_to" translatable="false">filter date to</string>
 
     <string name="yandex_map_start_search_control_placeholder_content">Адрес начала маршрута</string>
     <string name="yandex_map_finish_search_control_placeholder_content">Адрес конца маршрута</string>

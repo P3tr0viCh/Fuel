@@ -91,27 +91,20 @@ public class FragmentDialogProgress extends DialogFragment {
 
         mAsyncTaskOperationXml = null;
 
-        Intent intent = new Intent();
-
-        intent.putExtra(EXTRA_XML_RESULT, result);
-
         if (getTargetFragment() != null)
-            getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
+            getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK,
+                    new Intent().putExtra(EXTRA_XML_RESULT, result));
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Log.d("XXX", "FragmentDialogProgress -- onCreateDialog");
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
         @SuppressLint("InflateParams")
         View rootView = getActivity().getLayoutInflater().inflate(R.layout.dialog_progress, null, false);
-        builder.setView(rootView);
 
-        TextView textProgressMessage = (TextView) rootView.findViewById(R.id.textProgressMessage);
-        textProgressMessage.setText(getArguments().getString(MESSAGE));
+        ((TextView) rootView.findViewById(R.id.textProgressMessage)).setText(getArguments().getString(MESSAGE));
 
-        return builder.create();
+        return new AlertDialog.Builder(getActivity()).setView(rootView).create();
     }
 }

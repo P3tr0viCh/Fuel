@@ -36,20 +36,18 @@ public class FragmentDialogMessage extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        return new AlertDialog.Builder(getActivity())
+                .setTitle(getArguments().getString(TITLE))
+                .setMessage(getArguments().getString(MESSAGE))
 
-        builder.setTitle(getArguments().getString(TITLE));
-        builder.setMessage(getArguments().getString(MESSAGE));
+                .setPositiveButton(R.string.dialog_btn_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dismiss();
+                    }
+                })
 
-        builder.setPositiveButton(R.string.dialog_btn_ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                dismiss();
-            }
-        });
-
-        builder.setCancelable(true);
-
-        return builder.create();
+                .setCancelable(true)
+                .create();
     }
 }

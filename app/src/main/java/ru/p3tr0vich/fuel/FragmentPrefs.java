@@ -58,16 +58,15 @@ public class FragmentPrefs extends PreferenceFragment implements SharedPreferenc
     }
 
     private void init() {
-        for (int i = 0; i < getPreferenceScreen().getPreferenceCount(); ++i) {
+        for (int i = 0; i < getPreferenceScreen().getPreferenceCount(); i++) {
             Preference preference = getPreferenceScreen().getPreference(i);
             if (preference instanceof PreferenceGroup) {
                 PreferenceGroup preferenceGroup = (PreferenceGroup) preference;
-                for (int j = 0; j < preferenceGroup.getPreferenceCount(); ++j) {
+                for (int j = 0; j < preferenceGroup.getPreferenceCount(); j++)
                     updatePreferenceSummary(preferenceGroup.getPreference(j));
-                }
-            } else {
+            } else
                 updatePreferenceSummary(preference);
-            }
+
         }
     }
 

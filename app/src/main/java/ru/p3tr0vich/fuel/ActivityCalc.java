@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 
 public class ActivityCalc extends AppCompatActivity implements
@@ -98,17 +97,11 @@ public class ActivityCalc extends AppCompatActivity implements
 
         loadPrefs();
 
-        TextView textDistance = (TextView) findViewById(R.id.textDistance);
-        TextView textCost = (TextView) findViewById(R.id.textCost);
-        TextView textVolume = (TextView) findViewById(R.id.textVolume);
-        TextView textPrice = (TextView) findViewById(R.id.textPrice);
-        TextView textCons = (TextView) findViewById(R.id.textCons);
-
-        textDistance.setOnClickListener(this);
-        textCost.setOnClickListener(this);
-        textVolume.setOnClickListener(this);
-        textPrice.setOnClickListener(this);
-        textCons.setOnClickListener(this);
+        findViewById(R.id.textDistance).setOnClickListener(this);
+        findViewById(R.id.textCost).setOnClickListener(this);
+        findViewById(R.id.textVolume).setOnClickListener(this);
+        findViewById(R.id.textPrice).setOnClickListener(this);
+        findViewById(R.id.textCons).setOnClickListener(this);
 
         mSpinnerCons.setOnItemSelectedListener(this);
         mSpinnerSeason.setOnItemSelectedListener(this);
@@ -219,20 +212,19 @@ public class ActivityCalc extends AppCompatActivity implements
     }
 
     private void savePrefs() {
-        SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(this);
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .edit()
 
-        SharedPreferences.Editor editor = sPref.edit();
+                .putString(Const.PREF_DISTANCE, mEditDistance.getText().toString())
+                .putString(Const.PREF_COST, mEditCost.getText().toString())
+                .putString(Const.PREF_VOLUME, mEditVolume.getText().toString())
 
-        editor.putString(Const.PREF_DISTANCE, mEditDistance.getText().toString());
-        editor.putString(Const.PREF_COST, mEditCost.getText().toString());
-        editor.putString(Const.PREF_VOLUME, mEditVolume.getText().toString());
+                .putString(Const.PREF_PRICE, mEditPrice.getText().toString())
 
-        editor.putString(Const.PREF_PRICE, mEditPrice.getText().toString());
+                .putInt(Const.PREF_CONS, mSpinnerCons.getSelectedItemPosition())
+                .putInt(Const.PREF_SEASON, mSpinnerSeason.getSelectedItemPosition())
 
-        editor.putInt(Const.PREF_CONS, mSpinnerCons.getSelectedItemPosition());
-        editor.putInt(Const.PREF_SEASON, mSpinnerSeason.getSelectedItemPosition());
-
-        editor.apply();
+                .apply();
     }
 
     private void selectConsFromSpinners() {

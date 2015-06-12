@@ -10,7 +10,6 @@ import android.view.View;
 
 public class ActivityFuelingRecordChange extends AppCompatActivity {
 
-
     public static final String INTENT_EXTRA_ACTION = "EXTRA_ACTION";
     public static final String INTENT_EXTRA_DATA = "EXTRA_RECORD";
     public static final int REQUEST_CODE = 2309;
@@ -26,8 +25,7 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
     }
 
     public static Const.RecordAction getAction(Intent data) {
-        int intAction = data.getIntExtra(INTENT_EXTRA_ACTION, -1);
-        return Functions.intToRecordAction(intAction);
+        return Functions.intToRecordAction(data.getIntExtra(INTENT_EXTRA_ACTION, -1));
     }
 
     public static FuelingRecord getFuelingRecord(Intent data) {

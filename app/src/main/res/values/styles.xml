@@ -15,7 +15,6 @@
     </style>
 
     <style name="AppTheme.PopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
-        <!-- <item name="android:dropDownVerticalOffset">-48dp</item> -->
     </style>
 
     <style name="AppTheme.Button" parent="@style/Widget.AppCompat.Button">
@@ -48,5 +47,13 @@
     <style name="AppTheme.TextAppearance.ErrorValue" parent="@style/TextAppearance.AppCompat.Small">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/edit_error</item>
+    </style>
+
+    <style name="AppTheme.Toolbar" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/toolbar_height</item>
+        <item name="android:background">@color/primary</item>
+        <item name="android:minHeight">@dimen/toolbar_height</item>
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 </resources>

@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class FragmentDialogAbout extends DialogFragment implements View.OnClickListener {
@@ -23,28 +22,22 @@ public class FragmentDialogAbout extends DialogFragment implements View.OnClickL
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
         @SuppressLint("InflateParams")
         View rootView = getActivity().getLayoutInflater().inflate(R.layout.dialog_about, null, false);
-        builder.setView(rootView);
 
-        RelativeLayout ltMain = (RelativeLayout) rootView.findViewById(R.id.ltMain);
-        ltMain.setOnClickListener(this);
+        rootView.findViewById(R.id.ltMain).setOnClickListener(this);
 
-        TextView tv = (TextView) rootView.findViewById(R.id.textAboutVersion);
         String versionName;
         try {
             versionName = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName;
         } catch (PackageManager.NameNotFoundException e) {
             versionName = "0.0";
         }
-        tv.setText(getActivity().getString(R.string.about_version) + " " + versionName);
+        ((TextView) rootView.findViewById(R.id.textAboutVersion)).setText(getActivity().getString(R.string.about_version) + " " + versionName);
 
-        tv = (TextView) rootView.findViewById(R.id.textAboutDate);
-        tv.setText("(" + BuildConfig.BUILD_DATE + ")");
+        ((TextView) rootView.findViewById(R.id.textAboutDate)).setText("(" + BuildConfig.BUILD_DATE + ")");
 
-        return builder.create();
+        return new AlertDialog.Builder(getActivity()).setView(rootView).create();
     }
 
     @Override

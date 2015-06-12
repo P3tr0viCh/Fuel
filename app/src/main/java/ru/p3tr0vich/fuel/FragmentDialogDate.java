@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.text.format.DateUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
@@ -25,11 +24,16 @@ public class FragmentDialogDate extends DialogFragment {
     private static final String DIALOG_TAG = "DialogDatePicker";
     private static final String KEY_DATE = "KEY_DATE";
 
+    private static boolean isShowingInActivity;
+
     private Dialog mDialog;
 
     private Calendar mCalendar;
 
     public static void show(Fragment parent, Date date) {
+
+        isShowingInActivity = false;
+
         Bundle args = new Bundle();
 
         args.putSerializable(KEY_DATE, date);
@@ -37,6 +41,19 @@ public class FragmentDialogDate extends DialogFragment {
         DialogFragment dialogDate = new FragmentDialogDate();
         dialogDate.setArguments(args);
         dialogDate.setTargetFragment(parent, FragmentDialogDate.REQUEST_CODE);
+        dialogDate.show(parent.getFragmentManager(), DIALOG_TAG);
+    }
+
+    public static void show(Activity parent, Date date) {
+
+        isShowingInActivity = true;
+
+        Bundle args = new Bundle();
+
+        args.putSerializable(KEY_DATE, date);
+
+        DialogFragment dialogDate = new FragmentDialogDate();
+        dialogDate.setArguments(args);
         dialogDate.show(parent.getFragmentManager(), DIALOG_TAG);
     }
 
@@ -48,19 +65,13 @@ public class FragmentDialogDate extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        LayoutInflater inflater = getActivity().getLayoutInflater();
         @SuppressLint("InflateParams")
-        View view = inflater.inflate(R.layout.dialog_date, null, false);
-
-        Date date = (Date) getArguments().getSerializable(KEY_DATE);
+        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_date, null, false);
 
         mCalendar = Calendar.getInstance();
+        mCalendar.setTime((Date) getArguments().getSerializable(KEY_DATE));
 
-        mCalendar.setTime(date);
-
-        DatePicker mDatePicker = (DatePicker) view.findViewById(R.id.datePicker);
-
-        mDatePicker.init(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH),
+        ((DatePicker) view.findViewById(R.id.datePicker)).init(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH),
                 mCalendar.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
                     @Override
                     public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -68,23 +79,27 @@ public class FragmentDialogDate extends DialogFragment {
                     }
                 });
 
-        builder.setView(view);
-        builder.setPositiveButton(R.string.dialog_btn_done, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                Intent intent = new Intent();
+        builder
+                .setView(view)
+                .setPositiveButton(R.string.dialog_btn_done, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent intent = new Intent();
 
-                Date date = mCalendar.getTime();
-                intent.putExtra(KEY_DATE, date);
+                        intent.putExtra(KEY_DATE, mCalendar.getTime());
 
-                getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
-            }
-        });
+                        if (isShowingInActivity)
+                            // TODO
+                            ((ActivityMain) getActivity()).onActivityResult(REQUEST_CODE, Activity.RESULT_OK, intent);
+                        else
+                            getTargetFragment().onActivityResult(REQUEST_CODE, Activity.RESULT_OK, intent);
+                    }
+                })
 
-        builder.setNegativeButton(R.string.dialog_btn_cancel, null);
-        builder.setCancelable(true);
+                .setNegativeButton(R.string.dialog_btn_cancel, null)
+                .setCancelable(true)
 
-        builder.setTitle("");
+                .setTitle("");
 
         mDialog = builder.create();
 

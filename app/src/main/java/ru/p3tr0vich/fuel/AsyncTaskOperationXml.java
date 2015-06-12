@@ -30,7 +30,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, DatabaseBackupXmlHelpe
 
         DatabaseBackupXmlHelper.Result result;
 
-        FuelingDBHelper dbHelper = new FuelingDBHelper(mFragmentDialogProgress.getActivity().getApplicationContext());
+        FuelingDBHelper dbHelper = new FuelingDBHelper();
 
         if (mDoSave) {
             fuelingRecordList = dbHelper.getAllRecords();

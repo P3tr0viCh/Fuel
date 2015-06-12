@@ -32,23 +32,20 @@ public class FragmentDialogQuestion extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        return new AlertDialog.Builder(getActivity())
+                .setTitle(getArguments().getString(TITLE))
+                .setMessage(getArguments().getString(MESSAGE))
 
-        builder.setTitle(getArguments().getString(TITLE));
-        builder.setMessage(getArguments().getString(MESSAGE));
+                .setPositiveButton(getArguments().getString(POSITIVE_BUTTON_TEXT), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        getTargetFragment().onActivityResult(REQUEST_CODE, Activity.RESULT_OK, null);
+                    }
+                })
 
-        builder.setPositiveButton(getArguments().getString(POSITIVE_BUTTON_TEXT), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                getTargetFragment().onActivityResult(REQUEST_CODE, Activity.RESULT_OK, null);
-            }
-        });
-
-        builder.setNegativeButton(R.string.dialog_btn_cancel, null);
-
-        builder.setCancelable(true);
-
-        return builder.create();
+                .setNegativeButton(R.string.dialog_btn_cancel, null)
+                .setCancelable(true)
+                .create();
     }
 
 }

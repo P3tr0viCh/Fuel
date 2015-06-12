@@ -5,4 +5,6 @@
     <dimen name="activity_calc_horizontal_margin">140dp</dimen>
 
     <dimen name="toolbar_height">64dp</dimen>
+
+    <dimen name="abbrev_month">0dp</dimen>
 </resources>

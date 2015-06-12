@@ -8,8 +8,10 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.PopupMenu;
@@ -27,19 +29,21 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class FragmentFueling extends Fragment implements
-        View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String KEY_FILTER_MODE = "KEY_FILTER_MODE";
+    private static final String KEY_FILTER_DATE_FROM = "KEY_FILTER_DATE_FROM";
+    private static final String KEY_FILTER_DATE_TO = "KEY_FILTER_DATE_TO";
 
     private static final int LOADER_LIST_ID = 0;
 
     private FuelingDBHelper db;
+    private FuelingDBHelper.Filter mFilter;
     private FuelingCursorAdapter mFuelingCursorAdapter;
-
-    private Const.FilterMode mFilterMode;
 
     private ListView mListViewFueling;
 
@@ -85,20 +89,64 @@ public class FragmentFueling extends Fragment implements
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mFilter = new FuelingDBHelper.Filter();
+
+        if (savedInstanceState == null) {
+            Log.d(Const.LOG_TAG, "FragmentFueling -- onCreate: savedInstanceState == null");
+
+            SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+            mFilter.filterMode = FuelingDBHelper.FilterMode.CURRENT_YEAR;
+            mFilter.dateFrom = Functions.sqliteToDate(
+                    sPref.getString(getString(R.string.pref_filter_date_from),
+                            Functions.dateToSQLite(new Date())));
+            mFilter.dateTo = Functions.sqliteToDate(
+                    sPref.getString(getString(R.string.pref_filter_date_to),
+                            Functions.dateToSQLite(new Date())));
+
+        } else {
+            Log.d(Const.LOG_TAG, "FragmentFueling -- onCreate: savedInstanceState != null");
+
+            mFilter.filterMode = (FuelingDBHelper.FilterMode) savedInstanceState.getSerializable(KEY_FILTER_MODE);
+            mFilter.dateFrom = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_FROM);
+            mFilter.dateTo = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_TO);
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable(KEY_FILTER_MODE, mFilterMode);
+        outState.putSerializable(KEY_FILTER_MODE, mFilter.filterMode);
+        outState.putSerializable(KEY_FILTER_DATE_FROM, mFilter.dateFrom);
+        outState.putSerializable(KEY_FILTER_DATE_TO, mFilter.dateTo);
 
         Log.d(Const.LOG_TAG, "FragmentFueling -- onSaveInstanceState");
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(Const.LOG_TAG, "FragmentFueling -- onDestroy");
+
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .edit()
+                .putString(getString(R.string.pref_filter_date_from), Functions.dateToSQLite(mFilter.dateFrom))
+                .putString(getString(R.string.pref_filter_date_to), Functions.dateToSQLite(mFilter.dateTo))
+                .apply();
+
+        super.onDestroy();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        db = new FuelingDBHelper(getActivity());
+        Log.d(Const.LOG_TAG, "FragmentFueling -- onActivityCreated");
 
+        db = new FuelingDBHelper();
         String[] from = {
                 FuelingDBHelper.COLUMN_DATETIME,
                 FuelingDBHelper.COLUMN_COST,
@@ -106,35 +154,33 @@ public class FragmentFueling extends Fragment implements
                 FuelingDBHelper.COLUMN_TOTAL};
         int[] to = {R.id.tvDate, R.id.tvCost, R.id.tvVolume, R.id.tvDate};
 
+        mFuelingCursorAdapter = new FuelingCursorAdapter(getActivity(), from, to, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doPopup(v);
+            }
+        });
+
         mListViewFueling.addHeaderView(mListViewHeader, null, false);
         mListViewFueling.addFooterView(mListViewFooter, null, false);
 
-        mFuelingCursorAdapter = new FuelingCursorAdapter(this, getActivity(), from, to);
         mListViewFueling.setAdapter(mFuelingCursorAdapter);
 
-        if (savedInstanceState == null) {
-            Log.d(Const.LOG_TAG, "FragmentFueling -- onActivityCreated: savedInstanceState == null");
-
-            doSetFilterMode(Const.FilterMode.CURRENT_YEAR);
-        } else {
-            Log.d(Const.LOG_TAG, "FragmentFueling -- onActivityCreated: savedInstanceState != null");
-
-            doSetFilterMode((Const.FilterMode) savedInstanceState.getSerializable(KEY_FILTER_MODE));
-        }
+        doSetFilterMode(mFilter.filterMode);
 
         getLoaderManager().initLoader(LOADER_LIST_ID, null, this);
     }
 
-    private void doSetFilterMode(Const.FilterMode filterMode) {
-        mFilterMode = filterMode;
-        mFuelingCursorAdapter.showYear = (filterMode != Const.FilterMode.CURRENT_YEAR);
+    private void doSetFilterMode(FuelingDBHelper.FilterMode filterMode) {
+        mFilter.filterMode = filterMode;
+        mFuelingCursorAdapter.showYear = (filterMode != FuelingDBHelper.FilterMode.CURRENT_YEAR);
 
         mFilterChangeListener.onFilterChange(filterMode);
     }
 
-    public boolean setFilterMode(Const.FilterMode filterMode) {
+    public boolean setFilterMode(FuelingDBHelper.FilterMode filterMode) {
         Log.d(Const.LOG_TAG, "FragmentFueling -- setFilterMode");
-        if (mFilterMode != filterMode) {
+        if (mFilter.filterMode != filterMode) {
             Log.d(Const.LOG_TAG, "FragmentFueling -- setFilterMode: mFilterMode != filterMode");
 
             doSetFilterMode(filterMode);
@@ -157,20 +203,31 @@ public class FragmentFueling extends Fragment implements
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(Functions.sqliteToDate(fuelingRecord.getSQLiteDate()));
 
-        boolean needUpdate = calendar.get(Calendar.YEAR) == Functions.getCurrentYear() || setFilterMode(Const.FilterMode.ALL);
+        boolean needUpdate = calendar.get(Calendar.YEAR) == Functions.getCurrentYear() ||
+                setFilterMode(FuelingDBHelper.FilterMode.ALL);
 
         if (needUpdate) updateAfterChange();
+    }
+
+    public void setFilterDateFrom(Date date) {
+        mFilter.dateFrom = date;
+        getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
+    }
+
+    public void setFilterDateTo(Date date) {
+        mFilter.dateTo = date;
+        getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
     }
 
     static class FuelingCursorLoader extends CursorLoader {
 
         private final Context mContext;
-        private final Const.FilterMode mFilterMode;
+        private final FuelingDBHelper.Filter mFilter;
 
-        public FuelingCursorLoader(Context context, Const.FilterMode filterMode) {
+        public FuelingCursorLoader(Context context, FuelingDBHelper.Filter filter) {
             super(context);
             mContext = context;
-            mFilterMode = filterMode;
+            mFilter = filter;
         }
 
         @Override
@@ -179,8 +236,8 @@ public class FragmentFueling extends Fragment implements
 
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(true));
 
-            FuelingDBHelper dbHelper = new FuelingDBHelper(mContext);
-            dbHelper.setFilterMode(mFilterMode);
+            FuelingDBHelper dbHelper = new FuelingDBHelper();
+            dbHelper.setFilterMode(mFilter);
             try {
                 return dbHelper.getAllCursor();
             } finally {
@@ -193,7 +250,7 @@ public class FragmentFueling extends Fragment implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_LIST_ID:
-                return new FuelingCursorLoader(getActivity().getApplicationContext(), mFilterMode);
+                return new FuelingCursorLoader(getActivity().getApplicationContext(), mFilter);
             default:
                 return null;
         }
@@ -247,7 +304,7 @@ public class FragmentFueling extends Fragment implements
         } while (data.moveToNext());
 
         if (completeData)
-            average = (volumeSum / (lastTotal - firstTotal)) * 100;
+            average = volumeSum != 0 ? (volumeSum / (lastTotal - firstTotal)) * 100 : 0;
         else {
             average = 0;
             averageCount = 0;
@@ -365,11 +422,6 @@ public class FragmentFueling extends Fragment implements
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        doPopup(v);
-    }
-
     private void selectItemById(long id) {
         if (mSelectedId == 0) return;
         for (int i = 0; i < mListViewFueling.getCount(); i++) {
@@ -387,11 +439,15 @@ public class FragmentFueling extends Fragment implements
 
     public interface FilterChangeListener {
         // to Toolbar Spinner
-        void onFilterChange(Const.FilterMode filterMode);
+        void onFilterChange(FuelingDBHelper.FilterMode filterMode);
     }
 
     public interface RecordChangeListener {
         void onRecordChange(Const.RecordAction recordAction, FuelingRecord fuelingRecord);
+    }
+
+    public FuelingDBHelper.Filter getFilter() {
+        return mFilter;
     }
 
     @Override

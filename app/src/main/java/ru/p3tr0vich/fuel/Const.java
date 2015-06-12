@@ -15,7 +15,5 @@ class Const {
 
     enum RecordAction {ADD, UPDATE, DELETE}
 
-    enum FilterMode {CURRENT_YEAR, ALL}
-
     enum CalcAction {DISTANCE, COST, VOLUME}
 }

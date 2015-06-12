@@ -1,13 +1,13 @@
 package ru.p3tr0vich.fuel;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 class FuelingDBHelper extends SQLiteOpenHelper {
@@ -28,6 +28,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String ORDER_BY_DATE = " ORDER BY " + COLUMN_DATETIME + " DESC, " + COLUMN_TOTAL + " DESC";
 
     private static final String IN_CURRENT_YEAR = " BETWEEN '%1$d-01-01' AND '%1$d-12-31'";
+    private static final String IN_DATES = " BETWEEN '%1$s' AND '%2$s'";
 
     private static final String DATABASE_CREATE =
             "CREATE TABLE " + TABLE_NAME + "(" +
@@ -40,11 +41,21 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String DROP_TABLE =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-    private Const.FilterMode mFilterMode;
 
-    public FuelingDBHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        mFilterMode = Const.FilterMode.ALL;
+    enum FilterMode {CURRENT_YEAR, DATES, ALL}
+
+    static class Filter {
+        public Date dateFrom;
+        public Date dateTo;
+        public FilterMode filterMode;
+    }
+
+    private Filter mFilter;
+
+    public FuelingDBHelper() {
+        super(Functions.sApplicationContext, DATABASE_NAME, null, DATABASE_VERSION);
+        mFilter = new Filter();
+        mFilter.filterMode = FilterMode.ALL;
     }
 
     @Override
@@ -58,8 +69,10 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         db.execSQL(DATABASE_CREATE);
     }
 
-    public void setFilterMode(Const.FilterMode filterMode) {
-        this.mFilterMode = filterMode;
+    public void setFilterMode(Filter filter) {
+        mFilter.filterMode = filter.filterMode;
+        mFilter.dateFrom = filter.dateFrom;
+        mFilter.dateTo = filter.dateTo;
     }
 
 // --Commented out by Inspection START (17.05.2015 03:02):
@@ -140,7 +153,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_VOLUME, fuelingRecord.getVolume());
         cv.put(COLUMN_TOTAL, fuelingRecord.getTotal());
 
-        int id = db.update(TABLE_NAME, cv, _ID + "=?", new String[]{ String.valueOf(fuelingRecord.getId()) });
+        int id = db.update(TABLE_NAME, cv, _ID + "=?", new String[]{String.valueOf(fuelingRecord.getId())});
 
         db.close();
 
@@ -158,9 +171,12 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     private String filterModeToSql() {
-        switch (mFilterMode) {
+        switch (mFilter.filterMode) {
             case CURRENT_YEAR:
                 return WHERE + COLUMN_DATETIME + String.format(IN_CURRENT_YEAR, Functions.getCurrentYear());
+            case DATES:
+                return WHERE + COLUMN_DATETIME + String.format(IN_DATES,
+                        Functions.dateToSQLite(mFilter.dateFrom), Functions.dateToSQLite(mFilter.dateTo));
             default:
                 return "";
         }

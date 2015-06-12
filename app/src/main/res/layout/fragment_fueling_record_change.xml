@@ -11,14 +11,10 @@
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginLeft="@dimen/activity_record_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_record_horizontal_margin"
-        android:clickable="true"
-        android:gravity="center"
         android:text=""
         android:textAppearance="@style/AppTheme.TextAppearance.Texts"
-        tools:text="@string/list_item_date"
-        android:textColor="@color/primary_text" />
+        android:textColor="@color/primary_text"
+        tools:text="@string/list_item_date" />
 
     <View
         style="@style/AppTheme.Divider.Horizontal"

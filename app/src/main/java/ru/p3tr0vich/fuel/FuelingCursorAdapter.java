@@ -13,13 +13,13 @@ import android.widget.TextView;
 
 class FuelingCursorAdapter extends SimpleCursorAdapter {
 
-    private final FragmentFueling mParentFragment;
+    private final View.OnClickListener mOnClickListener;
 
     public boolean showYear;
 
-    public FuelingCursorAdapter(FragmentFueling fragmentFueling, Context context, String[] from, int[] to) {
+    public FuelingCursorAdapter(Context context, String[] from, int[] to, View.OnClickListener onClickListener) {
         super(context, R.layout.fueling_listitem, null, from, to, 1);
-        this.mParentFragment = fragmentFueling;
+        this.mOnClickListener = onClickListener;
     }
 
     static class ViewHolder {
@@ -32,15 +32,13 @@ class FuelingCursorAdapter extends SimpleCursorAdapter {
 
     @Override
     public void bindView(@NonNull View view, Context context, @NonNull Cursor cursor) {
-        ViewHolder holder;
+        long id = cursor.getLong(cursor.getColumnIndex(FuelingDBHelper._ID));
+        String date = cursor.getString(cursor.getColumnIndex(FuelingDBHelper.COLUMN_DATETIME));
+        float cost = cursor.getFloat(cursor.getColumnIndex(FuelingDBHelper.COLUMN_COST));
+        float volume = cursor.getFloat(cursor.getColumnIndex(FuelingDBHelper.COLUMN_VOLUME));
+        float total = cursor.getFloat(cursor.getColumnIndex(FuelingDBHelper.COLUMN_TOTAL));
 
-        long    id      = cursor.getLong(cursor.getColumnIndex(FuelingDBHelper._ID));
-        String  date    = cursor.getString(cursor.getColumnIndex(FuelingDBHelper.COLUMN_DATETIME));
-        float   cost    = cursor.getFloat(cursor.getColumnIndex(FuelingDBHelper.COLUMN_COST));
-        float   volume  = cursor.getFloat(cursor.getColumnIndex(FuelingDBHelper.COLUMN_VOLUME));
-        float   total   = cursor.getFloat(cursor.getColumnIndex(FuelingDBHelper.COLUMN_TOTAL));
-
-        holder = (ViewHolder) view.getTag();
+        ViewHolder holder = (ViewHolder) view.getTag();
 
         holder.tvDate.setText(Functions.sqliteToString(date, showYear));
         holder.tvCost.setText(Functions.floatToString(cost));
@@ -52,21 +50,18 @@ class FuelingCursorAdapter extends SimpleCursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        ViewHolder holder;
+        View view = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .inflate(R.layout.fueling_listitem, parent, false);
 
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ViewHolder holder = new ViewHolder();
 
-        View view = inflater.inflate(R.layout.fueling_listitem, parent, false);
-
-        holder = new ViewHolder();
-
-        holder.tvDate   = (TextView) view.findViewById(R.id.tvDate);
-        holder.tvCost   = (TextView) view.findViewById(R.id.tvCost);
+        holder.tvDate = (TextView) view.findViewById(R.id.tvDate);
+        holder.tvCost = (TextView) view.findViewById(R.id.tvCost);
         holder.tvVolume = (TextView) view.findViewById(R.id.tvVolume);
-        holder.tvTotal  = (TextView) view.findViewById(R.id.tvTotal);
+        holder.tvTotal = (TextView) view.findViewById(R.id.tvTotal);
 
-        holder.ibMenu   = (ImageButton) view.findViewById(R.id.ibMenu);
-        holder.ibMenu.setOnClickListener(mParentFragment);
+        holder.ibMenu = (ImageButton) view.findViewById(R.id.ibMenu);
+        holder.ibMenu.setOnClickListener(mOnClickListener);
 
         view.setTag(holder);
 

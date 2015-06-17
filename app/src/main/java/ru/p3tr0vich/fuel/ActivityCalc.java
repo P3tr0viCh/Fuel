@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -81,8 +80,7 @@ public class ActivityCalc extends AppCompatActivity implements
         adapterSeason.setDropDownViewResource(R.layout.spinner_dropdown_item);
         mSpinnerSeason.setAdapter(adapterSeason);
 
-        Button btnMaps = (Button) findViewById(R.id.btnMaps);
-        btnMaps.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btnMaps).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (Functions.isInternetConnected())
@@ -176,8 +174,7 @@ public class ActivityCalc extends AppCompatActivity implements
 
         switch (requestCode) {
             case ActivityYandexMap.REQUEST_CODE:
-                int distance = ActivityYandexMap.getDistance(data);
-                mEditDistance.setText(Integer.toString(distance));
+                mEditDistance.setText(Integer.toString(ActivityYandexMap.getDistance(data)));
                 break;
             case ActivityPreference.REQUEST_CODE:
                 loadCons(null);

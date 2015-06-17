@@ -284,11 +284,8 @@ public class DatabaseBackupXmlHelper {
 
         mFullFileName = new File(mExternalDirectory.getPath(), mFileName.getName());
 
-        if (!mExternalDirectory.exists()) {
-            if (!mExternalDirectory.mkdirs()) {
-                return Result.ERROR_MKDIRS;
-            }
-        }
+        if (!mExternalDirectory.exists()) if (!mExternalDirectory.mkdirs())
+            return Result.ERROR_MKDIRS;
 
         String xmlString;
         try {
@@ -298,11 +295,8 @@ public class DatabaseBackupXmlHelper {
         }
 
         try {
-            if (!mFullFileName.createNewFile()) {
-                if (!mFullFileName.isFile()) {
-                    return Result.ERROR_CREATE_FILE;
-                }
-            }
+            if (!mFullFileName.createNewFile()) if (!mFullFileName.isFile())
+                return Result.ERROR_CREATE_FILE;
         } catch (IOException e) {
             return Result.ERROR_CREATE_FILE;
         }

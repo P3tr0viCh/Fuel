@@ -63,8 +63,7 @@ class Functions {
     }
 
     public static String dateToSQLite(Date date) {
-        DateFormat dateFormat = new SimpleDateFormat(SQLITE_DATE_FORMAT, Locale.getDefault());
-        return dateFormat.format(date);
+        return new SimpleDateFormat(SQLITE_DATE_FORMAT, Locale.getDefault()).format(date);
     }
 
     public static String checkSQLiteDate(String sqlDate) throws ParseException {
@@ -88,7 +87,7 @@ class Functions {
     }
 
     public static String floatToString(float value) {
-        // TODO: LOCALE
+        // TODO: LOCALE?
         return DECIMAL_FORMAT.format(value).replace(',', '.');
     }
 

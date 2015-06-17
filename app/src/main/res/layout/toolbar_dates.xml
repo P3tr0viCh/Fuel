@@ -7,9 +7,9 @@
         android:id="@+id/btnDateFrom"
         style="@style/AppTheme.DatePickerButton"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:text=""
-        android:textAppearance="@style/AppTheme.TextAppearance.Texts"
+        android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
         android:textColor="@color/icons" />
 
     <TextView
@@ -26,8 +26,8 @@
         android:id="@+id/btnDateTo"
         style="@style/AppTheme.DatePickerButton"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:text=""
-        android:textAppearance="@style/AppTheme.TextAppearance.Texts"
+        android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
         android:textColor="@color/icons" />
 </android.support.v7.widget.Toolbar>

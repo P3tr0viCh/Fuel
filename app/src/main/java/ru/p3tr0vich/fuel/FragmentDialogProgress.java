@@ -30,8 +30,7 @@ public class FragmentDialogProgress extends DialogFragment {
         fragmentDialogProgress.setTargetFragment(parent, REQUEST_CODE);
 
         Bundle args = new Bundle();
-        int message = doSave ? R.string.message_progress_save : R.string.message_progress_load;
-        args.putString(MESSAGE, parent.getString(message));
+        args.putString(MESSAGE, parent.getString(doSave ? R.string.message_progress_save : R.string.message_progress_load));
         fragmentDialogProgress.setArguments(args);
 
         fragmentDialogProgress.show(parent.getFragmentManager(), DIALOG_TAG);

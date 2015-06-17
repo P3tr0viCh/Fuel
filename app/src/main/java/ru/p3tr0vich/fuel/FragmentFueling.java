@@ -23,7 +23,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.lang.reflect.Field;
@@ -77,8 +76,7 @@ public class FragmentFueling extends Fragment implements
         mTextAverage = (TextView) view.findViewById(R.id.tvAverage);
         mTextSumCost = (TextView) view.findViewById(R.id.tvSumCost);
 
-        FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.floatingActionButton);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.floatingActionButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mRecordChangeListener.onRecordChange(Const.RecordAction.ADD, null);
@@ -336,7 +334,7 @@ public class FragmentFueling extends Fragment implements
 
                 Log.d(Const.LOG_TAG, "FragmentFueling -- onLoadFinished: LOADER_LIST_ID");
 
-                calcTotal(data);
+                calcTotal(data); // TODO: async
                 break;
         }
     }

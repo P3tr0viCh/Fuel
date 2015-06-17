@@ -1,6 +1,7 @@
 package ru.p3tr0vich.fuel;
 // TODO: change color of selected item in spinners and popup menu
 
+import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
 import java.lang.reflect.Method;
@@ -33,15 +35,20 @@ public class ActivityMain extends AppCompatActivity implements
 
     private BroadcastReceiver mLoadingStatusReceiver;
 
-    private boolean abbrevMonth;
-    private boolean dateFromClicked;
+    private boolean mAbbrevMonth;
+    private boolean mDateFromClicked;
+    private boolean mToolbarMainDatesVisible;
+
+    private FragmentFueling getFragmentFueling() {
+        return (FragmentFueling) getFragmentManager().findFragmentById(R.id.fragmentFueling);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        abbrevMonth = getResources().getDimension(R.dimen.abbrev_month) != 0;
+        mAbbrevMonth = getResources().getDimension(R.dimen.abbrev_month) != 0;
         Functions.sApplicationContext = this.getApplicationContext();
 
         Toolbar toolbarMain = (Toolbar) findViewById(R.id.toolbarMain);
@@ -60,10 +67,9 @@ public class ActivityMain extends AppCompatActivity implements
 
                         FuelingDBHelper.FilterMode filterMode = Functions.positionToFilterMode(position);
 
-                        setToolbarDatesVisible(filterMode == FuelingDBHelper.FilterMode.DATES);
+                        setToolbarDatesVisible(filterMode == FuelingDBHelper.FilterMode.DATES, true);
 
-                        FragmentFueling fragmentFueling = (FragmentFueling) getFragmentManager().findFragmentById(R.id.fragmentFueling);
-                        fragmentFueling.setFilterMode(filterMode);
+                        getFragmentFueling().setFilterMode(filterMode);
                     }
 
                     @Override
@@ -72,8 +78,9 @@ public class ActivityMain extends AppCompatActivity implements
                     }
                 });
 
-        FragmentFueling fragmentFueling = (FragmentFueling) getFragmentManager().findFragmentById(R.id.fragmentFueling);
-        FuelingDBHelper.Filter filter = fragmentFueling.getFilter();
+        FuelingDBHelper.Filter filter = getFragmentFueling().getFilter();
+
+        setToolbarDatesVisible(filter.filterMode == FuelingDBHelper.FilterMode.DATES, false);
 
         updateFilterDate(true, filter.dateFrom);
         updateFilterDate(false, filter.dateTo);
@@ -81,10 +88,7 @@ public class ActivityMain extends AppCompatActivity implements
         mLoadingStatusReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                boolean visible = intent.getBooleanExtra(EXTRA_LOADING, false);
-
-                FragmentFueling fragmentFueling = (FragmentFueling) getFragmentManager().findFragmentById(R.id.fragmentFueling);
-                fragmentFueling.setProgressBarVisible(visible);
+                getFragmentFueling().setProgressBarVisible(intent.getBooleanExtra(EXTRA_LOADING, false));
             }
         };
         LocalBroadcastManager.getInstance(this).registerReceiver(mLoadingStatusReceiver,
@@ -107,13 +111,33 @@ public class ActivityMain extends AppCompatActivity implements
         Log.d(Const.LOG_TAG, "ActivityMain -- onCreate");
     }
 
+    private void setToolbarDatesVisible(final boolean visible, final boolean animate) {
+        if (mToolbarMainDatesVisible == visible) return;
+
+        mToolbarMainDatesVisible = visible;
+
+        int fromX = visible ? 0 : getResources().getDimensionPixelSize(R.dimen.toolbar_height);
+        int toX = visible ? getResources().getDimensionPixelSize(R.dimen.toolbar_height) : 0;
+
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(fromX, toX);
+        valueAnimator.setDuration(animate ? 400 : 0);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            public void onAnimationUpdate(ValueAnimator animation) {
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mToolbarMainDates.getLayoutParams();
+                layoutParams.setMargins(layoutParams.leftMargin, (Integer) animation.getAnimatedValue(), layoutParams.rightMargin, layoutParams.bottomMargin);
+
+                mToolbarMainDates.setLayoutParams(layoutParams);
+            }
+        });
+        valueAnimator.start();
+    }
+
     private void showDateDialog(boolean dateFrom) {
-        dateFromClicked = dateFrom;
+        mDateFromClicked = dateFrom;
 
-        FragmentFueling fragmentFueling = (FragmentFueling) getFragmentManager().findFragmentById(R.id.fragmentFueling);
-        Date date = dateFromClicked ? fragmentFueling.getFilter().dateFrom : fragmentFueling.getFilter().dateTo;
+        FuelingDBHelper.Filter filter = getFragmentFueling().getFilter();
 
-        FragmentDialogDate.show(this, date);
+        FragmentDialogDate.show(this, mDateFromClicked ? filter.dateFrom : filter.dateTo);
     }
 
     @Override
@@ -123,9 +147,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     public static Intent getLoadingBroadcast(boolean startLoading) {
-        Intent intent = new Intent(ACTION_LOADING);
-        intent.putExtra(EXTRA_LOADING, startLoading);
-        return intent;
+        return new Intent(ACTION_LOADING).putExtra(EXTRA_LOADING, startLoading);
     }
 
     @Override
@@ -136,17 +158,12 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     protected boolean onPrepareOptionsPanel(View view, Menu menu) {
-        if (menu != null) {
-            if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
-                try {
-                    Method m = menu.getClass().getDeclaredMethod(
-                            "setOptionalIconsVisible", boolean.class);
-                    m.setAccessible(true);
-                    m.invoke(menu, true);
-                } catch (Exception e) {
-                    //
-                }
-            }
+        if (menu != null && menu.getClass().getSimpleName().equals("MenuBuilder")) try {
+            Method declaredMethod = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", boolean.class);
+            declaredMethod.setAccessible(true);
+            declaredMethod.invoke(menu, true);
+        } catch (Exception e) {
+            //
         }
         return super.onPrepareOptionsPanel(view, menu);
     }
@@ -170,10 +187,6 @@ public class ActivityMain extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void setToolbarDatesVisible(boolean visible) {
-        mToolbarMainDates.setVisibility(visible ? View.VISIBLE : View.GONE);
-    }
-
     @Override
     public void onRecordChange(Const.RecordAction recordAction, FuelingRecord fuelingRecord) {
         if (recordAction != Const.RecordAction.DELETE)
@@ -188,7 +201,7 @@ public class ActivityMain extends AppCompatActivity implements
         if (resultCode != RESULT_OK) return;
 
         FuelingRecord fuelingRecord;
-        FragmentFueling fragmentFueling = (FragmentFueling) getFragmentManager().findFragmentById(R.id.fragmentFueling);
+        FragmentFueling fragmentFueling = getFragmentFueling();
 
         switch (requestCode) {
             case ActivityFuelingRecordChange.REQUEST_CODE:
@@ -215,9 +228,9 @@ public class ActivityMain extends AppCompatActivity implements
                 break;
             case FragmentDialogDate.REQUEST_CODE:
                 Date date = FragmentDialogDate.getDate(data);
-                if (dateFromClicked) fragmentFueling.setFilterDateFrom(date);
+                if (mDateFromClicked) fragmentFueling.setFilterDateFrom(date);
                 else fragmentFueling.setFilterDateTo(date);
-                updateFilterDate(dateFromClicked, date);
+                updateFilterDate(mDateFromClicked, date);
         }
     }
 
@@ -225,7 +238,7 @@ public class ActivityMain extends AppCompatActivity implements
     private void updateFilterDate(boolean dateFrom, Date date) {
         int buttonId = dateFrom ? R.id.btnDateFrom : R.id.btnDateTo;
         Button button = (Button) findViewById(buttonId);
-        button.setText(Functions.dateToString(date, true, abbrevMonth));
+        button.setText(Functions.dateToString(date, true, mAbbrevMonth));
     }
 
     @Override

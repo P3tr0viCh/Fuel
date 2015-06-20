@@ -21,6 +21,7 @@
     <string name="action_settings">Настройки</string>
     <string name="action_about">О программе</string>
     <string name="action_save">Сохранить</string>
+    <string name="action_distance">Принять</string>
 
     <string name="list_item_date">29 марта 1981</string>
     <string name="list_item_cost">500</string>

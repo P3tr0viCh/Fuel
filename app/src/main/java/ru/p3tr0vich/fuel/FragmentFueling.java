@@ -366,9 +366,6 @@ public class FragmentFueling extends Fragment implements
     }
 
     private void doPopup(View v) {
-
-        final long id = (long) v.getTag();
-
         PopupMenu popupMenu = new PopupMenu(getActivity(), v);
         popupMenu.inflate(R.menu.menu_fueling);
 
@@ -379,8 +376,10 @@ public class FragmentFueling extends Fragment implements
             menuHelper = fMenuHelper.get(popupMenu);
             menuHelper.getClass().getDeclaredMethod("setForceShowIcon", boolean.class).invoke(menuHelper, true);
         } catch (Exception e) {
-            Log.d(Const.LOG_TAG, "Error setForceShowIcon: " + e.getMessage());
+            //
         }
+
+        final long id = (long) v.getTag();
 
         popupMenu.setOnMenuItemClickListener(
                 new PopupMenu.OnMenuItemClickListener() {

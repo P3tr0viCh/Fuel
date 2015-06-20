@@ -1,11 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="ru.p3tr0vich.fuel.ActivityFuelingRecordChange">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ActivityFuelingRecordChange">
 
-    <item android:id="@+id/action_save"
+    <item
+        android:id="@+id/action_save"
         android:icon="@drawable/ic_done_white_24dp"
-        android:title="@string/action_save"
         android:orderInCategory="100"
-        app:showAsAction="always" />
+        android:title="@string/action_save"
+        app:showAsAction="always|withText" />
 </menu>

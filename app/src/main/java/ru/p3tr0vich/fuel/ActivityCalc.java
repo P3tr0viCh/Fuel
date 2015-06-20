@@ -19,6 +19,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import java.lang.reflect.Method;
+
 
 public class ActivityCalc extends AppCompatActivity implements
         AdapterView.OnItemSelectedListener, View.OnClickListener {
@@ -334,5 +336,17 @@ public class ActivityCalc extends AppCompatActivity implements
         } finally {
             mCalculating = false;
         }
+    }
+
+    @Override
+    protected boolean onPrepareOptionsPanel(View view, Menu menu) {
+        try {
+            Method declaredMethod = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", boolean.class);
+            declaredMethod.setAccessible(true);
+            declaredMethod.invoke(menu, true);
+        } catch (Exception e) {
+            //
+        }
+        return super.onPrepareOptionsPanel(view, menu);
     }
 }

@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -97,6 +98,8 @@ public class ActivityCalc extends AppCompatActivity implements
 
         loadPrefs();
 
+        checkTextOnEmpty(mEditPrice);
+
         findViewById(R.id.textDistance).setOnClickListener(this);
         findViewById(R.id.textCost).setOnClickListener(this);
         findViewById(R.id.textVolume).setOnClickListener(this);
@@ -113,8 +116,21 @@ public class ActivityCalc extends AppCompatActivity implements
         mEditPrice.addTextChangedListener(new EditTextWatcher(mEditPrice));
         mEditCons.addTextChangedListener(new EditTextWatcher(mEditCons));
 
-        checkTextOnEmpty(mEditPrice);
-        checkTextOnEmpty(mEditCons);
+    }
+
+    private void checkTextOnEmpty(EditText editText) {
+        LinearLayout linearLayout;
+        switch (editText.getId()) {
+            case R.id.editPrice:
+                linearLayout = mLayoutPriceEmpty;
+                break;
+            case R.id.editCons:
+                linearLayout = mLayoutConsEmpty;
+                break;
+            default:
+                return;
+        }
+        linearLayout.setVisibility(TextUtils.isEmpty(editText.getText()) ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -241,22 +257,6 @@ public class ActivityCalc extends AppCompatActivity implements
     public void onNothingSelected(AdapterView<?> parent) {
     }
 
-    private void checkTextOnEmpty(EditText editText) {
-        LinearLayout linearLayout;
-        switch (editText.getId()) {
-            case R.id.editPrice:
-                linearLayout = mLayoutPriceEmpty;
-                break;
-            case R.id.editCons:
-                linearLayout = mLayoutConsEmpty;
-                break;
-            default:
-                return;
-        }
-        if (editText.getText().length() == 0) linearLayout.setVisibility(View.VISIBLE);
-        else linearLayout.setVisibility(View.GONE);
-    }
-
     private class EditTextWatcher implements TextWatcher {
         final EditText editText;
 
@@ -298,40 +298,40 @@ public class ActivityCalc extends AppCompatActivity implements
         mCalculating = true;
 
         try {
-            float distancePerOneFuel, Price, Cons, Distance, Cost, Volume;
+            float distancePerOneFuel, price, cons, distance, cost, volume;
 
-            Price = Functions.editTextToFloat(mEditPrice);
-            Cons = Functions.editTextToFloat(mEditCons);
+            price = Functions.editTextToFloat(mEditPrice);
+            cons = Functions.editTextToFloat(mEditCons);
 
-            Distance = Functions.editTextToFloat(mEditDistance);
-            Cost = Functions.editTextToFloat(mEditCost);
-            Volume = Functions.editTextToFloat(mEditVolume);
+            distance = Functions.editTextToFloat(mEditDistance);
+            cost = Functions.editTextToFloat(mEditCost);
+            volume = Functions.editTextToFloat(mEditVolume);
 
-            if ((Price == 0) || (Cons == 0)) {
+            if (price == 0 || cons == 0) {
                 mCalculating = false;
                 return;
             }
 
-            distancePerOneFuel = (float) (100.0 / Cons);
+            distancePerOneFuel = (float) (100.0 / cons);
 
             switch (calcAction) {
                 case DISTANCE:
-                    Volume = Distance / distancePerOneFuel;
-                    Cost = Price * Volume;
-                    Functions.floatToText(mEditVolume, Volume, true);
-                    Functions.floatToText(mEditCost, Cost, true);
+                    volume = distance / distancePerOneFuel;
+                    cost = price * volume;
+                    Functions.floatToText(mEditVolume, volume, true);
+                    Functions.floatToText(mEditCost, cost, true);
                     break;
                 case COST:
-                    Volume = Cost / Price;
-                    Distance = distancePerOneFuel * Volume;
-                    Functions.floatToText(mEditVolume, Volume, true);
-                    Functions.floatToText(mEditDistance, Distance, true);
+                    volume = cost / price;
+                    distance = distancePerOneFuel * volume;
+                    Functions.floatToText(mEditVolume, volume, true);
+                    Functions.floatToText(mEditDistance, distance, true);
                     break;
                 case VOLUME:
-                    Cost = Price * Volume;
-                    Distance = distancePerOneFuel * Volume;
-                    Functions.floatToText(mEditCost, Cost, true);
-                    Functions.floatToText(mEditDistance, Distance, true);
+                    cost = price * volume;
+                    distance = distancePerOneFuel * volume;
+                    Functions.floatToText(mEditCost, cost, true);
+                    Functions.floatToText(mEditDistance, distance, true);
             }
         } finally {
             mCalculating = false;

@@ -146,7 +146,8 @@
         android:focusableInTouchMode="false"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/activity_calc_horizontal_margin"
-        android:paddingRight="@dimen/activity_calc_horizontal_margin">
+        android:paddingRight="@dimen/activity_calc_horizontal_margin"
+        android:visibility="gone">
 
         <Space
             android:layout_width="110dp"
@@ -225,7 +226,8 @@
         android:focusableInTouchMode="false"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/activity_calc_horizontal_margin"
-        android:paddingRight="@dimen/activity_calc_horizontal_margin">
+        android:paddingRight="@dimen/activity_calc_horizontal_margin"
+        android:visibility="gone">
 
         <Space
             android:layout_width="110dp"

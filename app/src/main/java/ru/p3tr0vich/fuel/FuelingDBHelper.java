@@ -50,7 +50,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         public FilterMode filterMode;
     }
 
-    private Filter mFilter;
+    private final Filter mFilter;
 
     public FuelingDBHelper() {
         super(Functions.sApplicationContext, DATABASE_NAME, null, DATABASE_VERSION);
@@ -74,12 +74,6 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         mFilter.dateFrom = filter.dateFrom;
         mFilter.dateTo = filter.dateTo;
     }
-
-// --Commented out by Inspection START (17.05.2015 03:02):
-//    public Const.FilterMode getFilterMode() {
-//        return mFilterMode;
-//    }
-// --Commented out by Inspection STOP (17.05.2015 03:02)
 
     public FuelingRecord getFuelingRecord(long id) {
         FuelingRecord fuelingRecord = null;
@@ -199,14 +193,14 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(SELECT_ALL + ORDER_BY_DATE, null);
 
-        if (cursor.moveToFirst()) do {
+        if (cursor.moveToFirst()) do
             fuelingRecords.add(new FuelingRecord(
                     cursor.getInt(0),
                     cursor.getString(1),
                     cursor.getFloat(2),
                     cursor.getFloat(3),
                     cursor.getFloat(4)));
-        } while (cursor.moveToNext());
+        while (cursor.moveToNext());
 
         cursor.close();
 

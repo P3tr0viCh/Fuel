@@ -10,6 +10,7 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -52,7 +53,7 @@ public class FragmentFueling extends Fragment implements
     private ProgressWheel mProgressWheelFueling;
 
     private TextView mTextAverage;
-    private TextView mTextSumCost;
+    private TextView mTextCostSum;
 
     private long mSelectedId = 0; // TODO: HACK
 
@@ -74,7 +75,7 @@ public class FragmentFueling extends Fragment implements
         mProgressWheelFueling = (ProgressWheel) view.findViewById(R.id.progressWheelFueling);
 
         mTextAverage = (TextView) view.findViewById(R.id.tvAverage);
-        mTextSumCost = (TextView) view.findViewById(R.id.tvSumCost);
+        mTextCostSum = (TextView) view.findViewById(R.id.tvCostSum);
 
         view.findViewById(R.id.floatingActionButton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -254,97 +255,128 @@ public class FragmentFueling extends Fragment implements
         }
     }
 
-    class VolumeAndTotal {
+    class CalcTotalData {
+        final float cost;
         final float volume;
         final float total;
 
-        VolumeAndTotal(float v, float t) {
+        CalcTotalData(float c, float v, float t) {
+            cost = c;
             volume = v;
             total = t;
         }
     }
 
-    private void calcTotal(Cursor data) {
-        float costSum = 0, volumeSum = 0;
-        float volume, total, firstTotal = 0, lastTotal = 0, average;
+    class CalcTotalResult {
+        final float average;
+        final float costSum;
 
-        int averageCount;
+        CalcTotalResult(float a, float s) {
+            average = a;
+            costSum = s;
+        }
+    }
 
-        int columnCost = data.getColumnIndex(FuelingDBHelper.COLUMN_COST);
-        int columnVolume = data.getColumnIndex(FuelingDBHelper.COLUMN_VOLUME);
-        int columnTotal = data.getColumnIndex(FuelingDBHelper.COLUMN_TOTAL);
+    class CalcTotalTask extends AsyncTask<Void, Void, CalcTotalResult> {
 
-        boolean completeData = true; // Во всех записях указаны объём заправки и текущий пробег
+        final Cursor mCursor;
+        final List<CalcTotalData> calcTotalDataList = new ArrayList<>();
 
-        List<VolumeAndTotal> volumeAndTotals = new ArrayList<>();
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
 
-        if (data.moveToFirst()) do {
-            costSum += data.getFloat(columnCost);
+            final int columnCost = mCursor.getColumnIndex(FuelingDBHelper.COLUMN_COST);
+            final int columnVolume = mCursor.getColumnIndex(FuelingDBHelper.COLUMN_VOLUME);
+            final int columnTotal = mCursor.getColumnIndex(FuelingDBHelper.COLUMN_TOTAL);
 
-            volume = data.getFloat(columnVolume);
-            total = data.getFloat(columnTotal);
-
-            volumeAndTotals.add(new VolumeAndTotal(volume, total));
-
-            if (completeData) {
-                if (volume == 0 || total == 0) completeData = false;
-                else {
-                    // Сортировка записей по дате в обратном порядке
-                    // isFirst -- последняя заправка
-                    if (data.isFirst()) lastTotal = total;
-                    else {
-                        // Последний (isFirst) объём заправки не нужен -- неизвестно, сколько на ней будет пробег
-                        volumeSum += volume;
-                        if (data.isLast()) firstTotal = total;
-                    }
-                }
-            }
-        } while (data.moveToNext());
-
-        if (completeData)
-            average = volumeSum != 0 ? (volumeSum / (lastTotal - firstTotal)) * 100 : 0;
-        else {
-            average = 0;
-            averageCount = 0;
-            for (int i = 0; i < volumeAndTotals.size() - 1; i++) {
-                lastTotal = volumeAndTotals.get(i).total;
-                if (lastTotal != 0) {
-                    volume = volumeAndTotals.get(i + 1).volume;
-                    total = volumeAndTotals.get(i + 1).total;
-                    if (volume != 0 && total != 0) {
-                        average += (volume / (lastTotal - total)) * 100;
-                        averageCount++;
-                    }
-                }
-            }
-
-            average = averageCount != 0 ? average / averageCount : 0;
+            if (mCursor.moveToFirst()) do
+                calcTotalDataList.add(new CalcTotalData(mCursor.getFloat(columnCost), mCursor.getFloat(columnVolume), mCursor.getFloat(columnTotal)));
+            while (mCursor.moveToNext());
         }
 
-        mTextAverage.setText(Functions.floatToString(average));
-        mTextSumCost.setText(Functions.floatToString(costSum));
+        CalcTotalTask(Cursor cursor) {
+            mCursor = cursor;
+        }
+
+        @Override
+        protected CalcTotalResult doInBackground(Void... params) {
+            float costSum = 0, volumeSum = 0;
+            float volume, total, firstTotal = 0, lastTotal = 0, average;
+
+            int averageCount;
+
+            boolean completeData = true; // Во всех записях указаны объём заправки и текущий пробег
+
+            for (int i = 0; i < calcTotalDataList.size(); i++) {
+                costSum += calcTotalDataList.get(i).cost;
+
+                if (completeData) {
+                    volume = calcTotalDataList.get(i).volume;
+                    total = calcTotalDataList.get(i).total;
+
+                    if (volume == 0 || total == 0) completeData = false;
+                    else {
+                        // Сортировка записей по дате в обратном порядке
+                        // 0 -- последняя заправка
+                        if (i == 0) lastTotal = total;
+                        else {
+                            // Последний (i == 0) объём заправки не нужен -- неизвестно, сколько на ней будет пробег,
+                            // в volumeSum не включается
+                            volumeSum += volume;
+                            if (i == calcTotalDataList.size() - 1) firstTotal = total;
+                        }
+                    }
+                }
+            }
+
+            if (completeData)
+                average = volumeSum != 0 ? (volumeSum / (lastTotal - firstTotal)) * 100 : 0;
+            else {
+                average = 0;
+                averageCount = 0;
+                for (int i = 0; i < calcTotalDataList.size() - 1; i++) {
+                    lastTotal = calcTotalDataList.get(i).total;
+                    if (lastTotal != 0) {
+                        volume = calcTotalDataList.get(i + 1).volume;
+                        total = calcTotalDataList.get(i + 1).total;
+                        if (volume != 0 && total != 0) {
+                            average += (volume / (lastTotal - total)) * 100;
+                            averageCount++;
+                        }
+                    }
+                }
+
+                average = averageCount != 0 ? average / averageCount : 0;
+            }
+
+            return new CalcTotalResult(average, costSum);
+        }
+
+        @Override
+        protected void onPostExecute(CalcTotalResult calcTotalResult) {
+            super.onPostExecute(calcTotalResult);
+
+            mTextAverage.setText(Functions.floatToString(calcTotalResult.average));
+            mTextCostSum.setText(Functions.floatToString(calcTotalResult.costSum));
+
+            Log.d(Const.LOG_TAG, "FragmentFueling -- CalcTotalTask: onPostExecute");
+        }
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        switch (loader.getId()) {
-            case LOADER_LIST_ID:
-                mFuelingCursorAdapter.swapCursor(data);
-                selectItemById(mSelectedId);
+        mFuelingCursorAdapter.swapCursor(data);
+        selectItemById(mSelectedId);
 
-                Log.d(Const.LOG_TAG, "FragmentFueling -- onLoadFinished: LOADER_LIST_ID");
+        Log.d(Const.LOG_TAG, "FragmentFueling -- onLoadFinished");
 
-                calcTotal(data); // TODO: async
-                break;
-        }
+        new CalcTotalTask(data).execute(); // TODO: cancel
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        switch (loader.getId()) {
-            case LOADER_LIST_ID:
-                mFuelingCursorAdapter.swapCursor(null);
-        }
+        mFuelingCursorAdapter.swapCursor(null);
     }
 
     public void updateAfterChange() {

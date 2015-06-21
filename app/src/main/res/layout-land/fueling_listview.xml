@@ -10,24 +10,25 @@
     <ListView
         android:id="@+id/listViewFueling"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/divider"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentStart="false"
-        android:layout_alignParentTop="false"
+        android:layout_alignParentTop="true"
+        android:choiceMode="none"
         android:drawSelectorOnTop="false"
         android:footerDividersEnabled="false"
         android:headerDividersEnabled="true"
         tools:listfooter="@layout/fueling_listview_footer"
         tools:listheader="@layout/fueling_listview_header"
-        tools:listitem="@layout/fueling_listitem"
-        android:choiceMode="none" />
+        tools:listitem="@layout/fueling_listitem" />
 
     <com.pnikosis.materialishprogress.ProgressWheel
         android:id="@+id/progressWheelFueling"
         android:layout_width="@dimen/progress_wheel_fueling_size"
         android:layout_height="@dimen/progress_wheel_fueling_size"
-        android:layout_alignBottom="@+id/listViewFueling"
-        android:layout_alignTop="@+id/listViewFueling"
+        android:layout_alignBottom="@+id/divider"
+        android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
         android:visibility="gone"
         wheel:matProg_barColor="@color/primary"
@@ -67,7 +68,7 @@
             tools:text="@string/list_item_volume" />
 
         <TextView
-            android:id="@+id/tvSumCostText"
+            android:id="@+id/tvCostSumText"
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
@@ -78,12 +79,12 @@
             android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
 
         <TextView
-            android:id="@+id/tvSumCost"
+            android:id="@+id/tvCostSum"
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="8dp"
-            android:layout_toRightOf="@+id/tvSumCostText"
+            android:layout_toRightOf="@+id/tvCostSumText"
             android:gravity="center_vertical"
             android:textAppearance="@style/AppTheme.TextAppearance.Texts"
             tools:text="@string/list_item_cost" />

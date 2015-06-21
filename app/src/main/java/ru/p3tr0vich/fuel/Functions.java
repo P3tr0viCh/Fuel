@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -179,5 +180,15 @@ class Functions {
         toolbar.addView(spinner);
 
         spinner.setOnItemSelectedListener(listener);
+    }
+
+    public static void setViewHeight(View view, int height) {
+        view.getLayoutParams().height = height;
+        view.requestLayout();
+    }
+
+    public static void setViewTopMargin(View view, RelativeLayout.LayoutParams layoutParams, int topMargin) {
+        layoutParams.setMargins(layoutParams.leftMargin, topMargin, layoutParams.rightMargin, layoutParams.bottomMargin);
+        view.setLayoutParams(layoutParams);
     }
 }

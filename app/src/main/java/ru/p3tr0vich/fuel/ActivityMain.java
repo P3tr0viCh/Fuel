@@ -1,7 +1,7 @@
 package ru.p3tr0vich.fuel;
 // TODO: change color of selected item in spinners and popup menu
 
-import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -115,101 +115,47 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void setToolbarDatesVisible(final boolean visible, final boolean animate) {
-        // Сначала запускается анимация valueAnimatorShadowShow, которая показывает тень.
-        // После окончания анимации valueAnimatorShadowShow запускается
-        // анимация valueAnimatorToolbar, которая показывает тулбар с датами.
-        // После окончания анимации valueAnimatorToolbar запускается
-        // анимация valueAnimatorShadowHide, которая скрывает тень.
-
         if (mToolbarMainDatesVisible == visible) return;
 
         mToolbarMainDatesVisible = visible;
 
-        final int toolbarTopStart = visible ? 0 : getResources().getDimensionPixelSize(R.dimen.toolbar_height);
-        final int toolbarTopEnd = visible ? getResources().getDimensionPixelSize(R.dimen.toolbar_height) : 0;
-
         final RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mToolbarMainDates.getLayoutParams();
 
         if (animate) {
-            final ValueAnimator valueAnimatorShadowShow = ValueAnimator.ofInt(0, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height))
-                    .setDuration(Const.ANIMATION_DURATION_TOOLBAR_SHADOW);
-            final ValueAnimator valueAnimatorShadowHide = ValueAnimator.ofInt(getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height), 0)
-                    .setDuration(Const.ANIMATION_DURATION_TOOLBAR_SHADOW);
+            final ValueAnimator valueAnimatorShadowShow = ValueAnimator.ofInt(0, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+            valueAnimatorShadowShow
+                    .setDuration(Const.ANIMATION_DURATION_TOOLBAR_SHADOW)
+                    .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            Functions.setViewHeight(mToolbarShadow, (Integer) animation.getAnimatedValue());
+                        }
+                    });
 
-            final ValueAnimator valueAnimatorToolbar = ValueAnimator.ofInt(toolbarTopStart, toolbarTopEnd)
-                    .setDuration(Const.ANIMATION_DURATION_TOOLBAR);
+            final ValueAnimator valueAnimatorShadowHide = ValueAnimator.ofInt(getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height), 0);
+            valueAnimatorShadowHide
+                    .setDuration(Const.ANIMATION_DURATION_TOOLBAR_SHADOW)
+                    .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            Functions.setViewHeight(mToolbarShadow, (Integer) animation.getAnimatedValue());
+                        }
+                    });
 
-// valueAnimatorShadowShow -------------
-            valueAnimatorShadowShow.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    mToolbarShadow.getLayoutParams().height = (Integer) animation.getAnimatedValue();
-                    mToolbarShadow.requestLayout();
-                }
-            });
-            valueAnimatorShadowShow.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
+            final ValueAnimator valueAnimatorToolbar = ValueAnimator.ofInt(
+                    visible ? 0 : getResources().getDimensionPixelSize(R.dimen.toolbar_height),
+                    visible ? getResources().getDimensionPixelSize(R.dimen.toolbar_height) : 0);
+            valueAnimatorToolbar
+                    .setDuration(Const.ANIMATION_DURATION_TOOLBAR)
+                    .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            Functions.setViewTopMargin(mToolbarMainDates, layoutParams, (Integer) animation.getAnimatedValue());
+                        }
+                    });
 
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    valueAnimatorToolbar.start();
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-
-                }
-            });
-
-// valueAnimatorShadowHide -------------
-            valueAnimatorShadowHide.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    mToolbarShadow.getLayoutParams().height = (Integer) animation.getAnimatedValue();
-                    mToolbarShadow.requestLayout();
-                }
-            });
-
-// valueAnimatorToolbar -------------
-            valueAnimatorToolbar.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    layoutParams.setMargins(layoutParams.leftMargin, (Integer) animation.getAnimatedValue(), layoutParams.rightMargin, layoutParams.bottomMargin);
-
-                    mToolbarMainDates.setLayoutParams(layoutParams);
-                }
-            });
-            valueAnimatorToolbar.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    valueAnimatorShadowHide.start();
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-
-                }
-            });
-
-            valueAnimatorShadowShow.start();
-        } else {
-            layoutParams.setMargins(layoutParams.leftMargin, toolbarTopEnd, layoutParams.rightMargin, layoutParams.bottomMargin);
-
-            mToolbarMainDates.setLayoutParams(layoutParams);
-        }
+            AnimatorSet animatorSet = new AnimatorSet();
+            animatorSet.playSequentially(valueAnimatorShadowShow, valueAnimatorToolbar, valueAnimatorShadowHide);
+            animatorSet.start();
+        } else
+            Functions.setViewTopMargin(mToolbarMainDates, layoutParams, visible ? getResources().getDimensionPixelSize(R.dimen.toolbar_height) : 0);
     }
 
     private void showDateDialog(boolean dateFrom) {

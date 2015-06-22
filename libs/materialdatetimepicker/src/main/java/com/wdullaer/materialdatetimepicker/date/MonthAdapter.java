@@ -219,7 +219,6 @@ public abstract class MonthAdapter extends BaseAdapter implements OnDayClickList
      * @param day The day that was tapped
      */
     protected void onDayTapped(CalendarDay day) {
-        mController.tryVibrate();
         mController.onDayOfMonthSelected(day.year, day.month, day.day);
         setSelectedDay(day);
     }

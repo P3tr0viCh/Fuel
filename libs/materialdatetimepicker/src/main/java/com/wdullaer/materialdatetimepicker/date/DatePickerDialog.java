@@ -37,7 +37,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.wdullaer.materialdatetimepicker.HapticFeedbackController;
 import com.wdullaer.materialdatetimepicker.R;
 import com.wdullaer.materialdatetimepicker.TypefaceHelper;
 import com.wdullaer.materialdatetimepicker.Utils;
@@ -102,8 +101,6 @@ public class DatePickerDialog extends DialogFragment implements
     private int mMaxYear = DEFAULT_END_YEAR;
     private Calendar mMinDate;
     private Calendar mMaxDate;
-
-    private HapticFeedbackController mHapticFeedbackController;
 
     private boolean mDelayAnimation = true;
 
@@ -251,7 +248,6 @@ public class DatePickerDialog extends DialogFragment implements
 
             @Override
             public void onClick(View v) {
-                tryVibrate();
                 if (mCallBack != null) {
                     mCallBack.onDateSet(DatePickerDialog.this, mCalendar.get(Calendar.YEAR),
                             mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
@@ -265,7 +261,6 @@ public class DatePickerDialog extends DialogFragment implements
         cancelButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                tryVibrate();
                 getDialog().cancel();
             }
         });
@@ -283,20 +278,7 @@ public class DatePickerDialog extends DialogFragment implements
             }
         }
 
-        mHapticFeedbackController = new HapticFeedbackController(activity);
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mHapticFeedbackController.start();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mHapticFeedbackController.stop();
     }
 
     @Override
@@ -480,7 +462,6 @@ public class DatePickerDialog extends DialogFragment implements
 
     @Override
     public void onClick(View v) {
-        tryVibrate();
         if (v.getId() == R.id.date_picker_year) {
             setCurrentView(YEAR_VIEW);
         } else if (v.getId() == R.id.date_picker_month_and_day) {
@@ -542,10 +523,5 @@ public class DatePickerDialog extends DialogFragment implements
     @Override
     public void unregisterOnDateChangedListener(OnDateChangedListener listener) {
         mListeners.remove(listener);
-    }
-
-    @Override
-    public void tryVibrate() {
-        mHapticFeedbackController.tryVibrate();
     }
 }

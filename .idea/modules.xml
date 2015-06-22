@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/fab/fab.iml" filepath="$PROJECT_DIR$/libs/fab/fab.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/libs.iml" filepath="$PROJECT_DIR$/libs/libs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libs/materialdatetimepicker/materialdatetimepicker.iml" filepath="$PROJECT_DIR$/libs/materialdatetimepicker/materialdatetimepicker.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/materialish-progress/materialish-progress.iml" filepath="$PROJECT_DIR$/libs/materialish-progress/materialish-progress.iml" />
     </modules>
   </component>

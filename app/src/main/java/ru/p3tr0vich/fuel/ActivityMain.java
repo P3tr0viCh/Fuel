@@ -21,7 +21,10 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+
 import java.lang.reflect.Method;
+import java.util.Calendar;
 import java.util.Date;
 
 public class ActivityMain extends AppCompatActivity implements
@@ -163,7 +166,29 @@ public class ActivityMain extends AppCompatActivity implements
 
         FuelingDBHelper.Filter filter = getFragmentFueling().getFilter();
 
-        FragmentDialogDate.show(this, mDateFromClicked ? filter.dateFrom : filter.dateTo);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(mDateFromClicked ? filter.dateFrom : filter.dateTo);
+        DatePickerDialog.newInstance(
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(year, monthOfYear, dayOfMonth);
+                        Date date = calendar.getTime();
+                        if (mDateFromClicked) getFragmentFueling().setFilterDateFrom(date);
+                        else getFragmentFueling().setFilterDateTo(date);
+                        updateFilterDate(mDateFromClicked, date);
+                    }
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+        ).show(getFragmentManager(), null);
+    }
+
+    private void updateFilterDate(final boolean dateFrom, final Date date) {
+        ((Button) findViewById(dateFrom ? R.id.btnDateFrom : R.id.btnDateTo))
+                .setText(Functions.dateToString(date, true, mAbbrevMonth));
     }
 
     @Override
@@ -252,19 +277,7 @@ public class ActivityMain extends AppCompatActivity implements
             case ActivityBackup.REQUEST_CODE:
                 fragmentFueling.updateAfterChange();
                 break;
-            case FragmentDialogDate.REQUEST_CODE:
-                Date date = FragmentDialogDate.getDate(data);
-                if (mDateFromClicked) fragmentFueling.setFilterDateFrom(date);
-                else fragmentFueling.setFilterDateTo(date);
-                updateFilterDate(mDateFromClicked, date);
         }
-    }
-
-
-    private void updateFilterDate(boolean dateFrom, Date date) {
-        int buttonId = dateFrom ? R.id.btnDateFrom : R.id.btnDateTo;
-        Button button = (Button) findViewById(buttonId);
-        button.setText(Functions.dateToString(date, true, mAbbrevMonth));
     }
 
     @Override

@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/libs" />
             <option value="$PROJECT_DIR$/libs/fab" />
+            <option value="$PROJECT_DIR$/libs/materialdatetimepicker" />
             <option value="$PROJECT_DIR$/libs/materialish-progress" />
           </set>
         </option>

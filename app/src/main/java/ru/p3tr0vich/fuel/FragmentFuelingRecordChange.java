@@ -16,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+
+import java.util.Calendar;
 import java.util.Date;
 
 public class FragmentFuelingRecordChange extends Fragment implements View.OnClickListener {
@@ -77,13 +80,26 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         if (savedInstanceState != null)
             mDate = (Date) savedInstanceState.getSerializable(INTENT_EXTRA);
 
-
         updateDate();
 
         mButtonDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentDialogDate.show(FragmentFuelingRecordChange.this, mDate);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(mDate);
+                DatePickerDialog.newInstance(
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.set(year, monthOfYear, dayOfMonth);
+                                setDate(calendar.getTime());
+                            }
+                        },
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)
+                ).show(getFragmentManager(), null);
             }
         });
 
@@ -92,13 +108,6 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         view.findViewById(R.id.textTotal).setOnClickListener(this);
 
         return view;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK) return;
-        if (requestCode == FragmentDialogDate.REQUEST_CODE)
-            setDate(FragmentDialogDate.getDate(data));
     }
 
     @Override

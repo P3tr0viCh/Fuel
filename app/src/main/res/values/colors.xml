@@ -23,6 +23,10 @@
 
     <color name="menu_item_pressed">#85D3EF</color>
 
+    <!-- DatePickerDialog -->
+    <color name="mdtp_accent_color">@color/primary</color>
+    <color name="mdtp_accent_color_dark">@color/primary_dark</color>
+
     <!-- Replace colors in ThemeOverlay.AppCompat.Light for ToolBar and Widget.AppCompat.PopupMenu -->
     <color name="background_material_light">@color/window_background</color>
     <color name="primary_text_default_material_light">@color/primary_text</color>

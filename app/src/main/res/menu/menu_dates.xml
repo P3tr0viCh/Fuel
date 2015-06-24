@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_dates_winter"
+        android:title="@string/action_dates_winter" />
+    <item
+        android:id="@+id/action_dates_summer"
+        android:title="@string/action_dates_summer" />
+    <item
+        android:id="@+id/action_dates_curr_year"
+        android:title="@string/action_dates_curr_year" />
+    <item
+        android:id="@+id/action_dates_prev_year"
+        android:title="@string/action_dates_prev_year" />
+    <item
+        android:id="@+id/action_dates_start_of_year"
+        android:title="@string/action_dates_start_of_year" />
+    <item
+        android:id="@+id/action_dates_end_of_year"
+        android:title="@string/action_dates_end_of_year" />
+</menu>

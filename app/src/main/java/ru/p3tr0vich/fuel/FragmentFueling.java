@@ -208,13 +208,14 @@ public class FragmentFueling extends Fragment implements
         if (needUpdate) updateAfterChange();
     }
 
-    public void setFilterDateFrom(Date date) {
-        mFilter.dateFrom = date;
+    public void setFilterDate(final Date dateFrom, final Date dateTo) {
+        mFilter.dateFrom = dateFrom;
+        mFilter.dateTo = dateTo;
         getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
     }
 
-    public void setFilterDateTo(Date date) {
-        mFilter.dateTo = date;
+    public void setFilterDate(final boolean setDateFrom, final Date date) {
+        if (setDateFrom) mFilter.dateFrom = date; else mFilter.dateTo = date;
         getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
     }
 
@@ -397,7 +398,7 @@ public class FragmentFueling extends Fragment implements
             updateAfterChange();
     }
 
-    private void doPopup(View v) {
+    private void doPopup(final View v) {
         PopupMenu popupMenu = new PopupMenu(getActivity(), v);
         popupMenu.inflate(R.menu.menu_fueling);
 

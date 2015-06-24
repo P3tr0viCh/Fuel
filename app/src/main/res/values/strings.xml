@@ -23,12 +23,20 @@
     <string name="action_save">Сохранить</string>
     <string name="action_distance">Принять</string>
 
+    <string name="action_update">Изменить</string>
+    <string name="action_delete">Удалить</string>
+
+    <string name="action_dates_start_of_year">Начало года</string>
+    <string name="action_dates_end_of_year">Конец года</string>
+    <string name="action_dates_winter">Зима</string>
+    <string name="action_dates_summer">Лето</string>
+    <string name="action_dates_curr_year">Текущий год</string>
+    <string name="action_dates_prev_year">Прошлый год</string>
+
     <string name="list_item_date">29 марта 1981</string>
     <string name="list_item_cost">500</string>
     <string name="list_item_volume">16.37</string>
     <string name="list_item_total">12345</string>
-    <string name="list_item_menu_update">Изменить</string>
-    <string name="list_item_menu_delete">Удалить</string>
 
     <string name="text_date">Дата</string>
     <string name="text_cost">Стоимость</string>

@@ -3,10 +3,10 @@
         android:id="@+id/action_fueling_update"
         android:icon="@drawable/ic_pen_black_24dp"
         android:orderInCategory="100"
-        android:title="@string/list_item_menu_update" />
+        android:title="@string/action_update" />
     <item
         android:id="@+id/action_fueling_delete"
         android:icon="@drawable/ic_delete_black_24dp"
         android:orderInCategory="200"
-        android:title="@string/list_item_menu_delete" />
+        android:title="@string/action_delete" />
 </menu>

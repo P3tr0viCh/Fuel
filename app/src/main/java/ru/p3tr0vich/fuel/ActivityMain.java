@@ -1,5 +1,4 @@
 package ru.p3tr0vich.fuel;
-// TODO: change color of selected item in spinners and popup menu
 
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
@@ -257,10 +256,12 @@ public class ActivityMain extends AppCompatActivity implements
 
         mToolbarMainDatesVisible = visible;
 
+        final int toolbarHeight = getResources().getDimensionPixelSize(R.dimen.toolbar_height);
+        final int toolbarShadowHeight = getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height);
         final RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mToolbarMainDates.getLayoutParams();
 
         if (animate) {
-            final ValueAnimator valueAnimatorShadowShow = ValueAnimator.ofInt(0, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+            final ValueAnimator valueAnimatorShadowShow = ValueAnimator.ofInt(0, toolbarShadowHeight);
             valueAnimatorShadowShow
                     .setDuration(Const.ANIMATION_DURATION_TOOLBAR_SHADOW)
                     .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -269,7 +270,7 @@ public class ActivityMain extends AppCompatActivity implements
                         }
                     });
 
-            final ValueAnimator valueAnimatorShadowHide = ValueAnimator.ofInt(getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height), 0);
+            final ValueAnimator valueAnimatorShadowHide = ValueAnimator.ofInt(toolbarShadowHeight, 0);
             valueAnimatorShadowHide
                     .setDuration(Const.ANIMATION_DURATION_TOOLBAR_SHADOW)
                     .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -279,8 +280,7 @@ public class ActivityMain extends AppCompatActivity implements
                     });
 
             final ValueAnimator valueAnimatorToolbar = ValueAnimator.ofInt(
-                    visible ? 0 : getResources().getDimensionPixelSize(R.dimen.toolbar_height),
-                    visible ? getResources().getDimensionPixelSize(R.dimen.toolbar_height) : 0);
+                    visible ? 0 : toolbarHeight, visible ? toolbarHeight : 0);
             valueAnimatorToolbar
                     .setDuration(Const.ANIMATION_DURATION_TOOLBAR)
                     .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -293,7 +293,7 @@ public class ActivityMain extends AppCompatActivity implements
             animatorSet.playSequentially(valueAnimatorShadowShow, valueAnimatorToolbar, valueAnimatorShadowHide);
             animatorSet.start();
         } else
-            Functions.setViewTopMargin(mToolbarMainDates, layoutParams, visible ? getResources().getDimensionPixelSize(R.dimen.toolbar_height) : 0);
+            Functions.setViewTopMargin(mToolbarMainDates, layoutParams, visible ? toolbarHeight : 0);
     }
 
     private void showDateDialog(final boolean dateFrom) {

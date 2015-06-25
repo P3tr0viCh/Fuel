@@ -174,7 +174,7 @@ public abstract class MonthAdapter extends BaseAdapter implements OnDayClickList
             v.setOnDayClickListener(this);
         }
         if (drawingParams == null) {
-            drawingParams = new HashMap<String, Integer>();
+            drawingParams = new HashMap<>();
         }
         drawingParams.clear();
 

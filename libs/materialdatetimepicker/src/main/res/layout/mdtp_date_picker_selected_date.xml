@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
      Copyright (C) 2013 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +22,8 @@
     android:layout_weight="1"
     android:background="@color/mdtp_accent_color"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:ignore="Overdraw">
 
     <com.wdullaer.materialdatetimepicker.AccessibleLinearLayout
         android:id="@+id/date_picker_month_and_day"
@@ -32,7 +32,7 @@
         android:layout_gravity="center"
         android:clickable="true"
         android:orientation="vertical"
-        android:textColor="@color/mdtp_date_picker_selector" >
+        android:textColor="@color/mdtp_date_picker_selector">
 
         <TextView
             android:id="@+id/date_picker_month"
@@ -43,7 +43,7 @@
             android:includeFontPadding="false"
             android:textColor="@color/mdtp_date_picker_selector"
             android:textSize="@dimen/mdtp_selected_date_month_size"
-            tools:text="May"/>
+            tools:text="May" />
 
         <TextView
             android:id="@+id/date_picker_day"
@@ -57,7 +57,7 @@
             android:includeFontPadding="false"
             android:textColor="@color/mdtp_date_picker_selector"
             android:textSize="@dimen/mdtp_selected_date_day_size"
-            tools:text="15"/>
+            tools:text="15" />
     </com.wdullaer.materialdatetimepicker.AccessibleLinearLayout>
 
     <com.wdullaer.materialdatetimepicker.AccessibleTextView

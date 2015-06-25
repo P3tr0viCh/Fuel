@@ -17,6 +17,7 @@
 package com.wdullaer.materialdatetimepicker.date;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
@@ -43,7 +44,6 @@ import com.wdullaer.materialdatetimepicker.Utils;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Locale;
 
 /**
@@ -74,12 +74,12 @@ public class DatePickerDialog extends DialogFragment implements
     private static final int ANIMATION_DURATION = 300;
     private static final int ANIMATION_DELAY = 500;
 
-    private static SimpleDateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy", Locale.getDefault());
-    private static SimpleDateFormat DAY_FORMAT = new SimpleDateFormat("dd", Locale.getDefault());
+    private static final SimpleDateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy", Locale.getDefault());
+    private static final SimpleDateFormat DAY_FORMAT = new SimpleDateFormat("dd", Locale.getDefault());
 
     private final Calendar mCalendar = Calendar.getInstance();
     private OnDateSetListener mCallBack;
-    private HashSet<OnDateChangedListener> mListeners = new HashSet<OnDateChangedListener>();
+    private final HashSet<OnDateChangedListener> mListeners = new HashSet<>();
     private DialogInterface.OnCancelListener mOnCancelListener;
     private DialogInterface.OnDismissListener mOnDismissListener;
 
@@ -128,8 +128,7 @@ public class DatePickerDialog extends DialogFragment implements
      * The callback used to notify other date picker components of a change in selected date.
      */
     public interface OnDateChangedListener {
-
-        public void onDateChanged();
+        void onDateChanged();
     }
 
 
@@ -197,7 +196,8 @@ public class DatePickerDialog extends DialogFragment implements
         Log.d(TAG, "onCreateView: ");
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-        View view = inflater.inflate(R.layout.mdtp_date_picker_dialog, null);
+        @SuppressLint("InflateParams")
+        View view = inflater.inflate(R.layout.mdtp_date_picker_dialog, null, false);
 
         mDayOfWeekView = (TextView) view.findViewById(R.id.date_picker_header);
         mMonthAndDayView = (LinearLayout) view.findViewById(R.id.date_picker_month_and_day);
@@ -485,9 +485,14 @@ public class DatePickerDialog extends DialogFragment implements
     }
 
     private void updatePickers() {
+/* P3tr0viCh
         Iterator<OnDateChangedListener> iterator = mListeners.iterator();
         while (iterator.hasNext()) {
             iterator.next().onDateChanged();
+        }*/
+
+        for (OnDateChangedListener mListener : mListeners) {
+            mListener.onDateChanged();
         }
     }
 

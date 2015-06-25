@@ -16,9 +16,13 @@
 
 package com.wdullaer.materialdatetimepicker.date;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.StateListDrawable;
+import android.os.Build;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
@@ -37,18 +41,16 @@ import java.util.List;
 /**
  * Displays a selectable list of years.
  */
+@SuppressLint("ViewConstructor")
 public class YearPickerView extends ListView implements OnItemClickListener, OnDateChangedListener {
     private static final String TAG = "YearPickerView";
 
     private final DatePickerController mController;
     private YearAdapter mAdapter;
-    private int mViewSize;
-    private int mChildSize;
+    private final int mViewSize;
+    private final int mChildSize;
     private TextViewWithCircularIndicator mSelectedView;
 
-    /**
-     * @param context
-     */
     public YearPickerView(Context context, DatePickerController controller) {
         super(context);
         mController = controller;
@@ -69,7 +71,7 @@ public class YearPickerView extends ListView implements OnItemClickListener, OnD
     }
 
     private void init(Context context) {
-        ArrayList<String> years = new ArrayList<String>();
+        ArrayList<String> years = new ArrayList<>();
         for (int year = mController.getMinYear(); year <= mController.getMaxYear(); year++) {
             years.add(String.format("%d", year));
         }
@@ -127,6 +129,7 @@ public class YearPickerView extends ListView implements OnItemClickListener, OnD
     public void postSetSelectionFromTop(final int position, final int offset) {
         post(new Runnable() {
 
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void run() {
                 setSelectionFromTop(position, offset);
@@ -150,7 +153,7 @@ public class YearPickerView extends ListView implements OnItemClickListener, OnD
     }
 
     @Override
-    public void onInitializeAccessibilityEvent(AccessibilityEvent event) {
+    public void onInitializeAccessibilityEvent(@NonNull AccessibilityEvent event) {
         super.onInitializeAccessibilityEvent(event);
         if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
             event.setFromIndex(0);

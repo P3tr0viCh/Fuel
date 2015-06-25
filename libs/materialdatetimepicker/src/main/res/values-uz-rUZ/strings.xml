@@ -15,8 +15,7 @@
      limitations under the License.
  -->
 
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="mdtp_done_label" msgid="7007948707597430919">"Tayyor"</string>
     <string name="mdtp_hour_picker_description" msgid="7586639618712934060">"Soat ko‘rsatkichli doira"</string>
     <string name="mdtp_minute_picker_description" msgid="6024811202872705251">"Daqiqa ko‘rsatkichli doira"</string>

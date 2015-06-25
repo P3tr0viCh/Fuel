@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
      Copyright (C) 2013 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,14 +40,4 @@
 
     <color name="mdtp_button_color">@color/mdtp_accent_color</color>
     <color name="mdtp_button_selected">#33969696</color>
-
-    <!-- Colors for red theme -->
-    <color name="mdtp_red">@color/mdtp_accent_color</color>
-    <color name="mdtp_red_focused">@color/mdtp_accent_color_dark</color>
-    <color name="mdtp_light_gray">#404040</color>
-    <color name="mdtp_dark_gray">#363636</color>
-    <color name="mdtp_line_dark">#808080</color>
-    <color name="mdtp_done_text_color_dark_normal">#ffffff</color>
-    <color name="mdtp_done_text_color_dark_disabled">#888888</color>
-    <color name="mdtp_done_disabled_dark">#bfbfbf</color>
 </resources>

@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.graphics.Paint.Align;
 import android.util.Log;
 import android.view.View;
@@ -38,7 +37,6 @@ public class AmPmCirclesView extends View {
 
     // Alpha level for selected circle.
     private static final int SELECTED_ALPHA = Utils.SELECTED_ALPHA;
-    private static final int SELECTED_ALPHA_THEME_DARK = Utils.SELECTED_ALPHA_THEME_DARK;
 
     private final Paint mPaint = new Paint();
     private int mSelectedAlpha;
@@ -82,9 +80,6 @@ public class AmPmCirclesView extends View {
         mAmPmTextColor = res.getColor(R.color.mdtp_ampm_text_color);
         mAmPmSelectedTextColor = res.getColor(R.color.mdtp_white);
         mSelectedAlpha = SELECTED_ALPHA;
-        String typefaceFamily = res.getString(R.string.mdtp_sans_serif);
-        Typeface tf = Typeface.create(typefaceFamily, Typeface.NORMAL);
-        mPaint.setTypeface(tf);
         mPaint.setAntiAlias(true);
         mPaint.setTextAlign(Align.CENTER);
 
@@ -102,19 +97,12 @@ public class AmPmCirclesView extends View {
         mIsInitialized = true;
     }
 
-    /* package */ void setTheme(Context context, boolean themeDark) {
+    void setTheme(Context context) {
         Resources res = context.getResources();
-        if (themeDark) {
-            mUnselectedColor = res.getColor(R.color.mdtp_dark_gray);
-            mSelectedColor = res.getColor(R.color.mdtp_red);
-            mAmPmTextColor = res.getColor(R.color.mdtp_white);
-            mSelectedAlpha = SELECTED_ALPHA_THEME_DARK;
-        } else {
-            mUnselectedColor = res.getColor(R.color.mdtp_white);
-            mSelectedColor = res.getColor(R.color.mdtp_accent_color);
-            mAmPmTextColor = res.getColor(R.color.mdtp_ampm_text_color);
-            mSelectedAlpha = SELECTED_ALPHA;
-        }
+        mUnselectedColor = res.getColor(R.color.mdtp_white);
+        mSelectedColor = res.getColor(R.color.mdtp_accent_color);
+        mAmPmTextColor = res.getColor(R.color.mdtp_ampm_text_color);
+        mSelectedAlpha = SELECTED_ALPHA;
     }
 
     public void setAmOrPm(int amOrPm) {
@@ -133,16 +121,16 @@ public class AmPmCirclesView extends View {
             return -1;
         }
 
-        int squaredYDistance = (int) ((yCoord - mAmPmYCenter)*(yCoord - mAmPmYCenter));
+        int squaredYDistance = (int) ((yCoord - mAmPmYCenter) * (yCoord - mAmPmYCenter));
 
         int distanceToAmCenter =
-                (int) Math.sqrt((xCoord - mAmXCenter)*(xCoord - mAmXCenter) + squaredYDistance);
+                (int) Math.sqrt((xCoord - mAmXCenter) * (xCoord - mAmXCenter) + squaredYDistance);
         if (distanceToAmCenter <= mAmPmCircleRadius) {
             return AM;
         }
 
         int distanceToPmCenter =
-                (int) Math.sqrt((xCoord - mPmXCenter)*(xCoord - mPmXCenter) + squaredYDistance);
+                (int) Math.sqrt((xCoord - mPmXCenter) * (xCoord - mPmXCenter) + squaredYDistance);
         if (distanceToPmCenter <= mAmPmCircleRadius) {
             return PM;
         }
@@ -164,7 +152,7 @@ public class AmPmCirclesView extends View {
             int circleRadius =
                     (int) (Math.min(layoutXCenter, layoutYCenter) * mCircleRadiusMultiplier);
             mAmPmCircleRadius = (int) (circleRadius * mAmPmCircleRadiusMultiplier);
-            layoutYCenter += mAmPmCircleRadius*0.75;
+            layoutYCenter += mAmPmCircleRadius * 0.75;
             int textSize = mAmPmCircleRadius * 3 / 4;
             mPaint.setTextSize(textSize);
 

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
      Copyright (C) 2013 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,12 +13,12 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <!-- Label for button to confirm chosen date or time [CHAR LIMIT=30] -->
     <string name="mdtp_done_label">Done</string>
-    <string name="mdtp_ok">@android:string/ok</string>
-    <string name="mdtp_cancel">@android:string/cancel</string>
+    <string name="mdtp_ok" tools:ignore="MissingTranslation">@android:string/ok</string>
+    <string name="mdtp_cancel" tools:ignore="MissingTranslation">@android:string/cancel</string>
     <!--
          Content description for the hour selector in the time picker, which displays
          selectable hours of the day along the inside edge of a circle, as in an analog clock.
@@ -54,20 +53,12 @@
     <!-- Accessibility announcement for the year picker [CHAR LIMIT=NONE] -->
     <string name="mdtp_select_year">Select year</string>
     <!-- Accessibility description for the item that is currently selected. -->
-    <string name="mdtp_item_is_selected"><xliff:g id="item" example="2013">%1$s</xliff:g> selected</string>
+    <string name="mdtp_item_is_selected"><xliff:g example="2013" id="item">%1$s</xliff:g> selected</string>
     <!-- Accessibility announcement when a number that had been typed in is deleted [CHAR_LIMIT=NONE] -->
-    <string name="mdtp_deleted_key"><xliff:g id="key" example="4">%1$s</xliff:g> deleted</string>
+    <string name="mdtp_deleted_key"><xliff:g example="4" id="key">%1$s</xliff:g> deleted</string>
 
     <!-- DO NOT TRANSLATE -->
     <string name="mdtp_time_placeholder" translatable="false">--</string>
     <!-- DO NOT TRANSLATE -->
     <string name="mdtp_time_separator" translatable="false">:</string>
-
-    <!-- DO NOT TRANSLATE -->
-    <string name="mdtp_radial_numbers_typeface" translatable="false">sans-serif</string>
-    <!-- DO NOT TRANSLATE -->
-    <string name="mdtp_sans_serif" translatable="false">sans-serif</string>
-
-    <!-- DO NOT TRANSLATE -->
-    <string name="mdtp_day_of_week_label_typeface" translatable="false">sans-serif</string>
 </resources>

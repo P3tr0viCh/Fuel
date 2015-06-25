@@ -8,7 +8,8 @@
     android:paddingEnd="16dp"
     android:paddingStart="16dp"
     android:background="@color/window_background"
-    android:clickable="false">
+    android:clickable="false"
+    tools:ignore="Overdraw">
 
     <TextView
         android:id="@+id/tvDate"

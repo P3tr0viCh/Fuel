@@ -1,8 +1,8 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ActivityBackup">
 
     <include
@@ -15,7 +15,5 @@
         android:name="ru.p3tr0vich.fuel.FragmentBackup"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbarBackup"
         tools:layout="@layout/fragment_backup" />
-
-</RelativeLayout>
+</LinearLayout>

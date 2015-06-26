@@ -191,4 +191,9 @@ class Functions {
         layoutParams.setMargins(layoutParams.leftMargin, topMargin, layoutParams.rightMargin, layoutParams.bottomMargin);
         view.setLayoutParams(layoutParams);
     }
+
+    public static int pxToDp(Context context, int px) {
+        return Math.round(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, px, context.getResources().getDisplayMetrics()));
+    }
 }

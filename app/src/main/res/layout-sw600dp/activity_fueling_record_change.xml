@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_light"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/toolbarRecord"
+        layout="@layout/toolbar" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_record_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_record_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:background="@drawable/drop_shadow">
+
+        <fragment
+            android:id="@+id/fragmentFuelingRecordChange"
+            android:name="ru.p3tr0vich.fuel.FragmentFuelingRecordChange"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_fueling_record_change" />
+    </FrameLayout>
+</LinearLayout>

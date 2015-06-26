@@ -7,6 +7,7 @@
 
     <dimen name="activity_record_horizontal_margin">16dp</dimen>
     <dimen name="activity_calc_horizontal_margin">16dp</dimen>
+    <dimen name="activity_backup_horizontal_margin">16dp</dimen>
 
     <dimen name="listview_footer_height">28dp</dimen>
 

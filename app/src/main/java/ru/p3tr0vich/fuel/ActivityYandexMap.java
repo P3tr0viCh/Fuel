@@ -1,5 +1,7 @@
 package ru.p3tr0vich.fuel;
 
+// TODO: Кнопка ГОТОВО недоступна, пока не выбрано расстояние
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;

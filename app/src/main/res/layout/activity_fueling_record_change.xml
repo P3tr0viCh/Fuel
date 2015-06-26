@@ -6,13 +6,13 @@
     android:orientation="vertical">
 
     <include
-        android:id="@+id/toolbarAdd"
+        android:id="@+id/toolbarRecord"
         layout="@layout/toolbar" />
 
     <fragment
         android:id="@+id/fragmentFuelingRecordChange"
         android:name="ru.p3tr0vich.fuel.FragmentFuelingRecordChange"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         tools:layout="@layout/fragment_fueling_record_change" />
 </LinearLayout>

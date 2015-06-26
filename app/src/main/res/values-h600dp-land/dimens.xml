@@ -3,6 +3,7 @@
     <dimen name="activity_horizontal_margin">128dp</dimen>
     <dimen name="activity_record_horizontal_margin">220dp</dimen>
     <dimen name="activity_calc_horizontal_margin">220dp</dimen>
+    <dimen name="activity_backup_horizontal_margin">220dp</dimen>
 
     <dimen name="toolbar_height">64dp</dimen>
 

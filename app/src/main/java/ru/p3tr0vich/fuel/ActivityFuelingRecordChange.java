@@ -37,10 +37,10 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fueling_record_change);
 
-        Toolbar toolbarAdd = (Toolbar) findViewById(R.id.toolbarAdd);
-        setSupportActionBar(toolbarAdd);
-        toolbarAdd.setNavigationIcon(R.drawable.abc_ic_clear_mtrl_alpha);
-        toolbarAdd.setNavigationOnClickListener(new View.OnClickListener() {
+        Toolbar toolbarRecord = (Toolbar) findViewById(R.id.toolbarRecord);
+        setSupportActionBar(toolbarRecord);
+        toolbarRecord.setNavigationIcon(R.drawable.abc_ic_clear_mtrl_alpha);
+        toolbarRecord.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setResult(RESULT_CANCELED, null);

@@ -19,15 +19,15 @@
     <View
         style="@style/AppTheme.Divider.Horizontal"
         android:layout_marginBottom="4dp"
-        android:layout_marginLeft="@dimen/activity_record_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_record_horizontal_margin" />
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/activity_record_horizontal_margin"
-        android:paddingRight="@dimen/activity_record_horizontal_margin">
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
 
         <TextView
             android:id="@+id/textCost"
@@ -53,8 +53,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/activity_record_horizontal_margin"
-        android:paddingRight="@dimen/activity_record_horizontal_margin">
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
 
         <TextView
             android:id="@+id/textVolume"
@@ -80,8 +80,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/activity_record_horizontal_margin"
-        android:paddingRight="@dimen/activity_record_horizontal_margin">
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
 
         <TextView
             android:id="@+id/textTotal"

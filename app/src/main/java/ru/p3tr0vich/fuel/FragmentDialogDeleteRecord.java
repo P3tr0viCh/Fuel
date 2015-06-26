@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.util.TypedValue;
 import android.view.WindowManager;
 
 public class FragmentDialogDeleteRecord extends DialogFragment {
@@ -46,12 +45,11 @@ public class FragmentDialogDeleteRecord extends DialogFragment {
                 .setPositiveButton(R.string.dialog_btn_delete, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        ActivityMain activityMain = (ActivityMain) getActivity();
-
                         Intent intent = new Intent();
                         intent.putExtra(INTENT_EXTRA_DATA, mFuelingRecord);
 
-                        activityMain.onActivityResult(REQUEST_CODE, Activity.RESULT_OK, intent);
+                        ((ActivityMain) getActivity())
+                                .onActivityResult(REQUEST_CODE, Activity.RESULT_OK, intent);
                     }
                 })
 
@@ -64,8 +62,7 @@ public class FragmentDialogDeleteRecord extends DialogFragment {
     @Override
     public void onResume() {
         WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
-        params.width = Math.round(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 300, getResources().getDisplayMetrics())); // WindowManager.LayoutParams.WRAP_CONTENT;
+        params.width = 500;
         params.height = WindowManager.LayoutParams.WRAP_CONTENT;
         getDialog().getWindow().setAttributes(params);
 

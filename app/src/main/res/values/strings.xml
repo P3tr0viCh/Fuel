@@ -21,7 +21,7 @@
     <string name="action_settings">Настройки</string>
     <string name="action_about">О программе</string>
     <string name="action_save">Сохранить</string>
-    <string name="action_distance">Принять</string>
+    <string name="action_done">Готово</string>
 
     <string name="action_update">Изменить</string>
     <string name="action_delete">Удалить</string>

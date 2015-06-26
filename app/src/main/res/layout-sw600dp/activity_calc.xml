@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/primary_light"
+    android:orientation="vertical"
+    tools:context="ru.p3tr0vich.fuel.ActivityCalc">
+
+    <include
+        android:id="@+id/toolbarCalc"
+        layout="@layout/toolbar" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/drop_shadow"
+        android:orientation="vertical"
+        android:layout_marginLeft="@dimen/activity_calc_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_calc_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin">
+
+        <fragment
+            android:id="@+id/fragmentCalc"
+            android:name="ru.p3tr0vich.fuel.FragmentCalc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            tools:layout="@layout/fragment_calc" />
+    </FrameLayout>
+</LinearLayout>

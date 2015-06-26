@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 public class FragmentDialogAbout extends DialogFragment implements View.OnClickListener {
@@ -16,16 +17,15 @@ public class FragmentDialogAbout extends DialogFragment implements View.OnClickL
     private static final String DIALOG_TAG = "DialogAbout";
 
     public static void show(Activity parent) {
-        FragmentDialogAbout dialog = new FragmentDialogAbout();
-        dialog.show(parent.getFragmentManager(), DIALOG_TAG);
+        new FragmentDialogAbout().show(parent.getFragmentManager(), DIALOG_TAG);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         @SuppressLint("InflateParams")
-        View rootView = getActivity().getLayoutInflater().inflate(R.layout.dialog_about, null, false);
+        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_about, null, false);
 
-        rootView.findViewById(R.id.ltMain).setOnClickListener(this);
+        view.findViewById(R.id.ltMain).setOnClickListener(this);
 
         String versionName;
         try {
@@ -33,15 +33,25 @@ public class FragmentDialogAbout extends DialogFragment implements View.OnClickL
         } catch (PackageManager.NameNotFoundException e) {
             versionName = "0.0";
         }
-        ((TextView) rootView.findViewById(R.id.textAboutVersion)).setText(getActivity().getString(R.string.about_version) + " " + versionName);
+        ((TextView) view.findViewById(R.id.textAboutVersion)).setText(getActivity().getString(R.string.about_version) + " " + versionName);
 
-        ((TextView) rootView.findViewById(R.id.textAboutDate)).setText("(" + BuildConfig.BUILD_DATE + ")");
+        ((TextView) view.findViewById(R.id.textAboutDate)).setText("(" + BuildConfig.BUILD_DATE + ")");
 
-        return new AlertDialog.Builder(getActivity()).setView(rootView).create();
+        return new AlertDialog.Builder(getActivity()).setView(view).create();
     }
 
     @Override
     public void onClick(View v) {
         dismiss();
+    }
+
+    @Override
+    public void onResume() {
+        WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
+        params.width = 500;
+        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        getDialog().getWindow().setAttributes(params);
+
+        super.onResume();
     }
 }

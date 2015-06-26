@@ -96,5 +96,6 @@
     <orderEntry type="library" exported="" name="appcompat-v7-22.2.0" level="project" />
     <orderEntry type="module" module-name="materialdatetimepicker" exported="" />
     <orderEntry type="module" module-name="materialish-progress" exported="" />
+    <orderEntry type="module" module-name="fab" exported="" />
   </component>
 </module>

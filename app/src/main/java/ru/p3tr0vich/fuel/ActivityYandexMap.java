@@ -32,7 +32,7 @@ public class ActivityYandexMap extends AppCompatActivity {
 
     private static final String MAP_HTML = "file:///android_asset/distanceCalculator.html";
 
-    private int mDistance = 0;
+    private int mDistance = -1;
 
     private ProgressWheel mProgressWheelYandexMap;
     private FrameLayout mWebViewPlaceholder;
@@ -68,6 +68,8 @@ public class ActivityYandexMap extends AppCompatActivity {
             }
         });
 
+        Log.d(Const.LOG_TAG, "ActivityYandexMap -- initUI: mDistance == " + mDistance);
+
         setDistance(mDistance);
 
         mProgressWheelYandexMap = (ProgressWheel) findViewById(R.id.progressWheelYandexMap);
@@ -84,7 +86,7 @@ public class ActivityYandexMap extends AppCompatActivity {
             mWebView.setWebChromeClient(new WebChromeClient() {
                 @Override
                 public boolean onConsoleMessage(@NonNull ConsoleMessage cm) {
-                    Log.d("XXX", cm.message() + " -- from line " + cm.lineNumber() + " of " + cm.sourceId());
+                    Log.d(Const.LOG_TAG, cm.message() + " -- from line " + cm.lineNumber() + " of " + cm.sourceId());
                     return true;
                 }
             });
@@ -97,11 +99,24 @@ public class ActivityYandexMap extends AppCompatActivity {
                 }
             });
 
-            mProgressWheelYandexMap.setVisibility(View.VISIBLE);
-
             mWebView.loadUrl(MAP_HTML);
         }
+
+        if (mDistance == -1) mProgressWheelYandexMap.setVisibility(View.VISIBLE);
+
         mWebViewPlaceholder.addView(mWebView);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mWebView != null) {
+            mWebView.stopLoading();
+            mWebView.clearCache(true);
+            mWebView.destroy();
+            mWebView = null;
+        }
+        super.onDestroy();
+        Log.d(Const.LOG_TAG, "ActivityYandexMap -- onDestroy");
     }
 
     @Override
@@ -148,17 +163,19 @@ public class ActivityYandexMap extends AppCompatActivity {
         mDistance = distance;
 
         String title = getString(R.string.title_activity_yandex_map);
-        if (mDistance != 0)
+        if (mDistance > 0)
             title += String.format(getString(R.string.title_activity_yandex_map_add), mDistance);
 
-        Log.d("XXX", "ActivityYandexMap -- setDistance: title == " + title);
+        Log.d(Const.LOG_TAG, "ActivityYandexMap -- setDistance: title == " + title);
 
         //noinspection ConstantConditions
         getSupportActionBar().setTitle(title);
     }
 
     public void endInitYandexMap() {
-        Log.d("XXX", "ActivityYandexMap -- endInitYandexMap");
+        Log.d(Const.LOG_TAG, "ActivityYandexMap -- endInitYandexMap");
+
+        mDistance = 0;
 
         mProgressWheelYandexMap.setVisibility(View.GONE);
     }

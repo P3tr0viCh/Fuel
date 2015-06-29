@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.view.WindowManager;
 
 public class FragmentDialogDeleteRecord extends DialogFragment {
 
@@ -61,11 +60,7 @@ public class FragmentDialogDeleteRecord extends DialogFragment {
 
     @Override
     public void onResume() {
-        WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
-        params.width = 500;
-        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        getDialog().getWindow().setAttributes(params);
-
+        Functions.setDialogWidth(getDialog(), 300);
         super.onResume();
     }
 }

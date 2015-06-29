@@ -1,5 +1,6 @@
 package ru.p3tr0vich.fuel;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -9,6 +10,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -195,5 +197,12 @@ class Functions {
     public static int pxToDp(Context context, int px) {
         return Math.round(TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, px, context.getResources().getDisplayMetrics()));
+    }
+
+    public static void setDialogWidth(Dialog dialog, int width) {
+        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+        params.width = pxToDp(dialog.getContext(), width);
+        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        dialog.getWindow().setAttributes(params);
     }
 }

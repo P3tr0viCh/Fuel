@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 public class FragmentDialogAbout extends DialogFragment implements View.OnClickListener {
@@ -47,11 +46,7 @@ public class FragmentDialogAbout extends DialogFragment implements View.OnClickL
 
     @Override
     public void onResume() {
-        WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
-        params.width = 500;
-        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        getDialog().getWindow().setAttributes(params);
-
+        Functions.setDialogWidth(getDialog(), 300);
         super.onResume();
     }
 }

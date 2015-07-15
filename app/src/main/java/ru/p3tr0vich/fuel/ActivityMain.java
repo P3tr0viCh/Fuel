@@ -12,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -70,7 +69,7 @@ public class ActivityMain extends AppCompatActivity implements
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        Log.d(Const.LOG_TAG, "ActivityMain -- onItemSelected");
+                        Functions.LogD("ActivityMain -- onItemSelected");
 
                         FuelingDBHelper.FilterMode filterMode = positionToFilterMode(position);
 
@@ -131,7 +130,7 @@ public class ActivityMain extends AppCompatActivity implements
             }
         });
 
-        Log.d(Const.LOG_TAG, "**************** ActivityMain -- onCreate ****************");
+        Functions.LogD("**************** ActivityMain -- onCreate ****************");
     }
 
     private void doPopupDate(final View v, final boolean dateFrom) {
@@ -441,7 +440,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onFilterChange(FuelingDBHelper.FilterMode filterMode) {
-        Log.d(Const.LOG_TAG, "ActivityMain -- onFilterChange");
+        Functions.LogD("ActivityMain -- onFilterChange");
 
         int position = filterModeToPosition(filterMode);
 

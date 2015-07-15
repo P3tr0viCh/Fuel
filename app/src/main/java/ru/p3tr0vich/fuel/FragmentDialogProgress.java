@@ -41,7 +41,7 @@ public class FragmentDialogProgress extends DialogFragment {
     }
 
     private void setTask(AsyncTaskOperationXml asyncTaskOperationXml) {
-        Log.d("XXX", "FragmentDialogProgress -- setTask");
+        Functions.LogD( "FragmentDialogProgress -- setTask");
 
         mAsyncTaskOperationXml = asyncTaskOperationXml;
         mAsyncTaskOperationXml.setFragmentDialogProgress(this);
@@ -53,7 +53,7 @@ public class FragmentDialogProgress extends DialogFragment {
         setCancelable(false);
         setRetainInstance(true);
 
-        Log.d("XXX", "FragmentDialogProgress -- onCreate");
+        Functions.LogD( "FragmentDialogProgress -- onCreate");
 
         if (mAsyncTaskOperationXml != null) mAsyncTaskOperationXml.execute();
     }
@@ -62,14 +62,14 @@ public class FragmentDialogProgress extends DialogFragment {
     public void onResume() {
         super.onResume();
 
-        Log.d("XXX", "FragmentDialogProgress -- onResume: mOperationXml == null " + Boolean.toString(mAsyncTaskOperationXml == null));
+        Functions.LogD( "FragmentDialogProgress -- onResume: mOperationXml == null " + Boolean.toString(mAsyncTaskOperationXml == null));
 
         if (mAsyncTaskOperationXml == null) dismiss();
     }
 
     @Override
     public void dismiss() {
-        Log.d("XXX", "FragmentDialogProgress -- dismiss");
+        Functions.LogD( "FragmentDialogProgress -- dismiss");
         super.dismiss();
     }
 
@@ -81,10 +81,10 @@ public class FragmentDialogProgress extends DialogFragment {
     }
 
     void stopTask(DatabaseBackupXmlHelper.Result result) {
-        Log.d("XXX", "FragmentDialogProgress -- stopTask: getTargetFragment() != null " + Boolean.toString(getTargetFragment() != null));
+        Functions.LogD( "FragmentDialogProgress -- stopTask: getTargetFragment() != null " + Boolean.toString(getTargetFragment() != null));
 
         if (isResumed()) {
-            Log.d("XXX", "FragmentDialogProgress -- stopTask: isResumed()");
+            Functions.LogD( "FragmentDialogProgress -- stopTask: isResumed()");
             dismiss();
         }
 
@@ -97,7 +97,7 @@ public class FragmentDialogProgress extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Log.d("XXX", "FragmentDialogProgress -- onCreateDialog");
+        Functions.LogD( "FragmentDialogProgress -- onCreateDialog");
 
         @SuppressLint("InflateParams")
         View rootView = getActivity().getLayoutInflater().inflate(R.layout.dialog_progress, null, false);

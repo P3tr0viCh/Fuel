@@ -2,7 +2,6 @@ package ru.p3tr0vich.fuel;
 
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, DatabaseBackupXmlHelpe
     }
 
     void setFragmentDialogProgress(FragmentDialogProgress fragmentDialogProgress) {
-        Log.d("XXX", "OperationXml -- setFragmentDialogProgress");
+        Functions.LogD("OperationXml -- setFragmentDialogProgress");
         mFragmentDialogProgress = fragmentDialogProgress;
     }
 
@@ -50,7 +49,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, DatabaseBackupXmlHelpe
 
     @Override
     protected void onPostExecute(DatabaseBackupXmlHelper.Result result) {
-        Log.d("XXX", "OperationXml -- onPostExecute: mFragmentDialogProgress != null " + Boolean.toString(mFragmentDialogProgress != null));
+        Functions.LogD("OperationXml -- onPostExecute: mFragmentDialogProgress != null " + Boolean.toString(mFragmentDialogProgress != null));
 
         if (mFragmentDialogProgress != null) mFragmentDialogProgress.stopTask(result);
     }

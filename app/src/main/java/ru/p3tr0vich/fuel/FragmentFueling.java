@@ -16,7 +16,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -63,7 +62,7 @@ public class FragmentFueling extends Fragment implements
     @SuppressLint("InflateParams")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(Const.LOG_TAG, "FragmentFueling -- onCreateView");
+        Functions.LogD("FragmentFueling -- onCreateView");
 
         View view = inflater.inflate(R.layout.fueling_listview, container, false);
 
@@ -94,7 +93,7 @@ public class FragmentFueling extends Fragment implements
         mFilter = new FuelingDBHelper.Filter();
 
         if (savedInstanceState == null) {
-            Log.d(Const.LOG_TAG, "FragmentFueling -- onCreate: savedInstanceState == null");
+            Functions.LogD("FragmentFueling -- onCreate: savedInstanceState == null");
 
             SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
@@ -107,7 +106,7 @@ public class FragmentFueling extends Fragment implements
                             Functions.dateToSQLite(new Date())));
 
         } else {
-            Log.d(Const.LOG_TAG, "FragmentFueling -- onCreate: savedInstanceState != null");
+            Functions.LogD("FragmentFueling -- onCreate: savedInstanceState != null");
 
             mFilter.filterMode = (FuelingDBHelper.FilterMode) savedInstanceState.getSerializable(KEY_FILTER_MODE);
             mFilter.dateFrom = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_FROM);
@@ -123,12 +122,12 @@ public class FragmentFueling extends Fragment implements
         outState.putSerializable(KEY_FILTER_DATE_FROM, mFilter.dateFrom);
         outState.putSerializable(KEY_FILTER_DATE_TO, mFilter.dateTo);
 
-        Log.d(Const.LOG_TAG, "FragmentFueling -- onSaveInstanceState");
+        Functions.LogD("FragmentFueling -- onSaveInstanceState");
     }
 
     @Override
     public void onDestroy() {
-        Log.d(Const.LOG_TAG, "FragmentFueling -- onDestroy");
+        Functions.LogD("FragmentFueling -- onDestroy");
 
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .edit()
@@ -143,7 +142,7 @@ public class FragmentFueling extends Fragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Log.d(Const.LOG_TAG, "FragmentFueling -- onActivityCreated");
+        Functions.LogD("FragmentFueling -- onActivityCreated");
 
         db = new FuelingDBHelper();
         String[] from = {
@@ -178,9 +177,9 @@ public class FragmentFueling extends Fragment implements
     }
 
     public boolean setFilterMode(FuelingDBHelper.FilterMode filterMode) {
-        Log.d(Const.LOG_TAG, "FragmentFueling -- setFilterMode");
+        Functions.LogD("FragmentFueling -- setFilterMode");
         if (mFilter.filterMode != filterMode) {
-            Log.d(Const.LOG_TAG, "FragmentFueling -- setFilterMode: mFilterMode != filterMode");
+            Functions.LogD("FragmentFueling -- setFilterMode: mFilterMode != filterMode");
 
             doSetFilterMode(filterMode);
 
@@ -232,7 +231,7 @@ public class FragmentFueling extends Fragment implements
 
         @Override
         public Cursor loadInBackground() {
-            Log.d(Const.LOG_TAG, "FragmentFueling -- loadInBackground");
+            Functions.LogD("FragmentFueling -- loadInBackground");
 
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(true));
 
@@ -361,7 +360,7 @@ public class FragmentFueling extends Fragment implements
             mTextAverage.setText(Functions.floatToString(calcTotalResult.average));
             mTextCostSum.setText(Functions.floatToString(calcTotalResult.costSum));
 
-            Log.d(Const.LOG_TAG, "FragmentFueling -- CalcTotalTask: onPostExecute");
+            Functions.LogD("FragmentFueling -- CalcTotalTask: onPostExecute");
         }
     }
 
@@ -370,7 +369,7 @@ public class FragmentFueling extends Fragment implements
         mFuelingCursorAdapter.swapCursor(data);
         selectItemById(mSelectedId);
 
-        Log.d(Const.LOG_TAG, "FragmentFueling -- onLoadFinished");
+        Functions.LogD("FragmentFueling -- onLoadFinished");
 
         new CalcTotalTask(data).execute(); // TODO: cancel
     }

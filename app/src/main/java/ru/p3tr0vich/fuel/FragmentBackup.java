@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,7 @@ public class FragmentBackup extends Fragment {
         FragmentDialogQuestion fragmentDialogQuestion =
                 (FragmentDialogQuestion) getFragmentManager().findFragmentByTag(FragmentDialogQuestion.DIALOG_TAG);
 
-        Log.d("XXX", "FragmentBackup -- onCreate: fragmentDialogProgress != null " + Boolean.toString(fragmentDialogProgress != null));
+        Functions.LogD("FragmentBackup -- onCreate: fragmentDialogProgress != null " + Boolean.toString(fragmentDialogProgress != null));
 
         if (fragmentDialogProgress != null)
             fragmentDialogProgress.setTargetFragment(this, FragmentDialogProgress.REQUEST_CODE);
@@ -36,7 +35,7 @@ public class FragmentBackup extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d("XXX", "FragmentBackup -- onCreateView");
+        Functions.LogD("FragmentBackup -- onCreateView");
 
         View v = inflater.inflate(R.layout.fragment_backup, container, false);
 
@@ -63,7 +62,7 @@ public class FragmentBackup extends Fragment {
     }
 
     private void startOperationXml(boolean doSave) {
-        Log.d("XXX", "FragmentBackup -- startOperationXml");
+        Functions.LogD("FragmentBackup -- startOperationXml");
 
         FragmentDialogProgress.show(this, mDatabaseBackupXmlHelper, doSave);
     }
@@ -114,7 +113,7 @@ public class FragmentBackup extends Fragment {
                 return;
         }
 
-        Log.d("XXX", "FragmentBackup -- stopOperationXml: " + resultMessage);
+        Functions.LogD("FragmentBackup -- stopOperationXml: " + resultMessage);
 
         if (result == DatabaseBackupXmlHelper.Result.RESULT_SAVE_OK)
             Toast.makeText(getActivity(), getString(R.string.message_save_file_ok), Toast.LENGTH_SHORT).show();
@@ -136,7 +135,7 @@ public class FragmentBackup extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("XXX", "FragmentBackup -- onActivityResult");
+        Functions.LogD("FragmentBackup -- onActivityResult");
 
         if (resultCode != Activity.RESULT_OK) return;
 

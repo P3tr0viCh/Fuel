@@ -68,7 +68,7 @@ public class ActivityYandexMap extends AppCompatActivity {
             }
         });
 
-        Log.d(Const.LOG_TAG, "ActivityYandexMap -- initUI: mDistance == " + mDistance);
+        Functions.LogD("ActivityYandexMap -- initUI: mDistance == " + mDistance);
 
         setDistance(mDistance);
 
@@ -86,7 +86,7 @@ public class ActivityYandexMap extends AppCompatActivity {
             mWebView.setWebChromeClient(new WebChromeClient() {
                 @Override
                 public boolean onConsoleMessage(@NonNull ConsoleMessage cm) {
-                    Log.d(Const.LOG_TAG, cm.message() + " -- from line " + cm.lineNumber() + " of " + cm.sourceId());
+                    Functions.LogD(cm.message() + " -- from line " + cm.lineNumber() + " of " + cm.sourceId());
                     return true;
                 }
             });
@@ -116,7 +116,7 @@ public class ActivityYandexMap extends AppCompatActivity {
             mWebView = null;
         }
         super.onDestroy();
-        Log.d(Const.LOG_TAG, "ActivityYandexMap -- onDestroy");
+        Functions.LogD("ActivityYandexMap -- onDestroy");
     }
 
     @Override
@@ -166,14 +166,14 @@ public class ActivityYandexMap extends AppCompatActivity {
         if (mDistance > 0)
             title += String.format(getString(R.string.title_activity_yandex_map_add), mDistance);
 
-        Log.d(Const.LOG_TAG, "ActivityYandexMap -- setDistance: title == " + title);
+        Functions.LogD("ActivityYandexMap -- setDistance: title == " + title);
 
         //noinspection ConstantConditions
         getSupportActionBar().setTitle(title);
     }
 
     public void endInitYandexMap() {
-        Log.d(Const.LOG_TAG, "ActivityYandexMap -- endInitYandexMap");
+        Functions.LogD("ActivityYandexMap -- endInitYandexMap");
 
         mDistance = 0;
 

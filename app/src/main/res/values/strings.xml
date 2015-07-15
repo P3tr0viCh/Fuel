@@ -5,6 +5,7 @@
     <string name="title_activity_backup">Резервная копия</string>
     <string name="title_activity_yandex_map">Расстояние</string>
     <string name="title_activity_yandex_map_add">: %d км</string>
+    <string name="title_activity_activity_chart_cost">ActivityChartCost</string>
 
     <string name="title_message_error">Ошибка</string>
 
@@ -17,6 +18,7 @@
     </string>
 
     <string name="action_calc">Калькулятор</string>
+    <string name="action_chart_cost">График</string>
     <string name="action_backup">Резервная копия</string>
     <string name="action_settings">Настройки</string>
     <string name="action_about">О программе</string>
@@ -53,6 +55,8 @@
 
     <string name="text_empty_price">Укажите стоимость литра топлива</string>
     <string name="text_empty_cons">Укажите расход топлива</string>
+
+    <string name="chart_no_data">Нет записей за указанный год</string>
 
     <string name="text_error_webview">Ошибка: %s</string>
 
@@ -91,12 +95,17 @@
     <string name="message_load_file_ok">Данные из файла загружены</string>
 
     <string name="year_current">Текущий год</string>
+    <string name="year_prev">Прошлый год</string>
     <string name="year_all">Все записи</string>
     <string name="date_filter">Период</string>
-    <string-array name="filter_years">
+    <string-array name="filter_dates">
         <item>@string/year_current</item>
         <item>@string/date_filter</item>
         <item>@string/year_all</item>
+    </string-array>
+    <string-array name="filter_years">
+        <item>@string/year_current</item>
+        <item>@string/year_prev</item>
     </string-array>
 
     <string name="city">Город</string>

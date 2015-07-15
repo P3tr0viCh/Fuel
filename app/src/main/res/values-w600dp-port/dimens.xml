@@ -6,5 +6,5 @@
 
     <dimen name="toolbar_height">64dp</dimen>
 
-    <dimen name="abbrev_month">0dp</dimen>
+    <dimen name="is_phone_in_portrait">0dp</dimen>
 </resources>

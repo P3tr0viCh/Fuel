@@ -13,6 +13,7 @@ class Const {
 
     static final int ANIMATION_DURATION_TOOLBAR = 400;
     static final int ANIMATION_DURATION_TOOLBAR_SHADOW = 100;
+    static final int ANIMATION_CHART = 600;
 
     static final String LOG_TAG = "XXX";
 

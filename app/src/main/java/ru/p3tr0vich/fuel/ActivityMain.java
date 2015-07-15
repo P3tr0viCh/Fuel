@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -41,7 +42,6 @@ public class ActivityMain extends AppCompatActivity implements
 
     private BroadcastReceiver mLoadingStatusReceiver;
 
-    private boolean mAbbrevMonth;
     private boolean mDateFromClicked;
     private boolean mToolbarMainDatesVisible;
 
@@ -54,7 +54,6 @@ public class ActivityMain extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mAbbrevMonth = getResources().getDimension(R.dimen.abbrev_month) != 0;
         Functions.sApplicationContext = this.getApplicationContext();
 
         Toolbar toolbarMain = (Toolbar) findViewById(R.id.toolbarMain);
@@ -66,13 +65,14 @@ public class ActivityMain extends AppCompatActivity implements
         //noinspection ConstantConditions
         mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
 
-        Functions.addSpinnerInToolbar(getSupportActionBar(), mToolbarSpinner, toolbarMain,
+        Functions.addSpinnerInToolbar(getSupportActionBar(), toolbarMain, mToolbarSpinner,
+                ArrayAdapter.createFromResource(this, R.array.filter_dates, R.layout.toolbar_spinner_item),
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         Log.d(Const.LOG_TAG, "ActivityMain -- onItemSelected");
 
-                        FuelingDBHelper.FilterMode filterMode = Functions.positionToFilterMode(position);
+                        FuelingDBHelper.FilterMode filterMode = positionToFilterMode(position);
 
                         setToolbarDatesVisible(filterMode == FuelingDBHelper.FilterMode.DATES, true);
 
@@ -143,7 +143,6 @@ public class ActivityMain extends AppCompatActivity implements
             Field fMenuHelper = PopupMenu.class.getDeclaredField("mPopup");
             fMenuHelper.setAccessible(true);
             menuHelper = fMenuHelper.get(popupMenu);
-//            menuHelper.getClass().getDeclaredMethod("setForceShowIcon", boolean.class).invoke(menuHelper, true);
         } catch (Exception e) {
             //
         }
@@ -323,7 +322,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     private void updateFilterDate(final boolean dateFrom, final Date date) {
         ((Button) findViewById(dateFrom ? R.id.btnDateFrom : R.id.btnDateTo))
-                .setText(Functions.dateToString(date, true, mAbbrevMonth));
+                .setText(Functions.dateToString(date, true, Functions.isPhoneInPortrait()));
     }
 
     @Override
@@ -359,6 +358,9 @@ public class ActivityMain extends AppCompatActivity implements
         switch (item.getItemId()) {
             case R.id.action_calc:
                 ActivityCalc.start(this);
+                return true;
+            case R.id.action_chart_cost:
+                ActivityChartCost.start(this);
                 return true;
             case R.id.action_backup:
                 ActivityBackup.start(this);
@@ -415,11 +417,33 @@ public class ActivityMain extends AppCompatActivity implements
         }
     }
 
+    public static FuelingDBHelper.FilterMode positionToFilterMode(int position) {
+        switch (position) {
+            case 0:
+                return FuelingDBHelper.FilterMode.CURRENT_YEAR;
+            case 1:
+                return FuelingDBHelper.FilterMode.DATES;
+            default:
+                return FuelingDBHelper.FilterMode.ALL;
+        }
+    }
+
+    public static int filterModeToPosition(FuelingDBHelper.FilterMode filterMode) {
+        switch (filterMode) {
+            case CURRENT_YEAR:
+                return 0;
+            case DATES:
+                return 1;
+            default:
+                return 2;
+        }
+    }
+
     @Override
     public void onFilterChange(FuelingDBHelper.FilterMode filterMode) {
         Log.d(Const.LOG_TAG, "ActivityMain -- onFilterChange");
 
-        int position = Functions.filterModeToPosition(filterMode);
+        int position = filterModeToPosition(filterMode);
 
         if (position != mToolbarSpinner.getSelectedItemPosition())
             mToolbarSpinner.setSelection(position);

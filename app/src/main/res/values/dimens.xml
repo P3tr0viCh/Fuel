@@ -15,5 +15,5 @@
 
     <dimen name="menu_item_margin">16dp</dimen>
 
-    <dimen name="abbrev_month">1dp</dimen>
+    <dimen name="is_phone_in_portrait">1dp</dimen>
 </resources>

@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,11 +23,17 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String TABLE_NAME = "fuelling";
 
     private static final String SELECT_ALL = "SELECT * FROM " + TABLE_NAME;
-    private static final String WHERE = " WHERE ";
-    private static final String ORDER_BY_DATE = " ORDER BY " + COLUMN_DATETIME + " DESC, " + COLUMN_TOTAL + " DESC";
+    private static final String SELECT_YEARS = "SELECT strftime('%Y', datetime) AS YEAR FROM " + TABLE_NAME +
+            " GROUP BY YEAR ORDER BY YEAR DESC";
+    private static final String SELECT_SUM_BY_MONTHS_IN_YEAR =
+            "SELECT SUM(cost), strftime('%m', fuelling.datetime) AS MONTH FROM " + TABLE_NAME;
 
-    private static final String IN_CURRENT_YEAR = " BETWEEN '%1$d-01-01' AND '%1$d-12-31'";
+    private static final String WHERE = " WHERE ";
+    private static final String IN_YEAR = " BETWEEN '%1$d-01-01' AND '%1$d-12-31'";
     private static final String IN_DATES = " BETWEEN '%1$s' AND '%2$s'";
+
+    private static final String GROUP_BY_MONTH = " GROUP BY MONTH";
+    private static final String ORDER_BY_DATE = " ORDER BY " + COLUMN_DATETIME + " DESC, " + COLUMN_TOTAL + " DESC";
 
     private static final String DATABASE_CREATE =
             "CREATE TABLE " + TABLE_NAME + "(" +
@@ -38,15 +43,14 @@ class FuelingDBHelper extends SQLiteOpenHelper {
                     COLUMN_VOLUME + " REAL, " +
                     COLUMN_TOTAL + " REAL" +
                     ");";
-    private static final String DROP_TABLE =
-            "DROP TABLE IF EXISTS " + TABLE_NAME;
+    private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-
-    enum FilterMode {CURRENT_YEAR, DATES, ALL}
+    enum FilterMode {CURRENT_YEAR, YEAR, DATES, ALL}
 
     static class Filter {
         public Date dateFrom;
         public Date dateTo;
+        public int year;
         public FilterMode filterMode;
     }
 
@@ -69,8 +73,11 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         db.execSQL(DATABASE_CREATE);
     }
 
-    public void setFilterMode(Filter filter) {
+    public void setFilter(Filter filter) {
+        Functions.LogD("FuelingDBHelper -- setFilter");
+
         mFilter.filterMode = filter.filterMode;
+        mFilter.year = filter.year;
         mFilter.dateFrom = filter.dateFrom;
         mFilter.dateTo = filter.dateTo;
     }
@@ -78,7 +85,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     public FuelingRecord getFuelingRecord(long id) {
         FuelingRecord fuelingRecord = null;
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_NAME,
                 new String[]{_ID, COLUMN_DATETIME, COLUMN_COST, COLUMN_VOLUME, COLUMN_TOTAL},
@@ -116,7 +123,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     public long insertRecord(FuelingRecord fuelingRecord) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase();
 
         long id = doInsertRecord(db, fuelingRecord);
 
@@ -126,7 +133,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     public void insertRecords(List<FuelingRecord> fuelingRecordList) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase();
 
         db.execSQL(DROP_TABLE);
         db.execSQL(DATABASE_CREATE);
@@ -138,7 +145,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     public int updateRecord(FuelingRecord fuelingRecord) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase();
 
         ContentValues cv = new ContentValues();
 
@@ -155,7 +162,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     public int deleteRecord(FuelingRecord fuelingRecord) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase();
 
         int id = db.delete(TABLE_NAME, _ID + "=?", new String[]{String.valueOf(fuelingRecord.getId())});
 
@@ -166,8 +173,10 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
     private String filterModeToSql() {
         switch (mFilter.filterMode) {
+            case YEAR:
             case CURRENT_YEAR:
-                return WHERE + COLUMN_DATETIME + String.format(IN_CURRENT_YEAR, Functions.getCurrentYear());
+                return WHERE + COLUMN_DATETIME + String.format(IN_YEAR,
+                        mFilter.filterMode == FilterMode.YEAR ? mFilter.year : Functions.getCurrentYear());
             case DATES:
                 return WHERE + COLUMN_DATETIME + String.format(IN_DATES,
                         Functions.dateToSQLite(mFilter.dateFrom), Functions.dateToSQLite(mFilter.dateTo));
@@ -177,19 +186,29 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getAllCursor() {
-        SQLiteDatabase db = this.getReadableDatabase();
-
         String sql = SELECT_ALL + filterModeToSql() + ORDER_BY_DATE;
 
-        Log.d("XXX", "FuelingDBHelper -- getAllCursor (sql == " + sql + ")");
+        Functions.LogD("FuelingDBHelper -- getAllCursor (sql == " + sql + ")");
 
-        return db.rawQuery(sql, null);
+        return getReadableDatabase().rawQuery(sql, null);
+    }
+
+    public Cursor getYears() {
+        return getReadableDatabase().rawQuery(SELECT_YEARS, null);
+    }
+
+    public Cursor getSumByMonthsForYear() {
+        String sql = SELECT_SUM_BY_MONTHS_IN_YEAR + filterModeToSql() + GROUP_BY_MONTH;
+
+        Functions.LogD("FuelingDBHelper -- getSumByMonthsForYear (sql == " + sql + ")");
+
+        return getReadableDatabase().rawQuery(sql, null);
     }
 
     public List<FuelingRecord> getAllRecords() {
         List<FuelingRecord> fuelingRecords = new ArrayList<>();
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
 
         Cursor cursor = db.rawQuery(SELECT_ALL + ORDER_BY_DATE, null);
 

@@ -4,6 +4,7 @@
       <w>apptheme</w>
       <w>mdtp</w>
       <w>sqlite</w>
+      <w>strftime</w>
     </words>
   </dictionary>
 </component>

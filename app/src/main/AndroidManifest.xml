@@ -40,6 +40,14 @@
             android:configChanges="screenSize|orientation"
             android:label="@string/title_activity_yandex_map"
             android:parentActivityName=".ActivityCalc" />
+        <activity
+            android:name=".ActivityChartCost"
+            android:label="@string/title_activity_activity_chart_cost"
+            android:parentActivityName=".ActivityMain" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.p3tr0vich.fuel.ActivityMain" />
+        </activity>
     </application>
 
 </manifest>

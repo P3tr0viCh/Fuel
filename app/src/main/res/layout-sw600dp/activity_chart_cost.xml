@@ -3,30 +3,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
     android:background="@color/primary_light"
     android:orientation="vertical"
-    tools:context="ru.p3tr0vich.fuel.ActivityCalc">
+    tools:context="ru.p3tr0vich.fuel.ActivityChartCost">
 
     <include
-        android:id="@+id/toolbarCalc"
+        android:id="@+id/toolbarChartCost"
         layout="@layout/toolbar" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/activity_calc_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_calc_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:background="@drawable/drop_shadow"
         android:orientation="vertical">
 
         <fragment
             android:id="@+id/fragmentCalc"
-            android:name="ru.p3tr0vich.fuel.FragmentCalc"
+            android:name="ru.p3tr0vich.fuel.FragmentChartCost"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            tools:layout="@layout/fragment_calc" />
+            tools:layout="@layout/fragment_chart_cost" />
     </FrameLayout>
 </LinearLayout>

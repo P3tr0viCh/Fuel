@@ -2,12 +2,14 @@ package ru.p3tr0vich.fuel;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowManager;
@@ -89,13 +91,18 @@ class Functions {
         return textToFloat(edit.getText().toString());
     }
 
-    public static String floatToString(float value) {
+    public static String floatToString(float value, boolean showZero) {
         // TODO: LOCALE?
-        return DECIMAL_FORMAT.format(value).replace(',', '.');
+        String strValue = DECIMAL_FORMAT.format(value).replace(',', '.');
+        return showZero ? strValue : value == 0 ? "" : strValue;
+    }
+
+    public static String floatToString(float value) {
+        return floatToString(value, true);
     }
 
     public static void floatToText(EditText edit, float value, boolean showZero) {
-        edit.setText(showZero ? floatToString(value) : value == 0 ? "" : floatToString(value));
+        edit.setText(floatToString(value, showZero));
     }
 
     public static int getCurrentYear() {
@@ -129,28 +136,6 @@ class Functions {
         else return Const.RecordAction.DELETE;
     }
 
-    public static FuelingDBHelper.FilterMode positionToFilterMode(int position) {
-        switch (position) {
-            case 0:
-                return FuelingDBHelper.FilterMode.CURRENT_YEAR;
-            case 1:
-                return FuelingDBHelper.FilterMode.DATES;
-            default:
-                return FuelingDBHelper.FilterMode.ALL;
-        }
-    }
-
-    public static int filterModeToPosition(FuelingDBHelper.FilterMode filterMode) {
-        switch (filterMode) {
-            case CURRENT_YEAR:
-                return 0;
-            case DATES:
-                return 1;
-            default:
-                return 2;
-        }
-    }
-
     public static boolean isInternetConnected() {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) sApplicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -164,12 +149,10 @@ class Functions {
         return false;
     }
 
-    public static void addSpinnerInToolbar(ActionBar actionBar, Spinner spinner,
-                                           Toolbar toolbar, AdapterView.OnItemSelectedListener listener) {
+    public static void addSpinnerInToolbar(ActionBar actionBar, Toolbar toolbar, Spinner spinner,
+                                           ArrayAdapter adapter, AdapterView.OnItemSelectedListener listener) {
         actionBar.setDisplayShowTitleEnabled(false);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(sApplicationContext,
-                R.array.filter_years, R.layout.toolbar_spinner_item);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
         spinner.setAdapter(adapter);
@@ -204,5 +187,14 @@ class Functions {
         params.width = pxToDp(dialog.getContext(), width);
         params.height = WindowManager.LayoutParams.WRAP_CONTENT;
         dialog.getWindow().setAttributes(params);
+    }
+
+    public static boolean isPhoneInPortrait() {
+        return sApplicationContext.getResources().getDimension(R.dimen.is_phone_in_portrait) != 0;
+    }
+
+    public static void LogD(String msg) {
+        if ((sApplicationContext.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0)
+            Log.d(Const.LOG_TAG, msg);
     }
 }

@@ -237,7 +237,7 @@ public class FragmentFueling extends Fragment implements
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(true));
 
             FuelingDBHelper dbHelper = new FuelingDBHelper();
-            dbHelper.setFilterMode(mFilter);
+            dbHelper.setFilter(mFilter);
             try {
                 return dbHelper.getAllCursor();
             } finally {

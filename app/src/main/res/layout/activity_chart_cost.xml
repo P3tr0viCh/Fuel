@@ -3,19 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
     android:orientation="vertical"
-    tools:context="ru.p3tr0vich.fuel.ActivityCalc">
+    tools:context="ru.p3tr0vich.fuel.ActivityChartCost">
 
     <include
-        android:id="@+id/toolbarCalc"
+        android:id="@+id/toolbarChartCost"
         layout="@layout/toolbar" />
 
     <fragment
-        android:id="@+id/fragmentCalc"
-        android:name="ru.p3tr0vich.fuel.FragmentCalc"
+        android:id="@+id/fragmentChartCost"
+        android:name="ru.p3tr0vich.fuel.FragmentChartCost"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        tools:layout="@layout/fragment_calc" />
+        android:layout_height="match_parent"
+        tools:layout="@layout/fragment_chart_cost" />
 </LinearLayout>

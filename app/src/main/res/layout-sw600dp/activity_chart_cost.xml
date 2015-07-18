@@ -22,11 +22,10 @@
         android:orientation="vertical">
 
         <fragment
-            android:id="@+id/fragmentCalc"
+            android:id="@+id/fragmentChartCost"
             android:name="ru.p3tr0vich.fuel.FragmentChartCost"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             tools:layout="@layout/fragment_chart_cost" />
     </FrameLayout>
 </LinearLayout>

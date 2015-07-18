@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +22,10 @@ import java.util.Arrays;
 public class ActivityChartCost extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final String KEY_FILTER_YEAR = "KEY_FILTER_YEAR";
+    private static final String KEY_FILTER_YEARS = "KEY_FILTER_YEARS";
+
+    private Spinner mToolbarSpinner;
     private ArrayAdapter<String> mSpinnerAdapter;
 
     public static void start(Activity parent) {
@@ -46,9 +51,10 @@ public class ActivityChartCost extends AppCompatActivity implements
                 new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.filter_years))));
 
         //noinspection ConstantConditions
+        mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
+
         Functions.addSpinnerInToolbar(getSupportActionBar(), toolbarChartCost,
-                new AppCompatSpinner(getSupportActionBar().getThemedContext()),
-                mSpinnerAdapter,
+                mToolbarSpinner, mSpinnerAdapter,
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -76,7 +82,36 @@ public class ActivityChartCost extends AppCompatActivity implements
                     }
                 });
 
-        getLoaderManager().initLoader(0, null, this);
+        if (savedInstanceState == null) {
+            Functions.LogD("ActivityChartCost -- onCreate: savedInstanceState == null");
+
+            getLoaderManager().initLoader(0, null, this);
+        } else {
+            Functions.LogD("ActivityChartCost -- onCreate: savedInstanceState != null");
+
+            int[] years = savedInstanceState.getIntArray(KEY_FILTER_YEARS);
+
+            assert years != null;
+
+            for (int year : years) mSpinnerAdapter.add(String.valueOf(year));
+
+            mToolbarSpinner.setSelection(savedInstanceState.getInt(KEY_FILTER_YEAR));
+        }
+     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        int i, j, count = mSpinnerAdapter.getCount();
+
+        int[] years = new int[count - 2];
+        for (i = 2, j = 0; i < count; i++, j++) years[j] = Integer.parseInt(mSpinnerAdapter.getItem(i));
+
+        outState.putIntArray(KEY_FILTER_YEARS, years);
+        outState.putInt(KEY_FILTER_YEAR, mToolbarSpinner.getSelectedItemPosition());
+
+        Functions.LogD("ActivityChartCost -- onSaveInstanceState");
     }
 
     static class YearsCursorLoader extends CursorLoader {
@@ -109,8 +144,11 @@ public class ActivityChartCost extends AppCompatActivity implements
 
         if (data.moveToFirst()) do {
             year = data.getInt(0);
+
             Functions.LogD("ActivityChartCost -- YEAR == " + year);
+
             if (year == currentYear || year == prevYear) continue;
+
             mSpinnerAdapter.add(String.valueOf(year));
         } while (data.moveToNext());
     }

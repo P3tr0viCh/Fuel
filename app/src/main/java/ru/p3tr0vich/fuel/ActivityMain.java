@@ -53,8 +53,6 @@ public class ActivityMain extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Functions.sApplicationContext = this.getApplicationContext();
-
         Toolbar toolbarMain = (Toolbar) findViewById(R.id.toolbarMain);
         setSupportActionBar(toolbarMain);
 

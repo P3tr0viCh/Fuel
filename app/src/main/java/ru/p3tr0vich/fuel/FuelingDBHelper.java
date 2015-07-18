@@ -26,7 +26,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String SELECT_YEARS = "SELECT strftime('%Y', datetime) AS YEAR FROM " + TABLE_NAME +
             " GROUP BY YEAR ORDER BY YEAR DESC";
     private static final String SELECT_SUM_BY_MONTHS_IN_YEAR =
-            "SELECT SUM(cost), strftime('%m', fuelling.datetime) AS MONTH FROM " + TABLE_NAME;
+            "SELECT SUM(cost), strftime('%m', datetime) AS MONTH FROM " + TABLE_NAME;
 
     private static final String WHERE = " WHERE ";
     private static final String IN_YEAR = " BETWEEN '%1$d-01-01' AND '%1$d-12-31'";
@@ -74,8 +74,6 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     public void setFilter(Filter filter) {
-        Functions.LogD("FuelingDBHelper -- setFilter");
-
         mFilter.filterMode = filter.filterMode;
         mFilter.year = filter.year;
         mFilter.dateFrom = filter.dateFrom;

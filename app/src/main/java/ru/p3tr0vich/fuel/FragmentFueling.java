@@ -90,6 +90,8 @@ public class FragmentFueling extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Functions.sApplicationContext = getActivity().getApplicationContext();
+
         mFilter = new FuelingDBHelper.Filter();
 
         if (savedInstanceState == null) {

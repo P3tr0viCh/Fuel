@@ -26,7 +26,7 @@ import java.util.Calendar;
 public class FragmentChartCost extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-//    private static final String KEY_FILTER_YEAR = "KEY_FILTER_MODE";
+    private static final String KEY_FILTER_YEAR = "KEY_FILTER_YEAR";
 
     private FuelingDBHelper.Filter mFilter;
 
@@ -48,6 +48,7 @@ public class FragmentChartCost extends Fragment implements
         mChart.setDrawBarShadow(false);
         mChart.setScaleEnabled(false);
         mChart.setDoubleTapToZoomEnabled(false);
+        mChart.setHighlightEnabled(false);
         mChart.setPinchZoom(false);
         mChart.setDrawGridBackground(false);
         mChart.setDrawValueAboveBar(true);
@@ -63,6 +64,7 @@ public class FragmentChartCost extends Fragment implements
         leftAxis.setLabelCount(10);
         leftAxis.setValueFormatter(new FloatFormatter());
         leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        leftAxis.setDrawGridLines(false);
         leftAxis.setSpaceTop(5f);
 
         mChart.getAxisRight().setEnabled(false);
@@ -70,10 +72,6 @@ public class FragmentChartCost extends Fragment implements
         mChart.getLegend().setEnabled(false);
 
         updateMonths();
-
-        updateChart();
-
-        getLoaderManager().initLoader(0, null, this);
 
         return view;
     }
@@ -92,8 +90,13 @@ public class FragmentChartCost extends Fragment implements
     }
 
     public void setYear(String year) {
-        Functions.LogD("FragmentChartCost -- setYear: year == " + year);
-        mFilter.year = Integer.parseInt(year);
+        int intYear = Integer.parseInt(year);
+
+        Functions.LogD("FragmentChartCost -- setYear: year == " + year + ", mFilter.year = " + mFilter.year);
+
+        if (intYear == mFilter.year) return;
+
+        mFilter.year = intYear;
         getLoaderManager().restartLoader(0, null, this);
     }
 
@@ -105,50 +108,36 @@ public class FragmentChartCost extends Fragment implements
         for (int i = 0; i < 12; i++) mSums[i] = 0;
 
         mFilter = new FuelingDBHelper.Filter();
-        mFilter.year = Functions.getCurrentYear();
         mFilter.filterMode = FuelingDBHelper.FilterMode.YEAR;
 
-/*        if (savedInstanceState == null) {
-            Log.d(Const.LOG_TAG, "FragmentFueling -- onCreate: savedInstanceState == null");
+        if (savedInstanceState == null) {
+            Functions.LogD("FragmentChartCost -- onCreate: savedInstanceState == null");
 
-            SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-            mFilter.filterMode = FuelingDBHelper.FilterMode.CURRENT_YEAR;
-            mFilter.dateFrom = Functions.sqliteToDate(
-                    sPref.getString(getString(R.string.pref_filter_date_from),
-                            Functions.dateToSQLite(new Date())));
-            mFilter.dateTo = Functions.sqliteToDate(
-                    sPref.getString(getString(R.string.pref_filter_date_to),
-                            Functions.dateToSQLite(new Date())));
-
+            mFilter.year = Functions.getCurrentYear();
+            getLoaderManager().initLoader(0, null, this);
         } else {
-            Log.d(Const.LOG_TAG, "FragmentFueling -- onCreate: savedInstanceState != null");
+            Functions.LogD("FragmentChartCost -- onCreate: savedInstanceState != null");
 
-            mFilter.filterMode = (FuelingDBHelper.FilterMode) savedInstanceState.getSerializable(KEY_FILTER_MODE);
-            mFilter.dateFrom = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_FROM);
-            mFilter.dateTo = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_TO);
-        }*/
+            mFilter.year = savedInstanceState.getInt(KEY_FILTER_YEAR);
+            getLoaderManager().restartLoader(0, null, this);
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-/*        outState.putSerializable(KEY_FILTER_MODE, mFilter.filterMode);
-        outState.putSerializable(KEY_FILTER_DATE_FROM, mFilter.dateFrom);
-        outState.putSerializable(KEY_FILTER_DATE_TO, mFilter.dateTo);
+        outState.putInt(KEY_FILTER_YEAR, mFilter.year);
 
-        Log.d(Const.LOG_TAG, "FragmentFueling -- onSaveInstanceState");*/
+        Functions.LogD("FragmentChartCost -- onSaveInstanceState");
     }
 
     static class ChartCursorLoader extends CursorLoader {
 
-        private final Context mContext;
         private final FuelingDBHelper.Filter mFilter;
 
         public ChartCursorLoader(Context context, FuelingDBHelper.Filter filter) {
             super(context);
-            mContext = context;
             mFilter = filter;
         }
 

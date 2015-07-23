@@ -414,7 +414,7 @@ public class ActivityMain extends AppCompatActivity implements
         }
     }
 
-    public static FuelingDBHelper.FilterMode positionToFilterMode(int position) {
+    private static FuelingDBHelper.FilterMode positionToFilterMode(int position) {
         switch (position) {
             case 0:
                 return FuelingDBHelper.FilterMode.CURRENT_YEAR;
@@ -425,7 +425,7 @@ public class ActivityMain extends AppCompatActivity implements
         }
     }
 
-    public static int filterModeToPosition(FuelingDBHelper.FilterMode filterMode) {
+    private static int filterModeToPosition(FuelingDBHelper.FilterMode filterMode) {
         switch (filterMode) {
             case CURRENT_YEAR:
                 return 0;

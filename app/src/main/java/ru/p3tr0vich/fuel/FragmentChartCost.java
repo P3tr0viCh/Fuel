@@ -31,7 +31,7 @@ public class FragmentChartCost extends Fragment implements
     private FuelingDBHelper.Filter mFilter;
 
     private BarChart mChart;
-    private ArrayList<String> mMonths = new ArrayList<>();
+    private final ArrayList<String> mMonths = new ArrayList<>();
 
     private float[] mSums;
 

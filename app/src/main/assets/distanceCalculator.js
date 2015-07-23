@@ -5,6 +5,9 @@ function init() {
             type: 'yandex#map',
             behaviors: ['multiTouch', 'drag'],
             controls: ['zoomControl']
+        } , {
+            suppressMapOpenBlock: true,
+            suppressObsoleteBrowserNotifier: true
         }),
 
         searchStartPoint = new ymaps.control.SearchControl({
@@ -44,10 +47,9 @@ function init() {
     })
         .add('load', function (event) {
             // По полю skip определяем, что это не дозагрузка данных.
-            // По getRusultsCount определяем, что есть хотя бы 1 результат.
-            if (!event.get('skip') && searchStartPoint.getResultsCount()) {
+            // По getResultsCount определяем, что есть хотя бы 1 результат.
+            if (!event.get('skip') && searchStartPoint.getResultsCount())
                 searchStartPoint.showResult(0);
-            }
         });
 
     searchFinishPoint.events.add('resultselect', function (e) {
@@ -59,10 +61,9 @@ function init() {
     })
         .add('load', function (event) {
             // По полю skip определяем, что это не дозагрузка данных.
-            // По getRusultsCount определяем, что есть хотя бы 1 результат.
-            if (!event.get('skip') && searchFinishPoint.getResultsCount()) {
+            // По getResultsCount определяем, что есть хотя бы 1 результат.
+            if (!event.get('skip') && searchFinishPoint.getResultsCount())
                 searchFinishPoint.showResult(0);
-            }
         });
 
     console.log('End of init');
@@ -85,11 +86,8 @@ var ptp = DistanceCalculator.prototype;
 ptp._onClick = function (e) {
     console.log("_onClick");
 
-    if (this._start) {
-        this.setFinishPoint(e.get('coords'));
-    } else {
-        this.setStartPoint(e.get('coords'));
-    }
+    if (this._start) this.setFinishPoint(e.get('coords'));
+    else             this.setStartPoint(e.get('coords'));
 };
 
 ptp._onStartDragEnd = function (e) {
@@ -103,9 +101,7 @@ ptp._onFinishDragEnd = function (e) {
 }
 
 ptp.getDirection = function () {
-    if (this._route) {
-        this._map.geoObjects.remove(this._route);
-    }
+    if (this._route) this._map.geoObjects.remove(this._route);
 
     if (this._start && this._finish) {
         var self = this,
@@ -136,9 +132,7 @@ ptp.getDirection = function () {
 };
 
 ptp.setStartPoint = function (position) {
-    if (this._start) {
-        this._start.geometry.setCoordinates(position);
-    }
+    if (this._start) this._start.geometry.setCoordinates(position);
     else {
         this._start = new ymaps.Placemark(position, { },
             { draggable: true, preset: 'islands#redDotIcon' });
@@ -149,18 +143,14 @@ ptp.setStartPoint = function (position) {
 };
 
 ptp.setFinishPoint = function (position) {
-    if (this._finish) {
-        this._finish.geometry.setCoordinates(position);
-    }
+    if (this._finish) this._finish.geometry.setCoordinates(position);
     else {
         this._finish = new ymaps.Placemark(position, { },
             { draggable: true, preset: 'islands#darkGreenDotIcon' });
         this._finish.events.add('dragend', this._onFinishDragEnd, this);
         this._map.geoObjects.add(this._finish);
     }
-    if (this._start) {
-        this.geocode("finish", position);
-    }
+    if (this._start) this.geocode("finish", position);
 };
 
 ptp.geocode = function (str, point) {

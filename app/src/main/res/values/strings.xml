@@ -24,6 +24,7 @@
     <string name="action_about">О программе</string>
     <string name="action_save">Сохранить</string>
     <string name="action_done">Готово</string>
+    <string name="action_done_all">Готово ×2</string>
 
     <string name="action_update">Изменить</string>
     <string name="action_delete">Удалить</string>
@@ -55,6 +56,8 @@
 
     <string name="text_empty_price">Укажите стоимость литра топлива</string>
     <string name="text_empty_cons">Укажите расход топлива</string>
+
+    <string name="text_empty_distance">Укажите начальную и конечную точку маршрута</string>
 
     <string name="chart_no_data">Нет записей за указанный год</string>
 

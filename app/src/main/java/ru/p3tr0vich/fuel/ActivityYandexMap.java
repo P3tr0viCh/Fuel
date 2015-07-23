@@ -1,11 +1,10 @@
 package ru.p3tr0vich.fuel;
 
-// TODO: Кнопка ГОТОВО недоступна, пока не выбрано расстояние
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -92,6 +91,13 @@ public class ActivityYandexMap extends AppCompatActivity {
 
             mWebView.setWebViewClient(new WebViewClient() {
                 @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url)));
+
+                    return true;
+                }
+
+                @Override
                 public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                     Toast.makeText(ActivityYandexMap.this,
                             String.format(getString(R.string.text_error_webview), description), Toast.LENGTH_SHORT).show();
@@ -149,13 +155,17 @@ public class ActivityYandexMap extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                setResult(RESULT_OK, new Intent().putExtra(INTENT_DISTANCE, mDistance));
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+        if (mDistance > 0)
+            switch (item.getItemId()) {
+                case R.id.action_done_x2:
+                    mDistance *= 2;
+                case R.id.action_done:
+                    setResult(RESULT_OK, new Intent().putExtra(INTENT_DISTANCE, mDistance));
+                    finish();
+            }
+        else
+            Toast.makeText(this, R.string.text_empty_distance, Toast.LENGTH_SHORT).show();
+        return true;
     }
 
     public void setDistance(int distance) {

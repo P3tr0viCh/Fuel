@@ -4,8 +4,14 @@
     tools:context=".ActivityYandexMap">
 
     <item
-        android:id="@+id/action_save"
+        android:id="@+id/action_done"
         android:icon="@drawable/ic_done_white_24dp"
         android:title="@string/action_done"
         app:showAsAction="always|withText" />
+
+    <item
+        android:id="@+id/action_done_x2"
+        android:icon="@drawable/ic_done_all_white_24dp"
+        android:title="@string/action_done_all"
+        app:showAsAction="ifRoom|withText" />
 </menu>

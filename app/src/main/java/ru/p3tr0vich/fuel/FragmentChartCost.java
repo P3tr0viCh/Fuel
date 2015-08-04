@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -34,6 +33,11 @@ public class FragmentChartCost extends Fragment implements
     private final ArrayList<String> mMonths = new ArrayList<>();
 
     private float[] mSums;
+    private int[] mColors = new int[]{R.color.chart_winter, R.color.chart_winter,
+            R.color.chart_spring, R.color.chart_spring, R.color.chart_spring,
+            R.color.chart_summer, R.color.chart_summer, R.color.chart_summer,
+            R.color.chart_autumn, R.color.chart_autumn, R.color.chart_autumn,
+            R.color.chart_winter};
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,15 +64,8 @@ public class FragmentChartCost extends Fragment implements
         xAxis.setSpaceBetweenLabels(0);
         xAxis.setTextSize(8f);
 
-        YAxis leftAxis = mChart.getAxisLeft();
-        leftAxis.setLabelCount(10);
-        leftAxis.setValueFormatter(new FloatFormatter());
-        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
-        leftAxis.setDrawGridLines(false);
-        leftAxis.setSpaceTop(5f);
-
+        mChart.getAxisLeft().setEnabled(false);
         mChart.getAxisRight().setEnabled(false);
-
         mChart.getLegend().setEnabled(false);
 
         updateMonths();
@@ -193,8 +190,7 @@ public class FragmentChartCost extends Fragment implements
 
         BarDataSet set = new BarDataSet(yValues, "");
         set.setBarSpacePercent(35f);
-        set.setColor(getResources().getColor(R.color.primary));
-        set.setHighLightColor(getResources().getColor(R.color.primary_dark));
+        set.setColors(mColors, getActivity());
 
         ArrayList<BarDataSet> dataSets = new ArrayList<>();
         dataSets.add(set);

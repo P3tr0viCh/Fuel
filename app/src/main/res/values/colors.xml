@@ -31,4 +31,9 @@
     <color name="background_material_light">@color/window_background</color>
     <color name="primary_text_default_material_light">@color/primary_text</color>
     <color name="secondary_text_default_material_light">@color/secondary_text</color>
+
+    <color name="chart_winter">#c8dae8</color>
+    <color name="chart_spring">#ff8dbe</color>
+    <color name="chart_summer">#719b25</color>
+    <color name="chart_autumn">#eeb063</color>
 </resources>

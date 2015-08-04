@@ -81,7 +81,7 @@ repositories {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.github.PhilJay:MPAndroidChart:v2.1.0'
+    compile 'com.github.PhilJay:MPAndroidChart:v2.1.3'
 
     compile project(':libs:fab')
     compile project(':libs:materialish-progress')

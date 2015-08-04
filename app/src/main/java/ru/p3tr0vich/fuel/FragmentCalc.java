@@ -241,6 +241,8 @@ public class FragmentCalc extends Fragment  implements
             switch (editText.getId()) {
                 case R.id.editPrice:
                     checkTextOnEmpty(editText);
+                    doCalculate(Const.CalcAction.DISTANCE);
+                    break;
                 case R.id.editCost:
                     doCalculate(Const.CalcAction.COST);
                     break;

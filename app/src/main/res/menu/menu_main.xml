@@ -15,17 +15,17 @@
         app:showAsAction="ifRoom|withText" />
     <item
         android:id="@+id/action_settings"
-        android:icon="@drawable/ic_settings_black_24dp"
+        android:icon="@drawable/ic_settings_grey600_24dp"
         android:title="@string/action_settings"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_backup"
-        android:icon="@drawable/ic_archive_black_24dp"
+        android:icon="@drawable/ic_archive_grey600_24dp"
         android:title="@string/action_backup"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_about"
-        android:icon="@drawable/ic_help_circle_black_24dp"
+        android:icon="@drawable/ic_help_circle_grey600_24dp"
         android:title="@string/action_about"
         app:showAsAction="never" />
 </menu>

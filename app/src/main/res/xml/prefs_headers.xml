@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <header
         android:fragment="ru.p3tr0vich.fuel.FragmentPrefs"
-        android:icon="@drawable/ic_plus_circle_outline_black_24dp"
+        android:icon="@drawable/ic_plus_circle_outline_grey600_24dp"
         android:summary="@string/pref_header_summary_def"
         android:title="@string/pref_header_def">
         <extra
@@ -12,7 +12,7 @@
     </header>
     <header
         android:fragment="ru.p3tr0vich.fuel.FragmentPrefs"
-        android:icon="@drawable/ic_calculator_black_24dp"
+        android:icon="@drawable/ic_calculator_grey600_24dp"
         android:summary="@string/pref_header_summary_cons"
         android:title="@string/pref_header_cons">
         <extra

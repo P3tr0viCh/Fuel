@@ -25,9 +25,5 @@
     public void show();
 }
 
--keepclassmembers class android.support.v7.internal.view.menu.MenuBuilder {
-    void setOptionalIconsVisible(boolean);
-}
-
 # Без этой строки не работает
 -keep class !android.support.v7.widget.ListPopupWindow {*;}

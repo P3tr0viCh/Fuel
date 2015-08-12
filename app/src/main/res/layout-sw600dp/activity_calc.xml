@@ -5,8 +5,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="@color/primary_light"
-    android:orientation="vertical"
-    tools:context="ru.p3tr0vich.fuel.ActivityCalc">
+    android:orientation="vertical">
 
     <include
         android:id="@+id/toolbarCalc"

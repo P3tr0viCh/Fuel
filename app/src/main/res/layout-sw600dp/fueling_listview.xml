@@ -94,6 +94,7 @@
         android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/layoutTotal"
         android:layout_alignParentBottom="false"
         android:layout_alignParentEnd="false"
         android:layout_alignParentRight="true"
@@ -103,6 +104,5 @@
         android:clickable="true"
         android:src="@drawable/ic_add_white_24dp"
         fab:fab_colorNormal="@color/primary"
-        fab:fab_colorPressed="@color/primary_dark"
-        android:layout_alignBottom="@+id/layoutTotal" />
+        fab:fab_colorPressed="@color/primary_dark" />
 </RelativeLayout>

@@ -18,7 +18,7 @@
     </string>
 
     <string name="action_calc">Калькулятор</string>
-    <string name="action_chart_cost">График</string>
+    <string name="action_chart_cost">График расходов</string>
     <string name="action_backup">Резервная копия</string>
     <string name="action_settings">Настройки</string>
     <string name="action_about">О программе</string>

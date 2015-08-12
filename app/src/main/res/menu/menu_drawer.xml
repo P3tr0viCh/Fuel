@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/menu_top"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/action_calc"
+            android:icon="@drawable/ic_calculator_grey600_24dp"
+            android:title="@string/action_calc" />
+        <item
+            android:id="@+id/action_chart_cost"
+            android:icon="@drawable/ic_chart_bar_grey600_24dp"
+            android:title="@string/action_chart_cost" />
+    </group>
+
+    <group
+        android:id="@+id/menu_bottom"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/action_settings"
+            android:icon="@drawable/ic_settings_grey600_24dp"
+            android:title="@string/action_settings" />
+        <item
+            android:id="@+id/action_backup"
+            android:icon="@drawable/ic_archive_grey600_24dp"
+            android:title="@string/action_backup" />
+        <item
+            android:id="@+id/action_about"
+            android:icon="@drawable/ic_help_circle_grey600_24dp"
+            android:title="@string/action_about" />
+    </group>
+</menu>

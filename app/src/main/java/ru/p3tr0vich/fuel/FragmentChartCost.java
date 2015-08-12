@@ -33,7 +33,7 @@ public class FragmentChartCost extends Fragment implements
     private final ArrayList<String> mMonths = new ArrayList<>();
 
     private float[] mSums;
-    private int[] mColors = new int[]{R.color.chart_winter, R.color.chart_winter,
+    private final int[] mColors = new int[]{R.color.chart_winter, R.color.chart_winter,
             R.color.chart_spring, R.color.chart_spring, R.color.chart_spring,
             R.color.chart_summer, R.color.chart_summer, R.color.chart_summer,
             R.color.chart_autumn, R.color.chart_autumn, R.color.chart_autumn,
@@ -183,7 +183,7 @@ public class FragmentChartCost extends Fragment implements
         }
     }
 
-    public void updateChart() {
+    private void updateChart() {
         ArrayList<BarEntry> yValues = new ArrayList<>();
 
         for (int i = 0; i < 12; i++) yValues.add(new BarEntry(mSums[i], i));

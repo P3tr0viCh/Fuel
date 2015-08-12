@@ -6,8 +6,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.PopupMenu;
@@ -24,7 +29,6 @@ import android.widget.Spinner;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -38,6 +42,9 @@ public class ActivityMain extends AppCompatActivity implements
     private Spinner mToolbarSpinner;
     private Toolbar mToolbarMainDates;
     private View mToolbarShadow;
+
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     private BroadcastReceiver mLoadingStatusReceiver;
 
@@ -55,6 +62,12 @@ public class ActivityMain extends AppCompatActivity implements
 
         Toolbar toolbarMain = (Toolbar) findViewById(R.id.toolbarMain);
         setSupportActionBar(toolbarMain);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        mDrawerToggle = new ActionBarDrawerToggle(this,
+                mDrawerLayout, toolbarMain, R.string.app_name, R.string.app_name);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
 
         mToolbarMainDates = (Toolbar) findViewById(R.id.toolbarMainDates);
         mToolbarShadow = findViewById(R.id.toolbarShadow);
@@ -128,7 +141,57 @@ public class ActivityMain extends AppCompatActivity implements
             }
         });
 
+        ((NavigationView) findViewById(R.id.drawerNavigationView))
+                .setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                        return onOptionsItemSelected(menuItem);
+                    }
+                });
+
         Functions.LogD("**************** ActivityMain -- onCreate ****************");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_calc:
+                ActivityCalc.start(this);
+                return true;
+            case R.id.action_chart_cost:
+                ActivityChartCost.start(this);
+                return true;
+            case R.id.action_backup:
+                ActivityBackup.start(this);
+                return true;
+            case R.id.action_settings:
+                ActivityPreference.start(this);
+                return true;
+            case R.id.action_about:
+                FragmentDialogAbout.show(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerVisible(GravityCompat.START))
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        else super.onBackPressed();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     private void doPopupDate(final View v, final boolean dateFrom) {
@@ -334,42 +397,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    protected boolean onPrepareOptionsPanel(View view, Menu menu) {
-        try {
-            Method declaredMethod = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", boolean.class);
-            declaredMethod.setAccessible(true);
-            declaredMethod.invoke(menu, true);
-        } catch (Exception e) {
-            //
-        }
-        return super.onPrepareOptionsPanel(view, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_calc:
-                ActivityCalc.start(this);
-                return true;
-            case R.id.action_chart_cost:
-                ActivityChartCost.start(this);
-                return true;
-            case R.id.action_backup:
-                ActivityBackup.start(this);
-                return true;
-            case R.id.action_settings:
-                ActivityPreference.start(this);
-                return true;
-            case R.id.action_about:
-                FragmentDialogAbout.show(this);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     @Override

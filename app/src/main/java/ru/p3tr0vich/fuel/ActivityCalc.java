@@ -10,8 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.lang.reflect.Method;
-
 public class ActivityCalc extends AppCompatActivity {
 
     public static void start(Activity parent) {
@@ -63,17 +61,5 @@ public class ActivityCalc extends AppCompatActivity {
                 ((FragmentCalc) getFragmentManager().findFragmentById(R.id.fragmentCalc))
                         .prefsChanged();
         }
-    }
-
-    @Override
-    protected boolean onPrepareOptionsPanel(View view, Menu menu) {
-        try {
-            Method declaredMethod = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", boolean.class);
-            declaredMethod.setAccessible(true);
-            declaredMethod.invoke(menu, true);
-        } catch (Exception e) {
-            //
-        }
-        return super.onPrepareOptionsPanel(view, menu);
     }
 }

@@ -5,6 +5,8 @@
     <dimen name="activity_calc_horizontal_margin">220dp</dimen>
     <dimen name="activity_backup_horizontal_margin">220dp</dimen>
 
+    <dimen name="drawer_horizontal_margin">24dp</dimen>
+
     <dimen name="toolbar_height">64dp</dimen>
 
     <dimen name="is_phone_in_portrait">0dp</dimen>

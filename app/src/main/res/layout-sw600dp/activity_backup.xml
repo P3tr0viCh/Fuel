@@ -2,9 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ActivityBackup"
-    android:background="@color/primary_light">
+    android:background="@color/primary_light"
+    android:orientation="vertical">
 
     <include
         android:id="@+id/toolbarBackup"
@@ -26,5 +25,4 @@
             android:layout_height="match_parent"
             tools:layout="@layout/fragment_backup" />
     </FrameLayout>
-
 </LinearLayout>

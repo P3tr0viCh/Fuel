@@ -177,7 +177,7 @@ class Functions {
         view.setLayoutParams(layoutParams);
     }
 
-    public static int pxToDp(Context context, int px) {
+    private static int pxToDp(Context context, int px) {
         return Math.round(TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, px, context.getResources().getDisplayMetrics()));
     }

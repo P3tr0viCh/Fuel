@@ -6,7 +6,6 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="16dp"
-    tools:context="ru.p3tr0vich.fuel.FragmentBackup"
     tools:showIn="@layout/activity_backup">
 
     <TextView
@@ -56,16 +55,16 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="false"
         android:layout_below="@+id/textFile"
-        android:text="@string/btn_backup_save"
-        android:layout_marginRight="4dp" />
+        android:layout_marginRight="4dp"
+        android:text="@string/btn_backup_save" />
 
     <Button
         android:id="@+id/btnLoad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/btnSave"
+        android:layout_marginLeft="4dp"
         android:layout_toEndOf="@+id/btnSave"
-        android:text="@string/btn_backup_load"
-        android:layout_marginLeft="4dp" />
+        android:text="@string/btn_backup_load" />
 
 </RelativeLayout>

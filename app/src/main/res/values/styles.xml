@@ -14,8 +14,7 @@
         <item name="android:layout_width">1dp</item>
     </style>
 
-    <style name="AppTheme.PopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
-    </style>
+    <style name="AppTheme.PopupMenu" parent="@style/Widget.AppCompat.PopupMenu"></style>
 
     <style name="AppTheme.Button" parent="@style/Widget.AppCompat.Button">
         <item name="android:textColor">@color/button_text</item>
@@ -49,15 +48,23 @@
         <item name="android:textColor">@color/edit_error</item>
     </style>
 
+    <style name="AppTheme.AlertDialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/accent</item>
+    </style>
+
     <style name="AppTheme.Toolbar" parent="@style/Widget.AppCompat.Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/toolbar_height</item>
         <item name="android:background">@color/primary</item>
-        <item name="android:minHeight">@dimen/toolbar_height</item>
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
-    <style name="AppTheme.AlertDialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/accent</item>
+    <style name="AppTheme.TabLayout" parent="Widget.Design.TabLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/toolbar_height</item>
+        <item name="android:minHeight">@dimen/toolbar_height</item>
+        <item name="android:background">@color/primary</item>
+        <item name="tabIndicatorColor">@color/primary_dark</item>
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 </resources>

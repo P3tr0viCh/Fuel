@@ -7,6 +7,7 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,23 +27,42 @@ public class FragmentChartCost extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String KEY_FILTER_YEAR = "KEY_FILTER_YEAR";
+    private static final String KEY_YEARS = "KEY_YEARS";
+    private static final String KEY_SUMS = "KEY_SUMS";
 
     private FuelingDBHelper.Filter mFilter;
 
     private BarChart mChart;
+    private TabLayout mTabLayout;
+
     private final ArrayList<String> mMonths = new ArrayList<>();
 
+    private int[] mYears;
     private float[] mSums;
+
     private final int[] mColors = new int[]{R.color.chart_winter, R.color.chart_winter,
             R.color.chart_spring, R.color.chart_spring, R.color.chart_spring,
             R.color.chart_summer, R.color.chart_summer, R.color.chart_summer,
             R.color.chart_autumn, R.color.chart_autumn, R.color.chart_autumn,
             R.color.chart_winter};
 
+    public int getYearFromPosition(int index) {
+        return mYears[index];
+    }
+
+    public int getPositionFromYear(int year) {
+        for (int i = 0; i < mYears.length; i++)
+            if (mYears[i] == year)
+                return i;
+        return -1;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chart_cost, container, false);
+
+        mTabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
 
         mChart = (BarChart) view.findViewById(R.id.chart);
 
@@ -69,6 +89,25 @@ public class FragmentChartCost extends Fragment implements
         mChart.getLegend().setEnabled(false);
 
         updateMonths();
+        updateYears();
+        updateChart();
+
+        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                setYear(getYearFromPosition(tab.getPosition()));
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
         return view;
     }
@@ -86,23 +125,28 @@ public class FragmentChartCost extends Fragment implements
         for (int i = 0; i < 12; i++) mMonths.add(getMonth(calendar, i));
     }
 
-    public void setYear(String year) {
-        int intYear = Integer.parseInt(year);
+    private void updateYears() {
+        mTabLayout.removeAllTabs();
+        if (mYears.isEmpty())
+            mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(Functions.getCurrentYear())));
+        else
+            for (int i = 0; i < mYears.size(); i++)
+                mTabLayout.addTab(mTabLayout.newTab().setText(mYears.get(i)));
+        mTabLayout.getTabAt(getPositionFromYear(mFilter.year)).select();
+    }
 
+    public void setYear(int year) {
         Functions.LogD("FragmentChartCost -- setYear: year == " + year + ", mFilter.year = " + mFilter.year);
 
-        if (intYear == mFilter.year) return;
+        if (year == mFilter.year) return;
 
-        mFilter.year = intYear;
-        getLoaderManager().restartLoader(0, null, this);
+        mFilter.year = year;
+        getLoaderManager().restartLoader(ChartCursorLoader.ID, null, this);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mSums = new float[12];
-        for (int i = 0; i < 12; i++) mSums[i] = 0;
 
         mFilter = new FuelingDBHelper.Filter();
         mFilter.filterMode = FuelingDBHelper.FilterMode.YEAR;
@@ -110,13 +154,21 @@ public class FragmentChartCost extends Fragment implements
         if (savedInstanceState == null) {
             Functions.LogD("FragmentChartCost -- onCreate: savedInstanceState == null");
 
+            mYears = new ArrayList<>();
+
+            mSums = new float[12];
+            for (int i = 0; i < 12; i++) mSums[i] = 0;
+
             mFilter.year = Functions.getCurrentYear();
-            getLoaderManager().initLoader(0, null, this);
+
+            getLoaderManager().initLoader(YearsCursorLoader.ID, null, this);
+            getLoaderManager().initLoader(ChartCursorLoader.ID, null, this);
         } else {
             Functions.LogD("FragmentChartCost -- onCreate: savedInstanceState != null");
 
             mFilter.year = savedInstanceState.getInt(KEY_FILTER_YEAR);
-            getLoaderManager().restartLoader(0, null, this);
+            mYears = savedInstanceState.getStringArrayList(KEY_YEARS);
+            mSums = savedInstanceState.getFloatArray(KEY_SUMS);
         }
     }
 
@@ -125,11 +177,15 @@ public class FragmentChartCost extends Fragment implements
         super.onSaveInstanceState(outState);
 
         outState.putInt(KEY_FILTER_YEAR, mFilter.year);
+        outState.putStringArrayList(KEY_YEARS, mYears);
+        outState.putFloatArray(KEY_SUMS, mSums);
 
         Functions.LogD("FragmentChartCost -- onSaveInstanceState");
     }
 
     static class ChartCursorLoader extends CursorLoader {
+
+        private static final int ID = 0;
 
         private final FuelingDBHelper.Filter mFilter;
 
@@ -140,7 +196,7 @@ public class FragmentChartCost extends Fragment implements
 
         @Override
         public Cursor loadInBackground() {
-            Functions.LogD("FragmentChartCost -- loadInBackground");
+            Functions.LogD("FragmentChartCost -- ChartCursorLoader: loadInBackground");
 
             FuelingDBHelper dbHelper = new FuelingDBHelper();
             dbHelper.setFilter(mFilter);
@@ -148,26 +204,69 @@ public class FragmentChartCost extends Fragment implements
         }
     }
 
+    static class YearsCursorLoader extends CursorLoader {
+
+        private static final int ID = 1;
+
+        public YearsCursorLoader(Context context) {
+            super(context);
+        }
+
+        @Override
+        public Cursor loadInBackground() {
+            Functions.LogD("FragmentChartCost -- YearsCursorLoader: loadInBackground");
+
+            FuelingDBHelper dbHelper = new FuelingDBHelper();
+            return dbHelper.getYears();
+        }
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new ChartCursorLoader(Functions.sApplicationContext, mFilter);
+        switch (id) {
+            case ChartCursorLoader.ID:
+                return new ChartCursorLoader(Functions.sApplicationContext, mFilter);
+            case YearsCursorLoader.ID:
+                return new YearsCursorLoader(Functions.sApplicationContext);
+            default:
+                return null;
+        }
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Functions.LogD("FragmentChartCost -- onLoadFinished");
+        switch (loader.getId()) {
+            case ChartCursorLoader.ID:
+                Functions.LogD("FragmentChartCost -- ChartCursorLoader: onLoadFinished");
 
-        for (int i = 0; i < 12; i++) mSums[i] = 0;
+                for (int i = 0; i < 12; i++) mSums[i] = 0;
 
-        if (data.moveToFirst()) do {
-            float sum = data.getFloat(0);
-            String month = data.getString(1);
-            Functions.LogD("FragmentChartCost -- SUM == " + sum + ", MONTH == " + month);
+                if (data.moveToFirst()) do {
+                    float sum = data.getFloat(0);
+                    String month = data.getString(1);
+                    Functions.LogD("FragmentChartCost -- SUM == " + sum + ", MONTH == " + month);
 
-            mSums[Integer.parseInt(month) - 1] = sum;
-        } while (data.moveToNext());
+                    mSums[Integer.parseInt(month) - 1] = sum;
+                } while (data.moveToNext());
 
-        updateChart();
+                updateChart();
+
+                break;
+            case YearsCursorLoader.ID:
+                Functions.LogD("FragmentChartCost -- YearsCursorLoader: onLoadFinished");
+
+                int year;
+
+                if (data.moveToFirst()) do {
+                    year = data.getInt(0);
+
+                    Functions.LogD("FragmentChartCost -- YEAR == " + year);
+
+                    mYears.add(String.valueOf(year));
+                } while (data.moveToNext());
+
+                updateYears();
+        }
     }
 
     @Override

@@ -5,7 +5,8 @@
     <string name="title_activity_backup">Резервная копия</string>
     <string name="title_activity_yandex_map">Расстояние</string>
     <string name="title_activity_yandex_map_add">: %d км</string>
-    <string name="title_activity_activity_chart_cost">ActivityChartCost</string>
+    <string name="title_activity_chart_cost">График расходов</string>
+    <string name="title_activity_chart_cost_subtitle">Сумма стоимости по месяцам</string>
 
     <string name="title_message_error">Ошибка</string>
 
@@ -105,10 +106,6 @@
         <item>@string/year_current</item>
         <item>@string/date_filter</item>
         <item>@string/year_all</item>
-    </string-array>
-    <string-array name="filter_years">
-        <item>@string/year_current</item>
-        <item>@string/year_prev</item>
     </string-array>
 
     <string name="city">Город</string>

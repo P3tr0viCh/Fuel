@@ -24,7 +24,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
     private static final String SELECT_ALL = "SELECT * FROM " + TABLE_NAME;
     private static final String SELECT_YEARS = "SELECT strftime('%Y', datetime) AS YEAR FROM " + TABLE_NAME +
-            " GROUP BY YEAR ORDER BY YEAR DESC";
+            " GROUP BY YEAR ORDER BY YEAR ASC";
     private static final String SELECT_SUM_BY_MONTHS_IN_YEAR =
             "SELECT SUM(cost), strftime('%m', datetime) AS MONTH FROM " + TABLE_NAME;
 

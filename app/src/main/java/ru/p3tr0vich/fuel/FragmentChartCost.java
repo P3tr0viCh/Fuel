@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -46,11 +47,19 @@ public class FragmentChartCost extends Fragment implements
             R.color.chart_autumn, R.color.chart_autumn, R.color.chart_autumn,
             R.color.chart_winter};
 
-    public int getYearFromPosition(int index) {
+    private boolean mUpdateYearInProcess = true;
+
+    private static boolean isArrayEmpty(int[] array) {
+        return array == null || array.length < 1;
+    }
+
+    private int getYearFromPosition(int index) {
+        if (isArrayEmpty(mYears)) return Functions.getCurrentYear();
         return mYears[index];
     }
 
-    public int getPositionFromYear(int year) {
+    private int getPositionForYear(int year) {
+        if (isArrayEmpty(mYears)) return -1;
         for (int i = 0; i < mYears.length; i++)
             if (mYears[i] == year)
                 return i;
@@ -60,6 +69,11 @@ public class FragmentChartCost extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        if (savedInstanceState == null)
+            Functions.LogD("FragmentChartCost -- onCreateView: savedInstanceState == null");
+        else
+            Functions.LogD("FragmentChartCost -- onCreateView: savedInstanceState != null");
+
         View view = inflater.inflate(R.layout.fragment_chart_cost, container, false);
 
         mTabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
@@ -70,6 +84,7 @@ public class FragmentChartCost extends Fragment implements
         mChart.setNoDataText(getString(R.string.chart_no_data));
 
         mChart.setDrawBarShadow(false);
+        mChart.setTouchEnabled(false);
         mChart.setScaleEnabled(false);
         mChart.setDoubleTapToZoomEnabled(false);
         mChart.setHighlightEnabled(false);
@@ -88,14 +103,19 @@ public class FragmentChartCost extends Fragment implements
         mChart.getAxisRight().setEnabled(false);
         mChart.getLegend().setEnabled(false);
 
+        mChart.setHardwareAccelerationEnabled(true);
+
         updateMonths();
-        updateYears();
-        updateChart();
+        if (savedInstanceState != null) {
+            updateYears();
+            updateChart();
+        }
 
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                setYear(getYearFromPosition(tab.getPosition()));
+                Functions.LogD("FragmentChartCost -- onTabSelected");
+                if (!mUpdateYearInProcess) setYear(getYearFromPosition(tab.getPosition()));
             }
 
             @Override
@@ -109,7 +129,61 @@ public class FragmentChartCost extends Fragment implements
             }
         });
 
+        view.setOnTouchListener(onSwipeTouchListener);
+        mChart.setOnTouchListener(onSwipeTouchListener);
+
         return view;
+    }
+
+    private void selectTab(TabLayout.Tab tab) {
+        if (tab != null) tab.select();
+    }
+
+    private final OnSwipeTouchListener onSwipeTouchListener = new OnSwipeTouchListener(getActivity()) {
+        @Override
+        public void onSwipeRight() {
+            int position = mTabLayout.getSelectedTabPosition();
+            if (position != 0) selectTab(mTabLayout.getTabAt(position - 1));
+        }
+
+        @Override
+        public void onSwipeLeft() {
+            int position = mTabLayout.getSelectedTabPosition();
+            if (position != mTabLayout.getTabCount() - 1)
+                selectTab(mTabLayout.getTabAt(position + 1));
+        }
+
+        @Override
+        public void onSwipeTop() {
+
+        }
+
+        @Override
+        public void onSwipeBottom() {
+
+        }
+
+        public boolean onTouch(View v, MotionEvent event) {
+            return gestureDetector.onTouchEvent(event);
+        }
+    };
+
+    private void updateYears() {
+        Functions.LogD("FragmentChartCost -- updateYears, mFilter.year = " + mFilter.year);
+
+        mUpdateYearInProcess = true;
+        if (!isArrayEmpty(mYears))
+            for (int year : mYears)
+                mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(year)));
+
+        int currentYear = Functions.getCurrentYear();
+        if (getPositionForYear(currentYear) == -1)
+            mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(currentYear)));
+
+        int position = getPositionForYear(mFilter.year);
+        if (position != -1) selectTab(mTabLayout.getTabAt(position));
+
+        mUpdateYearInProcess = false;
     }
 
     private String getMonth(Calendar calendar, int month) {
@@ -125,17 +199,7 @@ public class FragmentChartCost extends Fragment implements
         for (int i = 0; i < 12; i++) mMonths.add(getMonth(calendar, i));
     }
 
-    private void updateYears() {
-        mTabLayout.removeAllTabs();
-        if (mYears.isEmpty())
-            mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(Functions.getCurrentYear())));
-        else
-            for (int i = 0; i < mYears.size(); i++)
-                mTabLayout.addTab(mTabLayout.newTab().setText(mYears.get(i)));
-        mTabLayout.getTabAt(getPositionFromYear(mFilter.year)).select();
-    }
-
-    public void setYear(int year) {
+    private void setYear(int year) {
         Functions.LogD("FragmentChartCost -- setYear: year == " + year + ", mFilter.year = " + mFilter.year);
 
         if (year == mFilter.year) return;
@@ -154,8 +218,6 @@ public class FragmentChartCost extends Fragment implements
         if (savedInstanceState == null) {
             Functions.LogD("FragmentChartCost -- onCreate: savedInstanceState == null");
 
-            mYears = new ArrayList<>();
-
             mSums = new float[12];
             for (int i = 0; i < 12; i++) mSums[i] = 0;
 
@@ -167,7 +229,7 @@ public class FragmentChartCost extends Fragment implements
             Functions.LogD("FragmentChartCost -- onCreate: savedInstanceState != null");
 
             mFilter.year = savedInstanceState.getInt(KEY_FILTER_YEAR);
-            mYears = savedInstanceState.getStringArrayList(KEY_YEARS);
+            mYears = savedInstanceState.getIntArray(KEY_YEARS);
             mSums = savedInstanceState.getFloatArray(KEY_SUMS);
         }
     }
@@ -177,7 +239,7 @@ public class FragmentChartCost extends Fragment implements
         super.onSaveInstanceState(outState);
 
         outState.putInt(KEY_FILTER_YEAR, mFilter.year);
-        outState.putStringArrayList(KEY_YEARS, mYears);
+        outState.putIntArray(KEY_YEARS, mYears);
         outState.putFloatArray(KEY_SUMS, mSums);
 
         Functions.LogD("FragmentChartCost -- onSaveInstanceState");
@@ -239,11 +301,15 @@ public class FragmentChartCost extends Fragment implements
             case ChartCursorLoader.ID:
                 Functions.LogD("FragmentChartCost -- ChartCursorLoader: onLoadFinished");
 
+                float sum;
+                String month;
+
                 for (int i = 0; i < 12; i++) mSums[i] = 0;
 
                 if (data.moveToFirst()) do {
-                    float sum = data.getFloat(0);
-                    String month = data.getString(1);
+                    sum = data.getFloat(0);
+                    month = data.getString(1);
+
                     Functions.LogD("FragmentChartCost -- SUM == " + sum + ", MONTH == " + month);
 
                     mSums[Integer.parseInt(month) - 1] = sum;
@@ -255,15 +321,20 @@ public class FragmentChartCost extends Fragment implements
             case YearsCursorLoader.ID:
                 Functions.LogD("FragmentChartCost -- YearsCursorLoader: onLoadFinished");
 
-                int year;
+                int i = 0, year, count = data.getCount();
 
-                if (data.moveToFirst()) do {
-                    year = data.getInt(0);
+                if (count > 0) {
+                    mYears = new int[count];
 
-                    Functions.LogD("FragmentChartCost -- YEAR == " + year);
+                    if (data.moveToFirst()) do {
+                        year = data.getInt(0);
 
-                    mYears.add(String.valueOf(year));
-                } while (data.moveToNext());
+                        Functions.LogD("FragmentChartCost -- YEAR == " + year);
+
+                        mYears[i] = year;
+                        i++;
+                    } while (data.moveToNext());
+                } else mYears = null;
 
                 updateYears();
         }

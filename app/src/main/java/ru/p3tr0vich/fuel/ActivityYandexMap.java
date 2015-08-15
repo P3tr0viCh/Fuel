@@ -171,9 +171,9 @@ public class ActivityYandexMap extends AppCompatActivity {
     public void setDistance(int distance) {
         mDistance = distance;
 
-        String title = getString(R.string.title_activity_yandex_map);
+        String title = getString(R.string.title_yandex_map);
         if (mDistance > 0)
-            title += String.format(getString(R.string.title_activity_yandex_map_add), mDistance);
+            title += String.format(getString(R.string.title_yandex_map_add), mDistance);
 
         Functions.LogD("ActivityYandexMap -- setDistance: title == " + title);
 

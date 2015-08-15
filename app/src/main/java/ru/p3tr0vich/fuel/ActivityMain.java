@@ -1,7 +1,8 @@
 package ru.p3tr0vich.fuel;
 
-import android.animation.AnimatorSet;
-import android.animation.ValueAnimator;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,48 +16,40 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
-
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
-
-import java.lang.reflect.Field;
-import java.util.Calendar;
-import java.util.Date;
 
 public class ActivityMain extends AppCompatActivity implements
         FragmentFueling.FilterChangeListener,
-        FragmentFueling.RecordChangeListener {
+        FragmentFueling.RecordChangeListener,
+        OnFragmentChangedListener {
 
     private static final String ACTION_LOADING = "ru.p3tr0vich.fuel.ACTION_LOADING";
     private static final String EXTRA_LOADING = "ru.p3tr0vich.fuel.EXTRA_LOADING";
 
     private Spinner mToolbarSpinner;
-    private Toolbar mToolbarMainDates;
-    private View mToolbarShadow;
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
+    private NavigationView mNavigationView;
 
     private BroadcastReceiver mLoadingStatusReceiver;
 
-    private boolean mDateFromClicked;
-    private boolean mToolbarMainDatesVisible;
-
     private FragmentFueling getFragmentFueling() {
-        return (FragmentFueling) getFragmentManager().findFragmentById(R.id.fragmentFueling);
+        return (FragmentFueling) getFragmentManager().findFragmentByTag(FragmentFueling.TAG);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Functions.sApplicationContext = getApplicationContext();
+
+        Functions.LogD("**************** ActivityMain -- onCreate ****************");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -69,8 +62,14 @@ public class ActivityMain extends AppCompatActivity implements
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        mToolbarMainDates = (Toolbar) findViewById(R.id.toolbarMainDates);
-        mToolbarShadow = findViewById(R.id.toolbarShadow);
+        mNavigationView = (NavigationView) findViewById(R.id.drawerNavigationView);
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                return onOptionsItemSelected(menuItem);
+            }
+        });
 
         //noinspection ConstantConditions
         mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
@@ -82,11 +81,9 @@ public class ActivityMain extends AppCompatActivity implements
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         Functions.LogD("ActivityMain -- onItemSelected");
 
-                        FuelingDBHelper.FilterMode filterMode = positionToFilterMode(position);
-
-                        setToolbarDatesVisible(filterMode == FuelingDBHelper.FilterMode.DATES, true);
-
-                        getFragmentFueling().setFilterMode(filterMode);
+                        FragmentFueling fragmentFueling = getFragmentFueling();
+                        if (fragmentFueling != null && fragmentFueling.isVisible())
+                            fragmentFueling.setFilterMode(positionToFilterMode(position));
                     }
 
                     @Override
@@ -94,13 +91,6 @@ public class ActivityMain extends AppCompatActivity implements
 
                     }
                 });
-
-        FuelingDBHelper.Filter filter = getFragmentFueling().getFilter();
-
-        setToolbarDatesVisible(filter.filterMode == FuelingDBHelper.FilterMode.DATES, false);
-
-        updateFilterDate(true, filter.dateFrom);
-        updateFilterDate(false, filter.dateTo);
 
         mLoadingStatusReceiver = new BroadcastReceiver() {
             @Override
@@ -111,51 +101,56 @@ public class ActivityMain extends AppCompatActivity implements
         LocalBroadcastManager.getInstance(this).registerReceiver(mLoadingStatusReceiver,
                 new IntentFilter(ACTION_LOADING));
 
-        Button btnDateFrom = (Button) findViewById(R.id.btnDateFrom);
-        btnDateFrom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDateDialog(true);
-            }
-        });
-        btnDateFrom.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                doPopupDate(v, true);
-                return true;
-            }
-        });
+        if (savedInstanceState == null) selectItem(R.id.action_fueling);
+    }
 
-        Button btnDateTo = (Button) findViewById(R.id.btnDateTo);
-        btnDateTo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDateDialog(false);
-            }
-        });
-        btnDateTo.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                doPopupDate(v, false);
-                return true;
-            }
-        });
+    private void selectItem(int menuId) {
+        switch (menuId) {
+            case R.id.action_fueling:
+                if (getFragmentFueling() == null) {
+                    Fragment fragment = new FragmentFueling();
 
-        ((NavigationView) findViewById(R.id.drawerNavigationView))
-                .setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        mDrawerLayout.closeDrawer(GravityCompat.START);
-                        return onOptionsItemSelected(menuItem);
-                    }
-                });
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .add(R.id.contentFrame, fragment, FragmentFueling.TAG)
+                            .commit();
+                } else
+                    getFragmentManager().popBackStack();
+                break;
+            case R.id.action_about:
+                if (getFragmentManager().findFragmentByTag(FragmentAbout.TAG) == null) {
+                    Fragment fragment = new FragmentAbout();
 
-        Functions.LogD("**************** ActivityMain -- onCreate ****************");
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.contentFrame, fragment, FragmentAbout.TAG)
+                            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                            .addToBackStack(null)
+                            .commit();
+
+                }
+            default:
+                return;
+        }
+
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerVisible(GravityCompat.START))
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        else if (getFragmentManager().getBackStackEntryCount() != 0)
+            getFragmentManager().popBackStack();
+        else super.onBackPressed();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_fueling:
+                selectItem(R.id.action_fueling);
+                return true;
             case R.id.action_calc:
                 ActivityCalc.start(this);
                 return true;
@@ -169,17 +164,10 @@ public class ActivityMain extends AppCompatActivity implements
                 ActivityPreference.start(this);
                 return true;
             case R.id.action_about:
-                FragmentDialogAbout.show(this);
+                selectItem(R.id.action_about);
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mDrawerLayout.isDrawerVisible(GravityCompat.START))
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-        else super.onBackPressed();
     }
 
     @Override
@@ -192,197 +180,6 @@ public class ActivityMain extends AppCompatActivity implements
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    private void doPopupDate(final View v, final boolean dateFrom) {
-        PopupMenu popupMenu = new PopupMenu(this, v);
-        popupMenu.inflate(R.menu.menu_dates);
-
-        Object menuHelper = null;
-        try {
-            Field fMenuHelper = PopupMenu.class.getDeclaredField("mPopup");
-            fMenuHelper.setAccessible(true);
-            menuHelper = fMenuHelper.get(popupMenu);
-        } catch (Exception e) {
-            //
-        }
-
-        popupMenu.setOnMenuItemClickListener(
-                new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        setFilterDate(dateFrom, item.getItemId());
-                        return true;
-                    }
-                }
-        );
-
-        popupMenu.show();
-
-        try {
-            if (menuHelper == null) return;
-
-            Field fListPopup = menuHelper.getClass().getDeclaredField("mPopup");
-            fListPopup.setAccessible(true);
-            Object listPopup = fListPopup.get(menuHelper);
-            Class<?> listPopupClass = listPopup.getClass();
-
-            // Magic number
-            listPopupClass.getDeclaredMethod("setVerticalOffset", int.class).invoke(listPopup, -v.getHeight() - 8);
-
-            listPopupClass.getDeclaredMethod("show").invoke(listPopup);
-        } catch (Exception e) {
-            //
-        }
-    }
-
-    private void setFilterDate(final boolean setDateFrom, final int menuId) {
-        FuelingDBHelper.Filter filter = getFragmentFueling().getFilter();
-
-        switch (menuId) {
-            case R.id.action_dates_start_of_year:
-            case R.id.action_dates_end_of_year:
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(setDateFrom ? filter.dateFrom : filter.dateTo);
-
-                switch (menuId) {
-                    case R.id.action_dates_start_of_year:
-                        calendar.set(Calendar.MONTH, Calendar.JANUARY);
-                        calendar.set(Calendar.DAY_OF_MONTH, 1);
-                        break;
-                    case R.id.action_dates_end_of_year:
-                        calendar.set(Calendar.MONTH, Calendar.DECEMBER);
-                        calendar.set(Calendar.DAY_OF_MONTH, 31);
-                        break;
-                }
-
-                Date date = calendar.getTime();
-
-                updateFilterDate(setDateFrom, date);
-                getFragmentFueling().setFilterDate(setDateFrom, date);
-                break;
-            case R.id.action_dates_winter:
-            case R.id.action_dates_summer:
-            case R.id.action_dates_curr_year:
-            case R.id.action_dates_prev_year:
-                Calendar calendarFrom = Calendar.getInstance();
-                Calendar calendarTo = Calendar.getInstance();
-
-                int year = 0;
-
-                switch (menuId) {
-                    case R.id.action_dates_winter:
-                    case R.id.action_dates_summer:
-                        calendarFrom.setTime(setDateFrom ? filter.dateFrom : filter.dateTo);
-
-                        year = calendarFrom.get(Calendar.YEAR);
-                        break;
-                    case R.id.action_dates_curr_year:
-                    case R.id.action_dates_prev_year:
-                        year = Calendar.getInstance().get(Calendar.YEAR);
-                        if (menuId == R.id.action_dates_prev_year) year--;
-                }
-
-                switch (menuId) {
-                    case R.id.action_dates_winter:
-                        calendarFrom.set(year - 1, Calendar.DECEMBER, 1);
-                        calendarTo.set(Calendar.YEAR, year);
-                        calendarTo.set(Calendar.MONTH, Calendar.FEBRUARY);
-                        calendarTo.set(Calendar.DAY_OF_MONTH, calendarTo.getActualMaximum(Calendar.DAY_OF_MONTH));
-                        break;
-                    case R.id.action_dates_summer:
-                        calendarFrom.set(year, Calendar.JUNE, 1);
-                        calendarTo.set(year, Calendar.AUGUST, 31);
-                        break;
-                    case R.id.action_dates_curr_year:
-                    case R.id.action_dates_prev_year:
-                        calendarFrom.set(year, Calendar.JANUARY, 1);
-                        calendarTo.set(year, Calendar.DECEMBER, 31);
-
-                }
-
-                Date dateFrom = calendarFrom.getTime();
-                Date dateTo = calendarTo.getTime();
-
-                updateFilterDate(true, dateFrom);
-                updateFilterDate(false, dateTo);
-                getFragmentFueling().setFilterDate(dateFrom, dateTo);
-        }
-    }
-
-    private void setToolbarDatesVisible(final boolean visible, final boolean animate) {
-        if (mToolbarMainDatesVisible == visible) return;
-
-        mToolbarMainDatesVisible = visible;
-
-        final int toolbarHeight = getResources().getDimensionPixelSize(R.dimen.toolbar_height);
-        final int toolbarShadowHeight = getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height);
-        final RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mToolbarMainDates.getLayoutParams();
-
-        if (animate) {
-            final ValueAnimator valueAnimatorShadowShow = ValueAnimator.ofInt(0, toolbarShadowHeight);
-            valueAnimatorShadowShow
-                    .setDuration(Const.ANIMATION_DURATION_TOOLBAR_SHADOW)
-                    .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            Functions.setViewHeight(mToolbarShadow, (Integer) animation.getAnimatedValue());
-                        }
-                    });
-
-            final ValueAnimator valueAnimatorShadowHide = ValueAnimator.ofInt(toolbarShadowHeight, 0);
-            valueAnimatorShadowHide
-                    .setDuration(Const.ANIMATION_DURATION_TOOLBAR_SHADOW)
-                    .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            Functions.setViewHeight(mToolbarShadow, (Integer) animation.getAnimatedValue());
-                        }
-                    });
-
-            final ValueAnimator valueAnimatorToolbar = ValueAnimator.ofInt(
-                    visible ? 0 : toolbarHeight, visible ? toolbarHeight : 0);
-            valueAnimatorToolbar
-                    .setDuration(Const.ANIMATION_DURATION_TOOLBAR)
-                    .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            Functions.setViewTopMargin(mToolbarMainDates, layoutParams, (Integer) animation.getAnimatedValue());
-                        }
-                    });
-
-            AnimatorSet animatorSet = new AnimatorSet();
-            animatorSet.playSequentially(valueAnimatorShadowShow, valueAnimatorToolbar, valueAnimatorShadowHide);
-            animatorSet.start();
-        } else
-            Functions.setViewTopMargin(mToolbarMainDates, layoutParams, visible ? toolbarHeight : 0);
-    }
-
-    private void showDateDialog(final boolean dateFrom) {
-        mDateFromClicked = dateFrom;
-
-        FuelingDBHelper.Filter filter = getFragmentFueling().getFilter();
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(mDateFromClicked ? filter.dateFrom : filter.dateTo);
-        DatePickerDialog.newInstance(
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(year, monthOfYear, dayOfMonth);
-                        Date date = calendar.getTime();
-
-                        updateFilterDate(mDateFromClicked, date);
-                        getFragmentFueling().setFilterDate(mDateFromClicked, date);
-                    }
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-        ).show(getFragmentManager(), null);
-    }
-
-    private void updateFilterDate(final boolean dateFrom, final Date date) {
-        ((Button) findViewById(dateFrom ? R.id.btnDateFrom : R.id.btnDateTo))
-                .setText(Functions.dateToString(date, true, Functions.isPhoneInPortrait()));
     }
 
     @Override
@@ -472,5 +269,40 @@ public class ActivityMain extends AppCompatActivity implements
 
         if (position != mToolbarSpinner.getSelectedItemPosition())
             mToolbarSpinner.setSelection(position);
+    }
+
+    @Override
+    public void onFragmentChanged(int menuId) {
+        Functions.LogD("ActivityMain -- onFragmentChanged");
+
+        switch (menuId) {
+            case R.id.action_about:
+                setTitle(R.string.title_about);
+                //noinspection ConstantConditions
+                getSupportActionBar().setDisplayShowTitleEnabled(true);
+                mToolbarSpinner.setVisibility(View.GONE);
+                break;
+            default:
+                setTitle("");
+                //noinspection ConstantConditions
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+                mToolbarSpinner.setVisibility(View.VISIBLE);
+        }
+
+        for (int i = 0; i < mNavigationView.getMenu().size(); i++)
+            mNavigationView.getMenu().getItem(i).setChecked(false);
+        mNavigationView.getMenu().findItem(menuId).setChecked(true);
+    }
+
+    @Override
+    public void setTitle(int resId) {
+        //noinspection ConstantConditions
+        getSupportActionBar().setTitle(resId);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        //noinspection ConstantConditions
+        getSupportActionBar().setTitle(title);
     }
 }

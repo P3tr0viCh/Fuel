@@ -28,6 +28,6 @@ public class ActivityChartCost extends AppCompatActivity {
             }
         });
 
-        toolbar.setSubtitle(R.string.title_activity_chart_cost_subtitle);
+        toolbar.setSubtitle(R.string.title_chart_cost_subtitle);
     }
 }

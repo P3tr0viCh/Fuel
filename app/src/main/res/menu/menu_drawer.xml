@@ -2,7 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group
         android:id="@+id/menu_top"
-        android:checkableBehavior="none">
+        android:checkableBehavior="all">
+        <item
+            android:id="@+id/action_fueling"
+            android:icon="@drawable/ic_plus_circle_outline_grey600_24dp"
+            android:title="@string/action_list" />
         <item
             android:id="@+id/action_calc"
             android:icon="@drawable/ic_calculator_grey600_24dp"
@@ -15,7 +19,7 @@
 
     <group
         android:id="@+id/menu_bottom"
-        android:checkableBehavior="none">
+        android:checkableBehavior="all">
         <item
             android:id="@+id/action_settings"
             android:icon="@drawable/ic_settings_grey600_24dp"

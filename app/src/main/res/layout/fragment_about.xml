@@ -4,7 +4,7 @@
     android:id="@+id/ltMain"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:padding="16dp">
 
     <RelativeLayout
         android:id="@+id/ltTop"
@@ -72,8 +72,8 @@
         <View
             android:id="@+id/view"
             style="@style/AppTheme.Divider.Horizontal"
-            android:layout_marginBottom="4dp"
-            android:layout_marginTop="4dp" />
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp" />
 
         <TextView
             android:id="@+id/textAboutDisclaimer"

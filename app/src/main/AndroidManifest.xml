@@ -26,23 +26,23 @@
             android:parentActivityName=".ActivityMain" />
         <activity
             android:name=".ActivityCalc"
-            android:label="@string/title_activity_calc"
+            android:label="@string/title_calc"
             android:parentActivityName=".ActivityMain" />
         <activity
             android:name=".ActivityPreference"
-            android:label="@string/title_activity_prefs" />
+            android:label="@string/title_prefs" />
         <activity
             android:name=".ActivityBackup"
-            android:label="@string/title_activity_backup"
+            android:label="@string/title_backup"
             android:parentActivityName=".ActivityMain" />
         <activity
             android:name=".ActivityYandexMap"
             android:configChanges="screenSize|orientation"
-            android:label="@string/title_activity_yandex_map"
+            android:label="@string/title_yandex_map"
             android:parentActivityName=".ActivityCalc" />
         <activity
             android:name=".ActivityChartCost"
-            android:label="@string/title_activity_chart_cost"
+            android:label="@string/title_chart_cost"
             android:parentActivityName=".ActivityMain" />
     </application>
 

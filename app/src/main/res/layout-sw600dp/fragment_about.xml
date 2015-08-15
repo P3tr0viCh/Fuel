@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_light">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:background="@drawable/drop_shadow"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/ltMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <RelativeLayout
+                android:id="@+id/ltTop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/imageAbout"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_gravity="start|center"
+                    android:scaleType="center"
+                    android:src="@mipmap/ic_launcher"
+                    tools:ignore="contentDescription" />
+
+                <TextView
+                    android:id="@+id/textAboutAppName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="8dp"
+                    android:layout_toEndOf="@+id/imageAbout"
+                    android:gravity="start"
+                    android:text="@string/app_name"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textAboutVersion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/textAboutAppName"
+                    android:layout_below="@+id/textAboutAppName"
+                    android:text="@string/about_version"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+                <TextView
+                    android:id="@+id/textAboutDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textAboutAppName"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@+id/textAboutVersion"
+                    android:text="@string/list_item_date"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+                <TextView
+                    android:id="@+id/textAboutCopyright"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="false"
+                    android:layout_alignParentTop="false"
+                    android:layout_alignStart="@+id/textAboutAppName"
+                    android:layout_below="@+id/textAboutVersion"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/about_copyright"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ltTop">
+
+                <View
+                    android:id="@+id/view"
+                    style="@style/AppTheme.Divider.Horizontal"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp" />
+
+                <TextView
+                    android:id="@+id/textAboutDisclaimer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/view"
+                    android:gravity="fill_horizontal"
+                    android:text="@string/about_disclaimer"
+                    android:textSize="12sp" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </FrameLayout>
+</FrameLayout>

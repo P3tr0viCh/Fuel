@@ -18,16 +18,16 @@ public class ActivityChartCost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart_cost);
 
-        Toolbar toolbarChartCost = (Toolbar) findViewById(R.id.toolbarChartCost);
-        setSupportActionBar(toolbarChartCost);
-        toolbarChartCost.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
-        toolbarChartCost.setNavigationOnClickListener(new View.OnClickListener() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
 
-        toolbarChartCost.setSubtitle(R.string.title_activity_chart_cost_subtitle);
+        toolbar.setSubtitle(R.string.title_activity_chart_cost_subtitle);
     }
 }

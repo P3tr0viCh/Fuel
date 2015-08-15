@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <include
-        android:id="@+id/toolbarChartCost"
+        android:id="@+id/toolbar"
         layout="@layout/toolbar" />
 
     <fragment

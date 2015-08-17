@@ -1,7 +1,6 @@
 package ru.p3tr0vich.fuel;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,10 +9,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+public class FragmentBackup extends FragmentFuel {
 
-public class FragmentBackup extends Fragment {
+    public static final String TAG = "FragmentBackup";
 
     private DatabaseBackupXmlHelper mDatabaseBackupXmlHelper;
+
+    private OnDataLoadedFromBackupListener mOnDataLoadedFromBackupListener;
+
+    @Override
+    public int getFragmentId() {
+        return R.id.action_backup;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -119,7 +126,7 @@ public class FragmentBackup extends Fragment {
             Toast.makeText(getActivity(), getString(R.string.message_save_file_ok), Toast.LENGTH_SHORT).show();
         else if (result == DatabaseBackupXmlHelper.Result.RESULT_LOAD_OK) {
             Toast.makeText(getActivity(), getString(R.string.message_load_file_ok), Toast.LENGTH_SHORT).show();
-            getActivity().setResult(Activity.RESULT_OK);
+            mOnDataLoadedFromBackupListener.onDataLoadedFromBackup();
         } else
             FragmentDialogMessage.showMessage(this, getString(R.string.title_message_error), resultMessage);
     }
@@ -128,7 +135,7 @@ public class FragmentBackup extends Fragment {
         startOperationXml(true);
     }
 
-    private void loadFromXml() { // TODO: Сохранять старые в old
+    private void loadFromXml() { // TODO: Сохранять старые в old?
         FragmentDialogQuestion.show(this, getString(R.string.dialog_caption_load_from_xml),
                 getString(R.string.message_dialog_load_from_xml), getString(R.string.dialog_btn_load));
     }
@@ -147,4 +154,20 @@ public class FragmentBackup extends Fragment {
                 startOperationXml(false);
         }
     }
+
+    public interface OnDataLoadedFromBackupListener {
+        void onDataLoadedFromBackup();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mOnDataLoadedFromBackupListener = (OnDataLoadedFromBackupListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() +
+                    " must implement OnDataLoadedFromBackupListener");
+        }
+    }
+
 }

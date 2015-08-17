@@ -63,7 +63,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:background">@color/primary</item>
-        <item name="tabIndicatorColor">@color/primary_dark</item>
+        <item name="tabIndicatorColor">@color/window_background</item>
         <item name="tabMinWidth">@dimen/tab_min_width</item>
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>

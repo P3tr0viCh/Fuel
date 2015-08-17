@@ -101,7 +101,6 @@
     <string name="message_load_file_ok">Данные из файла загружены</string>
 
     <string name="year_current">Текущий год</string>
-    <string name="year_prev">Прошлый год</string>
     <string name="year_all">Все записи</string>
     <string name="date_filter">Период</string>
     <string-array name="filter_dates">

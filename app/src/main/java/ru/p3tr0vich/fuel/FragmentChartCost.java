@@ -1,6 +1,5 @@
 package ru.p3tr0vich.fuel;
 
-import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -24,8 +23,10 @@ import com.github.mikephil.charting.utils.ValueFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class FragmentChartCost extends Fragment implements
+public class FragmentChartCost extends FragmentFuel implements
         LoaderManager.LoaderCallbacks<Cursor> {
+
+    public static final String TAG = "FragmentChartCost";
 
     private static final String KEY_FILTER_YEAR = "KEY_FILTER_YEAR";
     private static final String KEY_YEARS = "KEY_YEARS";
@@ -48,6 +49,11 @@ public class FragmentChartCost extends Fragment implements
             R.color.chart_winter};
 
     private boolean mUpdateYearInProcess = true;
+
+    @Override
+    public int getFragmentId() {
+        return R.id.action_chart_cost;
+    }
 
     private static boolean isArrayEmpty(int[] array) {
         return array == null || array.length < 1;

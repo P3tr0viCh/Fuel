@@ -2,8 +2,6 @@ package ru.p3tr0vich.fuel;
 // TODO: Размер значка
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,11 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class FragmentAbout extends Fragment {
+public class FragmentAbout extends FragmentFuel {
 
     public static final String TAG = "FragmentAbout";
 
-    private OnFragmentChangedListener mOnFragmentChangedListener;
+    @Override
+    public int getFragmentId() {
+        return R.id.action_about;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,15 +36,18 @@ public class FragmentAbout extends Fragment {
 
         ((TextView) view.findViewById(R.id.textAboutDate)).setText("(" + BuildConfig.BUILD_DATE + ")");
 
-        mOnFragmentChangedListener.onFragmentChanged(R.id.action_about);
-
         return view;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Functions.LogD("FragmentAbout -- onCreate");
+    }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mOnFragmentChangedListener = (OnFragmentChangedListener) activity;
+    public void onDestroy() {
+        Functions.LogD("FragmentAbout -- onDestroy");
+        super.onDestroy();
     }
 }

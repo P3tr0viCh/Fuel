@@ -13,6 +13,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
@@ -25,13 +26,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 public class ActivityMain extends AppCompatActivity implements
-        FragmentFueling.FilterChangeListener,
-        FragmentFueling.RecordChangeListener,
-        OnFragmentChangedListener {
+        FragmentFueling.OnFilterChangeListener,
+        FragmentFueling.OnRecordChangeListener,
+        FragmentFuel.OnFragmentChangedListener,
+        FragmentBackup.OnDataLoadedFromBackupListener {
 
     private static final String ACTION_LOADING = "ru.p3tr0vich.fuel.ACTION_LOADING";
     private static final String EXTRA_LOADING = "ru.p3tr0vich.fuel.EXTRA_LOADING";
 
+    private Toolbar mToolbarMain;
     private Spinner mToolbarSpinner;
 
     private DrawerLayout mDrawerLayout;
@@ -39,6 +42,12 @@ public class ActivityMain extends AppCompatActivity implements
     private NavigationView mNavigationView;
 
     private BroadcastReceiver mLoadingStatusReceiver;
+
+    private int mCurrentFragmentId;
+
+    private FragmentFuel getFragmentFuel(String fragmentTag) {
+        return (FragmentFuel) getFragmentManager().findFragmentByTag(fragmentTag);
+    }
 
     private FragmentFueling getFragmentFueling() {
         return (FragmentFueling) getFragmentManager().findFragmentByTag(FragmentFueling.TAG);
@@ -53,12 +62,12 @@ public class ActivityMain extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbarMain = (Toolbar) findViewById(R.id.toolbarMain);
-        setSupportActionBar(toolbarMain);
+        mToolbarMain = (Toolbar) findViewById(R.id.toolbarMain);
+        setSupportActionBar(mToolbarMain);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mDrawerToggle = new ActionBarDrawerToggle(this,
-                mDrawerLayout, toolbarMain, R.string.app_name, R.string.app_name);
+                mDrawerLayout, mToolbarMain, R.string.app_name, R.string.app_name);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
@@ -66,15 +75,15 @@ public class ActivityMain extends AppCompatActivity implements
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-                mDrawerLayout.closeDrawer(GravityCompat.START);
-                return onOptionsItemSelected(menuItem);
+                selectItem(menuItem.getItemId());
+                return true;
             }
         });
 
         //noinspection ConstantConditions
         mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
 
-        Functions.addSpinnerInToolbar(getSupportActionBar(), toolbarMain, mToolbarSpinner,
+        Functions.addSpinnerInToolbar(getSupportActionBar(), mToolbarMain, mToolbarSpinner,
                 ArrayAdapter.createFromResource(this, R.array.filter_dates, R.layout.toolbar_spinner_item),
                 new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -101,37 +110,69 @@ public class ActivityMain extends AppCompatActivity implements
         LocalBroadcastManager.getInstance(this).registerReceiver(mLoadingStatusReceiver,
                 new IntentFilter(ACTION_LOADING));
 
-        if (savedInstanceState == null) selectItem(R.id.action_fueling);
+        if (savedInstanceState == null) {
+            mCurrentFragmentId = R.id.action_fueling;
+            getFragmentManager().beginTransaction()
+                    .add(R.id.contentFrame, new FragmentFueling(), FragmentFueling.TAG)
+                    .setTransition(FragmentTransaction.TRANSIT_NONE)
+                    .commit();
+        }
+    }
+
+    private Fragment getFragmentNewInstance(String fragmentTag) {
+        if (getFragmentFuel(fragmentTag) == null)
+            switch (fragmentTag) {
+                case FragmentBackup.TAG:
+                    return new FragmentBackup();
+                case FragmentChartCost.TAG:
+                    return new FragmentChartCost();
+                case FragmentAbout.TAG:
+                    return new FragmentAbout();
+                default:
+                    return null;
+            }
+        else return null;
     }
 
     private void selectItem(int menuId) {
-        switch (menuId) {
-            case R.id.action_fueling:
-                if (getFragmentFueling() == null) {
-                    Fragment fragment = new FragmentFueling();
+        if (mCurrentFragmentId == menuId) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            return;
+        }
 
-                    FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.beginTransaction()
-                            .add(R.id.contentFrame, fragment, FragmentFueling.TAG)
-                            .commit();
-                } else
-                    getFragmentManager().popBackStack();
+        String fragmentTag = null;
+
+        Fragment fragment = null;
+        FragmentManager fragmentManager = getFragmentManager();
+
+        if (!getFragmentFueling().isVisible()) fragmentManager.popBackStack();
+
+        switch (menuId) {
+            case R.id.action_chart_cost:
+                fragmentTag = FragmentChartCost.TAG;
+                fragment = getFragmentNewInstance(fragmentTag);
+                break;
+            case R.id.action_calc:
+                ActivityCalc.start(this);
+                break;
+            case R.id.action_settings:
+                ActivityPreference.start(this);
+                break;
+            case R.id.action_backup:
+                fragmentTag = FragmentBackup.TAG;
+                fragment = getFragmentNewInstance(fragmentTag);
                 break;
             case R.id.action_about:
-                if (getFragmentManager().findFragmentByTag(FragmentAbout.TAG) == null) {
-                    Fragment fragment = new FragmentAbout();
-
-                    FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.contentFrame, fragment, FragmentAbout.TAG)
-                            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                            .addToBackStack(null)
-                            .commit();
-
-                }
-            default:
-                return;
+                fragmentTag = FragmentAbout.TAG;
+                fragment = getFragmentNewInstance(fragmentTag);
         }
+
+        if (fragment != null)
+            fragmentManager.beginTransaction()
+                    .replace(R.id.contentFrame, fragment, fragmentTag)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .addToBackStack(null)
+                    .commit();
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
     }
@@ -143,31 +184,6 @@ public class ActivityMain extends AppCompatActivity implements
         else if (getFragmentManager().getBackStackEntryCount() != 0)
             getFragmentManager().popBackStack();
         else super.onBackPressed();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_fueling:
-                selectItem(R.id.action_fueling);
-                return true;
-            case R.id.action_calc:
-                ActivityCalc.start(this);
-                return true;
-            case R.id.action_chart_cost:
-                ActivityChartCost.start(this);
-                return true;
-            case R.id.action_backup:
-                ActivityBackup.start(this);
-                return true;
-            case R.id.action_settings:
-                ActivityPreference.start(this);
-                return true;
-            case R.id.action_about:
-                selectItem(R.id.action_about);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -232,10 +248,6 @@ public class ActivityMain extends AppCompatActivity implements
                 fuelingRecord = FragmentDialogDeleteRecord.getFuelingRecord(data);
 
                 fragmentFueling.deleteRecord(fuelingRecord);
-                break;
-            case ActivityBackup.REQUEST_CODE:
-                fragmentFueling.updateAfterChange();
-                break;
         }
     }
 
@@ -272,37 +284,61 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
-    public void onFragmentChanged(int menuId) {
+    public void onDataLoadedFromBackup() {
+        getFragmentFueling().updateAfterChange();
+    }
+
+    @Override
+    public void onFragmentChanged(int fragmentId) {
         Functions.LogD("ActivityMain -- onFragmentChanged");
 
-        switch (menuId) {
+        mCurrentFragmentId = fragmentId;
+
+        int titleId, subtitleId = -1;
+        boolean showSpinner = false;
+
+        switch (fragmentId) {
+            case R.id.action_chart_cost:
+                titleId = R.string.title_chart_cost;
+                subtitleId = R.string.title_chart_cost_subtitle;
+                break;
+            case R.id.action_backup:
+                titleId = R.string.title_backup;
+                break;
             case R.id.action_about:
-                setTitle(R.string.title_about);
-                //noinspection ConstantConditions
-                getSupportActionBar().setDisplayShowTitleEnabled(true);
-                mToolbarSpinner.setVisibility(View.GONE);
+                titleId = R.string.title_about;
                 break;
             default:
-                setTitle("");
-                //noinspection ConstantConditions
-                getSupportActionBar().setDisplayShowTitleEnabled(false);
-                mToolbarSpinner.setVisibility(View.VISIBLE);
+                titleId = -1;
+                showSpinner = true;
         }
+
+        setTitle(titleId);
+        setSubtitle(subtitleId);
+        mToolbarSpinner.setVisibility(showSpinner ? View.VISIBLE : View.GONE);
 
         for (int i = 0; i < mNavigationView.getMenu().size(); i++)
             mNavigationView.getMenu().getItem(i).setChecked(false);
-        mNavigationView.getMenu().findItem(menuId).setChecked(true);
+        mNavigationView.getMenu().findItem(fragmentId).setChecked(true);
     }
 
     @Override
     public void setTitle(int resId) {
-        //noinspection ConstantConditions
-        getSupportActionBar().setTitle(resId);
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar == null) return;
+
+        if (resId != -1) {
+            actionBar.setTitle(resId);
+            actionBar.setDisplayShowTitleEnabled(true);
+        } else {
+            actionBar.setTitle(null);
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
     }
 
-    @Override
-    public void setTitle(CharSequence title) {
-        //noinspection ConstantConditions
-        getSupportActionBar().setTitle(title);
+    private void setSubtitle(int resId) {
+        if (resId != -1) mToolbarMain.setSubtitle(resId);
+        else mToolbarMain.setSubtitle(null);
     }
 }

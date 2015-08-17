@@ -5,7 +5,6 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -37,7 +36,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class FragmentFueling extends Fragment implements
+public class FragmentFueling extends FragmentFuel implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String TAG = "FragmentFueling";
@@ -73,9 +72,13 @@ public class FragmentFueling extends Fragment implements
 
     private long mSelectedId = 0; // TODO: HACK
 
-    private FilterChangeListener mFilterChangeListener;
-    private RecordChangeListener mRecordChangeListener;
-    private OnFragmentChangedListener mOnFragmentChangedListener;
+    private OnFilterChangeListener mOnFilterChangeListener;
+    private OnRecordChangeListener mOnRecordChangeListener;
+
+    @Override
+    public int getFragmentId() {
+        return R.id.action_fueling;
+    }
 
     @SuppressLint("InflateParams")
     @Override
@@ -100,7 +103,7 @@ public class FragmentFueling extends Fragment implements
         view.findViewById(R.id.floatingActionButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mRecordChangeListener.onRecordChange(Const.RecordAction.ADD, null);
+                mOnRecordChangeListener.onRecordChange(Const.RecordAction.ADD, null);
             }
         });
 
@@ -139,8 +142,6 @@ public class FragmentFueling extends Fragment implements
 
         updateFilterDateButtons(true, mFilter.dateFrom);
         updateFilterDateButtons(false, mFilter.dateTo);
-
-        mOnFragmentChangedListener.onFragmentChanged(R.id.action_fueling);
 
         return view;
     }
@@ -232,7 +233,7 @@ public class FragmentFueling extends Fragment implements
         mFilter.filterMode = filterMode;
         mFuelingCursorAdapter.showYear = (filterMode != FuelingDBHelper.FilterMode.CURRENT_YEAR);
 
-        mFilterChangeListener.onFilterChange(filterMode);
+        mOnFilterChangeListener.onFilterChange(filterMode);
     }
 
     public boolean setFilterMode(FuelingDBHelper.FilterMode filterMode) {
@@ -268,13 +269,13 @@ public class FragmentFueling extends Fragment implements
         if (needUpdate) updateAfterChange();
     }
 
-    public void setFilterDate(final Date dateFrom, final Date dateTo) {
+    private void setFilterDate(final Date dateFrom, final Date dateTo) {
         mFilter.dateFrom = dateFrom;
         mFilter.dateTo = dateTo;
         getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
     }
 
-    public void setFilterDate(final boolean setDateFrom, final Date date) {
+    private void setFilterDate(final boolean setDateFrom, final Date date) {
         if (setDateFrom) mFilter.dateFrom = date;
         else mFilter.dateTo = date;
         getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
@@ -482,10 +483,10 @@ public class FragmentFueling extends Fragment implements
                         FuelingRecord fuelingRecord = db.getFuelingRecord(id);
                         switch (item.getItemId()) {
                             case R.id.action_fueling_update:
-                                mRecordChangeListener.onRecordChange(Const.RecordAction.UPDATE, fuelingRecord);
+                                mOnRecordChangeListener.onRecordChange(Const.RecordAction.UPDATE, fuelingRecord);
                                 return true;
                             case R.id.action_fueling_delete:
-                                mRecordChangeListener.onRecordChange(Const.RecordAction.DELETE, fuelingRecord);
+                                mOnRecordChangeListener.onRecordChange(Const.RecordAction.DELETE, fuelingRecord);
                                 return true;
                             default:
                                 return false;
@@ -528,16 +529,16 @@ public class FragmentFueling extends Fragment implements
         Functions.setProgressWheelVisible(mProgressWheelFueling, visible);
     }
 
-    public interface FilterChangeListener {
+    public interface OnFilterChangeListener {
         // to Toolbar Spinner
         void onFilterChange(FuelingDBHelper.FilterMode filterMode);
     }
 
-    public interface RecordChangeListener {
+    public interface OnRecordChangeListener {
         void onRecordChange(Const.RecordAction recordAction, FuelingRecord fuelingRecord);
     }
 
-    public FuelingDBHelper.Filter getFilter() {
+    private FuelingDBHelper.Filter getFilter() {
         return mFilter;
     }
 
@@ -545,12 +546,11 @@ public class FragmentFueling extends Fragment implements
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mFilterChangeListener = (FilterChangeListener) activity;
-            mRecordChangeListener = (RecordChangeListener) activity;
-            mOnFragmentChangedListener = (OnFragmentChangedListener) activity;
+            mOnFilterChangeListener = (OnFilterChangeListener) activity;
+            mOnRecordChangeListener = (OnRecordChangeListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() +
-                    " must implement FilterChangeListener, RecordChangeListener, OnFragmentChangedListener");
+                    " must implement FilterChangeListener, RecordChangeListener");
         }
     }
 

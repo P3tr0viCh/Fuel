@@ -1,6 +1,5 @@
 package ru.p3tr0vich.fuel;
 
-
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;

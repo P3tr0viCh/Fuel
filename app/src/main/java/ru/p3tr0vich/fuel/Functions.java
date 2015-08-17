@@ -31,7 +31,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-
 class Functions {
 
     public static Context sApplicationContext;

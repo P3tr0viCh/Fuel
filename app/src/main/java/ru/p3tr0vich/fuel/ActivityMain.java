@@ -46,7 +46,8 @@ public class ActivityMain extends AppCompatActivity implements
     private int mCurrentFragmentId;
 
     private FragmentFuel getFragmentFuel(String fragmentTag) {
-        return (FragmentFuel) getFragmentManager().findFragmentByTag(fragmentTag);
+        return fragmentTag != null ?
+                (FragmentFuel) getFragmentManager().findFragmentByTag(fragmentTag) : null;
     }
 
     private FragmentFueling getFragmentFueling() {
@@ -122,10 +123,12 @@ public class ActivityMain extends AppCompatActivity implements
     private Fragment getFragmentNewInstance(String fragmentTag) {
         if (getFragmentFuel(fragmentTag) == null)
             switch (fragmentTag) {
-                case FragmentBackup.TAG:
-                    return new FragmentBackup();
+                case FragmentCalc.TAG:
+                    return new FragmentCalc();
                 case FragmentChartCost.TAG:
                     return new FragmentChartCost();
+                case FragmentBackup.TAG:
+                    return new FragmentBackup();
                 case FragmentAbout.TAG:
                     return new FragmentAbout();
                 default:
@@ -142,30 +145,29 @@ public class ActivityMain extends AppCompatActivity implements
 
         String fragmentTag = null;
 
-        Fragment fragment = null;
+        Fragment fragment;
         FragmentManager fragmentManager = getFragmentManager();
 
         if (!getFragmentFueling().isVisible()) fragmentManager.popBackStack();
 
         switch (menuId) {
+            case R.id.action_calc:
+                fragmentTag = FragmentCalc.TAG;
+                break;
             case R.id.action_chart_cost:
                 fragmentTag = FragmentChartCost.TAG;
-                fragment = getFragmentNewInstance(fragmentTag);
-                break;
-            case R.id.action_calc:
-                ActivityCalc.start(this);
                 break;
             case R.id.action_settings:
                 ActivityPreference.start(this);
                 break;
             case R.id.action_backup:
                 fragmentTag = FragmentBackup.TAG;
-                fragment = getFragmentNewInstance(fragmentTag);
                 break;
             case R.id.action_about:
                 fragmentTag = FragmentAbout.TAG;
-                fragment = getFragmentNewInstance(fragmentTag);
         }
+
+        fragment = getFragmentNewInstance(fragmentTag);
 
         if (fragment != null)
             fragmentManager.beginTransaction()
@@ -231,11 +233,8 @@ public class ActivityMain extends AppCompatActivity implements
 
         switch (requestCode) {
             case ActivityFuelingRecordChange.REQUEST_CODE:
-                Const.RecordAction action = ActivityFuelingRecordChange.getAction(data);
-
                 fuelingRecord = ActivityFuelingRecordChange.getFuelingRecord(data);
-
-                switch (action) {
+                switch (ActivityFuelingRecordChange.getAction(data)) {
                     case ADD:
                         fragmentFueling.addRecord(fuelingRecord);
                         break;
@@ -246,8 +245,12 @@ public class ActivityMain extends AppCompatActivity implements
                 break;
             case FragmentDialogDeleteRecord.REQUEST_CODE:
                 fuelingRecord = FragmentDialogDeleteRecord.getFuelingRecord(data);
-
                 fragmentFueling.deleteRecord(fuelingRecord);
+                break;
+            case ActivityYandexMap.REQUEST_CODE:
+                ((FragmentCalc) getFragmentFuel(FragmentCalc.TAG))
+                        .setDistance(ActivityYandexMap.getDistance(data));
+                break;
         }
     }
 
@@ -298,6 +301,9 @@ public class ActivityMain extends AppCompatActivity implements
         boolean showSpinner = false;
 
         switch (fragmentId) {
+            case R.id.action_calc:
+                titleId = R.string.title_calc;
+                break;
             case R.id.action_chart_cost:
                 titleId = R.string.title_chart_cost;
                 subtitleId = R.string.title_chart_cost_subtitle;

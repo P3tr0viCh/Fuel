@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 
-
 public class ActivityYandexMap extends AppCompatActivity {
 
     public static final int REQUEST_CODE = 8829;

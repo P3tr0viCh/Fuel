@@ -1,6 +1,5 @@
 package ru.p3tr0vich.fuel;
 
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;

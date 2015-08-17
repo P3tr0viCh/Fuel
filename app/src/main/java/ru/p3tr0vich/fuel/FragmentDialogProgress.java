@@ -1,6 +1,5 @@
 package ru.p3tr0vich.fuel;
 
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;

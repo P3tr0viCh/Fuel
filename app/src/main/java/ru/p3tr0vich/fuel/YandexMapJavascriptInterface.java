@@ -1,6 +1,5 @@
 package ru.p3tr0vich.fuel;
 
-
 import android.webkit.JavascriptInterface;
 
 class YandexMapJavascriptInterface {

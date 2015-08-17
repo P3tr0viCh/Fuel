@@ -8,9 +8,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="16dp"
         android:paddingEnd="16dp"
-        android:paddingStart="16dp">
+        android:paddingStart="16dp"
+        android:paddingTop="16dp">
 
         <TextView
             android:id="@+id/textDistance"
@@ -42,7 +42,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal"
         android:paddingEnd="16dp"
         android:paddingStart="16dp">
@@ -97,10 +97,10 @@
     <View
         android:id="@+id/divider1"
         style="@style/AppTheme.Divider.Horizontal"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="8dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -137,9 +137,9 @@
         android:layout_marginTop="-8dp"
         android:focusableInTouchMode="false"
         android:orientation="horizontal"
-        android:visibility="gone"
         android:paddingEnd="16dp"
-        android:paddingStart="16dp">
+        android:paddingStart="16dp"
+        android:visibility="gone">
 
         <Space
             android:layout_width="110dp"
@@ -156,10 +156,10 @@
     <View
         android:id="@+id/divider2"
         style="@style/AppTheme.Divider.Horizontal"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="8dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -217,9 +217,9 @@
         android:layout_marginTop="-8dp"
         android:focusableInTouchMode="false"
         android:orientation="horizontal"
-        android:visibility="gone"
         android:paddingEnd="16dp"
-        android:paddingStart="16dp">
+        android:paddingStart="16dp"
+        android:visibility="gone">
 
         <Space
             android:layout_width="110dp"

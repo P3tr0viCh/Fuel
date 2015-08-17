@@ -38,16 +38,4 @@ public class FragmentAbout extends FragmentFuel {
 
         return view;
     }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Functions.LogD("FragmentAbout -- onCreate");
-    }
-
-    @Override
-    public void onDestroy() {
-        Functions.LogD("FragmentAbout -- onDestroy");
-        super.onDestroy();
-    }
 }

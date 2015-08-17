@@ -1,6 +1,5 @@
 package ru.p3tr0vich.fuel;
 
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;

@@ -1,8 +1,6 @@
 package ru.p3tr0vich.fuel;
 
-
 import android.annotation.SuppressLint;
-import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -19,8 +17,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-public class FragmentCalc extends Fragment  implements
+public class FragmentCalc extends FragmentFuel implements
         AdapterView.OnItemSelectedListener, View.OnClickListener {
+
+    public static final String TAG = "FragmentCalc";
 
     private EditText mEditDistance;
     private EditText mEditCost;
@@ -37,6 +37,11 @@ public class FragmentCalc extends Fragment  implements
     private boolean mCalculating;
 
     private final float[][] arrCons = {{0, 0, 0}, {0, 0, 0}};
+
+    @Override
+    protected int getFragmentId() {
+        return R.id.action_calc;
+    }
 
     @Nullable
     @SuppressLint("InflateParams")

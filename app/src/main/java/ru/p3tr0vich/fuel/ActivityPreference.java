@@ -1,6 +1,5 @@
 package ru.p3tr0vich.fuel;
 
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;

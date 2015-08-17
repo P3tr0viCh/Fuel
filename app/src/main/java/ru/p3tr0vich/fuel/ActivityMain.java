@@ -121,6 +121,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private Fragment getFragmentNewInstance(String fragmentTag) {
+        if (fragmentTag == null) return null;
         if (getFragmentFuel(fragmentTag) == null)
             switch (fragmentTag) {
                 case FragmentCalc.TAG:

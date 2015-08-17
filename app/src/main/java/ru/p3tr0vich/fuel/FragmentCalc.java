@@ -38,6 +38,8 @@ public class FragmentCalc extends FragmentFuel implements
 
     private final float[][] arrCons = {{0, 0, 0}, {0, 0, 0}};
 
+    private enum CalcAction {DISTANCE, COST, VOLUME}
+
     @Override
     protected int getFragmentId() {
         return R.id.action_calc;
@@ -189,11 +191,6 @@ public class FragmentCalc extends FragmentFuel implements
         arrCons[1][2] = Functions.textToFloat(sPref.getString(this.getString(R.string.pref_winter_mixed), "0"));
     }
 
-    public void prefsChanged() {
-        loadCons(null);
-        selectConsFromSpinners();
-    }
-
     private void savePrefs() {
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .edit()
@@ -246,23 +243,23 @@ public class FragmentCalc extends FragmentFuel implements
             switch (editText.getId()) {
                 case R.id.editPrice:
                     checkTextOnEmpty(editText);
-                    doCalculate(Const.CalcAction.DISTANCE);
+                    doCalculate(CalcAction.DISTANCE);
                     break;
                 case R.id.editCost:
-                    doCalculate(Const.CalcAction.COST);
+                    doCalculate(CalcAction.COST);
                     break;
                 case R.id.editCons:
                     checkTextOnEmpty(editText);
                 case R.id.editDistance:
-                    doCalculate(Const.CalcAction.DISTANCE);
+                    doCalculate(CalcAction.DISTANCE);
                     break;
                 case R.id.editVolume:
-                    doCalculate(Const.CalcAction.VOLUME);
+                    doCalculate(CalcAction.VOLUME);
             }
         }
     }
 
-    private void doCalculate(Const.CalcAction calcAction) {
+    private void doCalculate(CalcAction calcAction) {
 
         if (mCalculating) return;
 

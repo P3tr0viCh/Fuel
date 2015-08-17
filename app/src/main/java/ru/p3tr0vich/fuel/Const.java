@@ -18,6 +18,4 @@ class Const {
     static final String LOG_TAG = "XXX";
 
     enum RecordAction {ADD, UPDATE, DELETE}
-
-    enum CalcAction {DISTANCE, COST, VOLUME}
 }

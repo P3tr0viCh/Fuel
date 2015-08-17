@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ActivityPreference extends PreferenceActivity {
 
-    public static final int REQUEST_CODE = 1471;
+    private static final int REQUEST_CODE = 1471;
 
     public static void start(Activity parent) {
         parent.startActivityForResult(new Intent(parent, ActivityPreference.class), ActivityPreference.REQUEST_CODE);

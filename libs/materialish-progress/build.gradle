@@ -6,8 +6,8 @@ android {
     //noinspection GroovyAssignabilityCheck
     buildToolsVersion rootProject.ext.buildToolsVersion
     defaultConfig {
-        minSdkVersion 17
-        targetSdkVersion 22
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 5
         versionName "1.4"
     }
@@ -20,5 +20,5 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile support_appcompat
 }

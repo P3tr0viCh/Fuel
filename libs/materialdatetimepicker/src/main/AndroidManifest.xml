@@ -12,7 +12,8 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<manifest package="com.wdullaer.materialdatetimepicker">
+<manifest xmlns:tools="http://schemas.android.com/tools"
+    package="com.wdullaer.materialdatetimepicker">
 
-    <application />
+    <application tools:ignore="AllowBackup" />
 </manifest>

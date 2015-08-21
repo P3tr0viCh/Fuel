@@ -6,11 +6,14 @@ android {
     //noinspection GroovyAssignabilityCheck
     buildToolsVersion rootProject.ext.buildToolsVersion
     defaultConfig {
+        //noinspection GroovyAssignabilityCheck
         minSdkVersion rootProject.ext.minSdkVersion
+        //noinspection GroovyAssignabilityCheck
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 5
         versionName "1.4"
     }
+    
     buildTypes {
         release {
             minifyEnabled false
@@ -20,5 +23,6 @@ android {
 }
 
 dependencies {
+    //noinspection GroovyAssignabilityCheck
     compile support_appcompat
 }

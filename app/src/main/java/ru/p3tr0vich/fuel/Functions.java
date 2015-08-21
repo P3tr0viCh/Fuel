@@ -1,9 +1,11 @@
 package ru.p3tr0vich.fuel;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.NetworkInfo;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -113,8 +115,17 @@ class Functions {
     public static void showKeyboard(EditText editText) {
         editText.requestFocus();
         editText.selectAll();
-        InputMethodManager imm = (InputMethodManager) sApplicationContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+        InputMethodManager inputMethodManager = (InputMethodManager)
+                sApplicationContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager)
+                sApplicationContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view != null)
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     public static void setProgressWheelVisible(ProgressWheel progressWheel, boolean visible) {
@@ -139,11 +150,21 @@ class Functions {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) sApplicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
-            NetworkInfo[] allNetworkInfo = connectivityManager.getAllNetworkInfo();
-            if (allNetworkInfo != null)
-                for (NetworkInfo networkInfo : allNetworkInfo)
-                    if (networkInfo.getState() == NetworkInfo.State.CONNECTED)
-                        return true;
+            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
+                @SuppressWarnings("deprecation")
+                NetworkInfo[] networkInfos = connectivityManager.getAllNetworkInfo();
+                if (networkInfos != null)
+                    for (NetworkInfo networkInfo : networkInfos)
+                        if (networkInfo.getState() == NetworkInfo.State.CONNECTED)
+                            return true;
+            } else {
+                Network[] networks = connectivityManager.getAllNetworks();
+                if (networks != null)
+                    for (Network network : networks) {
+                        NetworkInfo networkInfo = connectivityManager.getNetworkInfo(network);
+                        if (networkInfo != null && networkInfo.isConnected()) return true;
+                    }
+            }
         }
         return false;
     }
@@ -192,7 +213,7 @@ class Functions {
         return sApplicationContext.getResources().getDimension(R.dimen.is_phone_in_portrait) != 0;
     }
 
-    public static void LogD(String msg) {
+    public static void logD(String msg) {
         if ((sApplicationContext.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0)
             Log.d(Const.LOG_TAG, msg);
     }

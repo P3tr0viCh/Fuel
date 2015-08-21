@@ -28,5 +28,6 @@
         android:layout_marginLeft="@dimen/abc_action_bar_icon_vertical_padding_material"
         android:text="@string/app_name"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
-        android:textColor="@color/abc_primary_text_material_dark" />
+        android:textColor="@color/abc_primary_text_material_dark"
+        tools:ignore="PrivateResource" />
 </LinearLayout>

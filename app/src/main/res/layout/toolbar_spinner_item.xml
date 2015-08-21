@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@android:id/text1"
     android:layout_width="wrap_content"
     android:layout_height="24dp"
@@ -8,4 +9,5 @@
     android:paddingEnd="4dp"
     android:paddingStart="4dp"
     android:textColor="@color/icons"
-    android:textSize="@dimen/abc_text_size_title_material_toolbar" />
+    android:textSize="@dimen/abc_text_size_title_material_toolbar"
+    tools:ignore="PrivateResource" />

@@ -31,7 +31,7 @@ public class FragmentBackup extends FragmentFuel {
         FragmentDialogQuestion fragmentDialogQuestion =
                 (FragmentDialogQuestion) getFragmentManager().findFragmentByTag(FragmentDialogQuestion.DIALOG_TAG);
 
-        Functions.LogD("FragmentBackup -- onCreate: fragmentDialogProgress != null " + Boolean.toString(fragmentDialogProgress != null));
+        Functions.logD("FragmentBackup -- onCreate: fragmentDialogProgress != null " + Boolean.toString(fragmentDialogProgress != null));
 
         if (fragmentDialogProgress != null)
             fragmentDialogProgress.setTargetFragment(this, FragmentDialogProgress.REQUEST_CODE);
@@ -42,7 +42,7 @@ public class FragmentBackup extends FragmentFuel {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Functions.LogD("FragmentBackup -- onCreateView");
+        Functions.logD("FragmentBackup -- onCreateView");
 
         View v = inflater.inflate(R.layout.fragment_backup, container, false);
 
@@ -69,7 +69,7 @@ public class FragmentBackup extends FragmentFuel {
     }
 
     private void startOperationXml(boolean doSave) {
-        Functions.LogD("FragmentBackup -- startOperationXml");
+        Functions.logD("FragmentBackup -- startOperationXml");
 
         FragmentDialogProgress.show(this, mDatabaseBackupXmlHelper, doSave);
     }
@@ -120,7 +120,7 @@ public class FragmentBackup extends FragmentFuel {
                 return;
         }
 
-        Functions.LogD("FragmentBackup -- stopOperationXml: " + resultMessage);
+        Functions.logD("FragmentBackup -- stopOperationXml: " + resultMessage);
 
         if (result == DatabaseBackupXmlHelper.Result.RESULT_SAVE_OK)
             Toast.makeText(getActivity(), getString(R.string.message_save_file_ok), Toast.LENGTH_SHORT).show();
@@ -142,7 +142,7 @@ public class FragmentBackup extends FragmentFuel {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Functions.LogD("FragmentBackup -- onActivityResult");
+        Functions.logD("FragmentBackup -- onActivityResult");
 
         if (resultCode != Activity.RESULT_OK) return;
 

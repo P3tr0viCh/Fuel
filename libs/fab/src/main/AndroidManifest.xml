@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<manifest package="com.melnykov.fab">
-    <application/>
+<manifest xmlns:tools="http://schemas.android.com/tools"
+    package="com.melnykov.fab">
+    <application tools:ignore="AllowBackup" />
 </manifest>

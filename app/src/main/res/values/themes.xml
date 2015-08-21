@@ -31,11 +31,5 @@
         <item name="android:listChoiceBackgroundIndicator">
             @drawable/apptheme_list_selector_holo_light
         </item>
-
-        <!--
-        <item name="android:activatedBackgroundIndicator">
-            @drawable/apptheme_activated_background_holo_light
-        </item>
-        -->
     </style>
 </resources>

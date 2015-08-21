@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -51,7 +53,7 @@ public class ActivityYandexMap extends AppCompatActivity {
         initUI();
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint({"SetJavaScriptEnabled", "PrivateResource"})
     private void initUI() {
         Toolbar mToolbarYandexMap = (Toolbar) findViewById(R.id.toolbarYandexMap);
         setSupportActionBar(mToolbarYandexMap);
@@ -65,7 +67,7 @@ public class ActivityYandexMap extends AppCompatActivity {
             }
         });
 
-        Functions.LogD("ActivityYandexMap -- initUI: mDistance == " + mDistance);
+        Functions.logD("ActivityYandexMap -- initUI: mDistance == " + mDistance);
 
         setDistance(mDistance);
 
@@ -83,7 +85,7 @@ public class ActivityYandexMap extends AppCompatActivity {
             mWebView.setWebChromeClient(new WebChromeClient() {
                 @Override
                 public boolean onConsoleMessage(@NonNull ConsoleMessage cm) {
-                    Functions.LogD(cm.message() + " -- from line " + cm.lineNumber() + " of " + cm.sourceId());
+                    Functions.logD(cm.message() + " -- from line " + cm.lineNumber() + " of " + cm.sourceId());
                     return true;
                 }
             });
@@ -96,10 +98,20 @@ public class ActivityYandexMap extends AppCompatActivity {
                     return true;
                 }
 
+                @SuppressWarnings("deprecation")
                 @Override
                 public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                     Toast.makeText(ActivityYandexMap.this,
-                            String.format(getString(R.string.text_error_webview), description), Toast.LENGTH_SHORT).show();
+                            String.format(getString(R.string.text_error_webview), description),
+                            Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                    super.onReceivedError(view, request, error);
+                    Toast.makeText(ActivityYandexMap.this,
+                            String.format(getString(R.string.text_error_webview),
+                                    error.getDescription()), Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -120,7 +132,7 @@ public class ActivityYandexMap extends AppCompatActivity {
             mWebView = null;
         }
         super.onDestroy();
-        Functions.LogD("ActivityYandexMap -- onDestroy");
+        Functions.logD("ActivityYandexMap -- onDestroy");
     }
 
     @Override
@@ -174,14 +186,14 @@ public class ActivityYandexMap extends AppCompatActivity {
         if (mDistance > 0)
             title += String.format(getString(R.string.title_yandex_map_add), mDistance);
 
-        Functions.LogD("ActivityYandexMap -- setDistance: title == " + title);
+        Functions.logD("ActivityYandexMap -- setDistance: title == " + title);
 
         //noinspection ConstantConditions
         getSupportActionBar().setTitle(title);
     }
 
     public void endInitYandexMap() {
-        Functions.LogD("ActivityYandexMap -- endInitYandexMap");
+        Functions.logD("ActivityYandexMap -- endInitYandexMap");
 
         mDistance = 0;
 

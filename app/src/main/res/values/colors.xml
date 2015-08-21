@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Palette colors Blue Grey -->
     <!-- Color primary 500 from palette colors -->
     <color name="primary">#607D8B</color>
@@ -28,9 +28,9 @@
     <color name="mdtp_accent_color_dark">@color/primary_dark</color>
 
     <!-- Replace colors in ThemeOverlay.AppCompat.Light for ToolBar and Widget.AppCompat.PopupMenu -->
-    <color name="background_material_light">@color/window_background</color>
-    <color name="primary_text_default_material_light">@color/primary_text</color>
-    <color name="secondary_text_default_material_light">@color/secondary_text</color>
+    <color name="background_material_light" tools:ignore="PrivateResource">@color/window_background</color>
+    <color name="primary_text_default_material_light" tools:ignore="PrivateResource">@color/primary_text</color>
+    <color name="secondary_text_default_material_light" tools:ignore="PrivateResource">@color/secondary_text</color>
 
     <color name="chart_winter">#c8dae8</color>
     <color name="chart_spring">#ff8dbe</color>

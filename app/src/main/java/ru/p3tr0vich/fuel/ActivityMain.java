@@ -43,7 +43,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     private BroadcastReceiver mLoadingStatusReceiver;
 
-    private int mCurrentFragmentId;
+    private int mCurrentFragmentId, mClickedMenuId;
 
     private FragmentFuel getFragmentFuel(String fragmentTag) {
         return fragmentTag != null ?
@@ -58,7 +58,7 @@ public class ActivityMain extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         Functions.sApplicationContext = getApplicationContext();
 
-        Functions.LogD("**************** ActivityMain -- onCreate ****************");
+        Functions.logD("**************** ActivityMain -- onCreate ****************");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -68,7 +68,19 @@ public class ActivityMain extends AppCompatActivity implements
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mDrawerToggle = new ActionBarDrawerToggle(this,
-                mDrawerLayout, mToolbarMain, R.string.app_name, R.string.app_name);
+                mDrawerLayout, mToolbarMain, R.string.app_name, R.string.app_name) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                Functions.hideKeyboard(ActivityMain.this);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                selectItem(mClickedMenuId);
+            }
+        };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
@@ -76,7 +88,8 @@ public class ActivityMain extends AppCompatActivity implements
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-                selectItem(menuItem.getItemId());
+                mClickedMenuId = menuItem.getItemId();
+                mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
         });
@@ -89,7 +102,7 @@ public class ActivityMain extends AppCompatActivity implements
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        Functions.LogD("ActivityMain -- onItemSelected");
+                        Functions.logD("ActivityMain -- onItemSelected");
 
                         FragmentFueling fragmentFueling = getFragmentFueling();
                         if (fragmentFueling != null && fragmentFueling.isVisible())
@@ -115,7 +128,7 @@ public class ActivityMain extends AppCompatActivity implements
             mCurrentFragmentId = R.id.action_fueling;
             getFragmentManager().beginTransaction()
                     .add(R.id.contentFrame, new FragmentFueling(), FragmentFueling.TAG)
-                    .setTransition(FragmentTransaction.TRANSIT_NONE)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit();
         }
     }
@@ -139,10 +152,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void selectItem(int menuId) {
-        if (mCurrentFragmentId == menuId) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-            return;
-        }
+        if (mCurrentFragmentId == menuId) return;
 
         String fragmentTag = null;
 
@@ -176,8 +186,6 @@ public class ActivityMain extends AppCompatActivity implements
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .addToBackStack(null)
                     .commit();
-
-        mDrawerLayout.closeDrawer(GravityCompat.START);
     }
 
     @Override
@@ -279,7 +287,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onFilterChange(FuelingDBHelper.FilterMode filterMode) {
-        Functions.LogD("ActivityMain -- onFilterChange");
+        Functions.logD("ActivityMain -- onFilterChange");
 
         int position = filterModeToPosition(filterMode);
 
@@ -294,9 +302,9 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onFragmentChanged(int fragmentId) {
-        Functions.LogD("ActivityMain -- onFragmentChanged");
+        Functions.logD("ActivityMain -- onFragmentChanged");
 
-        mCurrentFragmentId = fragmentId;
+        mCurrentFragmentId = mClickedMenuId = fragmentId;
 
         int titleId, subtitleId = -1;
         boolean showSpinner = false;

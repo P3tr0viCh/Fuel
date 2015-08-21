@@ -1,5 +1,6 @@
 package ru.p3tr0vich.fuel;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
         return data.getParcelableExtra(INTENT_EXTRA_DATA);
     }
 
+    @SuppressLint("PrivateResource")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +40,7 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
 
         Toolbar toolbarRecord = (Toolbar) findViewById(R.id.toolbarRecord);
         setSupportActionBar(toolbarRecord);
+
         toolbarRecord.setNavigationIcon(R.drawable.abc_ic_clear_mtrl_alpha);
         toolbarRecord.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

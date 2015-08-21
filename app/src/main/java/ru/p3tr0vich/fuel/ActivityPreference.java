@@ -1,5 +1,6 @@
 package ru.p3tr0vich.fuel;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -37,6 +38,7 @@ public class ActivityPreference extends PreferenceActivity {
         prepareLayout();
     }
 
+    @SuppressLint("PrivateResource")
     private void prepareLayout() {
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
         View content = root.getChildAt(0);

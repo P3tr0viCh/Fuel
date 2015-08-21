@@ -83,7 +83,7 @@ public class FragmentFueling extends FragmentFuel implements
     @SuppressLint("InflateParams")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Functions.LogD("FragmentFueling -- onCreateView");
+        Functions.logD("FragmentFueling -- onCreateView");
 
         View view = inflater.inflate(R.layout.fragment_fueling, container, false);
 
@@ -153,7 +153,7 @@ public class FragmentFueling extends FragmentFuel implements
         mFilter = new FuelingDBHelper.Filter();
 
         if (savedInstanceState == null) {
-            Functions.LogD("FragmentFueling -- onCreate: savedInstanceState == null");
+            Functions.logD("FragmentFueling -- onCreate: savedInstanceState == null");
 
             SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
@@ -166,7 +166,7 @@ public class FragmentFueling extends FragmentFuel implements
                             Functions.dateToSQLite(new Date())));
 
         } else {
-            Functions.LogD("FragmentFueling -- onCreate: savedInstanceState != null");
+            Functions.logD("FragmentFueling -- onCreate: savedInstanceState != null");
 
             mFilter.filterMode = (FuelingDBHelper.FilterMode) savedInstanceState.getSerializable(KEY_FILTER_MODE);
             mFilter.dateFrom = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_FROM);
@@ -182,12 +182,12 @@ public class FragmentFueling extends FragmentFuel implements
         outState.putSerializable(KEY_FILTER_DATE_FROM, mFilter.dateFrom);
         outState.putSerializable(KEY_FILTER_DATE_TO, mFilter.dateTo);
 
-        Functions.LogD("FragmentFueling -- onSaveInstanceState");
+        Functions.logD("FragmentFueling -- onSaveInstanceState");
     }
 
     @Override
     public void onDestroy() {
-        Functions.LogD("FragmentFueling -- onDestroy");
+        Functions.logD("FragmentFueling -- onDestroy");
 
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .edit()
@@ -202,7 +202,7 @@ public class FragmentFueling extends FragmentFuel implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Functions.LogD("FragmentFueling -- onActivityCreated");
+        Functions.logD("FragmentFueling -- onActivityCreated");
 
         db = new FuelingDBHelper();
         String[] from = {
@@ -237,7 +237,7 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     public boolean setFilterMode(FuelingDBHelper.FilterMode filterMode) {
-        Functions.LogD("FragmentFueling -- setFilterMode: new FilterMode == " + filterMode +
+        Functions.logD("FragmentFueling -- setFilterMode: new FilterMode == " + filterMode +
                 ", current FilterMode == " + mFilter.filterMode);
         if (mFilter.filterMode != filterMode) {
 
@@ -294,7 +294,7 @@ public class FragmentFueling extends FragmentFuel implements
 
         @Override
         public Cursor loadInBackground() {
-            Functions.LogD("FragmentFueling -- loadInBackground");
+            Functions.logD("FragmentFueling -- loadInBackground");
 
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(true));
 
@@ -423,7 +423,7 @@ public class FragmentFueling extends FragmentFuel implements
             mTextAverage.setText(Functions.floatToString(calcTotalResult.average));
             mTextCostSum.setText(Functions.floatToString(calcTotalResult.costSum));
 
-            Functions.LogD("FragmentFueling -- CalcTotalTask: onPostExecute");
+            Functions.logD("FragmentFueling -- CalcTotalTask: onPostExecute");
         }
     }
 
@@ -432,7 +432,7 @@ public class FragmentFueling extends FragmentFuel implements
         mFuelingCursorAdapter.swapCursor(data);
         selectItemById(mSelectedId);
 
-        Functions.LogD("FragmentFueling -- onLoadFinished");
+        Functions.logD("FragmentFueling -- onLoadFinished");
 
         new CalcTotalTask(data).execute(); // TODO: cancel
     }

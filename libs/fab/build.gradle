@@ -10,7 +10,9 @@ android {
     //noinspection GroovyAssignabilityCheck
     buildToolsVersion rootProject.ext.buildToolsVersion
     defaultConfig {
+        //noinspection GroovyAssignabilityCheck
         minSdkVersion rootProject.ext.minSdkVersion
+        //noinspection GroovyAssignabilityCheck
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionName "1.3.0"
         versionCode 13
@@ -24,6 +26,8 @@ android {
 }
 
 dependencies {
+    //noinspection GroovyAssignabilityCheck
     compile nineoldandroids_library
+    //noinspection GroovyAssignabilityCheck
     compile support_recyclerview
 }

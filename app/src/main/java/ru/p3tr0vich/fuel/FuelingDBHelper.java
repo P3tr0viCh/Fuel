@@ -186,7 +186,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     public Cursor getAllCursor() {
         String sql = SELECT_ALL + filterModeToSql() + ORDER_BY_DATE;
 
-        Functions.LogD("FuelingDBHelper -- getAllCursor (sql == " + sql + ")");
+        Functions.logD("FuelingDBHelper -- getAllCursor (sql == " + sql + ")");
 
         return getReadableDatabase().rawQuery(sql, null);
     }
@@ -198,7 +198,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     public Cursor getSumByMonthsForYear() {
         String sql = SELECT_SUM_BY_MONTHS_IN_YEAR + filterModeToSql() + GROUP_BY_MONTH;
 
-        Functions.LogD("FuelingDBHelper -- getSumByMonthsForYear (sql == " + sql + ")");
+        Functions.logD("FuelingDBHelper -- getSumByMonthsForYear (sql == " + sql + ")");
 
         return getReadableDatabase().rawQuery(sql, null);
     }

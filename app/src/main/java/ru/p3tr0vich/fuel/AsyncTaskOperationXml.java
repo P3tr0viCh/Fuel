@@ -18,7 +18,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, DatabaseBackupXmlHelpe
     }
 
     void setFragmentDialogProgress(FragmentDialogProgress fragmentDialogProgress) {
-        Functions.LogD("OperationXml -- setFragmentDialogProgress");
+        Functions.logD("OperationXml -- setFragmentDialogProgress");
         mFragmentDialogProgress = fragmentDialogProgress;
     }
 
@@ -48,7 +48,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, DatabaseBackupXmlHelpe
 
     @Override
     protected void onPostExecute(DatabaseBackupXmlHelper.Result result) {
-        Functions.LogD("OperationXml -- onPostExecute: mFragmentDialogProgress != null " + Boolean.toString(mFragmentDialogProgress != null));
+        Functions.logD("OperationXml -- onPostExecute: mFragmentDialogProgress != null " + Boolean.toString(mFragmentDialogProgress != null));
 
         if (mFragmentDialogProgress != null) mFragmentDialogProgress.stopTask(result);
     }

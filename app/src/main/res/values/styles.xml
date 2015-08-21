@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="AppTheme.Divider">
         <item name="android:layout_width">match_parent</item>
@@ -64,7 +64,7 @@
         <item name="android:layout_height">48dp</item>
         <item name="android:background">@color/primary</item>
         <item name="tabIndicatorColor">@color/window_background</item>
-        <item name="tabMinWidth">@dimen/design_tab_min_width</item>
+        <item name="tabMinWidth" tools:ignore="PrivateResource">@dimen/design_tab_min_width</item>
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 </resources>

@@ -4,4 +4,5 @@
     <dimen name="activity_record_horizontal_margin">240dp</dimen>
     <dimen name="activity_calc_horizontal_margin">240dp</dimen>
     <dimen name="activity_backup_horizontal_margin">240dp</dimen>
+    <dimen name="activity_about_horizontal_margin">240dp</dimen>
 </resources>

@@ -8,16 +8,31 @@ class YandexMapJavascriptInterface {
 
     private final ActivityYandexMap mActivityYandexMap;
 
+    private final double mMapCenterLatitude;  // Широта
+    private final double mMapCenterLongitude; // Долгота
     private final String mStartSearchControlPlaceholderContent;
     private final String mFinishSearchControlPlaceholderContent;
 
     YandexMapJavascriptInterface(ActivityYandexMap activityYandexMap) {
         mActivityYandexMap = activityYandexMap;
 
+        mMapCenterLatitude = 55.752023;
+        mMapCenterLongitude = 37.617499; // Москва, Кремль
+
         mStartSearchControlPlaceholderContent =
                 mActivityYandexMap.getString(R.string.yandex_map_start_search_control_placeholder_content);
         mFinishSearchControlPlaceholderContent =
                 mActivityYandexMap.getString(R.string.yandex_map_finish_search_control_placeholder_content);
+    }
+
+    @JavascriptInterface
+    public double getMapCenterLatitude() {
+        return mMapCenterLatitude;
+    }
+
+    @JavascriptInterface
+    public double getMapCenterLongitude() {
+        return mMapCenterLongitude;
     }
 
     @JavascriptInterface

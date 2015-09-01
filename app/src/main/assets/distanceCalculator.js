@@ -1,6 +1,7 @@
 function init() {
     var yandexMap = new ymaps.Map('map', {
-            center: [55.752023, 37.617499],
+            center: [YandexMapJavascriptInterface.getMapCenterLatitude(),
+                     YandexMapJavascriptInterface.getMapCenterLongitude()],
             zoom: 9,
             type: 'yandex#map',
             behaviors: ['multiTouch', 'drag'],

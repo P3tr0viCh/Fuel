@@ -1,5 +1,7 @@
 package ru.p3tr0vich.fuel;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -21,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -29,6 +32,7 @@ public class ActivityMain extends AppCompatActivity implements
         FragmentFueling.OnFilterChangeListener,
         FragmentFueling.OnRecordChangeListener,
         FragmentFuel.OnFragmentChangedListener,
+        FragmentPreference.OnPreferenceScreenChangedListener,
         FragmentBackup.OnDataLoadedFromBackupListener {
 
     private static final String ACTION_LOADING = "ru.p3tr0vich.fuel.ACTION_LOADING";
@@ -45,9 +49,9 @@ public class ActivityMain extends AppCompatActivity implements
 
     private int mCurrentFragmentId, mClickedMenuId;
 
-    private FragmentFuel getFragmentFuel(String fragmentTag) {
+    private Fragment findFragmentByTag(String fragmentTag) {
         return fragmentTag != null ?
-                (FragmentFuel) getFragmentManager().findFragmentByTag(fragmentTag) : null;
+                getFragmentManager().findFragmentByTag(fragmentTag) : null;
     }
 
     private FragmentFueling getFragmentFueling() {
@@ -65,6 +69,8 @@ public class ActivityMain extends AppCompatActivity implements
 
         mToolbarMain = (Toolbar) findViewById(R.id.toolbarMain);
         setSupportActionBar(mToolbarMain);
+        //noinspection ConstantConditions
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mDrawerToggle = new ActionBarDrawerToggle(this,
@@ -83,12 +89,26 @@ public class ActivityMain extends AppCompatActivity implements
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
+        mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Functions.logD("ActivityMain -- mDrawerToggle: onClick");
+                FragmentPreference fragmentPreference = (FragmentPreference) findFragmentByTag(FragmentPreference.TAG);
+                if (fragmentPreference.goToRootScreen()) {
+                    setTitle(R.string.title_prefs);
+                    toggleDrawer(mDrawerToggle, mDrawerLayout, false);
+                }
+            }
+        });
 
         mNavigationView = (NavigationView) findViewById(R.id.drawerNavigationView);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 mClickedMenuId = menuItem.getItemId();
+                if (mCurrentFragmentId == R.id.action_settings && mCurrentFragmentId != mClickedMenuId)
+                    mDrawerToggle.setDrawerIndicatorEnabled(true);
+
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
@@ -135,12 +155,14 @@ public class ActivityMain extends AppCompatActivity implements
 
     private Fragment getFragmentNewInstance(String fragmentTag) {
         if (fragmentTag == null) return null;
-        if (getFragmentFuel(fragmentTag) == null)
+        if (findFragmentByTag(fragmentTag) == null)
             switch (fragmentTag) {
                 case FragmentCalc.TAG:
                     return new FragmentCalc();
                 case FragmentChartCost.TAG:
                     return new FragmentChartCost();
+                case FragmentPreference.TAG:
+                    return new FragmentPreference();
                 case FragmentBackup.TAG:
                     return new FragmentBackup();
                 case FragmentAbout.TAG:
@@ -169,7 +191,8 @@ public class ActivityMain extends AppCompatActivity implements
                 fragmentTag = FragmentChartCost.TAG;
                 break;
             case R.id.action_settings:
-                ActivityPreference.start(this);
+//                ActivityPreference.start(this);
+                fragmentTag = FragmentPreference.TAG;
                 break;
             case R.id.action_backup:
                 fragmentTag = FragmentBackup.TAG;
@@ -192,7 +215,15 @@ public class ActivityMain extends AppCompatActivity implements
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerVisible(GravityCompat.START))
             mDrawerLayout.closeDrawer(GravityCompat.START);
-        else if (getFragmentManager().getBackStackEntryCount() != 0)
+        else if (mCurrentFragmentId == R.id.action_settings) {
+            FragmentPreference fragmentPreference = (FragmentPreference) findFragmentByTag(FragmentPreference.TAG);
+            if (fragmentPreference.goToRootScreen()) {
+                setTitle(R.string.title_prefs);
+                toggleDrawer(mDrawerToggle, mDrawerLayout, false);
+                return;
+            }
+        }
+        if (getFragmentManager().getBackStackEntryCount() != 0)
             getFragmentManager().popBackStack();
         else super.onBackPressed();
     }
@@ -257,7 +288,7 @@ public class ActivityMain extends AppCompatActivity implements
                 fragmentFueling.deleteRecord(fuelingRecord);
                 break;
             case ActivityYandexMap.REQUEST_CODE:
-                ((FragmentCalc) getFragmentFuel(FragmentCalc.TAG))
+                ((FragmentCalc) findFragmentByTag(FragmentCalc.TAG))
                         .setDistance(ActivityYandexMap.getDistance(data));
                 break;
         }
@@ -317,6 +348,9 @@ public class ActivityMain extends AppCompatActivity implements
                 titleId = R.string.title_chart_cost;
                 subtitleId = R.string.title_chart_cost_subtitle;
                 break;
+            case R.id.action_settings:
+                titleId = R.string.title_prefs;
+                break;
             case R.id.action_backup:
                 titleId = R.string.title_backup;
                 break;
@@ -332,8 +366,8 @@ public class ActivityMain extends AppCompatActivity implements
         setSubtitle(subtitleId);
         mToolbarSpinner.setVisibility(showSpinner ? View.VISIBLE : View.GONE);
 
-        for (int i = 0; i < mNavigationView.getMenu().size(); i++)
-            mNavigationView.getMenu().getItem(i).setChecked(false);
+//        for (int i = 0; i < mNavigationView.getMenu().size(); i++)
+//            mNavigationView.getMenu().getItem(i).setChecked(false);
         mNavigationView.getMenu().findItem(fragmentId).setChecked(true);
     }
 
@@ -352,8 +386,76 @@ public class ActivityMain extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public void setTitle(CharSequence title) {
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar == null) return;
+
+        if (title != null) {
+            actionBar.setTitle(title);
+            actionBar.setDisplayShowTitleEnabled(true);
+        } else {
+            actionBar.setTitle(null);
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
+    }
+
     private void setSubtitle(int resId) {
         if (resId != -1) mToolbarMain.setSubtitle(resId);
         else mToolbarMain.setSubtitle(null);
+    }
+
+    @Override
+    public void OnPreferenceScreenChanged(CharSequence title) {
+        setTitle(title);
+        toggleDrawer(mDrawerToggle, mDrawerLayout, true);
+    }
+
+    private void toggleDrawer(final ActionBarDrawerToggle actionBarDrawerToggle, final DrawerLayout drawerLayout,
+                              final boolean showArrow) {
+        float start, end;
+
+        if (showArrow) {
+            start = 0f;
+            end = 1f;
+        } else {
+            start = 1f;
+            end = 0f;
+        }
+        ValueAnimator anim = ValueAnimator.ofFloat(start, end);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float slideOffset = (Float) valueAnimator.getAnimatedValue();
+                actionBarDrawerToggle.onDrawerSlide(drawerLayout, slideOffset);
+            }
+        });
+        anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                if (!showArrow)
+                    mDrawerToggle.setDrawerIndicatorEnabled(true);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (showArrow)
+                    mDrawerToggle.setDrawerIndicatorEnabled(false);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        anim.setInterpolator(new DecelerateInterpolator());
+        anim.setDuration(300);
+        anim.start();
     }
 }

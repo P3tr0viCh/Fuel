@@ -1,0 +1,87 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceScreen
+        android:summary="@string/pref_header_summary_def"
+        android:title="@string/pref_header_def">
+        <EditTextPreference
+            android:imeOptions="flagNoExtractUi"
+            android:inputType="numberDecimal"
+            android:key="@string/pref_def_cost"
+            android:negativeButtonText="@string/dialog_btn_cancel"
+            android:positiveButtonText="@string/dialog_btn_done"
+            android:summary="@string/pref_summary_cost"
+            android:title="@string/text_cost" />
+        <EditTextPreference
+            android:imeOptions="flagNoExtractUi"
+            android:inputType="numberDecimal"
+            android:key="@string/pref_def_volume"
+            android:negativeButtonText="@string/dialog_btn_cancel"
+            android:positiveButtonText="@string/dialog_btn_done"
+            android:summary="@string/pref_summary_volume"
+            android:title="@string/text_volume" />
+    </PreferenceScreen>
+    <PreferenceScreen
+        android:summary="@string/pref_header_summary_cons"
+        android:title="@string/pref_header_cons">
+        <PreferenceCategory
+            android:key="Summer"
+            android:summary="@string/pref_summary_summer"
+            android:title="@string/summer">
+
+            <EditTextPreference
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="numberDecimal"
+                android:key="@string/pref_summer_city"
+                android:negativeButtonText="@string/dialog_btn_cancel"
+                android:positiveButtonText="@string/dialog_btn_done"
+                android:summary="@string/pref_summary_summer_city"
+                android:title="@string/city" />
+            <EditTextPreference
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="numberDecimal"
+                android:key="@string/pref_summer_highway"
+                android:negativeButtonText="@string/dialog_btn_cancel"
+                android:positiveButtonText="@string/dialog_btn_done"
+                android:summary="@string/pref_summary_summer_highway"
+                android:title="@string/highway" />
+            <EditTextPreference
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="numberDecimal"
+                android:key="@string/pref_summer_mixed"
+                android:negativeButtonText="@string/dialog_btn_cancel"
+                android:positiveButtonText="@string/dialog_btn_done"
+                android:summary="@string/pref_summary_summer_mixed"
+                android:title="@string/mixed" />
+        </PreferenceCategory>
+
+        <PreferenceCategory
+            android:key="Winter"
+            android:summary="@string/pref_summary_winter"
+            android:title="@string/winter">
+
+            <EditTextPreference
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="numberDecimal"
+                android:key="@string/pref_winter_city"
+                android:negativeButtonText="@string/dialog_btn_cancel"
+                android:positiveButtonText="@string/dialog_btn_done"
+                android:summary="@string/pref_summary_winter_city"
+                android:title="@string/city" />
+            <EditTextPreference
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="numberDecimal"
+                android:key="@string/pref_winter_highway"
+                android:negativeButtonText="@string/dialog_btn_cancel"
+                android:positiveButtonText="@string/dialog_btn_done"
+                android:summary="@string/pref_summary_winter_highway"
+                android:title="@string/highway" />
+            <EditTextPreference
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="numberDecimal"
+                android:key="@string/pref_winter_mixed"
+                android:negativeButtonText="@string/dialog_btn_cancel"
+                android:positiveButtonText="@string/dialog_btn_done"
+                android:summary="@string/pref_summary_winter_mixed"
+                android:title="@string/mixed" />
+        </PreferenceCategory>
+    </PreferenceScreen>
+</PreferenceScreen>

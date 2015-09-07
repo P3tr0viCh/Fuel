@@ -2,10 +2,10 @@ package ru.p3tr0vich.fuel;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceGroup;
+import android.support.v14.preference.PreferenceFragment;
+import android.support.v7.preference.EditTextPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceGroup;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +14,8 @@ import android.view.ViewGroup;
 public class FragmentPrefs extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle bundle, String s) {
+        Functions.logD("FragmentPrefs -- onCreatePreferences");
 
         String category = getArguments().getString(getString(R.string.pref_category));
         if (category != null) {

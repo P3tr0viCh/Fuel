@@ -20,7 +20,8 @@ ext {
 
     support_design = 'com.android.support:design:23.0.1'
     support_appcompat = 'com.android.support:appcompat-v7:23.0.1'
-    support_preference = 'com.android.support:preference-v14:23.0.1'
+    support_preference7 = 'com.android.support:preference-v7:23.0.1'
+    support_preference14 = 'com.android.support:preference-v14:23.0.1'
     support_recyclerview = 'com.android.support:recyclerview-v7:23.0.1'
 
     nineoldandroids_library = 'com.nineoldandroids:library:2.4.0'

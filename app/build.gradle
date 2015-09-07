@@ -94,6 +94,11 @@ dependencies {
     compile support_appcompat
     //noinspection GroovyAssignabilityCheck
     compile support_design
+    //noinspection GroovyAssignabilityCheck
+    compile support_preference7
+    //noinspection GroovyAssignabilityCheck
+    compile support_preference14
+
     compile 'com.github.PhilJay:MPAndroidChart:v2.1.3'
 
     compile project(':libs:fab')

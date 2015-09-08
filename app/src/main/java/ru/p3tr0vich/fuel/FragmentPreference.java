@@ -2,25 +2,31 @@ package ru.p3tr0vich.fuel;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v14.preference.PreferenceFragment;
+import android.support.v7.preference.EditTextPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceGroup;
 import android.support.v7.preference.PreferenceScreen;
+import android.text.TextUtils;
 
 public class FragmentPreference extends PreferenceFragment {
 
     public static final String TAG = "FragmentPreference";
 
-    private OnPreferenceScreenChangedListener mOnPreferenceScreenChangedListener;
+    private OnPreferenceScreenChangeListener mOnPreferenceScreenChangeListener;
     private FragmentFuel.OnFragmentChangedListener mOnFragmentChangedListener;
 
     private boolean isInRoot;
     private PreferenceScreen rootPreferenceScreen;
 
-    public interface OnPreferenceScreenChangedListener {
+    public interface OnPreferenceScreenChangeListener {
         void OnPreferenceScreenChanged(CharSequence title);
     }
 
-    public int getFragmentId() {
+    @SuppressWarnings("SameReturnValue")
+    private int getFragmentId() {
         return R.id.action_settings;
     }
 
@@ -29,17 +35,25 @@ public class FragmentPreference extends PreferenceFragment {
         addPreferencesFromResource(R.xml.preferences);
         isInRoot = true;
         rootPreferenceScreen = getPreferenceScreen();
+
+        rootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(
+                new SharedPreferences.OnSharedPreferenceChangeListener() {
+                    @Override
+                    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                        updatePreferenceSummary(findPreference(key));
+                    }
+                });
+
+        init(rootPreferenceScreen);
     }
 
     @Override
     public void onNavigateToScreen(PreferenceScreen preferenceScreen) {
         if (preferenceScreen != null) {
-            Functions.logD("FragmentPreference -- onNavigateToScreen: " + preferenceScreen.getTitle());
             isInRoot = false;
             setPreferenceScreen(preferenceScreen);
-            mOnPreferenceScreenChangedListener.OnPreferenceScreenChanged(preferenceScreen.getTitle());
-        } else
-            Functions.logD("FragmentPreference -- onNavigateToScreen: null");
+            mOnPreferenceScreenChangeListener.OnPreferenceScreenChanged(preferenceScreen.getTitle());
+        }
         super.onNavigateToScreen(preferenceScreen);
     }
 
@@ -54,13 +68,7 @@ public class FragmentPreference extends PreferenceFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         Functions.logD("FragmentPreference -- onAttach (context)");
-        try {
-            mOnPreferenceScreenChangedListener = (OnPreferenceScreenChangedListener) context;
-            mOnFragmentChangedListener = (FragmentFuel.OnFragmentChangedListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() +
-                    " must implement OnPreferenceScreenChangedListener, OnFragmentChangedListener");
-        }
+        onAttach((Activity) context);
     }
 
     @SuppressWarnings("deprecation")
@@ -69,7 +77,7 @@ public class FragmentPreference extends PreferenceFragment {
         super.onAttach(activity);
         Functions.logD("FragmentPreference -- onAttach (activity)");
         try {
-            mOnPreferenceScreenChangedListener = (OnPreferenceScreenChangedListener) activity;
+            mOnPreferenceScreenChangeListener = (OnPreferenceScreenChangeListener) activity;
             mOnFragmentChangedListener = (FragmentFuel.OnFragmentChangedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() +
@@ -82,5 +90,32 @@ public class FragmentPreference extends PreferenceFragment {
         super.onStart();
         Functions.logD("FragmentPreference -- onStart");
         mOnFragmentChangedListener.onFragmentChanged(getFragmentId());
+    }
+
+    private void updatePreferenceSummary(Preference preference) {
+        if (preference instanceof EditTextPreference) {
+            EditTextPreference editPref = (EditTextPreference) preference;
+
+            String summary, text;
+
+            summary = (String) editPref.getSummary();
+            text = editPref.getText();
+
+            if (TextUtils.isEmpty(text)) text = "0";
+
+            int i = summary.lastIndexOf(" (");
+            if (i != -1) summary = summary.substring(0, i);
+            summary = summary + " (" + text + ")";
+
+            editPref.setSummary(summary);
+        }
+    }
+
+    private void init(Preference preference) {
+        if (preference instanceof PreferenceScreen || preference instanceof PreferenceGroup) {
+            for (int i = 0; i < ((PreferenceGroup) preference).getPreferenceCount(); i++)
+                init(((PreferenceGroup) preference).getPreference(i));
+        } else
+            updatePreferenceSummary(preference);
     }
 }

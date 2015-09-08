@@ -154,10 +154,6 @@
     <string name="pref_winter_highway" translatable="false">winter highway</string>
     <string name="pref_winter_mixed" translatable="false">winter mixed</string>
 
-    <string name="pref_category" translatable="false">category</string>
-    <string name="pref_category_defaults" translatable="false">category_defaults</string>
-    <string name="pref_category_cons" translatable="false">category_cons</string>
-
     <string name="pref_filter_date_from" translatable="false">filter date from</string>
     <string name="pref_filter_date_to" translatable="false">filter date to</string>
 

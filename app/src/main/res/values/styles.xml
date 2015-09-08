@@ -67,4 +67,12 @@
         <item name="tabMinWidth" tools:ignore="PrivateResource">@dimen/design_tab_min_width</item>
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
+
+    <style name="AppTheme.PreferenceThemeOverlay" parent="PreferenceThemeOverlay">
+        <item name="preferenceStyle">@style/Preference</item>
+    </style>
+
+    <style name="Preference">
+        <item name="layout">@layout/apptheme_preference</item>
+    </style>
 </resources>

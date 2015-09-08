@@ -1,5 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceScreen
+        android:icon="@drawable/ic_plus_circle_outline_grey600_24dp"
         android:summary="@string/pref_header_summary_def"
         android:title="@string/pref_header_def">
         <EditTextPreference
@@ -20,13 +21,13 @@
             android:title="@string/text_volume" />
     </PreferenceScreen>
     <PreferenceScreen
+        android:icon="@drawable/ic_calculator_grey600_24dp"
         android:summary="@string/pref_header_summary_cons"
         android:title="@string/pref_header_cons">
         <PreferenceCategory
             android:key="Summer"
             android:summary="@string/pref_summary_summer"
             android:title="@string/summer">
-
             <EditTextPreference
                 android:imeOptions="flagNoExtractUi"
                 android:inputType="numberDecimal"
@@ -52,12 +53,10 @@
                 android:summary="@string/pref_summary_summer_mixed"
                 android:title="@string/mixed" />
         </PreferenceCategory>
-
         <PreferenceCategory
             android:key="Winter"
             android:summary="@string/pref_summary_winter"
             android:title="@string/winter">
-
             <EditTextPreference
                 android:imeOptions="flagNoExtractUi"
                 android:inputType="numberDecimal"

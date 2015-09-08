@@ -32,7 +32,7 @@ public class ActivityMain extends AppCompatActivity implements
         FragmentFueling.OnFilterChangeListener,
         FragmentFueling.OnRecordChangeListener,
         FragmentFuel.OnFragmentChangedListener,
-        FragmentPreference.OnPreferenceScreenChangedListener,
+        FragmentPreference.OnPreferenceScreenChangeListener,
         FragmentBackup.OnDataLoadedFromBackupListener {
 
     private static final String ACTION_LOADING = "ru.p3tr0vich.fuel.ACTION_LOADING";
@@ -366,8 +366,6 @@ public class ActivityMain extends AppCompatActivity implements
         setSubtitle(subtitleId);
         mToolbarSpinner.setVisibility(showSpinner ? View.VISIBLE : View.GONE);
 
-//        for (int i = 0; i < mNavigationView.getMenu().size(); i++)
-//            mNavigationView.getMenu().getItem(i).setChecked(false);
         mNavigationView.getMenu().findItem(fragmentId).setChecked(true);
     }
 

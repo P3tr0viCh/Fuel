@@ -43,8 +43,11 @@
         <item name="android:textColor">@color/accent</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.ErrorValue" parent="@style/TextAppearance.AppCompat.Small">
+    <style name="AppTheme.TextAppearance.Small" parent="@style/TextAppearance.AppCompat.Small">
         <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.ErrorValue" parent="@style/AppTheme.TextAppearance.Small">
         <item name="android:textColor">@color/edit_error</item>
     </style>
 

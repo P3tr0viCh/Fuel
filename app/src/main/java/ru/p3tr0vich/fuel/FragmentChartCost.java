@@ -22,7 +22,7 @@ import com.github.mikephil.charting.utils.ValueFormatter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-
+// TODO: пустая база
 public class FragmentChartCost extends FragmentFuel implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -48,6 +48,7 @@ public class FragmentChartCost extends FragmentFuel implements
             R.color.chart_autumn, R.color.chart_autumn, R.color.chart_autumn,
             R.color.chart_winter};
 
+    private boolean mIsData = false;
     private boolean mUpdateYearInProcess = true;
 
     @Override
@@ -312,6 +313,8 @@ public class FragmentChartCost extends FragmentFuel implements
 
                 for (int i = 0; i < 12; i++) mSums[i] = 0;
 
+                mIsData = data.getCount() > 0;
+
                 if (data.moveToFirst()) do {
                     sum = data.getFloat(0);
                     month = data.getString(1);
@@ -360,23 +363,26 @@ public class FragmentChartCost extends FragmentFuel implements
     }
 
     private void updateChart() {
-        ArrayList<BarEntry> yValues = new ArrayList<>();
+        if (mIsData) {
+            ArrayList<BarEntry> yValues = new ArrayList<>();
 
-        for (int i = 0; i < 12; i++) yValues.add(new BarEntry(mSums[i], i));
+            for (int i = 0; i < 12; i++) yValues.add(new BarEntry(mSums[i], i));
 
-        BarDataSet set = new BarDataSet(yValues, "");
-        set.setBarSpacePercent(35f);
-        set.setColors(mColors, getActivity());
+            BarDataSet set = new BarDataSet(yValues, "");
+            set.setBarSpacePercent(35f);
+            set.setColors(mColors, getActivity());
 
-        ArrayList<BarDataSet> dataSets = new ArrayList<>();
-        dataSets.add(set);
+            ArrayList<BarDataSet> dataSets = new ArrayList<>();
+            dataSets.add(set);
 
-        BarData data = new BarData(mMonths, dataSets);
-        data.setValueFormatter(new FloatFormatter());
-        data.setValueTextSize(8f);
+            BarData data = new BarData(mMonths, dataSets);
+            data.setValueFormatter(new FloatFormatter());
+            data.setValueTextSize(8f);
 
-        mChart.setData(data);
+            mChart.setData(data);
 
-        mChart.animateXY(Const.ANIMATION_CHART, Const.ANIMATION_CHART);
+            mChart.animateXY(Const.ANIMATION_CHART, Const.ANIMATION_CHART);
+        } else
+            mChart.clear();
     }
 }

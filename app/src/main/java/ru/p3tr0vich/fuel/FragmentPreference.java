@@ -10,6 +10,11 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceGroup;
 import android.support.v7.preference.PreferenceScreen;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 public class FragmentPreference extends PreferenceFragment {
 
@@ -45,6 +50,24 @@ public class FragmentPreference extends PreferenceFragment {
                 });
 
         init(rootPreferenceScreen);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        LinearLayout preferences = (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
+
+        assert preferences != null;
+
+        FrameLayout listContainer = (FrameLayout) preferences.findViewById(R.id.list_container);
+
+        FrameLayout root = (FrameLayout) inflater.inflate(R.layout.fragment_preference, container, false);
+        LinearLayout prefContainer = (LinearLayout) root.findViewById(R.id.prefContainer);
+
+        preferences.removeAllViews();
+        prefContainer.addView(listContainer);
+        preferences.addView(root);
+
+        return preferences;
     }
 
     @Override

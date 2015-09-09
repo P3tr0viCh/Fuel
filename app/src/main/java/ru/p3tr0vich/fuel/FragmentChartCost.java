@@ -22,7 +22,7 @@ import com.github.mikephil.charting.utils.ValueFormatter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-// TODO: пустая база
+
 public class FragmentChartCost extends FragmentFuel implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -31,16 +31,16 @@ public class FragmentChartCost extends FragmentFuel implements
     private static final String KEY_FILTER_YEAR = "KEY_FILTER_YEAR";
     private static final String KEY_YEARS = "KEY_YEARS";
     private static final String KEY_SUMS = "KEY_SUMS";
+    private static final String KEY_IS_DATA = "KEY_IS_DATA";
 
     private FuelingDBHelper.Filter mFilter;
 
     private BarChart mChart;
     private TabLayout mTabLayout;
 
-    private final ArrayList<String> mMonths = new ArrayList<>();
-
+    private final String[] mMonths = new String[12];
     private int[] mYears;
-    private float[] mSums;
+    private float[] mSums = new float[12];
 
     private final int[] mColors = new int[]{R.color.chart_winter, R.color.chart_winter,
             R.color.chart_spring, R.color.chart_spring, R.color.chart_spring,
@@ -56,17 +56,11 @@ public class FragmentChartCost extends FragmentFuel implements
         return R.id.action_chart_cost;
     }
 
-    private static boolean isArrayEmpty(int[] array) {
-        return array == null || array.length < 1;
-    }
-
     private int getYearFromPosition(int index) {
-        if (isArrayEmpty(mYears)) return Functions.getCurrentYear();
         return mYears[index];
     }
 
     private int getPositionForYear(int year) {
-        if (isArrayEmpty(mYears)) return -1;
         for (int i = 0; i < mYears.length; i++)
             if (mYears[i] == year)
                 return i;
@@ -179,13 +173,8 @@ public class FragmentChartCost extends FragmentFuel implements
         Functions.logD("FragmentChartCost -- updateYears, mFilter.year = " + mFilter.year);
 
         mUpdateYearInProcess = true;
-        if (!isArrayEmpty(mYears))
-            for (int year : mYears)
-                mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(year)));
-
-        int currentYear = Functions.getCurrentYear();
-        if (getPositionForYear(currentYear) == -1)
-            mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(currentYear)));
+        for (int year : mYears)
+            mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(year)));
 
         int position = getPositionForYear(mFilter.year);
         if (position != -1) selectTab(mTabLayout.getTabAt(position));
@@ -203,7 +192,7 @@ public class FragmentChartCost extends FragmentFuel implements
 
     private void updateMonths() {
         Calendar calendar = Calendar.getInstance();
-        for (int i = 0; i < 12; i++) mMonths.add(getMonth(calendar, i));
+        for (int i = 0; i < 12; i++) mMonths[i] = getMonth(calendar, i);
     }
 
     private void setYear(int year) {
@@ -225,7 +214,6 @@ public class FragmentChartCost extends FragmentFuel implements
         if (savedInstanceState == null) {
             Functions.logD("FragmentChartCost -- onCreate: savedInstanceState == null");
 
-            mSums = new float[12];
             for (int i = 0; i < 12; i++) mSums[i] = 0;
 
             mFilter.year = Functions.getCurrentYear();
@@ -238,6 +226,7 @@ public class FragmentChartCost extends FragmentFuel implements
             mFilter.year = savedInstanceState.getInt(KEY_FILTER_YEAR);
             mYears = savedInstanceState.getIntArray(KEY_YEARS);
             mSums = savedInstanceState.getFloatArray(KEY_SUMS);
+            mIsData = savedInstanceState.getBoolean(KEY_IS_DATA);
         }
     }
 
@@ -248,6 +237,7 @@ public class FragmentChartCost extends FragmentFuel implements
         outState.putInt(KEY_FILTER_YEAR, mFilter.year);
         outState.putIntArray(KEY_YEARS, mYears);
         outState.putFloatArray(KEY_SUMS, mSums);
+        outState.putBoolean(KEY_IS_DATA, mIsData);
 
         Functions.logD("FragmentChartCost -- onSaveInstanceState");
     }
@@ -333,7 +323,7 @@ public class FragmentChartCost extends FragmentFuel implements
                 int i = 0, year, count = data.getCount();
 
                 if (count > 0) {
-                    mYears = new int[count];
+                    mYears = new int[count + 1];
 
                     if (data.moveToFirst()) do {
                         year = data.getInt(0);
@@ -343,7 +333,12 @@ public class FragmentChartCost extends FragmentFuel implements
                         mYears[i] = year;
                         i++;
                     } while (data.moveToNext());
-                } else mYears = null;
+
+                    mYears[count] = Functions.getCurrentYear();
+                } else {
+                    mYears = new int[1];
+                    mYears[0] = Functions.getCurrentYear();
+                }
 
                 updateYears();
         }

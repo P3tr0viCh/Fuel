@@ -23,16 +23,17 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String TABLE_NAME = "fuelling";
 
     private static final String SELECT_ALL = "SELECT * FROM " + TABLE_NAME;
-    private static final String SELECT_YEARS = "SELECT strftime('%Y', datetime) AS YEAR FROM " + TABLE_NAME +
-            " GROUP BY YEAR ORDER BY YEAR ASC";
+    private static final String SELECT_YEARS = "SELECT strftime('%Y', datetime) AS year FROM " + TABLE_NAME;
+    private static final String SELECT_YEARS_WHERE = " WHERE year<'%d' GROUP BY year ORDER BY year ASC";
+
     private static final String SELECT_SUM_BY_MONTHS_IN_YEAR =
-            "SELECT SUM(cost), strftime('%m', datetime) AS MONTH FROM " + TABLE_NAME;
+            "SELECT SUM(cost), strftime('%m', datetime) AS month FROM " + TABLE_NAME;
 
     private static final String WHERE = " WHERE ";
     private static final String IN_YEAR = " BETWEEN '%1$d-01-01' AND '%1$d-12-31'";
     private static final String IN_DATES = " BETWEEN '%1$s' AND '%2$s'";
 
-    private static final String GROUP_BY_MONTH = " GROUP BY MONTH";
+    private static final String GROUP_BY_MONTH = " GROUP BY month";
     private static final String ORDER_BY_DATE = " ORDER BY " + COLUMN_DATETIME + " DESC, " + COLUMN_TOTAL + " DESC";
 
     private static final String DATABASE_CREATE =
@@ -192,7 +193,11 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getYears() {
-        return getReadableDatabase().rawQuery(SELECT_YEARS, null);
+        String sql = SELECT_YEARS + String.format(SELECT_YEARS_WHERE, Functions.getCurrentYear());
+
+        Functions.logD("FuelingDBHelper -- getYears (sql == " + sql + ")");
+
+        return getReadableDatabase().rawQuery(sql, null);
     }
 
     public Cursor getSumByMonthsForYear() {

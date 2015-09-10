@@ -1,12 +1,13 @@
 package ru.p3tr0vich.fuel;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 
 public class FragmentDialogMessage extends DialogFragment {
@@ -29,10 +30,11 @@ public class FragmentDialogMessage extends DialogFragment {
         showMessage(parent.getFragmentManager(), title, message);
     }
 
-    public static void showMessage(Activity parent, String title, String message) {
-        showMessage(parent.getFragmentManager(), title, message);
+    public static void showMessage(FragmentActivity parent, String title, String message) {
+        showMessage(parent.getSupportFragmentManager(), title, message);
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())

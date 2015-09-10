@@ -44,7 +44,6 @@
     </style>
 
     <style name="AppTheme.TextAppearance.Small" parent="@style/TextAppearance.AppCompat.Small">
-        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="AppTheme.TextAppearance.ErrorValue" parent="@style/AppTheme.TextAppearance.Small">
@@ -71,11 +70,19 @@
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
-    <style name="AppTheme.PreferenceThemeOverlay" parent="PreferenceThemeOverlay">
-        <item name="preferenceStyle">@style/Preference</item>
+    <style name="AppTheme.PreferenceThemeOverlay" parent="PreferenceThemeOverlay.v14.Material">
     </style>
 
-    <style name="Preference">
+    <style name="Preference.Material">
+        <item name="layout">@layout/apptheme_preference</item>
+    </style>
+    <style name="Preference.PreferenceScreen.Material">
+        <item name="layout">@layout/apptheme_preference</item>
+    </style>
+    <style name="Preference.DialogPreference.EditTextPreference.Material">
+        <item name="layout">@layout/apptheme_preference</item>
+    </style>
+    <style name="Preference.DialogPreference.Material">
         <item name="layout">@layout/apptheme_preference</item>
     </style>
 </resources>

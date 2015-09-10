@@ -3,10 +3,11 @@ package ru.p3tr0vich.fuel;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.TextView;
@@ -93,6 +94,7 @@ public class FragmentDialogProgress extends DialogFragment {
                     new Intent().putExtra(EXTRA_XML_RESULT, result));
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Functions.logD("FragmentDialogProgress -- onCreateDialog");

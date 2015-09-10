@@ -3,7 +3,7 @@
         android:icon="@drawable/ic_plus_circle_outline_grey600_24dp"
         android:summary="@string/pref_header_summary_def"
         android:title="@string/pref_header_def">
-        <EditTextPreference
+        <ru.p3tr0vich.fuel.NumberEditTextPreference
             android:imeOptions="flagNoExtractUi"
             android:inputType="numberDecimal"
             android:key="@string/pref_def_cost"

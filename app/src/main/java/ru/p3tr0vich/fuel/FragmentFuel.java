@@ -1,8 +1,7 @@
 package ru.p3tr0vich.fuel;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
+import android.support.v4.app.Fragment;
 
 public abstract class FragmentFuel extends Fragment {
 
@@ -22,19 +21,6 @@ public abstract class FragmentFuel extends Fragment {
             mOnFragmentChangedListener = (OnFragmentChangedListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() +
-                    " must implement OnFragmentChangedListener");
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        Functions.logD("FragmentFuel -- onAttach (activity)");
-        try {
-            mOnFragmentChangedListener = (OnFragmentChangedListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() +
                     " must implement OnFragmentChangedListener");
         }
     }

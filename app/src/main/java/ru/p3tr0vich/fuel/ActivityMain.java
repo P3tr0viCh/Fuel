@@ -2,9 +2,6 @@ package ru.p3tr0vich.fuel;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +9,9 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -51,11 +51,11 @@ public class ActivityMain extends AppCompatActivity implements
 
     private Fragment findFragmentByTag(String fragmentTag) {
         return fragmentTag != null ?
-                getFragmentManager().findFragmentByTag(fragmentTag) : null;
+                getSupportFragmentManager().findFragmentByTag(fragmentTag) : null;
     }
 
     private FragmentFueling getFragmentFueling() {
-        return (FragmentFueling) getFragmentManager().findFragmentByTag(FragmentFueling.TAG);
+        return (FragmentFueling) getSupportFragmentManager().findFragmentByTag(FragmentFueling.TAG);
     }
 
     @Override
@@ -146,7 +146,7 @@ public class ActivityMain extends AppCompatActivity implements
 
         if (savedInstanceState == null) {
             mCurrentFragmentId = R.id.action_fueling;
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.contentFrame, new FragmentFueling(), FragmentFueling.TAG)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit();
@@ -179,7 +179,7 @@ public class ActivityMain extends AppCompatActivity implements
         String fragmentTag = null;
 
         Fragment fragment;
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (!getFragmentFueling().isVisible()) fragmentManager.popBackStack();
 
@@ -191,7 +191,6 @@ public class ActivityMain extends AppCompatActivity implements
                 fragmentTag = FragmentChartCost.TAG;
                 break;
             case R.id.action_settings:
-//                ActivityPreference.start(this);
                 fragmentTag = FragmentPreference.TAG;
                 break;
             case R.id.action_backup:
@@ -206,7 +205,8 @@ public class ActivityMain extends AppCompatActivity implements
         if (fragment != null)
             fragmentManager.beginTransaction()
                     .replace(R.id.contentFrame, fragment, fragmentTag)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+// TODO:                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .addToBackStack(null)
                     .commit();
     }
@@ -223,8 +223,8 @@ public class ActivityMain extends AppCompatActivity implements
                 return;
             }
         }
-        if (getFragmentManager().getBackStackEntryCount() != 0)
-            getFragmentManager().popBackStack();
+        if (getSupportFragmentManager().getBackStackEntryCount() != 0)
+            getSupportFragmentManager().popBackStack();
         else super.onBackPressed();
     }
 

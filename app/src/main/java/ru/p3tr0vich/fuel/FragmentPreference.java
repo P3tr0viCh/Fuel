@@ -1,12 +1,11 @@
 package ru.p3tr0vich.fuel;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v14.preference.PreferenceFragment;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceGroup;
 import android.support.v7.preference.PreferenceScreen;
 import android.text.TextUtils;
@@ -16,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-public class FragmentPreference extends PreferenceFragment {
+public class FragmentPreference extends PreferenceFragmentCompat {
 
     public static final String TAG = "FragmentPreference";
 
@@ -91,19 +90,11 @@ public class FragmentPreference extends PreferenceFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         Functions.logD("FragmentPreference -- onAttach (context)");
-        onAttach((Activity) context);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        Functions.logD("FragmentPreference -- onAttach (activity)");
         try {
-            mOnPreferenceScreenChangeListener = (OnPreferenceScreenChangeListener) activity;
-            mOnFragmentChangedListener = (FragmentFuel.OnFragmentChangedListener) activity;
+            mOnPreferenceScreenChangeListener = (OnPreferenceScreenChangeListener) context;
+            mOnFragmentChangedListener = (FragmentFuel.OnFragmentChangedListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() +
+            throw new ClassCastException(context.toString() +
                     " must implement OnPreferenceScreenChangedListener, OnFragmentChangedListener");
         }
     }

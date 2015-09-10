@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (C) 2015 The Android Open Source Project
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,69 +16,69 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/apptheme_list_selector_holo_light"
-    android:baselineAligned="false"
-    android:focusable="true"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"
     android:gravity="center_vertical"
-    android:minHeight="?android:attr/listPreferredItemHeight"
-    android:paddingEnd="?android:attr/scrollbarSize"
-    android:paddingStart="0dp"> <!-- background changed, paddingStart added -->
+    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+    android:background="?android:attr/activatedBackgroundIndicator"
+    android:clipToPadding="false"
+    android:focusable="true" >
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/icon_frame"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <ImageView
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-4dp"
+        android:minWidth="60dp"
+        android:gravity="start|center_vertical"
+        android:orientation="horizontal"
+        android:paddingEnd="12dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:background="#d21c1c">
+        <android.support.v7.internal.widget.PreferenceImageView
             android:id="@android:id/icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            tools:ignore="ContentDescription" />
-    </FrameLayout>
+            app:maxWidth="48dp"
+            app:maxHeight="48dp" />
+    </LinearLayout>
 
     <RelativeLayout
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="6dip"
-        android:layout_marginEnd="6dip"
-        android:layout_marginStart="15dip"
-        android:layout_marginTop="6dip"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
 
-        <TextView
-            android:id="@android:id/title"
+        <TextView android:id="@android:id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="marquee"
-            android:fadingEdge="horizontal"
             android:singleLine="true"
-            android:textAppearance="@style/AppTheme.TextAppearance.Body"
-            android:textColor="@color/primary_text" />
-        <!-- textAppearance & textColor changed -->
+            android:textAppearance="?android:attr/textAppearanceListItem"
+            android:ellipsize="marquee" />
 
-        <TextView
-            android:id="@android:id/summary"
+        <TextView android:id="@android:id/summary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@android:id/title"
             android:layout_below="@android:id/title"
-            android:maxLines="4"
-            android:textAppearance="@style/AppTheme.TextAppearance.Small"
-            android:textColor="@color/secondary_text" />
-        <!-- textAppearance & textColor changed -->
+            android:layout_alignStart="@android:id/title"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorSecondary"
+            android:maxLines="10" />
 
     </RelativeLayout>
 
     <!-- Preference should place its actual preference widget here. -->
-    <LinearLayout
-        android:id="@android:id/widget_frame"
+    <LinearLayout android:id="@android:id/widget_frame"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
+        android:gravity="end|center_vertical"
+        android:paddingStart="16dp"
         android:orientation="vertical" />
 
-</LinearLayout><!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/mnc-sdk-release/frameworks/support/v7/preference/res/layout/preference.xml -->
+</LinearLayout>
+    <!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/mnc-sdk-release/frameworks/support/v14/preference/res/layout-v21/preference_material.xml -->

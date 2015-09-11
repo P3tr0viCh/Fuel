@@ -43,11 +43,16 @@
         <item name="android:textColor">@color/accent</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Small" parent="@style/TextAppearance.AppCompat.Small">
-    </style>
+    <style name="AppTheme.TextAppearance.Medium" parent="@style/TextAppearance.AppCompat.Medium" />
+
+    <style name="AppTheme.TextAppearance.Small" parent="@style/TextAppearance.AppCompat.Small" />
 
     <style name="AppTheme.TextAppearance.ErrorValue" parent="@style/AppTheme.TextAppearance.Small">
         <item name="android:textColor">@color/edit_error</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.PreferenceCategory" parent="AppTheme.TextAppearance.Medium">
+        <item name="android:textColor">@color/primary</item>
     </style>
 
     <style name="AppTheme.AlertDialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
@@ -71,18 +76,32 @@
     </style>
 
     <style name="AppTheme.PreferenceThemeOverlay" parent="PreferenceThemeOverlay.v14.Material">
+        <item name="preferenceScreenStyle">@style/AppTheme.Preference.PreferenceScreen</item>
+        <item name="preferenceCategoryStyle">@style/AppTheme.Preference.Category</item>
+        <item name="preferenceStyle">@style/AppTheme.Preference</item>
+        <item name="dialogPreferenceStyle">@style/AppTheme.Preference.DialogPreference</item>
+        <item name="editTextPreferenceStyle">
+            @style/AppTheme.Preference.DialogPreference.EditTextPreference
+        </item>
     </style>
 
-    <style name="Preference.Material">
+    <style name="AppTheme.Preference" parent="Preference.Material">
         <item name="layout">@layout/apptheme_preference</item>
     </style>
-    <style name="Preference.PreferenceScreen.Material">
+
+    <style name="AppTheme.Preference.Category" parent="Preference.Category.Material">
+        <item name="layout">@layout/apptheme_preference_category</item>
+    </style>
+
+    <style name="AppTheme.Preference.PreferenceScreen" parent="Preference.PreferenceScreen.Material">
         <item name="layout">@layout/apptheme_preference</item>
     </style>
-    <style name="Preference.DialogPreference.EditTextPreference.Material">
+
+    <style name="AppTheme.Preference.DialogPreference.EditTextPreference" parent="Preference.DialogPreference.EditTextPreference.Material">
         <item name="layout">@layout/apptheme_preference</item>
     </style>
-    <style name="Preference.DialogPreference.Material">
+
+    <style name="AppTheme.Preference.DialogPreference" parent="Preference.DialogPreference.Material">
         <item name="layout">@layout/apptheme_preference</item>
     </style>
 </resources>

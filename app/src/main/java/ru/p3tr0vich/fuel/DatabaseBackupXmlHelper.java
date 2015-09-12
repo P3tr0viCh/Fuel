@@ -195,6 +195,7 @@ public class DatabaseBackupXmlHelper {
         return writer.toString();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void parseXml(FileInputStream fileInputStream, List<FuelingRecord> fuelingRecordList)
             throws XmlPullParserException, IOException {
 

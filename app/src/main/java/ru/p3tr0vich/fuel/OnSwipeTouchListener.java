@@ -6,6 +6,7 @@ import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnTouchListener;
 import android.view.MotionEvent;
 
+@SuppressWarnings("EmptyMethod")
 abstract class OnSwipeTouchListener implements OnTouchListener {
 
     public final GestureDetector gestureDetector;

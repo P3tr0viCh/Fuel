@@ -110,7 +110,7 @@ public class FragmentCalc extends FragmentFuel implements
     }
 
     public void setDistance(int distance) {
-        mEditDistance.setText(Integer.toString(distance));
+        Functions.floatToText(mEditDistance, distance, false);
     }
 
     private void checkTextOnEmpty(EditText editText) {

@@ -1,10 +1,12 @@
 package ru.p3tr0vich.fuel;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -106,6 +108,7 @@ public class ActivityYandexMap extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
 
+                @TargetApi(Build.VERSION_CODES.M) // TODO: MARSHMALLOW
                 @Override
                 public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                     super.onReceivedError(view, request, error);

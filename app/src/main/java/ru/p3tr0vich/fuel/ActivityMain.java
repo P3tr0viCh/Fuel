@@ -148,7 +148,7 @@ public class ActivityMain extends AppCompatActivity implements
             mCurrentFragmentId = R.id.action_fueling;
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.contentFrame, new FragmentFueling(), FragmentFueling.TAG)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .setTransition(FragmentTransaction.TRANSIT_NONE)
                     .commit();
         }
     }
@@ -215,17 +215,19 @@ public class ActivityMain extends AppCompatActivity implements
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerVisible(GravityCompat.START))
             mDrawerLayout.closeDrawer(GravityCompat.START);
-        else if (mCurrentFragmentId == R.id.action_settings) {
-            FragmentPreference fragmentPreference = (FragmentPreference) findFragmentByTag(FragmentPreference.TAG);
-            if (fragmentPreference.goToRootScreen()) {
-                setTitle(R.string.title_prefs);
-                toggleDrawer(mDrawerToggle, mDrawerLayout, false);
-                return;
+        else {
+            if (mCurrentFragmentId == R.id.action_settings) {
+                FragmentPreference fragmentPreference = (FragmentPreference) findFragmentByTag(FragmentPreference.TAG);
+                if (fragmentPreference.goToRootScreen()) {
+                    setTitle(R.string.title_prefs);
+                    toggleDrawer(mDrawerToggle, mDrawerLayout, false);
+                    return;
+                }
             }
+            if (getSupportFragmentManager().getBackStackEntryCount() != 0)
+                getSupportFragmentManager().popBackStack();
+            else super.onBackPressed();
         }
-        if (getSupportFragmentManager().getBackStackEntryCount() != 0)
-            getSupportFragmentManager().popBackStack();
-        else super.onBackPressed();
     }
 
     @Override

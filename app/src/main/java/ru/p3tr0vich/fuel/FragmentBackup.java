@@ -1,6 +1,7 @@
 package ru.p3tr0vich.fuel;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -160,12 +161,13 @@ public class FragmentBackup extends FragmentFuel {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        Functions.logD("FragmentBackup -- onAttach");
+        super.onAttach(context);
         try {
-            mOnDataLoadedFromBackupListener = (OnDataLoadedFromBackupListener) activity;
+            mOnDataLoadedFromBackupListener = (OnDataLoadedFromBackupListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() +
+            throw new ClassCastException(context.toString() +
                     " must implement OnDataLoadedFromBackupListener");
         }
     }

@@ -4,7 +4,6 @@ package ru.p3tr0vich.fuel;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -354,7 +353,8 @@ public class FragmentFueling extends FragmentFuel implements
             final int columnTotal = mCursor.getColumnIndex(FuelingDBHelper.COLUMN_TOTAL);
 
             if (mCursor.moveToFirst()) do
-                calcTotalDataList.add(new CalcTotalData(mCursor.getFloat(columnCost), mCursor.getFloat(columnVolume), mCursor.getFloat(columnTotal)));
+                calcTotalDataList.add(new CalcTotalData(mCursor.getFloat(columnCost),
+                        mCursor.getFloat(columnVolume), mCursor.getFloat(columnTotal)));
             while (mCursor.moveToNext());
         }
 
@@ -543,13 +543,14 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        Functions.logD("FragmentFueling -- onAttach");
+        super.onAttach(context);
         try {
-            mOnFilterChangeListener = (OnFilterChangeListener) activity;
-            mOnRecordChangeListener = (OnRecordChangeListener) activity;
+            mOnFilterChangeListener = (OnFilterChangeListener) context;
+            mOnRecordChangeListener = (OnRecordChangeListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() +
+            throw new ClassCastException(context.toString() +
                     " must implement FilterChangeListener, RecordChangeListener");
         }
     }

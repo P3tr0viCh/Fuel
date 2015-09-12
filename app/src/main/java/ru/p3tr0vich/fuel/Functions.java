@@ -7,6 +7,7 @@ import android.content.pm.ApplicationInfo;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -150,7 +151,7 @@ class Functions {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) sApplicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
-            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 @SuppressWarnings("deprecation")
                 NetworkInfo[] networkInfos = connectivityManager.getAllNetworkInfo();
                 if (networkInfos != null)
@@ -202,7 +203,7 @@ class Functions {
                 TypedValue.COMPLEX_UNIT_DIP, px, context.getResources().getDisplayMetrics()));
     }
 
-    public static void setDialogWidth(Dialog dialog, int width) {
+    public static void setDialogWidth(Dialog dialog, @SuppressWarnings("SameParameterValue") int width) {
         WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
         params.width = pxToDp(dialog.getContext(), width);
         params.height = WindowManager.LayoutParams.WRAP_CONTENT;

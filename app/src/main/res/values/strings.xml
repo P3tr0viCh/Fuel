@@ -125,10 +125,13 @@
         <item>@string/winter</item>
     </string-array>
 
-    <string name="pref_header_def">Заправка по умолчанию</string>
-    <string name="pref_header_summary_def">Значения стоимости и объёма для новых записей</string>
-    <string name="pref_header_cons">Расход топлива</string>
-    <string name="pref_header_summary_cons">Расход топлива в различных режимах</string>
+    <string name="pref_def_key" translatable="false">key_def</string>
+    <string name="pref_def_header">Заправка по умолчанию</string>
+    <string name="pref_def_header_summary">Значения стоимости и объёма для новых записей</string>
+
+    <string name="pref_cons_key" translatable="false">key_cons</string>
+    <string name="pref_cons_header">Расход топлива</string>
+    <string name="pref_cons_header_summary">Расход топлива в различных режимах</string>
 
     <string name="pref_summary_cost">Стоимость заправки по умолчанию для новых записей</string>
     <string name="pref_summary_volume">Объём заправки по умолчанию для новых записей</string>

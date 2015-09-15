@@ -1,8 +1,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceScreen
         android:icon="@drawable/ic_plus_circle_outline_grey600_24dp"
-        android:summary="@string/pref_header_summary_def"
-        android:title="@string/pref_header_def">
+        android:key="@string/pref_def_key"
+        android:summary="@string/pref_def_header_summary"
+        android:title="@string/pref_def_header">
         <EditTextPreference
             android:imeOptions="flagNoExtractUi"
             android:inputType="numberDecimal"
@@ -22,8 +23,9 @@
     </PreferenceScreen>
     <PreferenceScreen
         android:icon="@drawable/ic_calculator_grey600_24dp"
-        android:summary="@string/pref_header_summary_cons"
-        android:title="@string/pref_header_cons">
+        android:key="@string/pref_cons_key"
+        android:summary="@string/pref_cons_header_summary"
+        android:title="@string/pref_cons_header">
         <PreferenceCategory
             android:key="Summer"
             android:summary="@string/pref_summary_summer"

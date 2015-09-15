@@ -12,9 +12,7 @@
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:background="@drawable/drop_shadow"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        android:background="@drawable/drop_shadow">
 
         <LinearLayout
             android:id="@+id/prefContainer"

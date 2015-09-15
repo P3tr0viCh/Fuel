@@ -31,12 +31,14 @@ import android.widget.Spinner;
 public class ActivityMain extends AppCompatActivity implements
         FragmentFueling.OnFilterChangeListener,
         FragmentFueling.OnRecordChangeListener,
-        FragmentFuel.OnFragmentChangedListener,
+        FragmentInterface.OnFragmentChangeListener,
         FragmentPreference.OnPreferenceScreenChangeListener,
         FragmentBackup.OnDataLoadedFromBackupListener {
 
     private static final String ACTION_LOADING = "ru.p3tr0vich.fuel.ACTION_LOADING";
     private static final String EXTRA_LOADING = "ru.p3tr0vich.fuel.EXTRA_LOADING";
+
+    private static final String KEY_CURRENT_FRAGMENT_ID = "KEY_CURRENT_FRAGMENT_ID";
 
     private Toolbar mToolbarMain;
     private Spinner mToolbarSpinner;
@@ -93,11 +95,7 @@ public class ActivityMain extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 Functions.logD("ActivityMain -- mDrawerToggle: onClick");
-                FragmentPreference fragmentPreference = (FragmentPreference) findFragmentByTag(FragmentPreference.TAG);
-                if (fragmentPreference.goToRootScreen()) {
-                    setTitle(R.string.title_prefs);
-                    toggleDrawer(mDrawerToggle, mDrawerLayout, false);
-                }
+                ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).goToRootScreen();
             }
         });
 
@@ -150,7 +148,19 @@ public class ActivityMain extends AppCompatActivity implements
                     .add(R.id.contentFrame, new FragmentFueling(), FragmentFueling.TAG)
                     .setTransition(FragmentTransaction.TRANSIT_NONE)
                     .commit();
+        } else {
+            mCurrentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID);
+            if (mCurrentFragmentId == R.id.action_settings)
+                mDrawerToggle.setDrawerIndicatorEnabled(
+                        ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).isInRoot());
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(KEY_CURRENT_FRAGMENT_ID, mCurrentFragmentId);
     }
 
     private Fragment getFragmentNewInstance(String fragmentTag) {
@@ -217,12 +227,8 @@ public class ActivityMain extends AppCompatActivity implements
             mDrawerLayout.closeDrawer(GravityCompat.START);
         else {
             if (mCurrentFragmentId == R.id.action_settings) {
-                FragmentPreference fragmentPreference = (FragmentPreference) findFragmentByTag(FragmentPreference.TAG);
-                if (fragmentPreference.goToRootScreen()) {
-                    setTitle(R.string.title_prefs);
-                    toggleDrawer(mDrawerToggle, mDrawerLayout, false);
+                if (((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).goToRootScreen())
                     return;
-                }
             }
             if (getSupportFragmentManager().getBackStackEntryCount() != 0)
                 getSupportFragmentManager().popBackStack();
@@ -334,8 +340,8 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
-    public void onFragmentChanged(int fragmentId) {
-        Functions.logD("ActivityMain -- onFragmentChanged");
+    public void onFragmentChange(int fragmentId) {
+        Functions.logD("ActivityMain -- onFragmentChange");
 
         mCurrentFragmentId = mClickedMenuId = fragmentId;
 
@@ -351,7 +357,7 @@ public class ActivityMain extends AppCompatActivity implements
                 subtitleId = R.string.title_chart_cost_subtitle;
                 break;
             case R.id.action_settings:
-                titleId = R.string.title_prefs;
+                titleId = ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).getTitleId();
                 break;
             case R.id.action_backup:
                 titleId = R.string.title_backup;
@@ -373,17 +379,8 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void setTitle(int resId) {
-        ActionBar actionBar = getSupportActionBar();
-
-        if (actionBar == null) return;
-
-        if (resId != -1) {
-            actionBar.setTitle(resId);
-            actionBar.setDisplayShowTitleEnabled(true);
-        } else {
-            actionBar.setTitle(null);
-            actionBar.setDisplayShowTitleEnabled(false);
-        }
+        if (resId != -1) setTitle(getString(resId));
+        else setTitle(null);
     }
 
     @Override
@@ -408,12 +405,16 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void OnPreferenceScreenChanged(CharSequence title) {
-        setTitle(title);
-        toggleDrawer(mDrawerToggle, mDrawerLayout, true);
+        Functions.logD("ActivityMain -- OnPreferenceScreenChanged: title == " + title);
+
+        setTitle(title == null ? getString(R.string.title_prefs) : title);
+        toggleDrawer(mDrawerToggle, mDrawerLayout, title != null);
     }
 
     private void toggleDrawer(final ActionBarDrawerToggle actionBarDrawerToggle, final DrawerLayout drawerLayout,
                               final boolean showArrow) {
+        if (mDrawerToggle.isDrawerIndicatorEnabled() != showArrow) return;
+
         float start, end;
 
         if (showArrow) {

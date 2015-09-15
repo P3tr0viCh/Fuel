@@ -4,5 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="32dp"
     android:gravity="center_vertical"
-    android:textAppearance="@style/AppTheme.TextAppearance.PreferenceCategory" />
+    android:textAppearance="@style/AppTheme.TextAppearance.PreferenceCategory"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp" />
 <!-- android:layout_height="48dp" -->

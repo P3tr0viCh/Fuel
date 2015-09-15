@@ -15,40 +15,62 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-public class FragmentPreference extends PreferenceFragmentCompat {
+public class FragmentPreference extends PreferenceFragmentCompat implements
+        SharedPreferences.OnSharedPreferenceChangeListener, FragmentInterface {
 
     public static final String TAG = "FragmentPreference";
 
+    private static final String KEY_PREFERENCE_SCREEN = "KEY_PREFERENCE_SCREEN";
+
     private OnPreferenceScreenChangeListener mOnPreferenceScreenChangeListener;
-    private FragmentFuel.OnFragmentChangedListener mOnFragmentChangedListener;
+    private OnFragmentChangeListener mOnFragmentChangeListener;
 
     private boolean isInRoot;
     private PreferenceScreen rootPreferenceScreen;
+
+    @Override
+    public int getFragmentId() {
+        return R.id.action_settings;
+    }
 
     public interface OnPreferenceScreenChangeListener {
         void OnPreferenceScreenChanged(CharSequence title);
     }
 
-    @SuppressWarnings("SameReturnValue")
-    private int getFragmentId() {
-        return R.id.action_settings;
+    public boolean isInRoot() {
+        return isInRoot;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        updatePreferenceSummary(findPreference(key));
     }
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.preferences);
-        isInRoot = true;
         rootPreferenceScreen = getPreferenceScreen();
 
-        rootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(
-                new SharedPreferences.OnSharedPreferenceChangeListener() {
-                    @Override
-                    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                        updatePreferenceSummary(findPreference(key));
-                    }
-                });
+        rootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
         init(rootPreferenceScreen);
+
+        if (bundle == null) {
+            Functions.logD("FragmentPreference -- onCreatePreferences: bundle == null");
+            isInRoot = true;
+        } else {
+            Functions.logD("FragmentPreference -- onCreatePreferences: bundle != null");
+            String preferenceKey = bundle.getString(KEY_PREFERENCE_SCREEN);
+            isInRoot = preferenceKey == null;
+            if (!isInRoot) setPreferenceScreen((PreferenceScreen) findPreference(preferenceKey));
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(KEY_PREFERENCE_SCREEN, isInRoot ? null : getPreferenceScreen().getKey());
     }
 
     @Override
@@ -83,7 +105,20 @@ public class FragmentPreference extends PreferenceFragmentCompat {
         if (isInRoot) return false;
         isInRoot = true;
         setPreferenceScreen(rootPreferenceScreen);
+        mOnPreferenceScreenChangeListener.OnPreferenceScreenChanged(null);
         return true;
+    }
+
+    public int getTitleId() {
+        if (isInRoot) return R.string.title_prefs;
+        else {
+            String preferenceKey = getPreferenceScreen().getKey();
+            if (preferenceKey.equals(getString(R.string.pref_def_key)))
+                return R.string.pref_def_header;
+            else if (preferenceKey.equals(getString(R.string.pref_cons_key)))
+                return R.string.pref_cons_header;
+            else return -1;
+        }
     }
 
     @Override
@@ -92,10 +127,10 @@ public class FragmentPreference extends PreferenceFragmentCompat {
         Functions.logD("FragmentPreference -- onAttach (context)");
         try {
             mOnPreferenceScreenChangeListener = (OnPreferenceScreenChangeListener) context;
-            mOnFragmentChangedListener = (FragmentFuel.OnFragmentChangedListener) context;
+            mOnFragmentChangeListener = (OnFragmentChangeListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() +
-                    " must implement OnPreferenceScreenChangedListener, OnFragmentChangedListener");
+                    " must implement OnPreferenceScreenChangeListener, OnFragmentChangeListener");
         }
     }
 
@@ -103,7 +138,7 @@ public class FragmentPreference extends PreferenceFragmentCompat {
     public void onStart() {
         super.onStart();
         Functions.logD("FragmentPreference -- onStart");
-        mOnFragmentChangedListener.onFragmentChanged(getFragmentId());
+        mOnFragmentChangeListener.onFragmentChange(getFragmentId());
     }
 
     private void updatePreferenceSummary(Preference preference) {

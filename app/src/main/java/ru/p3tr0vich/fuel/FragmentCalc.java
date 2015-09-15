@@ -41,7 +41,7 @@ public class FragmentCalc extends FragmentFuel implements
     private enum CalcAction {DISTANCE, COST, VOLUME}
 
     @Override
-    protected int getFragmentId() {
+    public int getFragmentId() {
         return R.id.action_calc;
     }
 

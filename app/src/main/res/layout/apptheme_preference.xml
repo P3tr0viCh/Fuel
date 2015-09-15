@@ -10,7 +10,9 @@
     android:focusable="true"
     android:gravity="center_vertical"
     android:minHeight="48dp"
-    tools:ignore="Overdraw">
+    tools:ignore="Overdraw"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
 <!--    android:background="?android:attr/activatedBackgroundIndicator" -->
 
     <LinearLayout

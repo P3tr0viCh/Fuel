@@ -17,12 +17,9 @@
     <style name="AppTheme.PopupMenu" parent="@style/Widget.AppCompat.PopupMenu" />
 
     <style name="AppTheme.Button" parent="@style/Widget.AppCompat.Button">
-        <item name="android:textColor">@color/button_text</item>
-        <item name="android:paddingRight">8dp</item>
-        <item name="android:paddingLeft">8dp</item>
-        <item name="android:minWidth">96dp</item>
-        <item name="android:minHeight">48dp</item>
-        <item name="android:background">@drawable/apptheme_material_button</item>
+    </style>
+
+    <style name="AppTheme.Button.Colored" parent="@style/Widget.AppCompat.Button.Colored">
     </style>
 
     <style name="AppTheme.DatePickerButton" parent="@style/Base.Widget.AppCompat.Spinner.Underlined">

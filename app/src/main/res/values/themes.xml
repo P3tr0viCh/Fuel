@@ -15,9 +15,6 @@
 
         <item name="alertDialogTheme">@style/AppTheme.AlertDialog</item>
 
-        <item name="android:buttonStyle">@style/AppTheme.Button</item>
-        <item name="buttonStyle">@style/AppTheme.Button</item>
-
         <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
 
         <!-- Generated with http://android-holo-colors.com -->

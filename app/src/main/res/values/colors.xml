@@ -18,7 +18,6 @@
 
     <color name="window_background">#FFFFFF</color>
 
-    <color name="button_text">#FFFFFF</color>
     <color name="edit_error">#FF0000</color>
 
     <color name="menu_item_pressed">#85D3EF</color>

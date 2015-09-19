@@ -6,10 +6,13 @@ class YandexMapJavascriptInterface {
 
     public static final String NAME = "YandexMapJavascriptInterface";
 
+    public final static String DEFAULT_MAP_CENTER = "Москва, Кремль";
+
     private final ActivityYandexMap mActivityYandexMap;
 
     private final double mMapCenterLatitude;  // Широта
     private final double mMapCenterLongitude; // Долгота
+
     private final String mStartSearchControlPlaceholderContent;
     private final String mFinishSearchControlPlaceholderContent;
 
@@ -17,7 +20,7 @@ class YandexMapJavascriptInterface {
         mActivityYandexMap = activityYandexMap;
 
         mMapCenterLatitude = 55.752023;
-        mMapCenterLongitude = 37.617499; // Москва, Кремль
+        mMapCenterLongitude = 37.617499;
 
         mStartSearchControlPlaceholderContent =
                 mActivityYandexMap.getString(R.string.yandex_map_start_search_control_placeholder_content);

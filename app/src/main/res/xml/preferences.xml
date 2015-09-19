@@ -85,4 +85,7 @@
                 android:title="@string/mixed" />
         </PreferenceCategory>
     </PreferenceScreen>
+    <Preference
+        android:key="@string/pref_map_center_text"
+        android:title="Центр Яндекс.Карты" />
 </PreferenceScreen>

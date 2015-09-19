@@ -100,6 +100,9 @@
     <string name="message_save_file_ok">Файл сохранён</string>
     <string name="message_load_file_ok">Данные из файла загружены</string>
 
+    <string name="yandex_map_start_search_control_placeholder_content">Адрес начала маршрута</string>
+    <string name="yandex_map_finish_search_control_placeholder_content">Адрес конца маршрута</string>
+
     <string name="year_current">Текущий год</string>
     <string name="year_all">Все записи</string>
     <string name="date_filter">Период</string>
@@ -160,6 +163,5 @@
     <string name="pref_filter_date_from" translatable="false">filter date from</string>
     <string name="pref_filter_date_to" translatable="false">filter date to</string>
 
-    <string name="yandex_map_start_search_control_placeholder_content">Адрес начала маршрута</string>
-    <string name="yandex_map_finish_search_control_placeholder_content">Адрес конца маршрута</string>
+    <string name="pref_map_center_text" translatable="false">map center text</string>
 </resources>

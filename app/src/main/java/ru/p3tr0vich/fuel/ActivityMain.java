@@ -295,9 +295,13 @@ public class ActivityMain extends AppCompatActivity implements
                 fuelingRecord = FragmentDialogDeleteRecord.getFuelingRecord(data);
                 fragmentFueling.deleteRecord(fuelingRecord);
                 break;
-            case ActivityYandexMap.REQUEST_CODE:
+            case ActivityYandexMap.REQUEST_CODE_DISTANCE:
                 ((FragmentCalc) findFragmentByTag(FragmentCalc.TAG))
                         .setDistance(ActivityYandexMap.getDistance(data));
+                break;
+            case ActivityYandexMap.REQUEST_CODE_MAP_CENTER:
+                ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG))
+                        .setMapCenter(ActivityYandexMap.getMapCenter(data));
                 break;
         }
     }
@@ -424,25 +428,23 @@ public class ActivityMain extends AppCompatActivity implements
             start = 1f;
             end = 0f;
         }
+
         ValueAnimator anim = ValueAnimator.ofFloat(start, end);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                float slideOffset = (Float) valueAnimator.getAnimatedValue();
-                actionBarDrawerToggle.onDrawerSlide(drawerLayout, slideOffset);
+                actionBarDrawerToggle.onDrawerSlide(drawerLayout, (Float) valueAnimator.getAnimatedValue());
             }
         });
         anim.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-                if (!showArrow)
-                    mDrawerToggle.setDrawerIndicatorEnabled(true);
+                if (!showArrow) mDrawerToggle.setDrawerIndicatorEnabled(true);
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                if (showArrow)
-                    mDrawerToggle.setDrawerIndicatorEnabled(false);
+                if (showArrow) mDrawerToggle.setDrawerIndicatorEnabled(false);
             }
 
             @Override

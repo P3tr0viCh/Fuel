@@ -76,11 +76,7 @@ public class FragmentCalc extends FragmentFuel implements
         view.findViewById(R.id.btnMaps).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Functions.isInternetConnected())
-                    ActivityYandexMap.start(getActivity());
-                else
-                    FragmentDialogMessage.showMessage(getActivity(),
-                            getString(R.string.title_message_error), getString(R.string.message_error_no_internet));
+                ActivityYandexMap.start(getActivity(), true);
             }
         });
 
@@ -183,12 +179,12 @@ public class FragmentCalc extends FragmentFuel implements
     private void loadCons(SharedPreferences sPref) {
         if (sPref == null) sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        arrCons[0][0] = Functions.textToFloat(sPref.getString(this.getString(R.string.pref_summer_city), "0"));
-        arrCons[0][1] = Functions.textToFloat(sPref.getString(this.getString(R.string.pref_summer_highway), "0"));
-        arrCons[0][2] = Functions.textToFloat(sPref.getString(this.getString(R.string.pref_summer_mixed), "0"));
-        arrCons[1][0] = Functions.textToFloat(sPref.getString(this.getString(R.string.pref_winter_city), "0"));
-        arrCons[1][1] = Functions.textToFloat(sPref.getString(this.getString(R.string.pref_winter_highway), "0"));
-        arrCons[1][2] = Functions.textToFloat(sPref.getString(this.getString(R.string.pref_winter_mixed), "0"));
+        arrCons[0][0] = Functions.textToFloat(sPref.getString(getString(R.string.pref_summer_city), "0"));
+        arrCons[0][1] = Functions.textToFloat(sPref.getString(getString(R.string.pref_summer_highway), "0"));
+        arrCons[0][2] = Functions.textToFloat(sPref.getString(getString(R.string.pref_summer_mixed), "0"));
+        arrCons[1][0] = Functions.textToFloat(sPref.getString(getString(R.string.pref_winter_city), "0"));
+        arrCons[1][1] = Functions.textToFloat(sPref.getString(getString(R.string.pref_winter_highway), "0"));
+        arrCons[1][2] = Functions.textToFloat(sPref.getString(getString(R.string.pref_winter_mixed), "0"));
     }
 
     private void savePrefs() {

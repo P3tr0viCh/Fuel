@@ -3,6 +3,7 @@ package ru.p3tr0vich.fuel;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -64,6 +65,24 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
             isInRoot = preferenceKey == null;
             if (!isInRoot) setPreferenceScreen((PreferenceScreen) findPreference(preferenceKey));
         }
+
+        findPreference(getString(R.string.pref_map_center_text))
+                .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        ActivityYandexMap.start(getActivity(), false);
+
+                        return true;
+                    }
+                });
+    }
+
+    public void setMapCenter(int mapCenter) {
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .edit()
+                .putString(getString(R.string.pref_map_center_text),
+                        String.valueOf(mapCenter))
+                .apply();
     }
 
     @Override
@@ -157,6 +176,9 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
             summary = summary + " (" + text + ")";
 
             editPref.setSummary(summary);
+        } else if (preference.getKey().equals(getString(R.string.pref_map_center_text))) {
+            preference.setSummary(PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .getString(getString(R.string.pref_map_center_text), YandexMapJavascriptInterface.DEFAULT_MAP_CENTER));
         }
     }
 

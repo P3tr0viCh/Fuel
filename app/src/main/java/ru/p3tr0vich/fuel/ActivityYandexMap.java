@@ -2,13 +2,13 @@ package ru.p3tr0vich.fuel;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -27,9 +27,11 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 
 public class ActivityYandexMap extends AppCompatActivity {
 
-    public static final int REQUEST_CODE = 8829;
+    public static final int REQUEST_CODE_DISTANCE = 8829;
+    public static final int REQUEST_CODE_MAP_CENTER = 8830;
 
     private static final String INTENT_DISTANCE = "INTENT_DISTANCE";
+    private static final String INTENT_MAP_CENTER_TEXT = "INTENT_MAP_CENTER_TEXT";
 
     private static final String MAP_HTML = "file:///android_asset/distanceCalculator.html";
 
@@ -39,12 +41,30 @@ public class ActivityYandexMap extends AppCompatActivity {
     private FrameLayout mWebViewPlaceholder;
     private WebView mWebView;
 
-    public static void start(Activity parent) {
-        parent.startActivityForResult(new Intent(parent, ActivityYandexMap.class), REQUEST_CODE);
+    static class MapCenter {
+        final String text;
+
+        MapCenter(String text) {
+            this.text = text;
+        }
+    }
+
+    public static void start(FragmentActivity parent, boolean distance) {
+        if (Functions.isInternetConnected())
+            parent.startActivityForResult(new Intent(parent, ActivityYandexMap.class),
+                    distance ? REQUEST_CODE_DISTANCE : REQUEST_CODE_MAP_CENTER);
+        else
+            FragmentDialogMessage.showMessage(parent,
+                    parent.getString(R.string.title_message_error),
+                    parent.getString(R.string.message_error_no_internet));
     }
 
     public static int getDistance(Intent data) {
         return data.getIntExtra(INTENT_DISTANCE, 0);
+    }
+
+    public static MapCenter getMapCenter(Intent data) {
+        return new MapCenter(data.getStringExtra(INTENT_MAP_CENTER_TEXT));
     }
 
     @Override

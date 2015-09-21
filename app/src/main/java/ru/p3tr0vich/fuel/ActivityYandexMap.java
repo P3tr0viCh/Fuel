@@ -35,6 +35,8 @@ public class ActivityYandexMap extends AppCompatActivity {
     private static final String INTENT_MAP_CENTER_LATITUDE = "INTENT_MAP_CENTER_LATITUDE";
     private static final String INTENT_MAP_CENTER_LONGITUDE = "INTENT_MAP_CENTER_LONGITUDE";
 
+    private static final String PREFIX_RUSSIA = "Россия, ";
+
     private static final String EXTRA_TYPE = "EXTRA_TYPE";
 
     private static final String MAP_HTML_DISTANCE = "file:///android_asset/distanceCalculator.html";
@@ -42,7 +44,8 @@ public class ActivityYandexMap extends AppCompatActivity {
 
     private MapType mType;
 
-    private int mDistance = -1;
+    private boolean mLoading = true;
+    private int mDistance = 0;
     private MapCenter mMapCenter;
 
     private Toolbar mToolbarYandexMap;
@@ -54,18 +57,22 @@ public class ActivityYandexMap extends AppCompatActivity {
 
     static class MapCenter {
         String text;
+        String name;
+        String description;
         double latitude, longitude;
-
-        MapCenter() {
-            this.text = YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_TEXT;
-            this.latitude = YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_LATITUDE;
-            this.longitude = YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_LONGITUDE;
-        }
 
         MapCenter(String text, double latitude, double longitude) {
             this.text = text;
+            this.name = "";
+            this.description = "";
             this.latitude = latitude;
             this.longitude = longitude;
+        }
+
+        MapCenter() {
+            this(YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_TEXT,
+                    YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_LATITUDE,
+                    YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_LONGITUDE);
         }
     }
 
@@ -94,11 +101,14 @@ public class ActivityYandexMap extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Functions.logD("ActivityYandexMap -- onCreate");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_yandex_map);
 
         mType = (MapType) getIntent().getSerializableExtra(EXTRA_TYPE);
         mMapCenter = new MapCenter();
+        mMapCenter.text = getString(R.string.yandex_map_map_center_title);
 
         initUI();
     }
@@ -117,9 +127,21 @@ public class ActivityYandexMap extends AppCompatActivity {
             }
         });
 
-        Functions.logD("ActivityYandexMap -- initUI: mDistance == " + mDistance);
+        Functions.logD("ActivityYandexMap -- initUI: mLoading == " + mLoading);
 
-        setDistance(mDistance);
+        switch (mType) {
+            case DISTANCE:
+                setDistance(mDistance);
+                break;
+            case CENTER:
+                setMapCenter(
+                        mMapCenter.text,
+                        mMapCenter.description,
+                        mMapCenter.name,
+                        mMapCenter.latitude,
+                        mMapCenter.longitude);
+                break;
+        }
 
         mProgressWheelYandexMap = (ProgressWheel) findViewById(R.id.progressWheelYandexMap);
 
@@ -176,7 +198,7 @@ public class ActivityYandexMap extends AppCompatActivity {
             }
         }
 
-        if (mDistance == -1) mProgressWheelYandexMap.setVisibility(View.VISIBLE);
+        if (mLoading) mProgressWheelYandexMap.setVisibility(View.VISIBLE);
 
         mWebViewPlaceholder.addView(mWebView);
     }
@@ -268,21 +290,33 @@ public class ActivityYandexMap extends AppCompatActivity {
         getSupportActionBar().setTitle(title);
     }
 
-    public void setMapCenter(final String text, final String name,
+    private String minimizeGeoCode(String text) {
+        return text.startsWith(PREFIX_RUSSIA) ? text.substring(PREFIX_RUSSIA.length()) : text;
+    }
+
+    public void setMapCenter(final String text, final String description, final String name,
                              final double latitude, final double longitude) {
         Functions.logD("ActivityYandexMap -- setMapCenterText: text == " + text);
 
-        mMapCenter.text = text;
+        mMapCenter.text = minimizeGeoCode(text);
+        if (description.equals(""))
+            mMapCenter.description = mMapCenter.text;
+        else
+            mMapCenter.description = minimizeGeoCode(description);
+        mMapCenter.name = name;
         mMapCenter.latitude = latitude;
         mMapCenter.longitude = longitude;
 
-        mToolbarYandexMap.setSubtitle(name);
+        //noinspection ConstantConditions
+        getSupportActionBar().setTitle(mMapCenter.description);
+
+        mToolbarYandexMap.setSubtitle(mMapCenter.name);
     }
 
     public void endInitYandexMap() {
         Functions.logD("ActivityYandexMap -- endInitYandexMap");
 
-        mDistance = 0;
+        mLoading = false;
 
         mProgressWheelYandexMap.setVisibility(View.GONE);
     }

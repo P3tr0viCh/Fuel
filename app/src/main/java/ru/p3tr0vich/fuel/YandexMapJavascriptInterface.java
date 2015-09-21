@@ -71,12 +71,12 @@ class YandexMapJavascriptInterface {
     }
 
     @JavascriptInterface
-    public void updateMapCenter(final String text, final String name,
+    public void updateMapCenter(final String text, final String description, final String name,
                                 final double latitude, final double longitude) {
         mActivityYandexMap.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mActivityYandexMap.setMapCenter(text, name, latitude, longitude);
+                mActivityYandexMap.setMapCenter(text, description, name, latitude, longitude);
             }
         });
     }

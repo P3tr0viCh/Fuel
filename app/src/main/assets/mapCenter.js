@@ -50,6 +50,7 @@ function DistanceCalculator(map) {
     this._startBalloon;
     this._mapCenterText;
     this._mapCenterName;
+    this._mapCenterDescription;
 
     map.events.add('click', this._onClick, this);
 
@@ -96,6 +97,10 @@ ptp.geocode = function (point) {
             geocode.geoObjects.get(0).properties.get('name') || ''
         console.log(this._mapCenterName);
 
+        this._mapCenterDescription = geocode.geoObjects.get(0) &&
+            geocode.geoObjects.get(0).properties.get('description') || ''
+        console.log(this._mapCenterDescription);
+
         this.getMapCenter();
     }, this);
 }
@@ -109,7 +114,7 @@ ptp.getMapCenter = function () {
             self._start.properties.set('balloonContentBody', startBalloon);
 
             YandexMapJavascriptInterface.updateMapCenter(
-                this._mapCenterText, this._mapCenterName, start[0], start[1]);
+                this._mapCenterText, this._mapCenterDescription, this._mapCenterName, start[0], start[1]);
     }
 };
 

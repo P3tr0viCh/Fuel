@@ -100,6 +100,7 @@
     <string name="message_save_file_ok">Файл сохранён</string>
     <string name="message_load_file_ok">Данные из файла загружены</string>
 
+    <string name="yandex_map_map_center_title">Яндекс.Карты</string>
     <string name="yandex_map_start_search_control_placeholder_content">Адрес начала маршрута</string>
     <string name="yandex_map_finish_search_control_placeholder_content">Адрес конца маршрута</string>
     <string name="yandex_map_start_search_control_placeholder_content_map_center">Адрес центра карты</string>

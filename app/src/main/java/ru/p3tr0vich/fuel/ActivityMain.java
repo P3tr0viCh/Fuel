@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -300,8 +301,15 @@ public class ActivityMain extends AppCompatActivity implements
                         .setDistance(ActivityYandexMap.getDistance(data));
                 break;
             case ActivityYandexMap.REQUEST_CODE_MAP_CENTER:
-                ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG))
-                        .setMapCenter(ActivityYandexMap.getMapCenter(data));
+                ActivityYandexMap.MapCenter mapCenter = ActivityYandexMap.getMapCenter(data);
+                PreferenceManager.getDefaultSharedPreferences(this)
+                        .edit()
+                        .putString(getString(R.string.pref_map_center_text), mapCenter.text)
+                        .putLong(getString(R.string.pref_map_center_latitude),
+                                Double.doubleToRawLongBits(mapCenter.latitude))
+                        .putLong(getString(R.string.pref_map_center_longitude),
+                                Double.doubleToRawLongBits(mapCenter.longitude))
+                        .apply();
                 break;
         }
     }

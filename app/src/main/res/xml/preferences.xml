@@ -86,6 +86,7 @@
         </PreferenceCategory>
     </PreferenceScreen>
     <Preference
+        android:icon="@drawable/ic_map_marker_grey600_24dp"
         android:key="@string/pref_map_center_text"
         android:title="Центр Яндекс.Карты" />
 </PreferenceScreen>

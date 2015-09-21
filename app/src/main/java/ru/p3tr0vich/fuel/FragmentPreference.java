@@ -53,8 +53,6 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         addPreferencesFromResource(R.xml.preferences);
         rootPreferenceScreen = getPreferenceScreen();
 
-        rootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-
         init(rootPreferenceScreen);
 
         if (bundle == null) {
@@ -76,17 +74,6 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
                         return true;
                     }
                 });
-    }
-
-    public void setMapCenter(ActivityYandexMap.MapCenter mapCenter) {
-        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .edit()
-                .putString(getString(R.string.pref_map_center_text), mapCenter.text)
-                .putLong(getString(R.string.pref_map_center_latitude),
-                        Double.doubleToRawLongBits(mapCenter.latitude))
-                .putLong(getString(R.string.pref_map_center_longitude),
-                        Double.doubleToRawLongBits(mapCenter.longitude))
-                .apply();
     }
 
     @Override
@@ -162,6 +149,14 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         super.onStart();
         Functions.logD("FragmentPreference -- onStart");
         mOnFragmentChangeListener.onFragmentChange(getFragmentId());
+        rootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onStop() {
+        Functions.logD("FragmentPreference -- onStop");
+        rootPreferenceScreen.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        super.onStop();
     }
 
     private void updatePreferenceSummary(Preference preference) {
@@ -185,8 +180,10 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
             editPref.setSummary(summary);
         } else if (preference.getKey().equals(getString(R.string.pref_map_center_text))) {
-            preference.setSummary(PreferenceManager.getDefaultSharedPreferences(getActivity())
-                    .getString(getString(R.string.pref_map_center_text), YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_TEXT));
+            preference.setSummary(
+                    PreferenceManager.getDefaultSharedPreferences(Functions.sApplicationContext)
+                            .getString(getString(R.string.pref_map_center_text),
+                                    YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_TEXT));
         }
     }
 

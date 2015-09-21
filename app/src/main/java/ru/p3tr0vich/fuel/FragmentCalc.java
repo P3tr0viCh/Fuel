@@ -76,7 +76,7 @@ public class FragmentCalc extends FragmentFuel implements
         view.findViewById(R.id.btnMaps).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityYandexMap.start(getActivity(), true);
+                ActivityYandexMap.start(getActivity(), ActivityYandexMap.MapType.DISTANCE);
             }
         });
 

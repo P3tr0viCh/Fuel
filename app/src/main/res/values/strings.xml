@@ -102,6 +102,7 @@
 
     <string name="yandex_map_start_search_control_placeholder_content">Адрес начала маршрута</string>
     <string name="yandex_map_finish_search_control_placeholder_content">Адрес конца маршрута</string>
+    <string name="yandex_map_start_search_control_placeholder_content_map_center">Адрес центра карты</string>
 
     <string name="year_current">Текущий год</string>
     <string name="year_all">Все записи</string>
@@ -164,4 +165,6 @@
     <string name="pref_filter_date_to" translatable="false">filter date to</string>
 
     <string name="pref_map_center_text" translatable="false">map center text</string>
+    <string name="pref_map_center_latitude" translatable="false">map center latitude</string>
+    <string name="pref_map_center_longitude" translatable="false">map center longitude</string>
 </resources>

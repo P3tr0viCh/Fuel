@@ -1,17 +1,21 @@
 package ru.p3tr0vich.fuel;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.webkit.JavascriptInterface;
 
 class YandexMapJavascriptInterface {
 
     public static final String NAME = "YandexMapJavascriptInterface";
 
-    public final static String DEFAULT_MAP_CENTER = "Москва, Кремль";
+    public final static String DEFAULT_MAP_CENTER_TEXT = "Москва, Кремль";
+    public final static double DEFAULT_MAP_CENTER_LATITUDE = 55.752023;  // Широта
+    public final static double DEFAULT_MAP_CENTER_LONGITUDE = 37.617499; // Долгота
 
     private final ActivityYandexMap mActivityYandexMap;
 
-    private final double mMapCenterLatitude;  // Широта
-    private final double mMapCenterLongitude; // Долгота
+    private final double mMapCenterLatitude;
+    private final double mMapCenterLongitude;
 
     private final String mStartSearchControlPlaceholderContent;
     private final String mFinishSearchControlPlaceholderContent;
@@ -19,11 +23,19 @@ class YandexMapJavascriptInterface {
     YandexMapJavascriptInterface(ActivityYandexMap activityYandexMap) {
         mActivityYandexMap = activityYandexMap;
 
-        mMapCenterLatitude = 55.752023;
-        mMapCenterLongitude = 37.617499;
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivityYandexMap);
+        mMapCenterLatitude = Double.longBitsToDouble(preferences.getLong(
+                mActivityYandexMap.getString(R.string.pref_map_center_latitude),
+                Double.doubleToLongBits(DEFAULT_MAP_CENTER_LATITUDE)));
+        mMapCenterLongitude = Double.longBitsToDouble(preferences.getLong(
+                mActivityYandexMap.getString(R.string.pref_map_center_longitude),
+                Double.doubleToLongBits(DEFAULT_MAP_CENTER_LONGITUDE)));
 
         mStartSearchControlPlaceholderContent =
-                mActivityYandexMap.getString(R.string.yandex_map_start_search_control_placeholder_content);
+                mActivityYandexMap.getString(
+                        mActivityYandexMap.getType() == ActivityYandexMap.MapType.DISTANCE ?
+                                R.string.yandex_map_start_search_control_placeholder_content :
+                                R.string.yandex_map_start_search_control_placeholder_content_map_center);
         mFinishSearchControlPlaceholderContent =
                 mActivityYandexMap.getString(R.string.yandex_map_finish_search_control_placeholder_content);
     }
@@ -54,6 +66,17 @@ class YandexMapJavascriptInterface {
             @Override
             public void run() {
                 mActivityYandexMap.setDistance(distance);
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void updateMapCenter(final String text, final String name,
+                                final double latitude, final double longitude) {
+        mActivityYandexMap.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mActivityYandexMap.setMapCenter(text, name, latitude, longitude);
             }
         });
     }

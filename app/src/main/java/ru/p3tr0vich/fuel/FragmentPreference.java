@@ -44,6 +44,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Functions.logD("FragmentPreference -- onSharedPreferenceChanged: key == " + key);
         updatePreferenceSummary(findPreference(key));
     }
 
@@ -70,18 +71,21 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
                 .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
-                        ActivityYandexMap.start(getActivity(), false);
+                        ActivityYandexMap.start(getActivity(), ActivityYandexMap.MapType.CENTER);
 
                         return true;
                     }
                 });
     }
 
-    public void setMapCenter(int mapCenter) {
+    public void setMapCenter(ActivityYandexMap.MapCenter mapCenter) {
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .edit()
-                .putString(getString(R.string.pref_map_center_text),
-                        String.valueOf(mapCenter))
+                .putString(getString(R.string.pref_map_center_text), mapCenter.text)
+                .putLong(getString(R.string.pref_map_center_latitude),
+                        Double.doubleToRawLongBits(mapCenter.latitude))
+                .putLong(getString(R.string.pref_map_center_longitude),
+                        Double.doubleToRawLongBits(mapCenter.longitude))
                 .apply();
     }
 
@@ -161,6 +165,10 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     }
 
     private void updatePreferenceSummary(Preference preference) {
+        if (preference == null) {
+            Functions.logD("FragmentPreference -- updatePreferenceSummary: preference == null");
+            return;
+        }
         if (preference instanceof EditTextPreference) {
             EditTextPreference editPref = (EditTextPreference) preference;
 
@@ -178,7 +186,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
             editPref.setSummary(summary);
         } else if (preference.getKey().equals(getString(R.string.pref_map_center_text))) {
             preference.setSummary(PreferenceManager.getDefaultSharedPreferences(getActivity())
-                    .getString(getString(R.string.pref_map_center_text), YandexMapJavascriptInterface.DEFAULT_MAP_CENTER));
+                    .getString(getString(R.string.pref_map_center_text), YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_TEXT));
         }
     }
 

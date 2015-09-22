@@ -301,6 +301,7 @@ public class ActivityMain extends AppCompatActivity implements
                         .setDistance(ActivityYandexMap.getDistance(data));
                 break;
             case ActivityYandexMap.REQUEST_CODE_MAP_CENTER:
+                Functions.logD("ActivityMain -- onActivityResult: ActivityYandexMap.REQUEST_CODE_MAP_CENTER");
                 ActivityYandexMap.MapCenter mapCenter = ActivityYandexMap.getMapCenter(data);
                 PreferenceManager.getDefaultSharedPreferences(this)
                         .edit()
@@ -310,6 +311,7 @@ public class ActivityMain extends AppCompatActivity implements
                         .putLong(getString(R.string.pref_map_center_longitude),
                                 Double.doubleToRawLongBits(mapCenter.longitude))
                         .apply();
+                ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).updateMapCenter();
                 break;
         }
     }

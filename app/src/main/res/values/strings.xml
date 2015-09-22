@@ -101,9 +101,9 @@
     <string name="message_load_file_ok">Данные из файла загружены</string>
 
     <string name="yandex_map_map_center_title">Яндекс.Карты</string>
+    <string name="yandex_map_empty_geocode">Нет данных</string>
     <string name="yandex_map_start_search_control_placeholder_content">Адрес начала маршрута</string>
     <string name="yandex_map_finish_search_control_placeholder_content">Адрес конца маршрута</string>
-    <string name="yandex_map_start_search_control_placeholder_content_map_center">Адрес центра карты</string>
 
     <string name="year_current">Текущий год</string>
     <string name="year_all">Все записи</string>
@@ -137,6 +137,8 @@
     <string name="pref_cons_key" translatable="false">key_cons</string>
     <string name="pref_cons_header">Расход топлива</string>
     <string name="pref_cons_header_summary">Расход топлива в различных режимах</string>
+
+    <string name="pref_yandex_map_header">Яндекс.Карты. Начало маршрута</string>
 
     <string name="pref_summary_cost">Стоимость заправки по умолчанию для новых записей</string>
     <string name="pref_summary_volume">Объём заправки по умолчанию для новых записей</string>

@@ -194,4 +194,8 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         } else
             updatePreferenceSummary(preference);
     }
+
+    public void updateMapCenter() {
+        updatePreferenceSummary(findPreference(getString(R.string.pref_map_center_text)));
+    }
 }

@@ -45,76 +45,160 @@ function init() {
 } // init
 
 function DistanceCalculator(map) {
-    this._map = map;
-    this._start = null;
-    this._startBalloon;
-    this._mapCenterText;
-    this._mapCenterName;
-    this._mapCenterDescription;
+    this.map = map;
+    this.start = null;
 
-    map.events.add('click', this._onClick, this);
+    this.geoObject = null;
+    this.startBalloon = null;
+
+    this.mapCenterText;
+    this.mapCenterTitle;
+    this.mapCenterSubtitle;
+
+    this.AdministrativeAreaName;
+    this.SubAdministrativeAreaName;
+    this.LocalityName;
+    this.DependentLocalityName;
+    this.ThoroughfareName;
+    this.PremiseName;
+    this.PremiseNumber;
+
+    map.events.add('click', this.onClick, this);
 
     this.setStartPoint(map.getCenter());
 }
 
 var ptp = DistanceCalculator.prototype;
 
-ptp._onClick = function (e) {
-    console.log("_onClick");
-
+ptp.onClick = function (e) {
+    console.log("onClick");
     this.setStartPoint(e.get('coords'));
 };
 
-ptp._onStartDragEnd = function (e) {
-    var coords = this._start.geometry.getCoordinates();
-    this.geocode(coords);
+ptp.onStartDragEnd = function (e) {
+    var coordinates = this.start.geometry.getCoordinates();
+    this.geocode(coordinates);
 };
 
 ptp.setStartPoint = function (position) {
-    if (this._start) this._start.geometry.setCoordinates(position);
+    if (this.start) this.start.geometry.setCoordinates(position);
     else {
-        this._start = new ymaps.Placemark(position, { },
+        this.start = new ymaps.Placemark(position, { },
             { draggable: true, preset: 'islands#redDotIcon' });
-        this._start.events.add('dragend', this._onStartDragEnd, this);
-        this._map.geoObjects.add(this._start);
+        this.start.events.add('dragend', this.onStartDragEnd, this);
+        this.map.geoObjects.add(this.start);
     }
     this.geocode(position);
 };
 
 ptp.geocode = function (point) {
-    console.log("geocode");
-
     ymaps.geocode(point).then(function(geocode) {
-        this._startBalloon = geocode.geoObjects.get(0) &&
-            geocode.geoObjects.get(0).properties.get('balloonContentBody') || '';
-        console.log(this._startBalloon);
+        geoObject = geocode.geoObjects.get(0);
 
-        this._mapCenterText = geocode.geoObjects.get(0) &&
-            geocode.geoObjects.get(0).properties.get('text') || ''
-        console.log(this._mapCenterText);
+        mapCenterText = geoObject && geoObject.properties.get('text') || '';
 
-        this._mapCenterName = geocode.geoObjects.get(0) &&
-            geocode.geoObjects.get(0).properties.get('name') || ''
-        console.log(this._mapCenterName);
+        if (mapCenterText != '') {
+            startBalloon = geoObject && geoObject.properties.get('balloonContent') || '';
+            console.log('balloonContent: ' + startBalloon);
 
-        this._mapCenterDescription = geocode.geoObjects.get(0) &&
-            geocode.geoObjects.get(0).properties.get('description') || ''
-        console.log(this._mapCenterDescription);
+            console.log('text: ' + mapCenterText);
+
+            AdministrativeAreaName = null;
+            SubAdministrativeAreaName = null;
+            LocalityName = null;
+            DependentLocalityName = null;
+            ThoroughfareName = null;
+            PremiseName = null;
+            PremiseNumber = null;
+
+            mapCenterTitle = null;
+            mapCenterSubtitle = null;
+
+            this.getAllKeys(geoObject.properties.get('metaDataProperty.GeocoderMetaData.AddressDetails'));
+
+            if (LocalityName != null) {
+                mapCenterTitle = LocalityName;
+                if (ThoroughfareName != null) {
+                    mapCenterSubtitle = ThoroughfareName;
+                } else if (PremiseName != null) {
+                    mapCenterSubtitle = PremiseName;
+                } else if (DependentLocalityName != null) {
+                    mapCenterSubtitle = DependentLocalityName;
+                }
+                if (mapCenterSubtitle != null) {
+                    if (PremiseNumber != null)
+                        mapCenterSubtitle = mapCenterSubtitle + ', ' + PremiseNumber;
+                } else {
+                    if (AdministrativeAreaName != null) {
+                        mapCenterTitle = AdministrativeAreaName;
+                        mapCenterSubtitle = LocalityName;
+                    }
+                }
+            } else {
+                if (PremiseName != null) {
+                    mapCenterSubtitle = PremiseName;
+                } else if (ThoroughfareName != null) {
+                    mapCenterSubtitle = ThoroughfareName;
+                }
+                if (mapCenterSubtitle != null) {
+                    if (SubAdministrativeAreaName != null)
+                        mapCenterTitle = SubAdministrativeAreaName;
+                    else if (AdministrativeAreaName != null)
+                        mapCenterTitle = AdministrativeAreaName;
+                } else {
+                    if (AdministrativeAreaName != null)
+                        mapCenterTitle = AdministrativeAreaName;
+                    if (SubAdministrativeAreaName != null)
+                        mapCenterSubtitle = SubAdministrativeAreaName;
+                }
+            }
+            if (mapCenterTitle == null) {
+                if (mapCenterSubtitle == null) {
+                    mapCenterTitle = '';
+                    mapCenterSubtitle = '';
+                } else {
+                    mapCenterTitle = mapCenterSubtitle;
+                    mapCenterSubtitle = '';
+                }
+            } else if (mapCenterSubtitle == null) mapCenterSubtitle = '';
+        } else {
+            console.log('text: null');
+            startBalloon = YandexMapJavascriptInterface.getEmptyBalloonContent();
+            mapCenterTitle = '';
+            mapCenterSubtitle = '';
+        }
 
         this.getMapCenter();
     }, this);
 }
 
+ptp.getAllKeys = function (object) {
+    for (var key in object)
+        if (object[key] == '[object Object]')
+            this.getAllKeys(object[key])
+        else {
+            console.log('getAll: key == ' + key + ', value == ' + object[key]);
+            switch (key) {
+                case 'AdministrativeAreaName': AdministrativeAreaName = object[key]; break;
+                case 'SubAdministrativeAreaName': SubAdministrativeAreaName = object[key]; break;
+                case 'LocalityName': LocalityName = object[key]; break;
+                case 'DependentLocalityName': DependentLocalityName = object[key]; break;
+                case 'ThoroughfareName': ThoroughfareName = object[key]; break;
+                case 'PremiseName': PremiseName = object[key]; break;
+                case 'PremiseNumber': PremiseNumber = object[key]; break;
+            }
+        }
+}
+
 ptp.getMapCenter = function () {
-    if (this._start) {
-        var self = this,
-            start = this._start.geometry.getCoordinates(),
-            startBalloon = this._startBalloon;
+    if (this.start) {
+        var startCoordinates = this.start.geometry.getCoordinates();
 
-            self._start.properties.set('balloonContentBody', startBalloon);
+        this.start.properties.set('balloonContentBody', startBalloon);
 
-            YandexMapJavascriptInterface.updateMapCenter(
-                this._mapCenterText, this._mapCenterDescription, this._mapCenterName, start[0], start[1]);
+        YandexMapJavascriptInterface.updateMapCenter(
+            mapCenterText, mapCenterTitle, mapCenterSubtitle,
+            startCoordinates[0], startCoordinates[1]);
     }
 };
 

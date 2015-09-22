@@ -19,6 +19,7 @@ class YandexMapJavascriptInterface {
 
     private final String mStartSearchControlPlaceholderContent;
     private final String mFinishSearchControlPlaceholderContent;
+    private final String mEmptyBalloonContent; // TODO: distance
 
     YandexMapJavascriptInterface(ActivityYandexMap activityYandexMap) {
         mActivityYandexMap = activityYandexMap;
@@ -32,12 +33,11 @@ class YandexMapJavascriptInterface {
                 Double.doubleToLongBits(DEFAULT_MAP_CENTER_LONGITUDE)));
 
         mStartSearchControlPlaceholderContent =
-                mActivityYandexMap.getString(
-                        mActivityYandexMap.getType() == ActivityYandexMap.MapType.DISTANCE ?
-                                R.string.yandex_map_start_search_control_placeholder_content :
-                                R.string.yandex_map_start_search_control_placeholder_content_map_center);
+                mActivityYandexMap.getString(R.string.yandex_map_start_search_control_placeholder_content);
         mFinishSearchControlPlaceholderContent =
                 mActivityYandexMap.getString(R.string.yandex_map_finish_search_control_placeholder_content);
+        mEmptyBalloonContent = "<h3>" +
+                mActivityYandexMap.getString(R.string.yandex_map_empty_geocode) +  "</h3>";
     }
 
     @JavascriptInterface
@@ -61,6 +61,11 @@ class YandexMapJavascriptInterface {
     }
 
     @JavascriptInterface
+    public String getEmptyBalloonContent() {
+        return mEmptyBalloonContent;
+    }
+
+    @JavascriptInterface
     public void updateDistance(final int distance) {
         mActivityYandexMap.runOnUiThread(new Runnable() {
             @Override
@@ -71,12 +76,12 @@ class YandexMapJavascriptInterface {
     }
 
     @JavascriptInterface
-    public void updateMapCenter(final String text, final String description, final String name,
+    public void updateMapCenter(final String text, final String title, final String subtitle,
                                 final double latitude, final double longitude) {
         mActivityYandexMap.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mActivityYandexMap.setMapCenter(text, description, name, latitude, longitude);
+                mActivityYandexMap.setMapCenter(text, title, subtitle, latitude, longitude);
             }
         });
     }

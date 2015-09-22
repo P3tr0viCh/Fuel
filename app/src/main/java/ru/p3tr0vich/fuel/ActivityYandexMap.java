@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,14 +58,14 @@ public class ActivityYandexMap extends AppCompatActivity {
 
     static class MapCenter {
         String text;
-        String name;
-        String description;
+        String title;
+        String subtitle;
         double latitude, longitude;
 
         MapCenter(String text, double latitude, double longitude) {
             this.text = text;
-            this.name = "";
-            this.description = "";
+            this.title = "";
+            this.subtitle = "";
             this.latitude = latitude;
             this.longitude = longitude;
         }
@@ -136,8 +137,8 @@ public class ActivityYandexMap extends AppCompatActivity {
             case CENTER:
                 setMapCenter(
                         mMapCenter.text,
-                        mMapCenter.description,
-                        mMapCenter.name,
+                        mMapCenter.title,
+                        mMapCenter.subtitle,
                         mMapCenter.latitude,
                         mMapCenter.longitude);
                 break;
@@ -157,7 +158,7 @@ public class ActivityYandexMap extends AppCompatActivity {
             mWebView.setWebChromeClient(new WebChromeClient() {
                 @Override
                 public boolean onConsoleMessage(@NonNull ConsoleMessage cm) {
-                    Functions.logD(cm.message() + " -- from line " + cm.lineNumber() + " of " + cm.sourceId());
+                    Functions.logD(cm.message() + " [line " + cm.lineNumber() + "]");
                     return true;
                 }
             });
@@ -273,10 +274,6 @@ public class ActivityYandexMap extends AppCompatActivity {
         }
     }
 
-    public MapType getType() {
-        return mType;
-    }
-
     public void setDistance(int distance) {
         mDistance = distance;
 
@@ -294,23 +291,27 @@ public class ActivityYandexMap extends AppCompatActivity {
         return text.startsWith(PREFIX_RUSSIA) ? text.substring(PREFIX_RUSSIA.length()) : text;
     }
 
-    public void setMapCenter(final String text, final String description, final String name,
+    public void setMapCenter(final String text, final String title, final String subtitle,
                              final double latitude, final double longitude) {
         Functions.logD("ActivityYandexMap -- setMapCenterText: text == " + text);
 
-        mMapCenter.text = minimizeGeoCode(text);
-        if (description.equals(""))
-            mMapCenter.description = mMapCenter.text;
+        if (!TextUtils.isEmpty(text))
+            mMapCenter.text = minimizeGeoCode(text);
         else
-            mMapCenter.description = minimizeGeoCode(description);
-        mMapCenter.name = name;
+            mMapCenter.text = Functions.floatToString((float) latitude) + ',' +
+                    Functions.floatToString((float) longitude);
+        if (title.equals(""))
+            mMapCenter.title = mMapCenter.text;
+        else
+            mMapCenter.title = title;
+        mMapCenter.subtitle = subtitle;
         mMapCenter.latitude = latitude;
         mMapCenter.longitude = longitude;
 
         //noinspection ConstantConditions
-        getSupportActionBar().setTitle(mMapCenter.description);
+        getSupportActionBar().setTitle(mMapCenter.title);
 
-        mToolbarYandexMap.setSubtitle(mMapCenter.name);
+        mToolbarYandexMap.setSubtitle(mMapCenter.subtitle);
     }
 
     public void endInitYandexMap() {

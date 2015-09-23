@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:wheel="http://schemas.android.com/apk/res-auto"
@@ -18,110 +19,122 @@
         android:layout_height="0dp"
         android:background="@drawable/toolbar_shadow" />
 
-    <ListView
-        android:id="@+id/listViewFueling"
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/divider"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentStart="false"
-        android:layout_alignParentTop="false"
-        android:layout_below="@+id/toolbarDates"
-        android:choiceMode="none"
-        android:drawSelectorOnTop="false"
-        android:footerDividersEnabled="false"
-        android:headerDividersEnabled="true"
-        tools:listfooter="@layout/fueling_listview_footer"
-        tools:listheader="@layout/fueling_listview_header"
-        tools:listitem="@layout/fueling_listitem" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbarDates">
 
-    <com.pnikosis.materialishprogress.ProgressWheel
-        android:id="@+id/progressWheelFueling"
-        android:layout_width="@dimen/progress_wheel_fueling_size"
-        android:layout_height="@dimen/progress_wheel_fueling_size"
-        android:layout_alignBottom="@+id/divider"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        wheel:matProg_barColor="@color/primary"
-        wheel:matProg_progressIndeterminate="true" />
-
-    <View
-        android:id="@+id/divider"
-        style="@style/AppTheme.Divider.Horizontal"
-        android:layout_above="@+id/layoutTotal" />
-
-    <TableLayout
-        android:id="@+id/layoutTotal"
-        android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="false"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp">
-
-        <TableRow
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:layout_weight="1"
-            android:gravity="bottom">
+            android:layout_height="match_parent"
+            app:layout_behavior="ru.p3tr0vich.fuel.RelativeLayoutBehavior"
+            android:id="@+id/layoutMain">
 
-            <TextView
-                android:id="@+id/tvAverageText"
+            <ListView
+                android:id="@+id/listViewFueling"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/divider"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentStart="false"
+                android:layout_alignParentTop="false"
+                android:choiceMode="none"
+                android:drawSelectorOnTop="false"
+                android:footerDividersEnabled="false"
+                android:headerDividersEnabled="true"
+                tools:listfooter="@layout/fueling_listview_footer"
+                tools:listheader="@layout/fueling_listview_header"
+                tools:listitem="@layout/fueling_listitem" />
+
+            <com.pnikosis.materialishprogress.ProgressWheel
+                android:id="@+id/progressWheelFueling"
+                android:layout_width="@dimen/progress_wheel_fueling_size"
+                android:layout_height="@dimen/progress_wheel_fueling_size"
+                android:layout_alignBottom="@+id/divider"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:visibility="gone"
+                wheel:matProg_barColor="@color/primary"
+                wheel:matProg_progressIndeterminate="true" />
+
+            <View
+                android:id="@+id/divider"
+                style="@style/AppTheme.Divider.Horizontal"
+                android:layout_above="@+id/layoutTotal" />
+
+            <TableLayout
+                android:id="@+id/layoutTotal"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="false"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom">
+
+                    <TextView
+                        android:id="@+id/tvAverageText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_average_cons"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+
+                    <TextView
+                        android:id="@+id/tvAverage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginLeft="8dp"
+                        android:gravity="center_vertical"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts"
+                        tools:text="@string/list_item_volume" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="top">
+
+                    <TextView
+                        android:id="@+id/tvCostSumText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_sum_cost"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+
+                    <TextView
+                        android:id="@+id/tvCostSum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginLeft="8dp"
+                        android:gravity="center_vertical"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts"
+                        tools:text="@string/list_item_cost" />
+                </TableRow>
+            </TableLayout>
+
+            <com.melnykov.fab.FloatingActionButton
+                android:id="@+id/floatingActionButton"
                 android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:gravity="center_vertical"
-                android:text="@string/text_average_cons"
-                android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
-
-            <TextView
-                android:id="@+id/tvAverage"
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:layout_marginLeft="8dp"
-                android:gravity="center_vertical"
-                android:textAppearance="@style/AppTheme.TextAppearance.Texts"
-                tools:text="@string/list_item_volume" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="top">
-
-            <TextView
-                android:id="@+id/tvCostSumText"
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:gravity="center_vertical"
-                android:text="@string/text_sum_cost"
-                android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
-
-            <TextView
-                android:id="@+id/tvCostSum"
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:layout_marginLeft="8dp"
-                android:gravity="center_vertical"
-                android:textAppearance="@style/AppTheme.TextAppearance.Texts"
-                tools:text="@string/list_item_cost" />
-        </TableRow>
-    </TableLayout>
-
-    <com.melnykov.fab.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentRight="true"
-        android:layout_gravity="bottom|right"
-        android:layout_marginBottom="46dp"
-        android:layout_marginRight="16dp"
-        android:clickable="true"
-        android:src="@drawable/ic_add_white_24dp"
-        fab:fab_colorNormal="@color/primary"
-        fab:fab_colorPressed="@color/primary_dark" />
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="false"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="46dp"
+                android:layout_marginRight="16dp"
+                android:clickable="true"
+                android:src="@drawable/ic_add_white_24dp"
+                fab:fab_colorNormal="@color/primary"
+                fab:fab_colorPressed="@color/primary_dark" />
+        </RelativeLayout>
+    </android.support.design.widget.CoordinatorLayout>
 </RelativeLayout>

@@ -455,9 +455,10 @@ public class FragmentFueling extends FragmentFuel implements
         if (db.updateRecord(fuelingRecord) > 0) checkFilterMode(fuelingRecord);
     }
 
-    public void deleteRecord(FuelingRecord fuelingRecord) {
-        if (db.deleteRecord(fuelingRecord) > 0)
-            updateAfterChange();
+    public boolean deleteRecord(FuelingRecord fuelingRecord) {
+        boolean deleted = db.deleteRecord(fuelingRecord) > 0;
+        if (deleted) updateAfterChange();
+        return deleted;
     }
 
     private void doPopup(final View v) {

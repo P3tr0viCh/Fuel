@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -273,6 +274,13 @@ public class ActivityMain extends AppCompatActivity implements
             FragmentDialogDeleteRecord.show(this, fuelingRecord);
     }
 
+    private final View.OnClickListener undoClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+//            Toast.makeText(ActivityMain.this, "UNDO CLICK!", Toast.LENGTH_SHORT).show();
+        }
+    };
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) return;
@@ -294,7 +302,13 @@ public class ActivityMain extends AppCompatActivity implements
                 break;
             case FragmentDialogDeleteRecord.REQUEST_CODE:
                 fuelingRecord = FragmentDialogDeleteRecord.getFuelingRecord(data);
-                fragmentFueling.deleteRecord(fuelingRecord);
+
+//                if (fragmentFueling.deleteRecord(fuelingRecord));
+
+                Snackbar
+                        .make(findViewById(R.id.layoutMain), "Запись удалена", Snackbar.LENGTH_LONG)
+                        .setAction("undo", undoClickListener)
+                        .show();
                 break;
             case ActivityYandexMap.REQUEST_CODE_DISTANCE:
                 ((FragmentCalc) findFragmentByTag(FragmentCalc.TAG))

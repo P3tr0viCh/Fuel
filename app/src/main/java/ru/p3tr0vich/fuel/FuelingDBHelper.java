@@ -163,11 +163,11 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     public int deleteRecord(FuelingRecord fuelingRecord) {
         SQLiteDatabase db = getWritableDatabase();
 
-        int id = db.delete(TABLE_NAME, _ID + "=?", new String[]{String.valueOf(fuelingRecord.getId())});
+        int count = db.delete(TABLE_NAME, _ID + "=?", new String[]{String.valueOf(fuelingRecord.getId())});
 
         db.close();
 
-        return id;
+        return count;
     }
 
     private String filterModeToSql() {

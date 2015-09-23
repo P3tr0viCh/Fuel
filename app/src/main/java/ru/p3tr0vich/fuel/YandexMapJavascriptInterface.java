@@ -95,4 +95,14 @@ class YandexMapJavascriptInterface {
             }
         });
     }
+
+    @JavascriptInterface
+    public void errorConstructRoute() {
+        mActivityYandexMap.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mActivityYandexMap.errorConstructRoute();
+            }
+        });
+    }
 }

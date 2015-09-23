@@ -321,4 +321,9 @@ public class ActivityYandexMap extends AppCompatActivity {
 
         mProgressWheelYandexMap.setVisibility(View.GONE);
     }
+
+    public void errorConstructRoute() {
+        setDistance(0);
+        Toast.makeText(this, R.string.message_error_yandex_map_route, Toast.LENGTH_SHORT).show();
+    }
 }

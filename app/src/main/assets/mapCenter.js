@@ -47,7 +47,6 @@ function init() {
 function DistanceCalculator(map) {
     this.map = map;
     this.start = null;
-
     this.geoObject = null;
     this.startBalloon = null;
 
@@ -73,12 +72,11 @@ var ptp = DistanceCalculator.prototype;
 ptp.onClick = function (e) {
     console.log("onClick");
     this.setStartPoint(e.get('coords'));
-};
+}
 
 ptp.onStartDragEnd = function (e) {
-    var coordinates = this.start.geometry.getCoordinates();
-    this.geocode(coordinates);
-};
+    this.geocode(this.start.geometry.getCoordinates());
+}
 
 ptp.setStartPoint = function (position) {
     if (this.start) this.start.geometry.setCoordinates(position);
@@ -89,7 +87,7 @@ ptp.setStartPoint = function (position) {
         this.map.geoObjects.add(this.start);
     }
     this.geocode(position);
-};
+}
 
 ptp.geocode = function (point) {
     ymaps.geocode(point).then(function(geocode) {
@@ -200,7 +198,7 @@ ptp.getMapCenter = function () {
             mapCenterText, mapCenterTitle, mapCenterSubtitle,
             startCoordinates[0], startCoordinates[1]);
     }
-};
+}
 
 if (YandexMapJavascriptInterface)
     console.log('YandexMapJavascriptInterface found');

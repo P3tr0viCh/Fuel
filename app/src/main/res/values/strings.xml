@@ -94,6 +94,7 @@
     <string name="message_error_read_file">Не удалось прочитать файл</string>
     <string name="message_error_create_file">Не удалось создать файл \"%1$s\" в каталоге \"%2$s\"</string>
     <string name="message_error_save_file">Не удалось сохранить файл \"%1$s\" в каталоге \"%2$s\"</string>
+    <string name="message_error_yandex_map_route">Не удалось построить маршрут</string>
 
     <string name="message_error_no_internet">Отсутствует подключение к Интернет</string>
 

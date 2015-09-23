@@ -34,7 +34,7 @@ function init() {
             }
         }),
 
-        calculator = new DistanceCalculator(yandexMap, yandexMap.getCenter());
+        calculator = new DistanceCalculator(yandexMap);
 
     yandexMap.controls.add(searchStartPoint);
     yandexMap.controls.add(searchFinishPoint);
@@ -72,101 +72,104 @@ function init() {
     YandexMapJavascriptInterface.endInit();
 } // init
 
-function DistanceCalculator(map, finish) {
-    this._map = map;
-    this._start = null;
-    this._route = null;
-    this._startBalloon;
-    this._finishBalloon;
+function DistanceCalculator(map) {
+    this.map = map;
+    this.start = null;
+    this.geoObject = null;
+    this.route = null;
+    this.startBalloon;
+    this.finishBalloon;
 
-    map.events.add('click', this._onClick, this);
+    map.events.add('click', this.onClick, this);
+
+    this.setStartPoint(map.getCenter());
 }
 
 var ptp = DistanceCalculator.prototype;
 
-ptp._onClick = function (e) {
-    console.log("_onClick");
+ptp.onClick = function (e) {
+    console.log("onClick");
 
-    if (this._start) this.setFinishPoint(e.get('coords'));
-    else             this.setStartPoint(e.get('coords'));
-};
-
-ptp._onStartDragEnd = function (e) {
-    var coords = this._start.geometry.getCoordinates();
-    this.geocode("start", coords);
+    if (this.start) this.setFinishPoint(e.get('coords'));
+    else            this.setStartPoint(e.get('coords'));
 }
 
-ptp._onFinishDragEnd = function (e) {
-    var coords = this._finish.geometry.getCoordinates();
-    this.geocode("finish", coords);
+ptp.onStartDragEnd = function (e) {
+    this.geocode("start", this.start.geometry.getCoordinates());
 }
 
-ptp.getDirection = function () {
-    if (this._route) this._map.geoObjects.remove(this._route);
-
-    if (this._start && this._finish) {
-        var self = this,
-            start = this._start.geometry.getCoordinates(),
-            finish = this._finish.geometry.getCoordinates(),
-            startBalloon = this._startBalloon,
-            finishBalloon = this._finishBalloon;
-
-        ymaps.route([start, finish])
-            .then(function (router) {
-                var distance = Math.round(router.getLength() / 1000);
-
-                console.log("route: " + distance);
-
-                self._route = router.getPaths();
-
-                self._route.options.set({ strokeWidth: 5, strokeColor: '0000ffff', opacity: 0.5 });
-                self._map.geoObjects.add(self._route);
-
-                self._start.properties.set('balloonContentBody', startBalloon);
-                self._finish.properties.set('balloonContentBody', finishBalloon);
-
-                YandexMapJavascriptInterface.updateDistance(distance);
-            });
-
-        self._map.setBounds(self._map.geoObjects.getBounds())
-    }
-};
+ptp.onFinishDragEnd = function (e) {
+    this.geocode("finish", this.finish.geometry.getCoordinates());
+}
 
 ptp.setStartPoint = function (position) {
-    if (this._start) this._start.geometry.setCoordinates(position);
+    if (this.start) this.start.geometry.setCoordinates(position);
     else {
-        this._start = new ymaps.Placemark(position, { },
+        this.start = new ymaps.Placemark(position, { },
             { draggable: true, preset: 'islands#redDotIcon' });
-        this._start.events.add('dragend', this._onStartDragEnd, this);
-        this._map.geoObjects.add(this._start);
+        this.start.events.add('dragend', this.onStartDragEnd, this);
+        this.map.geoObjects.add(this.start);
     }
     this.geocode("start", position);
-};
+}
 
 ptp.setFinishPoint = function (position) {
-    if (this._finish) this._finish.geometry.setCoordinates(position);
+    if (this.finish) this.finish.geometry.setCoordinates(position);
     else {
-        this._finish = new ymaps.Placemark(position, { },
+        this.finish = new ymaps.Placemark(position, { },
             { draggable: true, preset: 'islands#darkGreenDotIcon' });
-        this._finish.events.add('dragend', this._onFinishDragEnd, this);
-        this._map.geoObjects.add(this._finish);
+        this.finish.events.add('dragend', this.onFinishDragEnd, this);
+        this.map.geoObjects.add(this.finish);
     }
-    if (this._start) this.geocode("finish", position);
-};
+    if (this.start) this.geocode("finish", position);
+}
 
 ptp.geocode = function (str, point) {
     ymaps.geocode(point).then(function(geocode) {
+        geoObject = geocode.geoObjects.get(0);
+
         if (str == "start") {
-            this._startBalloon = geocode.geoObjects.get(0) &&
-                geocode.geoObjects.get(0).properties.get('balloonContentBody') || '';
-            console.log(str + " " + this._startBalloon);
+            startBalloon = geoObject && geoObject.properties.get('balloonContent') ||
+                YandexMapJavascriptInterface.getEmptyBalloonContent();
+            this.start.properties.set('balloonContentBody', startBalloon);
+            console.log(str + ": " + startBalloon);
         } else {
-            this._finishBalloon = geocode.geoObjects.get(0) &&
-                geocode.geoObjects.get(0).properties.get('balloonContentBody') || '';
-            console.log(str + " " + this._finishBalloon);
+            finishBalloon = geoObject && geoObject.properties.get('balloonContent') ||
+                YandexMapJavascriptInterface.getEmptyBalloonContent();
+            this.finish.properties.set('balloonContentBody', finishBalloon);
+            console.log(str + ": " + finishBalloon);
         }
         this.getDirection();
     }, this);
+}
+
+ptp.getDirection = function () {
+    if (this.route) this.map.geoObjects.remove(this.route);
+
+    if (this.start && this.finish) {
+        var self = this,
+            startCoordinates = this.start.geometry.getCoordinates(),
+            finishCoordinates = this.finish.geometry.getCoordinates();
+
+        ymaps.route([startCoordinates, finishCoordinates])
+            .then(function (router) {
+                var distance = Math.round(router.getLength() / 1000);
+
+                console.log("distance: " + distance);
+
+                self.route = router.getPaths();
+
+                self.route.options.set({ strokeWidth: 5, strokeColor: '0000ffff', opacity: 0.5 });
+                self.map.geoObjects.add(self.route);
+
+                YandexMapJavascriptInterface.updateDistance(distance);
+            }, function (err) {
+                 console.log("error: " + err.message);
+                 YandexMapJavascriptInterface.errorConstructRoute();
+            });
+
+        self.map.setBounds(self.map.geoObjects.getBounds())
+    }
 }
 
 if (YandexMapJavascriptInterface)

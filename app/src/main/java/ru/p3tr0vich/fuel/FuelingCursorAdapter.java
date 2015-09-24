@@ -39,7 +39,7 @@ class FuelingCursorAdapter extends SimpleCursorAdapter {
 
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        holder.tvDate.setText(Functions.sqliteToString(date, showYear));
+        holder.tvDate.setText(Functions.sqlDateToString(date, showYear));
         holder.tvCost.setText(Functions.floatToString(cost));
         holder.tvVolume.setText(Functions.floatToString(volume));
         holder.tvTotal.setText(Functions.floatToString(total));

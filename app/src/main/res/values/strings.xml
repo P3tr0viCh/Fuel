@@ -85,6 +85,7 @@
     <string name="message_dialog_load_from_xml">Загрузить данные из файла XML?\nИмеющиеся в базе данных записи будут безвозвратно удалены</string>
     <string name="message_progress_save">Подождите, выполняется сохранение в файл…</string>
     <string name="message_progress_load">Подождите, выполняется чтение файла…</string>
+    <string name="message_record_deleted">Запись удалена</string>
 
     <string name="message_error_mkdirs">Не удалось создать каталог\n\"%s\"</string>
     <string name="message_error_dir_not_exists">Каталог \"%s\" не существует</string>

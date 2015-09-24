@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 public class FragmentDialogProgress extends DialogFragment {
 
-    public static final String DIALOG_TAG = "DialogProgress";
+    public static final String TAG = "DialogProgress";
     public static final int REQUEST_CODE = 7548;
 
     private static final String MESSAGE = "message";
@@ -32,7 +32,7 @@ public class FragmentDialogProgress extends DialogFragment {
         args.putString(MESSAGE, parent.getString(doSave ? R.string.message_progress_save : R.string.message_progress_load));
         fragmentDialogProgress.setArguments(args);
 
-        fragmentDialogProgress.show(parent.getFragmentManager(), DIALOG_TAG);
+        fragmentDialogProgress.show(parent.getFragmentManager(), TAG);
     }
 
     public static DatabaseBackupXmlHelper.Result getResult(Intent data) {

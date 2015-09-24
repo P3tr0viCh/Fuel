@@ -42,7 +42,7 @@ class Functions {
 
     private static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd";
 
-    public static Date sqliteToDate(String sqlDate) {
+    public static Date sqlDateToDate(String sqlDate) {
         Date date = null;
 
         DateFormat format = new SimpleDateFormat(SQLITE_DATE_FORMAT, Locale.getDefault());
@@ -65,8 +65,8 @@ class Functions {
         return dateToString(date, withYear, false);
     }
 
-    public static String sqliteToString(String sqlDate, boolean withYear) {
-        return dateToString(sqliteToDate(sqlDate), withYear);
+    public static String sqlDateToString(String sqlDate, boolean withYear) {
+        return dateToString(sqlDateToDate(sqlDate), withYear);
     }
 
     public static String dateToSQLite(Date date) {

@@ -12,7 +12,7 @@ import android.support.v7.app.AlertDialog;
 public class FragmentDialogQuestion extends DialogFragment {
 
     public static final int REQUEST_CODE = 9106;
-    public static final String DIALOG_TAG = "DialogQuestion";
+    public static final String TAG = "DialogQuestion";
 
     private static final String TITLE = "title";
     private static final String MESSAGE = "message";
@@ -27,7 +27,7 @@ public class FragmentDialogQuestion extends DialogFragment {
         FragmentDialogQuestion dialogQuestion = new FragmentDialogQuestion();
         dialogQuestion.setArguments(args);
         dialogQuestion.setTargetFragment(parent, REQUEST_CODE);
-        dialogQuestion.show(parent.getFragmentManager(), DIALOG_TAG);
+        dialogQuestion.show(parent.getFragmentManager(), TAG);
     }
 
     @NonNull

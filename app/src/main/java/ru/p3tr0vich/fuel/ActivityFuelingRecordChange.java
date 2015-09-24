@@ -11,7 +11,6 @@ import android.view.View;
 public class ActivityFuelingRecordChange extends AppCompatActivity {
 
     public static final String INTENT_EXTRA_ACTION = "EXTRA_ACTION";
-    public static final String INTENT_EXTRA_DATA = "EXTRA_RECORD";
     public static final int REQUEST_CODE = 2309;
 
     public static void start(Activity parent, Const.RecordAction recordAction, FuelingRecord fuelingRecord) {
@@ -19,17 +18,13 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
 
         intent.putExtra(INTENT_EXTRA_ACTION, recordAction.ordinal());
         if (recordAction == Const.RecordAction.UPDATE)
-            intent.putExtra(INTENT_EXTRA_DATA, fuelingRecord);
+            fuelingRecord.toIntent(intent);
 
         parent.startActivityForResult(intent, REQUEST_CODE);
     }
 
     public static Const.RecordAction getAction(Intent data) {
         return Functions.intToRecordAction(data.getIntExtra(INTENT_EXTRA_ACTION, -1));
-    }
-
-    public static FuelingRecord getFuelingRecord(Intent data) {
-        return data.getParcelableExtra(INTENT_EXTRA_DATA);
     }
 
     @SuppressLint("PrivateResource")

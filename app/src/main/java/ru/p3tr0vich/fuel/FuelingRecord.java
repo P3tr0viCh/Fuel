@@ -1,9 +1,14 @@
 package ru.p3tr0vich.fuel;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 public class FuelingRecord implements Parcelable {
+
+    private static final String NAME = "FUELING_RECORD_NAME";
 
     private long mId;
     private String mSqlLiteDate;    // Дата заправки
@@ -20,28 +25,43 @@ public class FuelingRecord implements Parcelable {
     }
 
     private FuelingRecord(Parcel in) {
-        setId(in.readLong());
-        setSQLiteDate(in.readString());
-        setCost(in.readFloat());
-        setVolume(in.readFloat());
-        setTotal(in.readFloat());
+        this(in.readLong(), in.readString(), in.readFloat(), in.readFloat(), in.readFloat());
     }
 
     FuelingRecord() {
-        setId(0);
-        setSQLiteDate("");
-        setCost(0);
-        setVolume(0);
-        setTotal(0);
+        this(0, "", 0, 0, 0);
     }
 
-/*     FuelingRecord(Intent intent) {
-        setId(intent.getLongExtra(FuelingDBHelper._ID, 0));
-        setSQLiteDate(intent.getStringExtra(FuelingDBHelper.COLUMN_DATETIME));
-        setCost(intent.getFloatExtra(FuelingDBHelper.COLUMN_COST, 0));
-        setVolume(intent.getFloatExtra(FuelingDBHelper.COLUMN_VOLUME, 0));
-        setTotal(intent.getFloatExtra(FuelingDBHelper.COLUMN_TOTAL, 0));
-    }*/
+    FuelingRecord(FuelingRecord fuelingRecord) {
+        this(fuelingRecord.mId, fuelingRecord.mSqlLiteDate, fuelingRecord.mCost,
+                fuelingRecord.mVolume, fuelingRecord.mTotal);
+    }
+
+    FuelingRecord(Intent intent) {
+        this((FuelingRecord) intent.getParcelableExtra(NAME));
+    }
+
+    FuelingRecord(Bundle bundle) {
+        this((FuelingRecord) bundle.getParcelable(NAME));
+    }
+
+    public Intent toIntent(@NonNull Intent intent) {
+        intent.putExtra(NAME, this);
+        return intent;
+    }
+
+    public Intent toIntent() {
+        return this.toIntent(new Intent());
+    }
+
+    public Bundle toBundle(@NonNull Bundle bundle) {
+        bundle.putParcelable(NAME, this);
+        return bundle;
+    }
+
+    public Bundle toBundle() {
+        return this.toBundle(new Bundle());
+    }
 
     public long getId() {
         return mId;

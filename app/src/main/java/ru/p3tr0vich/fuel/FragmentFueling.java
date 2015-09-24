@@ -157,10 +157,10 @@ public class FragmentFueling extends FragmentFuel implements
             SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
             mFilter.filterMode = FuelingDBHelper.FilterMode.CURRENT_YEAR;
-            mFilter.dateFrom = Functions.sqliteToDate(
+            mFilter.dateFrom = Functions.sqlDateToDate(
                     sPref.getString(getString(R.string.pref_filter_date_from),
                             Functions.dateToSQLite(new Date())));
-            mFilter.dateTo = Functions.sqliteToDate(
+            mFilter.dateTo = Functions.sqlDateToDate(
                     sPref.getString(getString(R.string.pref_filter_date_to),
                             Functions.dateToSQLite(new Date())));
 
@@ -260,7 +260,7 @@ public class FragmentFueling extends FragmentFuel implements
         // Если needUpdate == true вызывается форс лоад.
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(Functions.sqliteToDate(fuelingRecord.getSQLiteDate()));
+        calendar.setTime(Functions.sqlDateToDate(fuelingRecord.getSQLiteDate()));
 
         boolean needUpdate = calendar.get(Calendar.YEAR) == Functions.getCurrentYear() ||
                 setFilterMode(FuelingDBHelper.FilterMode.ALL);

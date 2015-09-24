@@ -67,9 +67,9 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
             case UPDATE:
                 getActivity().setTitle(R.string.dialog_caption_update);
 
-                mFuelingRecord = ActivityFuelingRecordChange.getFuelingRecord(intent);
+                mFuelingRecord = new FuelingRecord(intent);
 
-                mDate = Functions.sqliteToDate(mFuelingRecord.getSQLiteDate());
+                mDate = Functions.sqlDateToDate(mFuelingRecord.getSQLiteDate());
         }
 
         Functions.floatToText(mEditCost, mFuelingRecord.getCost(), false);
@@ -140,15 +140,17 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 mFuelingRecord.setVolume(Functions.editTextToFloat(mEditVolume));
                 mFuelingRecord.setTotal(Functions.editTextToFloat(mEditTotal));
 
-                PreferenceManager.getDefaultSharedPreferences(getActivity())
+                Activity activity = getActivity();
+
+                PreferenceManager.getDefaultSharedPreferences(activity)
                         .edit()
                         .putFloat(getString(R.string.pref_last_total), mFuelingRecord.getTotal())
                         .apply();
 
-                getActivity().setResult(Activity.RESULT_OK, new Intent()
-                        .putExtra(ActivityFuelingRecordChange.INTENT_EXTRA_ACTION, mRecordAction.ordinal())
-                        .putExtra(ActivityFuelingRecordChange.INTENT_EXTRA_DATA, mFuelingRecord));
-                getActivity().finish();
+                activity.setResult(Activity.RESULT_OK,
+                        mFuelingRecord.toIntent()
+                                .putExtra(ActivityFuelingRecordChange.INTENT_EXTRA_ACTION, mRecordAction.ordinal()));
+                activity.finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);

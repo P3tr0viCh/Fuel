@@ -28,9 +28,9 @@ public class FragmentBackup extends FragmentFuel {
         super.onCreate(savedInstanceState);
 
         FragmentDialogProgress fragmentDialogProgress =
-                (FragmentDialogProgress) getFragmentManager().findFragmentByTag(FragmentDialogProgress.DIALOG_TAG);
+                (FragmentDialogProgress) getFragmentManager().findFragmentByTag(FragmentDialogProgress.TAG);
         FragmentDialogQuestion fragmentDialogQuestion =
-                (FragmentDialogQuestion) getFragmentManager().findFragmentByTag(FragmentDialogQuestion.DIALOG_TAG);
+                (FragmentDialogQuestion) getFragmentManager().findFragmentByTag(FragmentDialogQuestion.TAG);
 
         Functions.logD("FragmentBackup -- onCreate: fragmentDialogProgress != null " + Boolean.toString(fragmentDialogProgress != null));
 

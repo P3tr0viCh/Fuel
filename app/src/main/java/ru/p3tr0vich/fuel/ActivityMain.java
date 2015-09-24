@@ -53,6 +53,8 @@ public class ActivityMain extends AppCompatActivity implements
 
     private int mCurrentFragmentId, mClickedMenuId;
 
+    private FuelingRecord deletedFuelingRecord = null;
+
     private Fragment findFragmentByTag(String fragmentTag) {
         return fragmentTag != null ?
                 getSupportFragmentManager().findFragmentByTag(fragmentTag) : null;
@@ -271,13 +273,17 @@ public class ActivityMain extends AppCompatActivity implements
             // ADD, UPDATE
             ActivityFuelingRecordChange.start(this, recordAction, fuelingRecord);
         else
-            FragmentDialogDeleteRecord.show(this, fuelingRecord);
+            FragmentDialogDeleteRecord.show(getSupportFragmentManager(), fuelingRecord);
     }
 
     private final View.OnClickListener undoClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-//            Toast.makeText(ActivityMain.this, "UNDO CLICK!", Toast.LENGTH_SHORT).show();
+            Functions.logD("ActivityMain -- undoClickListener: " + deletedFuelingRecord.toString());
+
+            getFragmentFueling().addRecord(deletedFuelingRecord);
+
+            deletedFuelingRecord = null;
         }
     };
 
@@ -290,7 +296,8 @@ public class ActivityMain extends AppCompatActivity implements
 
         switch (requestCode) {
             case ActivityFuelingRecordChange.REQUEST_CODE:
-                fuelingRecord = ActivityFuelingRecordChange.getFuelingRecord(data);
+                fuelingRecord = new FuelingRecord(data);
+
                 switch (ActivityFuelingRecordChange.getAction(data)) {
                     case ADD:
                         fragmentFueling.addRecord(fuelingRecord);
@@ -301,13 +308,14 @@ public class ActivityMain extends AppCompatActivity implements
                 }
                 break;
             case FragmentDialogDeleteRecord.REQUEST_CODE:
-                fuelingRecord = FragmentDialogDeleteRecord.getFuelingRecord(data);
+                fuelingRecord = new FuelingRecord(data);
 
-//                if (fragmentFueling.deleteRecord(fuelingRecord));
+                deletedFuelingRecord = fuelingRecord;
 
+                if (fragmentFueling.deleteRecord(fuelingRecord))
                 Snackbar
-                        .make(findViewById(R.id.layoutMain), "Запись удалена", Snackbar.LENGTH_LONG)
-                        .setAction("undo", undoClickListener)
+                        .make(findViewById(R.id.layoutMain), R.string.message_record_deleted, Snackbar.LENGTH_SHORT)
+                        .setAction(R.string.dialog_btn_cancel, undoClickListener)
                         .show();
                 break;
             case ActivityYandexMap.REQUEST_CODE_DISTANCE:

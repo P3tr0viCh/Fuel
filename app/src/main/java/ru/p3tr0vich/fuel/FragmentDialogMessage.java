@@ -12,7 +12,7 @@ import android.support.v7.app.AlertDialog;
 
 public class FragmentDialogMessage extends DialogFragment {
 
-    private static final String DIALOG_TAG = "DialogMessage";
+    private static final String TAG = "DialogMessage";
     private static final String TITLE = "title";
     private static final String MESSAGE = "message";
 
@@ -23,7 +23,7 @@ public class FragmentDialogMessage extends DialogFragment {
 
         FragmentDialogMessage dialogMessage = new FragmentDialogMessage();
         dialogMessage.setArguments(args);
-        dialogMessage.show(fragmentManager, DIALOG_TAG);
+        dialogMessage.show(fragmentManager, TAG);
     }
 
     public static void showMessage(Fragment parent, String title, String message) {

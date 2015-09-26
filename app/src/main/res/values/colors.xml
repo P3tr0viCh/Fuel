@@ -20,7 +20,7 @@
 
     <color name="edit_error">#FF0000</color>
 
-    <color name="menu_item_pressed">#85D3EF</color>
+    <color name="menu_item_pressed">#EFEBEF</color>
 
     <!-- DatePickerDialog -->
     <color name="mdtp_accent_color">@color/accent</color>

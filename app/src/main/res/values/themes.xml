@@ -17,6 +17,9 @@
 
         <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
 
+        <item name="android:listChoiceBackgroundIndicator">?attr/listChoiceBackgroundIndicator
+        </item>
+
         <!-- Generated with http://android-holo-colors.com -->
 
         <item name="android:editTextBackground">@drawable/apptheme_edit_text_holo_light</item>
@@ -26,9 +29,5 @@
         <item name="android:textSelectHandleRight">@drawable/apptheme_text_select_handle_right
         </item>
         <item name="android:textSelectHandle">@drawable/apptheme_text_select_handle_middle</item>
-
-        <item name="android:listChoiceBackgroundIndicator">
-            @drawable/apptheme_list_selector_holo_light
-        </item>
     </style>
 </resources>

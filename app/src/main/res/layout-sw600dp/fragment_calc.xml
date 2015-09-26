@@ -12,7 +12,7 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:background="@drawable/drop_shadow"
         android:orientation="vertical"
-        android:paddingBottom="8dp"
+        android:paddingBottom="16dp"
         android:paddingTop="16dp">
 
         <LinearLayout

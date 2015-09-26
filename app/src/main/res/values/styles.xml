@@ -16,11 +16,9 @@
 
     <style name="AppTheme.PopupMenu" parent="@style/Widget.AppCompat.PopupMenu" />
 
-    <style name="AppTheme.Button" parent="@style/Widget.AppCompat.Button">
-    </style>
+    <style name="AppTheme.Button" parent="@style/Widget.AppCompat.Button"/>
 
-    <style name="AppTheme.Button.Colored" parent="@style/Widget.AppCompat.Button.Colored">
-    </style>
+    <style name="AppTheme.Button.Colored" parent="@style/Widget.AppCompat.Button.Colored"/>
 
     <style name="AppTheme.DatePickerButton" parent="@style/Base.Widget.AppCompat.Spinner.Underlined">
         <item name="android:paddingRight">24dp</item>

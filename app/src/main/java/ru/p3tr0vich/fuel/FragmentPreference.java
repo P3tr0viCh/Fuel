@@ -55,16 +55,6 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
         init(rootPreferenceScreen);
 
-        if (bundle == null) {
-            Functions.logD("FragmentPreference -- onCreatePreferences: bundle == null");
-            isInRoot = true;
-        } else {
-            Functions.logD("FragmentPreference -- onCreatePreferences: bundle != null");
-            String preferenceKey = bundle.getString(KEY_PREFERENCE_SCREEN);
-            isInRoot = preferenceKey == null;
-            if (!isInRoot) setPreferenceScreen((PreferenceScreen) findPreference(preferenceKey));
-        }
-
         findPreference(getString(R.string.pref_map_center_text))
                 .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     @Override
@@ -74,6 +64,16 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
                         return true;
                     }
                 });
+
+        if (bundle == null) {
+            Functions.logD("FragmentPreference -- onCreatePreferences: bundle == null");
+            isInRoot = true;
+        } else {
+            Functions.logD("FragmentPreference -- onCreatePreferences: bundle != null");
+            String preferenceKey = bundle.getString(KEY_PREFERENCE_SCREEN);
+            isInRoot = preferenceKey == null;
+            if (!isInRoot) setPreferenceScreen((PreferenceScreen) findPreference(preferenceKey));
+        }
     }
 
     @Override

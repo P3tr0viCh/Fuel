@@ -19,7 +19,7 @@ class YandexMapJavascriptInterface {
 
     private final String mStartSearchControlPlaceholderContent;
     private final String mFinishSearchControlPlaceholderContent;
-    private final String mEmptyBalloonContent; // TODO: distance
+    private final String mEmptyBalloonContent;
 
     YandexMapJavascriptInterface(ActivityYandexMap activityYandexMap) {
         mActivityYandexMap = activityYandexMap;

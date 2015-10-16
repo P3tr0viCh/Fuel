@@ -219,7 +219,6 @@ public class ActivityMain extends AppCompatActivity implements
         if (fragment != null)
             fragmentManager.beginTransaction()
                     .replace(R.id.contentFrame, fragment, fragmentTag)
-// TODO:                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .addToBackStack(null)
                     .commit();

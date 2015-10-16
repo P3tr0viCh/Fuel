@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <style name="AppTheme.Divider">
         <item name="android:layout_width">match_parent</item>
@@ -16,9 +16,9 @@
 
     <style name="AppTheme.PopupMenu" parent="@style/Widget.AppCompat.PopupMenu" />
 
-    <style name="AppTheme.Button" parent="@style/Widget.AppCompat.Button"/>
+    <style name="AppTheme.Button" parent="@style/Widget.AppCompat.Button" />
 
-    <style name="AppTheme.Button.Colored" parent="@style/Widget.AppCompat.Button.Colored"/>
+    <style name="AppTheme.Button.Colored" parent="@style/Widget.AppCompat.Button.Colored" />
 
     <style name="AppTheme.DatePickerButton" parent="@style/Base.Widget.AppCompat.Spinner.Underlined">
         <item name="android:paddingRight">24dp</item>
@@ -66,7 +66,7 @@
         <item name="android:layout_height">48dp</item>
         <item name="android:background">@color/primary</item>
         <item name="tabIndicatorColor">@color/window_background</item>
-        <item name="tabMinWidth" tools:ignore="PrivateResource">@dimen/design_tab_min_width</item>
+        <item name="tabMinWidth">@dimen/tab_min_width</item>
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 

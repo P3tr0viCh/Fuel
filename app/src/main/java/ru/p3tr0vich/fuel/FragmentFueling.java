@@ -229,6 +229,10 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     public boolean setFilterMode(FuelingDBHelper.FilterMode filterMode) {
+        // Результат:
+        // true - фильтр не изменился.
+        // false - фильтр изменён и вызван рестарт лоадер (список полностью обновлён).
+
         Functions.logD("FragmentFueling -- setFilterMode: new FilterMode == " + filterMode +
                 ", current FilterMode == " + mFilter.filterMode);
         if (mFilter.filterMode != filterMode) {
@@ -243,22 +247,53 @@ public class FragmentFueling extends FragmentFuel implements
         } else return true;
     }
 
-    private void checkFilterMode(FuelingRecord fuelingRecord) {
+    private boolean needUpdateCurrentList(FuelingRecord fuelingRecord) {
         // Вызов после добавления или изменения записи.
-        // Если год в дате записи не текущий, то нужно установить фильтр -> "все записи".
-        // Если год в записи текущий, то needUpdate == true.
-        // Если год не текущий, то вызывается needUpdate == setFilterMode.
-        // В setFilterMode проверяется текущий фильтр. Если он уже "все записи", то needUpdate == true,
-        // иначе needUpdate == false и вызывается рестарт лоадер.
-        // Если needUpdate == true вызывается форс лоад.
+
+        // Результат:
+        // true - добавление или обновление записи в текущем списке.
+        // false - список полностью обновлён, добавлять или изменять запись в списке не нужно.
+
+        // Если установлен фильтр "все записи", то возвращается true,
+        // иначе проверяется год в дате записи.
+        // Если год в дате записи текущий,
+        // то нужно установить фильтр -> "текущий год".
+        // Если год в дате записи не текущий,
+        // то нужно установить фильтр -> "все записи".
+
+        // В setFilterMode проверяется текущий фильтр.
+        // Если он уже необходимый, то setFilterMode возвращает true,
+        // иначе в setFilterMode вызывается рестарт лоадер и возвращается false.
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(Functions.sqlDateToDate(fuelingRecord.getSQLiteDate()));
 
-        boolean needUpdate = calendar.get(Calendar.YEAR) == Functions.getCurrentYear() ||
-                setFilterMode(FuelingDBHelper.FilterMode.ALL);
+        return mFilter.filterMode == FuelingDBHelper.FilterMode.ALL ||
+                setFilterMode(calendar.get(Calendar.YEAR) == Functions.getCurrentYear() ?
+                                FuelingDBHelper.FilterMode.CURRENT_YEAR : FuelingDBHelper.FilterMode.ALL);
+    }
 
-        if (needUpdate) updateAfterChange();
+    public void forceLoad() {
+        getLoaderManager().getLoader(LOADER_LIST_ID).forceLoad();
+    }
+
+    public void addRecord(FuelingRecord fuelingRecord) {
+        mSelectedId = db.insertRecord(fuelingRecord);
+        if (mSelectedId > 0)
+            if (needUpdateCurrentList(fuelingRecord))
+                mFuelingAdapter.addRecord(fuelingRecord);
+    }
+
+    public void updateRecord(FuelingRecord fuelingRecord) {
+        if (db.updateRecord(fuelingRecord) > 0)
+            if (needUpdateCurrentList(fuelingRecord))
+                mFuelingAdapter.updateRecord(fuelingRecord);
+    }
+
+    public boolean deleteRecord(FuelingRecord fuelingRecord) {
+        boolean deleted = db.deleteRecord(fuelingRecord) > 0;
+        if (deleted) mFuelingAdapter.deleteRecord(fuelingRecord);
+        return deleted;
     }
 
     private void setFilterDate(final Date dateFrom, final Date dateTo) {
@@ -304,7 +339,7 @@ public class FragmentFueling extends FragmentFuel implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_LIST_ID:
-                return new FuelingCursorLoader(getActivity().getApplicationContext(), mFilter);
+                return new FuelingCursorLoader(Functions.sApplicationContext, mFilter);
             default:
                 return null;
         }
@@ -312,32 +347,20 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        List<FuelingRecord> fuelingRecords = new ArrayList<>();
+        Functions.logD("FragmentFueling -- onLoadFinished");
 
-        boolean showYear = mFilter.filterMode != FuelingDBHelper.FilterMode.CURRENT_YEAR;
+        mFuelingAdapter.setShowYear(mFilter.filterMode != FuelingDBHelper.FilterMode.CURRENT_YEAR);
 
-        if (data.moveToFirst()) do
-            fuelingRecords.add(new FuelingRecord(
-                    data.getInt(0),
-                    data.getString(1),
-                    data.getFloat(2),
-                    data.getFloat(3),
-                    data.getFloat(4),
-                    showYear));
-        while (data.moveToNext());
-
-        mFuelingAdapter.setRecords(fuelingRecords);
+        mFuelingAdapter.swapCursor(data);
 
         selectItemById(mSelectedId);
-
-        Functions.logD("FragmentFueling -- onLoadFinished");
 
         new CalcTotalTask(data).execute(); // TODO: cancel
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-//        mFuelingCursorAdapter.swapCursor(null);
+        mFuelingAdapter.swapCursor(null);
     }
 
     class CalcTotalData {
@@ -450,25 +473,6 @@ public class FragmentFueling extends FragmentFuel implements
         }
     }
 
-    public void updateAfterChange() {
-        getLoaderManager().getLoader(LOADER_LIST_ID).forceLoad();
-    }
-
-    public void addRecord(FuelingRecord fuelingRecord) {
-        mSelectedId = db.insertRecord(fuelingRecord);
-        if (mSelectedId > 0) checkFilterMode(fuelingRecord);
-    }
-
-    public void updateRecord(FuelingRecord fuelingRecord) {
-        if (db.updateRecord(fuelingRecord) > 0) checkFilterMode(fuelingRecord);
-    }
-
-    public boolean deleteRecord(FuelingRecord fuelingRecord) {
-        boolean deleted = db.deleteRecord(fuelingRecord) > 0;
-        if (deleted) updateAfterChange();
-        return deleted;
-    }
-
     private void doPopup(final View v) {
         PopupMenu popupMenu = new PopupMenu(getActivity(), v);
         popupMenu.inflate(R.menu.menu_fueling);
@@ -524,6 +528,7 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     private void selectItemById(long id) {
+        // TODO: delete
         if (mSelectedId == 0) return;
 //        for (int i = 0; i < mListViewFueling.getCount(); i++) {
 //            if (mListViewFueling.getItemIdAtPosition(i) == id) {

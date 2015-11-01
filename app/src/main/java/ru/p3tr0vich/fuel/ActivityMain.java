@@ -371,7 +371,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onDataLoadedFromBackup() {
-        getFragmentFueling().updateAfterChange();
+        getFragmentFueling().forceLoad();
     }
 
     @Override

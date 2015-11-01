@@ -16,25 +16,32 @@ public class FuelingRecord implements Parcelable {
     private float mVolume;          // Объём заправки
     private float mTotal;           // Общий пробег
 
-    FuelingRecord(long id, String sqlLiteDate, float cost, float volume, float total) {
+    public boolean showYear;
+
+    FuelingRecord(long id, String sqlLiteDate, float cost, float volume, float total, boolean showYear) {
         setId(id);
         setSQLiteDate(sqlLiteDate);
         setCost(cost);
         setVolume(volume);
         setTotal(total);
+        this.showYear = showYear;
+    }
+
+    FuelingRecord(long id, String sqlLiteDate, float cost, float volume, float total) {
+        this(id, sqlLiteDate, cost, volume, total, true);
     }
 
     private FuelingRecord(Parcel in) {
-        this(in.readLong(), in.readString(), in.readFloat(), in.readFloat(), in.readFloat());
+        this(in.readLong(), in.readString(), in.readFloat(), in.readFloat(), in.readFloat(), in.readInt() == 1);
     }
 
     FuelingRecord() {
-        this(0, "", 0, 0, 0);
+        this(0, "", 0, 0, 0, true);
     }
 
     FuelingRecord(FuelingRecord fuelingRecord) {
         this(fuelingRecord.mId, fuelingRecord.mSqlLiteDate, fuelingRecord.mCost,
-                fuelingRecord.mVolume, fuelingRecord.mTotal);
+                fuelingRecord.mVolume, fuelingRecord.mTotal, fuelingRecord.showYear);
     }
 
     FuelingRecord(Intent intent) {
@@ -75,12 +82,20 @@ public class FuelingRecord implements Parcelable {
         return mSqlLiteDate;
     }
 
+    public String getDateText() {
+        return Functions.sqlDateToString(mSqlLiteDate, showYear);
+    }
+
     public void setSQLiteDate(String date) {
         this.mSqlLiteDate = date;
     }
 
     public float getCost() {
         return mCost;
+    }
+
+    public String getCostText() {
+        return Functions.floatToString(mCost);
     }
 
     public void setCost(float cost) {
@@ -91,12 +106,20 @@ public class FuelingRecord implements Parcelable {
         return mVolume;
     }
 
+    public String getVolumeText() {
+        return Functions.floatToString(mVolume);
+    }
+
     public void setVolume(float volume) {
         this.mVolume = volume;
     }
 
     public float getTotal() {
         return mTotal;
+    }
+
+    public String getTotalText() {
+        return Functions.floatToString(mTotal);
     }
 
     public void setTotal(float total) {
@@ -115,6 +138,7 @@ public class FuelingRecord implements Parcelable {
         dest.writeFloat(mCost);
         dest.writeFloat(mVolume);
         dest.writeFloat(mTotal);
+        dest.writeInt(showYear ? 1 : 0);
     }
 
     public static final Parcelable.Creator<FuelingRecord> CREATOR = new Parcelable.Creator<FuelingRecord>() {

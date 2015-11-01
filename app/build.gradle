@@ -1,6 +1,7 @@
 import java.text.SimpleDateFormat
 
 apply plugin: 'com.android.application'
+apply plugin: 'com.android.databinding'
 
 def getDate() {
     return new SimpleDateFormat("yyyy.MM.dd").format(new Date());
@@ -60,7 +61,7 @@ android {
 
     productFlavors {
     }
-    
+
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
@@ -98,6 +99,8 @@ dependencies {
     compile support_preference7
     //noinspection GroovyAssignabilityCheck
     compile support_preference14
+    //noinspection GroovyAssignabilityCheck
+    compile support_recyclerview
 
     compile 'com.github.PhilJay:MPAndroidChart:v2.1.3'
 

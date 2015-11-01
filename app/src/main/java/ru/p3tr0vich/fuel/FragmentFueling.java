@@ -15,14 +15,16 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -54,15 +56,13 @@ public class FragmentFueling extends FragmentFuel implements
 
     private FuelingDBHelper db;
     private FuelingDBHelper.Filter mFilter;
-    private FuelingCursorAdapter mFuelingCursorAdapter;
+
+    private FuelingAdapter mFuelingAdapter;
 
     private Button mBtnDateFrom;
     private Button mBtnDateTo;
 
-    private ListView mListViewFueling;
-
-    private View mListViewHeader;
-    private View mListViewFooter;
+    private RecyclerView mRecyclerViewFueling;
 
     private ProgressWheel mProgressWheelFueling;
 
@@ -89,10 +89,10 @@ public class FragmentFueling extends FragmentFuel implements
         mToolbarDates = (Toolbar) view.findViewById(R.id.toolbarDates);
         mToolbarShadow = view.findViewById(R.id.toolbarShadow);
 
-        mListViewFueling = (ListView) view.findViewById(R.id.listViewFueling);
-
-        mListViewHeader = inflater.inflate(R.layout.fueling_listview_header, null, false);
-        mListViewFooter = inflater.inflate(R.layout.fueling_listview_footer, null, false);
+        mRecyclerViewFueling = (RecyclerView) view.findViewById(R.id.recyclerViewFueling);
+        mRecyclerViewFueling.setHasFixedSize(true);
+        mRecyclerViewFueling.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerViewFueling.addItemDecoration(new DividerItemDecoration(getActivity(), null));
 
         mProgressWheelFueling = (ProgressWheel) view.findViewById(R.id.progressWheelFueling);
 
@@ -204,24 +204,17 @@ public class FragmentFueling extends FragmentFuel implements
         Functions.logD("FragmentFueling -- onActivityCreated");
 
         db = new FuelingDBHelper();
-        String[] from = {
-                FuelingDBHelper.COLUMN_DATETIME,
-                FuelingDBHelper.COLUMN_COST,
-                FuelingDBHelper.COLUMN_VOLUME,
-                FuelingDBHelper.COLUMN_TOTAL};
-        int[] to = {R.id.tvDate, R.id.tvCost, R.id.tvVolume, R.id.tvDate};
 
-        mFuelingCursorAdapter = new FuelingCursorAdapter(getActivity(), from, to, new View.OnClickListener() {
+        mRecyclerViewFueling.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        mFuelingAdapter = new FuelingAdapter(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doPopup(v);
             }
         });
 
-        mListViewFueling.addHeaderView(mListViewHeader, null, false);
-        mListViewFueling.addFooterView(mListViewFooter, null, false);
-
-        mListViewFueling.setAdapter(mFuelingCursorAdapter);
+        mRecyclerViewFueling.setAdapter(mFuelingAdapter);
 
         doSetFilterMode(mFilter.filterMode);
 
@@ -230,7 +223,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     private void doSetFilterMode(FuelingDBHelper.FilterMode filterMode) {
         mFilter.filterMode = filterMode;
-        mFuelingCursorAdapter.showYear = (filterMode != FuelingDBHelper.FilterMode.CURRENT_YEAR);
+//        mFuelingCursorAdapter.showYear = (filterMode != FuelingDBHelper.FilterMode.CURRENT_YEAR);
 
         mOnFilterChangeListener.onFilterChange(filterMode);
     }
@@ -315,6 +308,36 @@ public class FragmentFueling extends FragmentFuel implements
             default:
                 return null;
         }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        List<FuelingRecord> fuelingRecords = new ArrayList<>();
+
+        boolean showYear = mFilter.filterMode != FuelingDBHelper.FilterMode.CURRENT_YEAR;
+
+        if (data.moveToFirst()) do
+            fuelingRecords.add(new FuelingRecord(
+                    data.getInt(0),
+                    data.getString(1),
+                    data.getFloat(2),
+                    data.getFloat(3),
+                    data.getFloat(4),
+                    showYear));
+        while (data.moveToNext());
+
+        mFuelingAdapter.setRecords(fuelingRecords);
+
+        selectItemById(mSelectedId);
+
+        Functions.logD("FragmentFueling -- onLoadFinished");
+
+        new CalcTotalTask(data).execute(); // TODO: cancel
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+//        mFuelingCursorAdapter.swapCursor(null);
     }
 
     class CalcTotalData {
@@ -427,21 +450,6 @@ public class FragmentFueling extends FragmentFuel implements
         }
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mFuelingCursorAdapter.swapCursor(data);
-        selectItemById(mSelectedId);
-
-        Functions.logD("FragmentFueling -- onLoadFinished");
-
-        new CalcTotalTask(data).execute(); // TODO: cancel
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mFuelingCursorAdapter.swapCursor(null);
-    }
-
     public void updateAfterChange() {
         getLoaderManager().getLoader(LOADER_LIST_ID).forceLoad();
     }
@@ -517,12 +525,12 @@ public class FragmentFueling extends FragmentFuel implements
 
     private void selectItemById(long id) {
         if (mSelectedId == 0) return;
-        for (int i = 0; i < mListViewFueling.getCount(); i++) {
-            if (mListViewFueling.getItemIdAtPosition(i) == id) {
-                mListViewFueling.setSelection(i);
-                break;
-            }
-        }
+//        for (int i = 0; i < mListViewFueling.getCount(); i++) {
+//            if (mListViewFueling.getItemIdAtPosition(i) == id) {
+//                mListViewFueling.setSelection(i);
+//                break;
+//            }
+//        }
         mSelectedId = 0;
     }
 

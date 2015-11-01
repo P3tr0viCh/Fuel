@@ -30,8 +30,8 @@
         android:background="@drawable/drop_shadow"
         android:id="@+id/layoutMain">
 
-        <ListView
-            android:id="@+id/listViewFueling"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewFueling"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/divider"

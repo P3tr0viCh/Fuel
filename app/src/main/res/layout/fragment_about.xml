@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ltMain"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/ltTop"
@@ -18,7 +19,8 @@
             android:layout_gravity="start|center"
             android:scaleType="center"
             android:src="@mipmap/ic_launcher"
-            tools:ignore="contentDescription" />
+            tools:ignore="contentDescription"
+            android:layout_marginRight="16dp" />
 
         <TextView
             android:id="@+id/textAboutAppName"
@@ -64,10 +66,10 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ltTop">
+        android:orientation="vertical">
 
         <View
             android:id="@+id/view"
@@ -79,9 +81,8 @@
             android:id="@+id/textAboutDisclaimer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/view"
             android:gravity="fill_horizontal"
             android:text="@string/about_disclaimer"
             android:textSize="12sp" />
-    </RelativeLayout>
-</RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,83 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="72dp"
-    android:background="@color/window_background"
-    android:clickable="false"
-    android:descendantFocusability="blocksDescendants"
-    android:orientation="horizontal"
-    android:paddingEnd="16dp"
-    android:paddingStart="16dp"
-    tools:ignore="Overdraw">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-        android:id="@+id/tvDate"
+    <data>
+
+        <variable
+            name="fuelingRecord"
+            type="ru.p3tr0vich.fuel.FuelingRecord" />
+    </data>
+
+    <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="34dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/ibMenu"
+        android:layout_height="72dp"
+        android:background="@color/window_background"
         android:clickable="false"
-        android:gravity="bottom"
-        android:text=""
-        android:textAppearance="@style/AppTheme.TextAppearance.Lists"
-        tools:text="@string/list_item_date" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="34dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="16dp"
-        android:layout_toLeftOf="@+id/ibMenu"
-        android:gravity="top"
-        android:orientation="horizontal">
+        android:descendantFocusability="blocksDescendants"
+        android:orientation="horizontal"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        tools:ignore="Overdraw">
 
         <TextView
-            android:id="@+id/tvCost"
+            android:id="@+id/tvDate"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="top"
-            android:text=""
+            android:layout_height="34dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/ibMenu"
+            android:clickable="false"
+            android:gravity="bottom"
+            android:text="@{fuelingRecord.getDateText}"
             android:textAppearance="@style/AppTheme.TextAppearance.Lists"
-            tools:text="@string/list_item_cost" />
+            tools:text="@string/list_item_date" />
 
-        <TextView
-            android:id="@+id/tvVolume"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_height="34dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="16dp"
+            android:layout_toLeftOf="@+id/ibMenu"
             android:gravity="top"
-            android:text=""
-            android:textAppearance="@style/AppTheme.TextAppearance.Lists"
-            tools:text="@string/list_item_volume" />
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tvTotal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="top"
-            android:text=""
-            android:textAppearance="@style/AppTheme.TextAppearance.Lists"
-            tools:text="@string/list_item_total" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tvCost"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="top"
+                android:text="@{fuelingRecord.getCostText}"
+                android:textAppearance="@style/AppTheme.TextAppearance.Lists"
+                tools:text="@string/list_item_cost" />
 
-    <ImageButton
-        android:id="@+id/ibMenu"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="false"
-        android:layout_centerVertical="true"
-        android:adjustViewBounds="false"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:scaleType="center"
-        android:src="@drawable/ic_more_vert_black_24dp"
-        tools:ignore="ContentDescription" />
-</RelativeLayout>
+            <TextView
+                android:id="@+id/tvVolume"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="top"
+                android:text="@{fuelingRecord.getVolumeText}"
+                android:textAppearance="@style/AppTheme.TextAppearance.Lists"
+                tools:text="@string/list_item_volume" />
+
+            <TextView
+                android:id="@+id/tvTotal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="top"
+                android:text="@{fuelingRecord.getTotalText}"
+                android:textAppearance="@style/AppTheme.TextAppearance.Lists"
+                tools:text="@string/list_item_total" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/ibMenu"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="false"
+            android:layout_centerVertical="true"
+            android:adjustViewBounds="false"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:scaleType="center"
+            android:src="@drawable/ic_more_vert_black_24dp"
+            tools:ignore="ContentDescription" />
+    </RelativeLayout>
+</layout>

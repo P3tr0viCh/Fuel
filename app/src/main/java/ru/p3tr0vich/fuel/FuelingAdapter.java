@@ -21,15 +21,21 @@ public class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int HEADER_ID = -2;
     private static final int FOOTER_ID = -3;
 
+    public static final int HEADER_POSITION = 0;
+
     private List<FuelingRecord> mFuelingRecords;
 
     private boolean mShowYear;
+
+    private int mFirstRecordPosition;
 
     private final View.OnClickListener mOnClickListener;
 
     FuelingAdapter(View.OnClickListener onClickListener) {
         super();
         setHasStableIds(true);
+
+        mFirstRecordPosition = 1;
 
         mFuelingRecords = new ArrayList<>();
 
@@ -52,41 +58,82 @@ public class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged();
     }
 
-    public void addRecord(FuelingRecord fuelingRecord) {
+    public int addRecord(FuelingRecord fuelingRecord) {
         fuelingRecord.showYear = mShowYear;
 
-        mFuelingRecords.add(0, fuelingRecord); // TODO: need insert in right position
+        int position = findPositionForDate(fuelingRecord.getTimeStamp());
 
-        notifyItemInserted(1);
-        // TODO: scroll to
+        mFuelingRecords.add(position, fuelingRecord); // TODO: need insert in right position
+
+        position += mFirstRecordPosition;
+
+        notifyItemInserted(position);
+
+        return position;
     }
 
-    public void updateRecord(FuelingRecord fuelingRecord) {
+    public int updateRecord(FuelingRecord fuelingRecord) {
+        // TODO: sort if date changed
+
         fuelingRecord.showYear = mShowYear;
 
-        int position = getRecordPosition(fuelingRecord);
-        if (position >= 0) {
-            mFuelingRecords.set(position, fuelingRecord);
-            notifyItemChanged(position + 1);
+        int position = positionOfRecordById(fuelingRecord.getId());
+        if (position > -1) {
+
+            mFuelingRecords.set(position - mFirstRecordPosition, fuelingRecord);
+
+            notifyItemChanged(position);
         }
-        // TODO: sort if date changed
+
+        return position;
     }
 
     public void deleteRecord(FuelingRecord fuelingRecord) {
-        int position = getRecordPosition(fuelingRecord);
-        if (position >= 0) {
-            mFuelingRecords.remove(position);
-            notifyItemRemoved(position + 1);
+        int position = positionOfRecordById(fuelingRecord.getId());
+        if (position > -1) {
+            mFuelingRecords.remove(position - mFirstRecordPosition);
+
+            notifyItemRemoved(position);
         }
     }
 
-    private int getRecordPosition(FuelingRecord fuelingRecord) {
+    public int positionOfRecordById(long id) {
         // TODO: need use fast search?
 
         for (int i = 0; i < mFuelingRecords.size(); i++)
-            if (mFuelingRecords.get(i).getId() == fuelingRecord.getId()) return i;
+            if (mFuelingRecords.get(i).getId() == id) return i + mFirstRecordPosition;
 
         return -1;
+    }
+
+    private int findPositionForDate(long date) {
+        if (mFuelingRecords.isEmpty()) return 0;
+
+        // Взято из Arrays.binarySearch() с учётом того,
+        // что массив отсортирован в обратном порядке
+
+        // TODO
+
+        int hi = 0;
+        int lo = mFuelingRecords.size() - 1;
+
+        if (date >= mFuelingRecords.get(hi).getTimeStamp()) return hi;
+
+        if (date <= mFuelingRecords.get(lo).getTimeStamp()) return lo + 1;
+
+        while (lo <= hi) {
+            int mid = (lo + hi) >>> 1;
+            long midVal = mFuelingRecords.get(mid).getTimeStamp();
+
+            if (midVal < date) {
+                lo = mid - 1;
+            } else if (midVal > date) {
+                hi = mid + 1;
+            } else {
+                return mid;  // value found
+            }
+        }
+        return ~lo;  // value not present
     }
 
     public void setShowYear(boolean showYear) {
@@ -97,6 +144,10 @@ public class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public int getItemCount() {
         int size = mFuelingRecords.size();
         return size > 0 ? size + 2 : 0;
+    }
+
+    public int getFirstRecordPosition() {
+        return mFirstRecordPosition;
     }
 
     @Override
@@ -121,7 +172,7 @@ public class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof FuelingItemViewHolder) {
-            FuelingRecord fuelingRecord = mFuelingRecords.get(position - 1);
+            FuelingRecord fuelingRecord = mFuelingRecords.get(position - mFirstRecordPosition);
             ((FuelingItemViewHolder) holder).binding.setFuelingRecord(fuelingRecord);
 
             ((FuelingItemViewHolder) holder).binding.ibMenu.setTag(fuelingRecord.getId());
@@ -138,10 +189,10 @@ public class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public long getItemId(int position) {
-        if (position == 0) return HEADER_ID;
+        if (position == HEADER_POSITION) return HEADER_ID;
         if (position == mFuelingRecords.size() + 1) return FOOTER_ID;
 
-        return mFuelingRecords.get(position - 1).getId();
+        return mFuelingRecords.get(position - mFirstRecordPosition).getId();
     }
 
     public class FuelingItemViewHolder extends RecyclerView.ViewHolder {

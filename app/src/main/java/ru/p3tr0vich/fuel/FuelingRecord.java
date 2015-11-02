@@ -5,13 +5,15 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 public class FuelingRecord implements Parcelable {
 
     private static final String NAME = "FUELING_RECORD_NAME";
 
     private long mId;
-    private String mSqlLiteDate;    // Дата заправки
+    private String mSQLiteDate;    // Дата заправки
+    private long mTimeStamp;        // Дата заправки в миллисекундах
     private float mCost;            // Стоимость
     private float mVolume;          // Объём заправки
     private float mTotal;           // Общий пробег
@@ -40,7 +42,7 @@ public class FuelingRecord implements Parcelable {
     }
 
     FuelingRecord(FuelingRecord fuelingRecord) {
-        this(fuelingRecord.mId, fuelingRecord.mSqlLiteDate, fuelingRecord.mCost,
+        this(fuelingRecord.mId, fuelingRecord.mSQLiteDate, fuelingRecord.mCost,
                 fuelingRecord.mVolume, fuelingRecord.mTotal, fuelingRecord.showYear);
     }
 
@@ -74,20 +76,29 @@ public class FuelingRecord implements Parcelable {
         return mId;
     }
 
-    private void setId(long id) {
-        this.mId = id;
+    public void setId(long id) {
+        mId = id;
     }
 
     public String getSQLiteDate() {
-        return mSqlLiteDate;
+        return mSQLiteDate;
+    }
+
+    public long getTimeStamp() {
+        return mTimeStamp;
     }
 
     public String getDateText() {
-        return Functions.sqlDateToString(mSqlLiteDate, showYear);
+        return Functions.sqlDateToString(mSQLiteDate, showYear) +
+                " (" + String.valueOf(mTimeStamp) + ")";
     }
 
     public void setSQLiteDate(String date) {
-        this.mSqlLiteDate = date;
+        mSQLiteDate = date;
+        if (TextUtils.isEmpty(date))
+            mTimeStamp = 0; // Hmm...
+        else
+            mTimeStamp = Functions.sqlDateToDate(date).getTime();
     }
 
     public float getCost() {
@@ -99,7 +110,7 @@ public class FuelingRecord implements Parcelable {
     }
 
     public void setCost(float cost) {
-        this.mCost = cost;
+        mCost = cost;
     }
 
     public float getVolume() {
@@ -111,7 +122,7 @@ public class FuelingRecord implements Parcelable {
     }
 
     public void setVolume(float volume) {
-        this.mVolume = volume;
+        mVolume = volume;
     }
 
     public float getTotal() {
@@ -123,7 +134,7 @@ public class FuelingRecord implements Parcelable {
     }
 
     public void setTotal(float total) {
-        this.mTotal = total;
+        mTotal = total;
     }
 
     @Override
@@ -134,7 +145,7 @@ public class FuelingRecord implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(mId);
-        dest.writeString(mSqlLiteDate);
+        dest.writeString(mSQLiteDate);
         dest.writeFloat(mCost);
         dest.writeFloat(mVolume);
         dest.writeFloat(mTotal);
@@ -156,6 +167,6 @@ public class FuelingRecord implements Parcelable {
 
     @Override
     public String toString() {
-        return mId + ", " + mSqlLiteDate + ", " + mCost + ", " + mVolume + ", " + mTotal;
+        return mId + ", " + mSQLiteDate + ", " + mCost + ", " + mVolume + ", " + mTotal;
     }
 }

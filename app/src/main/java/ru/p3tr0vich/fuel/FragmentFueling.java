@@ -264,6 +264,11 @@ public class FragmentFueling extends FragmentFuel implements
         // Если он уже необходимый, то setFilterMode возвращает true,
         // иначе в setFilterMode вызывается рестарт лоадер и возвращается false.
 
+        // В mIdForScroll сохраняется Id добавленной или изменёной записи.
+        // Если был вызван рестарт лоадер, список будет прокручен к записи с этим Id.
+
+        mIdForScroll = fuelingRecord.getId();
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(Functions.sqlDateToDate(fuelingRecord.getSQLiteDate()));
 
@@ -277,10 +282,10 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     public void addRecord(FuelingRecord fuelingRecord) {
-        mIdForScroll = db.insertRecord(fuelingRecord);
+        long id = db.insertRecord(fuelingRecord);
 
-        if (mIdForScroll > -1) {
-            fuelingRecord.setId(mIdForScroll);
+        if (id > -1) {
+            fuelingRecord.setId(id);
 
             if (needUpdateCurrentList(fuelingRecord)) {
                 int position = mFuelingAdapter.addRecord(fuelingRecord);
@@ -294,20 +299,13 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     public void updateRecord(FuelingRecord fuelingRecord) {
-        // TODO: Скакать при изменении если не видно
-
-        if (db.updateRecord(fuelingRecord) > -1) {
-            mIdForScroll = fuelingRecord.getId();
-
+        if (db.updateRecord(fuelingRecord) > -1)
             if (needUpdateCurrentList(fuelingRecord)) {
                 int position = mFuelingAdapter.updateRecord(fuelingRecord);
 
-                if (position > -1) {
-                    if (!isItemVisible(position))
-                        scrollToPosition(position);
-                }
+                if (position > -1 && !isItemVisible(position))
+                    scrollToPosition(position);
             }
-        }
     }
 
     private boolean isItemVisible(int position) {
@@ -402,7 +400,7 @@ public class FragmentFueling extends FragmentFuel implements
     private void scrollToId(long id) {
         if (id == -1) return;
 
-        int position = mFuelingAdapter.positionOfRecordById(id);
+        int position = mFuelingAdapter.findPositionById(id);
 
         if (position > -1) {
             if (position == mFuelingAdapter.getFirstRecordPosition())

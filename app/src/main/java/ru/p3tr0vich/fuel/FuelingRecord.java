@@ -1,6 +1,7 @@
 package ru.p3tr0vich.fuel;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -27,6 +28,19 @@ public class FuelingRecord implements Parcelable {
         setVolume(volume);
         setTotal(total);
         this.showYear = showYear;
+    }
+
+    FuelingRecord(Cursor cursor) {
+        this(cursor, true);
+    }
+
+    FuelingRecord(Cursor cursor, boolean showYear) {
+        this(cursor.getInt(FuelingDBHelper.COLUMN_ID_INDEX),
+                cursor.getString(FuelingDBHelper.COLUMN_DATETIME_INDEX),
+                cursor.getFloat(FuelingDBHelper.COLUMN_COST_INDEX),
+                cursor.getFloat(FuelingDBHelper.COLUMN_VOLUME_INDEX),
+                cursor.getFloat(FuelingDBHelper.COLUMN_TOTAL_INDEX),
+                showYear);
     }
 
     FuelingRecord(long id, String sqlLiteDate, float cost, float volume, float total) {

@@ -45,14 +45,12 @@ public class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void swapCursor(Cursor data) {
         mFuelingRecords.clear();
 
-        if (data != null && data.moveToFirst()) do
-            mFuelingRecords.add(new FuelingRecord(
-                    data.getInt(0),
-                    data.getString(1),
-                    data.getFloat(2),
-                    data.getFloat(3),
-                    data.getFloat(4),
-                    mShowYear));
+        notifyDataSetChanged();
+
+        if (data == null) return;
+
+        if (data.moveToFirst()) do
+            mFuelingRecords.add(new FuelingRecord(data, mShowYear));
         while (data.moveToNext());
 
         notifyDataSetChanged();
@@ -63,7 +61,7 @@ public class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         int position = findPositionForDate(fuelingRecord.getTimeStamp());
 
-        mFuelingRecords.add(position, fuelingRecord); // TODO: need insert in right position
+        mFuelingRecords.add(position, fuelingRecord);
 
         position += mFirstRecordPosition;
 
@@ -77,51 +75,61 @@ public class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         fuelingRecord.showYear = mShowYear;
 
-        int position = positionOfRecordById(fuelingRecord.getId());
+        int position = getPositionById(fuelingRecord.getId());
+
         if (position > -1) {
+            long oldTimeStamp = mFuelingRecords.get(position).getTimeStamp();
 
-            mFuelingRecords.set(position - mFirstRecordPosition, fuelingRecord);
+            long newTimeStamp = fuelingRecord.getTimeStamp();
 
-            notifyItemChanged(position);
+            mFuelingRecords.set(position, fuelingRecord);
+
+            notifyItemChanged(position + mFirstRecordPosition);
+
+            if (oldTimeStamp != newTimeStamp) {
+                FuelingRecord temp = mFuelingRecords.remove(position);
+
+                int newPosition = findPositionForDate(newTimeStamp);
+
+                mFuelingRecords.add(newPosition, temp);
+
+                notifyItemMoved(position + mFirstRecordPosition, newPosition + mFirstRecordPosition);
+
+                position = newPosition;
+            }
         }
 
-        return position;
+        return position + mFirstRecordPosition;
     }
 
     public void deleteRecord(FuelingRecord fuelingRecord) {
-        int position = positionOfRecordById(fuelingRecord.getId());
+        int position = getPositionById(fuelingRecord.getId());
         if (position > -1) {
-            mFuelingRecords.remove(position - mFirstRecordPosition);
+            mFuelingRecords.remove(position);
 
-            notifyItemRemoved(position);
+            notifyItemRemoved(position + mFirstRecordPosition);
         }
     }
 
-    public int positionOfRecordById(long id) {
-        // TODO: need use fast search?
-
+    private int getPositionById(long id) {
         for (int i = 0; i < mFuelingRecords.size(); i++)
-            if (mFuelingRecords.get(i).getId() == id) return i + mFirstRecordPosition;
+            if (mFuelingRecords.get(i).getId() == id) return i;
 
         return -1;
     }
 
+    public int findPositionById(long id) {
+        int position = getPositionById(id);
+        return position != -1 ? position + mFirstRecordPosition : -1;
+    }
+
     private int findPositionForDate(long date) {
-        if (mFuelingRecords.isEmpty()) return 0;
-
-        // Взято из Arrays.binarySearch() с учётом того,
-        // что массив отсортирован в обратном порядке
-
-        // TODO
+        if (mFuelingRecords.isEmpty() || date >= mFuelingRecords.get(0).getTimeStamp()) return 0;
 
         int hi = 0;
         int lo = mFuelingRecords.size() - 1;
 
-        if (date >= mFuelingRecords.get(hi).getTimeStamp()) return hi;
-
-        if (date <= mFuelingRecords.get(lo).getTimeStamp()) return lo + 1;
-
-        while (lo <= hi) {
+        while (hi <= lo) {
             int mid = (lo + hi) >>> 1;
             long midVal = mFuelingRecords.get(mid).getTimeStamp();
 
@@ -130,10 +138,10 @@ public class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             } else if (midVal > date) {
                 hi = mid + 1;
             } else {
-                return mid;  // value found
+                return mid;
             }
         }
-        return ~lo;  // value not present
+        return hi;
     }
 
     public void setShowYear(boolean showYear) {

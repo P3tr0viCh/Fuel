@@ -17,6 +17,12 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_VOLUME = "volume";
     public static final String COLUMN_TOTAL = "total";
 
+    public static final int COLUMN_ID_INDEX = 0;
+    public static final int COLUMN_DATETIME_INDEX = 1;
+    public static final int COLUMN_COST_INDEX = 2;
+    public static final int COLUMN_VOLUME_INDEX = 3;
+    public static final int COLUMN_TOTAL_INDEX = 4;
+
     private static final int DATABASE_VERSION = 1;
 
     private static final String DATABASE_NAME = "fuel.db";
@@ -94,13 +100,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         if (cursor != null) {
             cursor.moveToFirst();
 
-            fuelingRecord = new FuelingRecord(
-                    cursor.getInt(0),
-                    cursor.getString(1),
-                    cursor.getFloat(2),
-                    cursor.getFloat(3),
-                    cursor.getFloat(4)
-            );
+            fuelingRecord = new FuelingRecord(cursor);
 
             cursor.close();
         }
@@ -216,12 +216,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(SELECT_ALL + ORDER_BY_DATE, null);
 
         if (cursor.moveToFirst()) do
-            fuelingRecords.add(new FuelingRecord(
-                    cursor.getInt(0),
-                    cursor.getString(1),
-                    cursor.getFloat(2),
-                    cursor.getFloat(3),
-                    cursor.getFloat(4)));
+            fuelingRecords.add(new FuelingRecord(cursor));
         while (cursor.moveToNext());
 
         cursor.close();

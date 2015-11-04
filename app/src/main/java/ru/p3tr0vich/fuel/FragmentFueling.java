@@ -82,19 +82,21 @@ public class FragmentFueling extends FragmentFuel implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+        db = new FuelingDBHelper();
         mFilter = new FuelingDBHelper.Filter();
 
         if (savedInstanceState == null) {
             Functions.logD("FragmentFueling -- onCreate: savedInstanceState == null");
 
-            SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
             mFilter.filterMode = FuelingDBHelper.FilterMode.CURRENT_YEAR;
             mFilter.dateFrom = Functions.sqlDateToDate(
-                    sPref.getString(getString(R.string.pref_filter_date_from),
+                    preferences.getString(getString(R.string.pref_filter_date_from),
                             Functions.dateToSQLite(new Date())));
             mFilter.dateTo = Functions.sqlDateToDate(
-                    sPref.getString(getString(R.string.pref_filter_date_to),
+                    preferences.getString(getString(R.string.pref_filter_date_to),
                             Functions.dateToSQLite(new Date())));
 
         } else {
@@ -120,6 +122,13 @@ public class FragmentFueling extends FragmentFuel implements
         mRecyclerViewFueling.setHasFixedSize(true);
         mRecyclerViewFueling.setItemAnimator(new DefaultItemAnimator());
         mRecyclerViewFueling.addItemDecoration(new DividerItemDecoration(getActivity(), null));
+        mRecyclerViewFueling.setLayoutManager(new LinearLayoutManager(Functions.sApplicationContext));
+        mRecyclerViewFueling.setAdapter(mFuelingAdapter = new FuelingAdapter(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doPopup(v);
+            }
+        }));
 
         mProgressWheelFueling = (ProgressWheel) view.findViewById(R.id.progressWheelFueling);
 
@@ -176,27 +185,12 @@ public class FragmentFueling extends FragmentFuel implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Functions.logD("FragmentFueling -- onActivityCreated");
-
-        db = new FuelingDBHelper();
-
-        mRecyclerViewFueling.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        mFuelingAdapter = new FuelingAdapter(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doPopup(v);
-            }
-        });
-
-        mRecyclerViewFueling.setAdapter(mFuelingAdapter);
+        Functions.logD("FragmentFueling -- onActivityCreated: savedInstanceState " +
+                (savedInstanceState == null ? "=" : "!") + "= null");
 
         doSetFilterMode(mFilter.filterMode);
 
-        if (savedInstanceState == null)
-            getLoaderManager().initLoader(LOADER_LIST_ID, null, this);
-        else
-            getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
+        getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
     }
 
     @Override
@@ -236,6 +230,7 @@ public class FragmentFueling extends FragmentFuel implements
 
         Functions.logD("FragmentFueling -- setFilterMode: new FilterMode == " + filterMode +
                 ", current FilterMode == " + mFilter.filterMode);
+
         if (mFilter.filterMode != filterMode) {
 
             setToolbarDatesVisible(filterMode == FuelingDBHelper.FilterMode.DATES, true);
@@ -245,7 +240,10 @@ public class FragmentFueling extends FragmentFuel implements
             getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
 
             return false;
-        } else return true;
+        } else {
+            mIdForScroll = -1;
+            return true;
+        }
     }
 
     private boolean needUpdateCurrentList(FuelingRecord fuelingRecord) {
@@ -269,14 +267,18 @@ public class FragmentFueling extends FragmentFuel implements
         // В mIdForScroll сохраняется Id добавленной или изменёной записи.
         // Если был вызван рестарт лоадер, список будет прокручен к записи с этим Id.
 
+        if (mFilter.filterMode == FuelingDBHelper.FilterMode.ALL) {
+            mIdForScroll = -1;
+            return true;
+        }
+
         mIdForScroll = fuelingRecord.getId();
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(Functions.sqlDateToDate(fuelingRecord.getSQLiteDate()));
 
-        return mFilter.filterMode == FuelingDBHelper.FilterMode.ALL ||
-                setFilterMode(calendar.get(Calendar.YEAR) == Functions.getCurrentYear() ?
-                        FuelingDBHelper.FilterMode.CURRENT_YEAR : FuelingDBHelper.FilterMode.ALL);
+        return setFilterMode(calendar.get(Calendar.YEAR) == Functions.getCurrentYear() ?
+                FuelingDBHelper.FilterMode.CURRENT_YEAR : FuelingDBHelper.FilterMode.ALL);
     }
 
     public void forceLoad() {
@@ -292,7 +294,7 @@ public class FragmentFueling extends FragmentFuel implements
             if (needUpdateCurrentList(fuelingRecord)) {
                 int position = mFuelingAdapter.addRecord(fuelingRecord);
 
-                if (position == mFuelingAdapter.getFirstRecordPosition())
+                if (mFuelingAdapter.isShowHeader() && position == 1)
                     position = FuelingAdapter.HEADER_POSITION;
 
                 scrollToPosition(position);
@@ -388,10 +390,9 @@ public class FragmentFueling extends FragmentFuel implements
 
         mFuelingAdapter.swapCursor(data);
 
-        scrollToId(mIdForScroll);
-        mIdForScroll = -1;
+        scrollToId();
 
-        new CalcTotalTask(data).execute(); // TODO: cancel
+        new CalcTotalTask(data).execute();
     }
 
     @Override
@@ -399,18 +400,19 @@ public class FragmentFueling extends FragmentFuel implements
         mFuelingAdapter.swapCursor(null);
     }
 
-    private void scrollToId(long id) {
-        if (id == -1) return;
+    private void scrollToId() {
+        if (mIdForScroll == -1) return;
 
-        int position = mFuelingAdapter.findPositionById(id);
+        int position = mFuelingAdapter.findPositionById(mIdForScroll);
 
         if (position > -1) {
-            if (position == mFuelingAdapter.getFirstRecordPosition())
+            if (mFuelingAdapter.isShowHeader() && position == 1)
                 position = FuelingAdapter.HEADER_POSITION;
 
             ((LinearLayoutManager) mRecyclerViewFueling.getLayoutManager())
                     .scrollToPositionWithOffset(position, 0);
         }
+        mIdForScroll = -1;
     }
 
     class CalcTotalData {

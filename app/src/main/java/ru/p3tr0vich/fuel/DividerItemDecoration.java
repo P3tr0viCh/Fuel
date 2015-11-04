@@ -10,20 +10,22 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class DividerItemDecoration extends RecyclerView.ItemDecoration {
+@SuppressWarnings("SameParameterValue")
+class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
-    private Drawable mDivider;
+    private final Drawable mDivider;
 
-    private boolean mShowFirstDivider;
-    private boolean mShowLastDivider;
+    private final boolean mShowFirstDivider;
+    private final boolean mShowLastDivider;
 
-    private boolean mIsLastItemFooter;
+    private final boolean mIsLastItemFooter;
 
 
     public DividerItemDecoration(Context context, AttributeSet attrs) {
         this(context, attrs, false, false, true);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public DividerItemDecoration(Context context, AttributeSet attrs, boolean showFirstDivider,
                                  boolean showLastDivider, boolean isLastItemFooter) {
         final TypedArray a = context

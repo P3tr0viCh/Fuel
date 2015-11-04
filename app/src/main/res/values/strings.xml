@@ -71,7 +71,6 @@
     <string name="dialog_caption_load_from_xml">Предупреждение</string>
 
     <string name="dialog_btn_ok">OK</string>
-    <string name="dialog_btn_delete">УДАЛИТЬ</string>
     <string name="dialog_btn_cancel">ОТМЕНА</string>
     <string name="dialog_btn_done">ГОТОВО</string>
     <string name="dialog_btn_load">ЗАГРУЗИТЬ</string>
@@ -81,7 +80,6 @@
 
     <string name="btn_calc_map">Подсчитать на Яндекс.Карты</string>
 
-    <string name="message_dialog_delete">Удалить запись с датой\n%s?</string>
     <string name="message_dialog_load_from_xml">Загрузить данные из файла XML?\nИмеющиеся в базе данных записи будут безвозвратно удалены</string>
     <string name="message_progress_save">Подождите, выполняется сохранение в файл…</string>
     <string name="message_progress_load">Подождите, выполняется чтение файла…</string>

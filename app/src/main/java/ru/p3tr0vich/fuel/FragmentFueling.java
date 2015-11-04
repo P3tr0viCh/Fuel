@@ -78,6 +78,34 @@ public class FragmentFueling extends FragmentFuel implements
         return R.id.action_fueling;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mFilter = new FuelingDBHelper.Filter();
+
+        if (savedInstanceState == null) {
+            Functions.logD("FragmentFueling -- onCreate: savedInstanceState == null");
+
+            SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+            mFilter.filterMode = FuelingDBHelper.FilterMode.CURRENT_YEAR;
+            mFilter.dateFrom = Functions.sqlDateToDate(
+                    sPref.getString(getString(R.string.pref_filter_date_from),
+                            Functions.dateToSQLite(new Date())));
+            mFilter.dateTo = Functions.sqlDateToDate(
+                    sPref.getString(getString(R.string.pref_filter_date_to),
+                            Functions.dateToSQLite(new Date())));
+
+        } else {
+            Functions.logD("FragmentFueling -- onCreate: savedInstanceState != null");
+
+            mFilter.filterMode = (FuelingDBHelper.FilterMode) savedInstanceState.getSerializable(KEY_FILTER_MODE);
+            mFilter.dateFrom = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_FROM);
+            mFilter.dateTo = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_TO);
+        }
+    }
+
     @SuppressLint("InflateParams")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -145,31 +173,30 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        mFilter = new FuelingDBHelper.Filter();
+        Functions.logD("FragmentFueling -- onActivityCreated");
 
-        if (savedInstanceState == null) {
-            Functions.logD("FragmentFueling -- onCreate: savedInstanceState == null");
+        db = new FuelingDBHelper();
 
-            SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mRecyclerViewFueling.setLayoutManager(new LinearLayoutManager(getContext()));
 
-            mFilter.filterMode = FuelingDBHelper.FilterMode.CURRENT_YEAR;
-            mFilter.dateFrom = Functions.sqlDateToDate(
-                    sPref.getString(getString(R.string.pref_filter_date_from),
-                            Functions.dateToSQLite(new Date())));
-            mFilter.dateTo = Functions.sqlDateToDate(
-                    sPref.getString(getString(R.string.pref_filter_date_to),
-                            Functions.dateToSQLite(new Date())));
+        mFuelingAdapter = new FuelingAdapter(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doPopup(v);
+            }
+        });
 
-        } else {
-            Functions.logD("FragmentFueling -- onCreate: savedInstanceState != null");
+        mRecyclerViewFueling.setAdapter(mFuelingAdapter);
 
-            mFilter.filterMode = (FuelingDBHelper.FilterMode) savedInstanceState.getSerializable(KEY_FILTER_MODE);
-            mFilter.dateFrom = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_FROM);
-            mFilter.dateTo = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_TO);
-        }
+        doSetFilterMode(mFilter.filterMode);
+
+        if (savedInstanceState == null)
+            getLoaderManager().initLoader(LOADER_LIST_ID, null, this);
+        else
+            getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
     }
 
     @Override
@@ -196,33 +223,8 @@ public class FragmentFueling extends FragmentFuel implements
         super.onDestroy();
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        Functions.logD("FragmentFueling -- onActivityCreated");
-
-        db = new FuelingDBHelper();
-
-        mRecyclerViewFueling.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        mFuelingAdapter = new FuelingAdapter(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doPopup(v);
-            }
-        });
-
-        mRecyclerViewFueling.setAdapter(mFuelingAdapter);
-
-        doSetFilterMode(mFilter.filterMode);
-
-        getLoaderManager().initLoader(LOADER_LIST_ID, null, this);
-    }
-
     private void doSetFilterMode(FuelingDBHelper.FilterMode filterMode) {
         mFilter.filterMode = filterMode;
-//        mFuelingCursorAdapter.showYear = (filterMode != FuelingDBHelper.FilterMode.CURRENT_YEAR);
 
         mOnFilterChangeListener.onFilterChange(filterMode);
     }

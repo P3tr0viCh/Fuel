@@ -103,8 +103,8 @@ public class FuelingRecord implements Parcelable {
     }
 
     public String getDateText() {
-        return Functions.sqlDateToString(mSQLiteDate, showYear) +
-                " (" + String.valueOf(mTimeStamp) + ")";
+        return Functions.sqlDateToString(mSQLiteDate, showYear);
+//                + " (" + String.valueOf(mTimeStamp) + ")";
     }
 
     public void setSQLiteDate(String date) {

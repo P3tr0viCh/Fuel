@@ -13,33 +13,27 @@ import android.view.View;
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private Drawable mDivider;
-    private boolean mShowFirstDivider = false;
-    private boolean mShowLastDivider = false;
+
+    private boolean mShowFirstDivider;
+    private boolean mShowLastDivider;
+
+    private boolean mIsLastItemFooter;
 
 
     public DividerItemDecoration(Context context, AttributeSet attrs) {
+        this(context, attrs, false, false, true);
+    }
+
+    public DividerItemDecoration(Context context, AttributeSet attrs, boolean showFirstDivider,
+                                 boolean showLastDivider, boolean isLastItemFooter) {
         final TypedArray a = context
                 .obtainStyledAttributes(attrs, new int[]{android.R.attr.listDivider});
         mDivider = a.getDrawable(0);
         a.recycle();
-    }
 
-    public DividerItemDecoration(Context context, AttributeSet attrs, boolean showFirstDivider,
-                                 boolean showLastDivider) {
-        this(context, attrs);
         mShowFirstDivider = showFirstDivider;
         mShowLastDivider = showLastDivider;
-    }
-
-    public DividerItemDecoration(Drawable divider) {
-        mDivider = divider;
-    }
-
-    public DividerItemDecoration(Drawable divider, boolean showFirstDivider,
-                                 boolean showLastDivider) {
-        this(divider);
-        mShowFirstDivider = showFirstDivider;
-        mShowLastDivider = showLastDivider;
+        mIsLastItemFooter = isLastItemFooter;
     }
 
     @Override
@@ -71,6 +65,8 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         int left = 0, right = 0, top = 0, bottom = 0, size;
         int orientation = getOrientation(parent);
         int childCount = parent.getChildCount();
+
+        if (mIsLastItemFooter) childCount--;
 
         if (orientation == LinearLayoutManager.VERTICAL) {
             size = mDivider.getIntrinsicHeight();

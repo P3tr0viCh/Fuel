@@ -98,9 +98,8 @@ class FuelingDBHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(id)}, null, null, null);
 
         if (cursor != null) {
-            cursor.moveToFirst();
-
-            fuelingRecord = new FuelingRecord(cursor);
+            if (cursor.moveToFirst())
+                fuelingRecord = new FuelingRecord(cursor);
 
             cursor.close();
         }

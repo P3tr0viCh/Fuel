@@ -10,8 +10,7 @@
     <RelativeLayout
         android:id="@+id/layoutMain"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="ru.p3tr0vich.fuel.RelativeLayoutBehavior">
+        android:layout_height="match_parent">
 
         <include
             android:id="@+id/toolbarDates"
@@ -106,20 +105,18 @@
                 android:textAppearance="@style/AppTheme.TextAppearance.Texts"
                 tools:text="@string/list_item_cost" />
         </RelativeLayout>
-
-        <com.melnykov.fab.FloatingActionButton
-            android:id="@+id/floatingActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="false"
-            android:layout_alignParentRight="true"
-            android:layout_gravity="bottom|right"
-            android:layout_marginBottom="22dp"
-            android:layout_marginRight="16dp"
-            android:clickable="true"
-            android:src="@drawable/ic_add_white_24dp"
-            fab:fab_colorNormal="@color/primary"
-            fab:fab_colorPressed="@color/primary_dark" />
     </RelativeLayout>
+
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="@dimen/fab_margin_bottom"
+        android:layout_marginEnd="16dp"
+        android:clickable="true"
+        android:src="@drawable/ic_add_white_24dp"
+        app:layout_behavior="ru.p3tr0vich.fuel.FloatingActionButtonBehavior"
+        fab:fab_colorNormal="@color/primary"
+        fab:fab_colorPressed="@color/primary_dark" />
 </android.support.design.widget.CoordinatorLayout>

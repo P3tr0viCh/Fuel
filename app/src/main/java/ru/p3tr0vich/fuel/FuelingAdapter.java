@@ -183,6 +183,8 @@ public class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             FuelingRecord fuelingRecord = mFuelingRecords.get(position - mFirstRecordPosition);
             ((FuelingItemViewHolder) holder).binding.setFuelingRecord(fuelingRecord);
 
+            // TODO: don't use Tag
+
             ((FuelingItemViewHolder) holder).binding.ibMenu.setTag(fuelingRecord.getId());
             ((FuelingItemViewHolder) holder).binding.ibMenu.setOnClickListener(mOnClickListener);
         }

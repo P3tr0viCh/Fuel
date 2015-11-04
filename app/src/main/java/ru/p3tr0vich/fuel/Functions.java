@@ -1,13 +1,13 @@
 package ru.p3tr0vich.fuel;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.annotation.DimenRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -15,7 +15,6 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -198,18 +197,6 @@ class Functions {
         view.setLayoutParams(layoutParams);
     }
 
-    private static int pxToDp(Context context, int px) {
-        return Math.round(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, px, context.getResources().getDisplayMetrics()));
-    }
-
-    public static void setDialogWidth(Dialog dialog, @SuppressWarnings("SameParameterValue") int width) {
-        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
-        params.width = pxToDp(dialog.getContext(), width);
-        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        dialog.getWindow().setAttributes(params);
-    }
-
     public static boolean isPhoneInPortrait() {
         return sApplicationContext.getResources().getDimension(R.dimen.is_phone_in_portrait) != 0;
     }
@@ -217,5 +204,9 @@ class Functions {
     public static void logD(String msg) {
         if ((sApplicationContext.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0)
             Log.d(Const.LOG_TAG, msg);
+    }
+
+    public static int getDimensionPixelSize(@DimenRes int id) {
+        return sApplicationContext.getResources().getDimensionPixelSize(id);
     }
 }

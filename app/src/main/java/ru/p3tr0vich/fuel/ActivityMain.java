@@ -271,8 +271,16 @@ public class ActivityMain extends AppCompatActivity implements
         if (recordAction != Const.RecordAction.DELETE)
             // ADD, UPDATE
             ActivityFuelingRecordChange.start(this, recordAction, fuelingRecord);
-        else
-            FragmentDialogDeleteRecord.show(getSupportFragmentManager(), fuelingRecord);
+        else {
+            deletedFuelingRecord = fuelingRecord;
+
+            if (getFragmentFueling().deleteRecord(fuelingRecord))
+                Snackbar
+                        .make(findViewById(R.id.layoutMain), R.string.message_record_deleted,
+                                Snackbar.LENGTH_LONG)
+                        .setAction(R.string.dialog_btn_cancel, undoClickListener)
+                        .show();
+        }
     }
 
     private final View.OnClickListener undoClickListener = new View.OnClickListener() {
@@ -305,17 +313,6 @@ public class ActivityMain extends AppCompatActivity implements
                         fragmentFueling.updateRecord(fuelingRecord);
                         break;
                 }
-                break;
-            case FragmentDialogDeleteRecord.REQUEST_CODE:
-                fuelingRecord = new FuelingRecord(data);
-
-                deletedFuelingRecord = fuelingRecord;
-
-                if (fragmentFueling.deleteRecord(fuelingRecord))
-                Snackbar
-                        .make(findViewById(R.id.layoutMain), R.string.message_record_deleted, Snackbar.LENGTH_SHORT)
-                        .setAction(R.string.dialog_btn_cancel, undoClickListener)
-                        .show();
                 break;
             case ActivityYandexMap.REQUEST_CODE_DISTANCE:
                 ((FragmentCalc) findFragmentByTag(FragmentCalc.TAG))

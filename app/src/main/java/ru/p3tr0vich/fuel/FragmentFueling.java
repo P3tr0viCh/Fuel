@@ -805,4 +805,8 @@ public class FragmentFueling extends FragmentFuel implements
                 calendar.get(Calendar.DAY_OF_MONTH)
         ).show(getFragmentManager(), null);
     }
+
+    public void updateFabPositionAfterSnackBarSwipe() {
+        getActivity().findViewById(R.id.floatingActionButton).setTranslationY(0);
+    }
 }

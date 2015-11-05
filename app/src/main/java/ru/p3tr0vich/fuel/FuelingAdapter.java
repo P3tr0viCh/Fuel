@@ -136,7 +136,8 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private int findPositionForDate(long date) {
-        if (mFuelingRecords.isEmpty() || date >= mFuelingRecords.get(mShowHeader).getTimeStamp()) return 0;
+        if (mFuelingRecords.isEmpty() || date >= mFuelingRecords.get(mShowHeader).getTimeStamp())
+            return mShowHeader;
 
         int hi = mShowHeader;
         int lo = mFuelingRecords.size() - 1 - mShowFooter;

@@ -279,6 +279,7 @@ public class ActivityMain extends AppCompatActivity implements
                         .make(findViewById(R.id.layoutMain), R.string.message_record_deleted,
                                 Snackbar.LENGTH_LONG)
                         .setAction(R.string.dialog_btn_cancel, undoClickListener)
+                        .setCallback(snackBarCallback)
                         .show();
         }
     }
@@ -291,6 +292,16 @@ public class ActivityMain extends AppCompatActivity implements
             getFragmentFueling().addRecord(deletedFuelingRecord);
 
             deletedFuelingRecord = null;
+        }
+    };
+
+    private final Snackbar.Callback snackBarCallback = new Snackbar.Callback() {
+        // Workaround for bug
+
+        @Override
+        public void onDismissed(Snackbar snackbar, int event) {
+            if (event == DISMISS_EVENT_SWIPE)
+                getFragmentFueling().updateFabPositionAfterSnackBarSwipe();
         }
     };
 

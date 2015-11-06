@@ -45,6 +45,8 @@ public class FragmentFueling extends FragmentFuel implements
     private static final String KEY_FILTER_DATE_FROM = "KEY_FILTER_DATE_FROM";
     private static final String KEY_FILTER_DATE_TO = "KEY_FILTER_DATE_TO";
 
+    private static final String KEY_DATA_CHANGED = "KEY_DATA_CHANGED";
+
     private static final int LOADER_LIST_ID = 0;
 
     private Toolbar mToolbarDates;
@@ -68,7 +70,8 @@ public class FragmentFueling extends FragmentFuel implements
     private TextView mTextAverage;
     private TextView mTextCostSum;
 
-    private long mIdForScroll = -1;
+    private boolean mDataChanged;
+    private long mIdForScroll = -1; // TODO: onSaveInstanceState?
 
     private OnFilterChangeListener mOnFilterChangeListener;
     private OnRecordChangeListener mOnRecordChangeListener;
@@ -99,12 +102,15 @@ public class FragmentFueling extends FragmentFuel implements
                     preferences.getString(getString(R.string.pref_filter_date_to),
                             Functions.dateToSQLite(new Date())));
 
+            mDataChanged = false;
         } else {
             Functions.logD("FragmentFueling -- onCreate: savedInstanceState != null");
 
             mFilter.filterMode = (FuelingDBHelper.FilterMode) savedInstanceState.getSerializable(KEY_FILTER_MODE);
             mFilter.dateFrom = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_FROM);
             mFilter.dateTo = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_TO);
+
+            mDataChanged = savedInstanceState.getBoolean(KEY_DATA_CHANGED);
         }
     }
 
@@ -190,7 +196,10 @@ public class FragmentFueling extends FragmentFuel implements
 
         doSetFilterMode(mFilter.filterMode);
 
-        getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
+        if (mDataChanged)
+            getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
+        else
+            getLoaderManager().initLoader(LOADER_LIST_ID, null, this);
     }
 
     @Override
@@ -200,6 +209,8 @@ public class FragmentFueling extends FragmentFuel implements
         outState.putSerializable(KEY_FILTER_MODE, mFilter.filterMode);
         outState.putSerializable(KEY_FILTER_DATE_FROM, mFilter.dateFrom);
         outState.putSerializable(KEY_FILTER_DATE_TO, mFilter.dateTo);
+
+        outState.putBoolean(KEY_DATA_CHANGED, mDataChanged);
 
         Functions.logD("FragmentFueling -- onSaveInstanceState");
     }
@@ -292,6 +303,8 @@ public class FragmentFueling extends FragmentFuel implements
             fuelingRecord.setId(id);
 
             if (needUpdateCurrentList(fuelingRecord)) {
+                mDataChanged = true;
+
                 int position = mFuelingAdapter.addRecord(fuelingRecord);
 
                 if (mFuelingAdapter.isShowHeader() && position == 1)
@@ -305,11 +318,23 @@ public class FragmentFueling extends FragmentFuel implements
     public void updateRecord(FuelingRecord fuelingRecord) {
         if (db.updateRecord(fuelingRecord) > -1)
             if (needUpdateCurrentList(fuelingRecord)) {
+                mDataChanged = true;
+
                 int position = mFuelingAdapter.updateRecord(fuelingRecord);
 
                 if (position > -1 && !isItemVisible(position))
                     scrollToPosition(position);
             }
+    }
+
+    public boolean deleteRecord(FuelingRecord fuelingRecord) {
+        boolean deleted = db.deleteRecord(fuelingRecord) > 0;
+        if (deleted) {
+            mDataChanged = true;
+
+            mFuelingAdapter.deleteRecord(fuelingRecord);
+        }
+        return deleted;
     }
 
     private boolean isItemVisible(int position) {
@@ -325,12 +350,6 @@ public class FragmentFueling extends FragmentFuel implements
 
     private void scrollToPosition(int position) {
         mRecyclerViewFueling.scrollToPosition(position);
-    }
-
-    public boolean deleteRecord(FuelingRecord fuelingRecord) {
-        boolean deleted = db.deleteRecord(fuelingRecord) > 0;
-        if (deleted) mFuelingAdapter.deleteRecord(fuelingRecord);
-        return deleted;
     }
 
     private void setFilterDate(final Date dateFrom, final Date dateTo) {
@@ -387,6 +406,8 @@ public class FragmentFueling extends FragmentFuel implements
         Functions.logD("FragmentFueling -- onLoadFinished");
 
         mFuelingAdapter.setShowYear(mFilter.filterMode != FuelingDBHelper.FilterMode.CURRENT_YEAR);
+
+        mDataChanged = false;
 
         mFuelingAdapter.swapCursor(data);
 

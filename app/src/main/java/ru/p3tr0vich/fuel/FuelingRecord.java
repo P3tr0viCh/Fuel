@@ -64,6 +64,7 @@ public class FuelingRecord implements Parcelable {
         this((FuelingRecord) intent.getParcelableExtra(NAME));
     }
 
+    @SuppressWarnings("unused")
     FuelingRecord(Bundle bundle) {
         this((FuelingRecord) bundle.getParcelable(NAME));
     }
@@ -77,11 +78,13 @@ public class FuelingRecord implements Parcelable {
         return this.toIntent(new Intent());
     }
 
+    @SuppressWarnings("WeakerAccess")
     public Bundle toBundle(@NonNull Bundle bundle) {
         bundle.putParcelable(NAME, this);
         return bundle;
     }
 
+    @SuppressWarnings("unused")
     public Bundle toBundle() {
         return this.toBundle(new Bundle());
     }
@@ -102,13 +105,6 @@ public class FuelingRecord implements Parcelable {
         return mTimeStamp;
     }
 
-    public String getDateText() {
-        return Functions.sqlDateToString(mSQLiteDate, showYear)
-//                + " (" + String.valueOf(mId) + ")"
-//                + " (" + String.valueOf(mTimeStamp) + ")"
-                ;
-    }
-
     public void setSQLiteDate(String date) {
         mSQLiteDate = date;
         if (TextUtils.isEmpty(date))
@@ -121,10 +117,6 @@ public class FuelingRecord implements Parcelable {
         return mCost;
     }
 
-    public String getCostText() {
-        return Functions.floatToString(mCost);
-    }
-
     public void setCost(float cost) {
         mCost = cost;
     }
@@ -133,20 +125,12 @@ public class FuelingRecord implements Parcelable {
         return mVolume;
     }
 
-    public String getVolumeText() {
-        return Functions.floatToString(mVolume);
-    }
-
     public void setVolume(float volume) {
         mVolume = volume;
     }
 
     public float getTotal() {
         return mTotal;
-    }
-
-    public String getTotalText() {
-        return Functions.floatToString(mTotal);
     }
 
     public void setTotal(float total) {

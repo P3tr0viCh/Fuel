@@ -33,7 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-class Functions {
+public class Functions {
 
     public static Context sApplicationContext;
 
@@ -64,7 +64,9 @@ class Functions {
         return dateToString(date, withYear, false);
     }
 
+    @SuppressWarnings("unused")
     public static String sqlDateToString(String sqlDate, boolean withYear) {
+        // Used in fueling_listitem
         return dateToString(sqlDateToDate(sqlDate), withYear);
     }
 

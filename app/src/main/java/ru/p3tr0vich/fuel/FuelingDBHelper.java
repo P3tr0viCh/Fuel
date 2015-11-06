@@ -11,7 +11,9 @@ import java.util.List;
 
 class FuelingDBHelper extends SQLiteOpenHelper {
 
+    @SuppressWarnings("WeakerAccess")
     public static final String _ID = "_id";
+    @SuppressWarnings("WeakerAccess")
     public static final String COLUMN_DATETIME = "datetime";
     public static final String COLUMN_COST = "cost";
     public static final String COLUMN_VOLUME = "volume";

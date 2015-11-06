@@ -48,15 +48,16 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return mShowHeader == 1;
     }
 
-    private void setShowHeader(boolean showHeader) {
+    private void setShowHeader(@SuppressWarnings("SameParameterValue") boolean showHeader) {
         mShowHeader = showHeader ? 1 : 0;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public boolean isShowFooter() {
         return mShowFooter == 1;
     }
 
-    private void setShowFooter(boolean showFooter) {
+    private void setShowFooter(@SuppressWarnings("SameParameterValue") boolean showFooter) {
         mShowFooter = showFooter ? 1 : 0;
     }
 

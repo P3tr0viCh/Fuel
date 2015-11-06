@@ -11,6 +11,11 @@
    public *;
 }
 
+-keepclassmembers class ru.p3tr0vich.fuel.Functions {
+    public static String sqlDateToString(String, boolean);
+    public static String floatToString(float);
+}
+
 -keepclassmembers class android.support.v7.widget.PopupMenu {
     private MenuPopupHelper mPopup;
 }

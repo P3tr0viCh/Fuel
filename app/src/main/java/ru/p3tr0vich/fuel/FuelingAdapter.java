@@ -16,7 +16,7 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
-    private static final int TYPE_FOOTER = 2;
+    public static final int TYPE_FOOTER = 2;
 
     private static final int HEADER_ID = -2;
     private static final int FOOTER_ID = -3;

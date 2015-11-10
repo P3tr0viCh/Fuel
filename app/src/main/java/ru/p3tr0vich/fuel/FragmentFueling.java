@@ -127,7 +127,8 @@ public class FragmentFueling extends FragmentFuel implements
         mRecyclerViewFueling = (RecyclerView) view.findViewById(R.id.recyclerViewFueling);
         mRecyclerViewFueling.setHasFixedSize(true);
         mRecyclerViewFueling.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerViewFueling.addItemDecoration(new DividerItemDecoration(getActivity(), null));
+        mRecyclerViewFueling.addItemDecoration(
+                new DividerItemDecoration(getActivity(), null, false, true, FuelingAdapter.TYPE_FOOTER));
         mRecyclerViewFueling.setLayoutManager(new LinearLayoutManager(Functions.sApplicationContext));
         mRecyclerViewFueling.setAdapter(mFuelingAdapter = new FuelingAdapter(new View.OnClickListener() {
             @Override

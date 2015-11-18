@@ -43,10 +43,6 @@ public class FuelingRecord implements Parcelable {
                 showYear);
     }
 
-    FuelingRecord(long id, String sqlLiteDate, float cost, float volume, float total) {
-        this(id, sqlLiteDate, cost, volume, total, true);
-    }
-
     private FuelingRecord(Parcel in) {
         this(in.readLong(), in.readString(), in.readFloat(), in.readFloat(), in.readFloat(), in.readInt() == 1);
     }

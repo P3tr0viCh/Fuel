@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
@@ -66,6 +67,8 @@ public class FragmentFueling extends FragmentFuel implements
     private RecyclerView mRecyclerViewFueling;
 
     private ProgressWheel mProgressWheelFueling;
+
+    private FloatingActionButton mFloatingActionButton;
 
     private TextView mTextAverage;
     private TextView mTextCostSum;
@@ -142,12 +145,16 @@ public class FragmentFueling extends FragmentFuel implements
         mTextAverage = (TextView) view.findViewById(R.id.tvAverage);
         mTextCostSum = (TextView) view.findViewById(R.id.tvCostSum);
 
-        view.findViewById(R.id.floatingActionButton).setOnClickListener(new View.OnClickListener() {
+        mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.floatingActionButton);
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mOnRecordChangeListener.onRecordChange(Const.RecordAction.ADD, null);
             }
         });
+        mFloatingActionButton.setScaleX(0.0f);
+        mFloatingActionButton.setScaleY(0.0f);
+        mFloatingActionButton.attachToRecyclerView(mRecyclerViewFueling);
 
         mBtnDateFrom = (Button) view.findViewById(R.id.btnDateFrom);
         mBtnDateFrom.setOnClickListener(new View.OnClickListener() {
@@ -413,6 +420,8 @@ public class FragmentFueling extends FragmentFuel implements
         mFuelingAdapter.swapCursor(data);
 
         scrollToId();
+
+        mFloatingActionButton.animate().scaleX(1.0f).scaleY(1.0f);
 
         new CalcTotalTask(data).execute();
     }

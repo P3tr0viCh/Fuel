@@ -62,7 +62,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 mFuelingRecord = new FuelingRecord(-1, "",
                         Functions.textToFloat(sPref.getString(getString(R.string.pref_def_cost), "0")),
                         Functions.textToFloat(sPref.getString(getString(R.string.pref_def_volume), "0")),
-                        sPref.getFloat(getString(R.string.pref_last_total), 0));
+                        sPref.getFloat(getString(R.string.pref_last_total), 0), true);
                 break;
             case UPDATE:
                 getActivity().setTitle(R.string.dialog_caption_update);

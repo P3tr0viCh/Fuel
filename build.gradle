@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0-beta2'
+        classpath 'com.android.tools.build:gradle:1.5.0'
         classpath 'com.android.databinding:dataBinder:1.0-rc1'
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -19,11 +19,13 @@ ext {
     minSdkVersion = 17
     targetSdkVersion = 23
 
-    support_design = 'com.android.support:design:23.1.0'
-    support_appcompat = 'com.android.support:appcompat-v7:23.1.0'
-    support_preference7 = 'com.android.support:preference-v7:23.1.0'
-    support_preference14 = 'com.android.support:preference-v14:23.1.0'
-    support_recyclerview = 'com.android.support:recyclerview-v7:23.1.0'
+    support_version = '23.1.1'
+
+    support_design = 'com.android.support:design:' + support_version
+    support_appcompat = 'com.android.support:appcompat-v7:' + support_version
+    support_preference7 = 'com.android.support:preference-v7:' + support_version
+    support_preference14 = 'com.android.support:preference-v14:' + support_version
+    support_recyclerview = 'com.android.support:recyclerview-v7:' + support_version
 
     nineoldandroids_library = 'com.nineoldandroids:library:2.4.0'
 }

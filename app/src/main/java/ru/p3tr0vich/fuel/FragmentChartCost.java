@@ -18,7 +18,9 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.utils.ValueFormatter;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -88,7 +90,6 @@ public class FragmentChartCost extends FragmentFuel implements
         mChart.setTouchEnabled(false);
         mChart.setScaleEnabled(false);
         mChart.setDoubleTapToZoomEnabled(false);
-        mChart.setHighlightEnabled(false);
         mChart.setPinchZoom(false);
         mChart.setDrawGridBackground(false);
         mChart.setDrawValueAboveBar(true);
@@ -352,7 +353,7 @@ public class FragmentChartCost extends FragmentFuel implements
     private final class FloatFormatter implements ValueFormatter {
 
         @Override
-        public String getFormattedValue(float value) {
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
             return Functions.floatToString(value, false);
         }
     }

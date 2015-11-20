@@ -1,4 +1,4 @@
-# Учёт топлива
+﻿# Учёт топлива
 Программа для Android.
 
 Учёт топливных заправок автомобиля.
@@ -8,6 +8,8 @@
 Калькулятор расхода.
 Расчёт необходимого количества топлива и его стоимости в зависимости от предполагаемого расстояния, топливного расхода автомобиля и стоимости единицы топлива.
 Расстояние можно вычислять при помощи Яндекс.Карты.
+
+График расходов за год по месяцам.
 
 ------------------------------------------------------------
 (Google translate)
@@ -21,3 +23,5 @@ Keeping records from the database in a file XML, a format compatible with Micros
 Flow Calculator.
 Calculation of the required amount of fuel and its value depending on the intended distance, the fuel consumption of a vehicle and the unit cost of fuel.
 The distance can be calculated using Yandex.Maps.
+
+Schedule of expenditure for the year by months.

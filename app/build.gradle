@@ -38,6 +38,8 @@ android {
         versionCode 1
         versionName "1.0"
         buildConfigField "String", "BUILD_DATE", "new String(\"" + getDate() + "\")"
+
+        resConfigs "ru"
     }
 
     buildTypes {
@@ -46,6 +48,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             //noinspection GroovyAssignabilityCheck
             signingConfig signingConfigs.debug
+
+            ext.enableCrashlytics = false
         }
         release {
             minifyEnabled false // TODO
@@ -56,6 +60,8 @@ android {
             applicationVariants.all { variant ->
                 appendVersionName(variant, defaultConfig)
             }
+
+            ext.enableCrashlytics = false
         }
     }
 
@@ -67,7 +73,7 @@ android {
         exclude 'META-INF/NOTICE.txt'
         exclude '.readme'
     }
-    
+
     dataBinding {
         enabled = true
     }

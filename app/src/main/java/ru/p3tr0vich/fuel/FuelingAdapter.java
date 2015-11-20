@@ -32,7 +32,9 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final View.OnClickListener mOnClickListener;
 
-    FuelingAdapter(View.OnClickListener onClickListener) {
+    private final OnFuelingRecordsChangeListener mOnFuelingRecordsChangeListener;
+
+    FuelingAdapter(View.OnClickListener onClickListener, OnFuelingRecordsChangeListener onFuelingRecordsChangeListener) {
         super();
         setHasStableIds(true);
 
@@ -42,6 +44,12 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mFuelingRecords = new ArrayList<>();
 
         mOnClickListener = onClickListener;
+
+        mOnFuelingRecordsChangeListener = onFuelingRecordsChangeListener;
+    }
+
+    public interface OnFuelingRecordsChangeListener {
+        void OnFuelingRecordsChange(List<FuelingRecord> fuelingRecords);
     }
 
     public boolean isShowHeader() {
@@ -77,6 +85,16 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (isShowFooter()) mFuelingRecords.add(null);
 
         notifyDataSetChanged();
+
+        notifyFuelingRecordsChanged();
+    }
+
+    private void notifyFuelingRecordsChanged() {
+        List<FuelingRecord> tempFuelingRecords = new ArrayList<>(mFuelingRecords);
+        if (isShowHeader()) tempFuelingRecords.remove(0);
+        if (isShowFooter()) tempFuelingRecords.remove(tempFuelingRecords.size() - 1);
+
+        mOnFuelingRecordsChangeListener.OnFuelingRecordsChange(tempFuelingRecords);
     }
 
     public int addRecord(FuelingRecord fuelingRecord) {
@@ -87,6 +105,8 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mFuelingRecords.add(position, fuelingRecord);
 
         notifyItemInserted(position);
+
+        notifyFuelingRecordsChanged();
 
         return position;
     }
@@ -118,6 +138,8 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
 
+        notifyFuelingRecordsChanged();
+
         return position;
     }
 
@@ -126,6 +148,8 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (position > -1) {
             mFuelingRecords.remove(position);
             notifyItemRemoved(position);
+
+            notifyFuelingRecordsChanged();
         }
     }
 

@@ -32,13 +32,12 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 public class FragmentFueling extends FragmentFuel implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, FuelingAdapter.OnFuelingRecordsChangeListener {
 
     public static final String TAG = "FragmentFueling";
 
@@ -70,6 +69,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     private FloatingActionButton mFloatingActionButton;
 
+    private CalcTotalTask mCalcTotalTask;
     private TextView mTextAverage;
     private TextView mTextCostSum;
 
@@ -87,7 +87,6 @@ public class FragmentFueling extends FragmentFuel implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         db = new FuelingDBHelper();
         mFilter = new FuelingDBHelper.Filter();
@@ -138,7 +137,7 @@ public class FragmentFueling extends FragmentFuel implements
             public void onClick(View v) {
                 doPopup(v);
             }
-        }));
+        }, this));
 
         mProgressWheelFueling = (ProgressWheel) view.findViewById(R.id.progressWheelFueling);
 
@@ -226,6 +225,8 @@ public class FragmentFueling extends FragmentFuel implements
     @Override
     public void onDestroy() {
         Functions.logD("FragmentFueling -- onDestroy");
+
+        mCalcTotalTask.cancel(false);
 
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .edit()
@@ -422,8 +423,6 @@ public class FragmentFueling extends FragmentFuel implements
         scrollToId();
 
         mFloatingActionButton.animate().scaleX(1.0f).scaleY(1.0f);
-
-        new CalcTotalTask(data).execute();
     }
 
     @Override
@@ -446,16 +445,15 @@ public class FragmentFueling extends FragmentFuel implements
         mIdForScroll = -1;
     }
 
-    class CalcTotalData {
-        final float cost;
-        final float volume;
-        final float total;
+    @Override
+    public void OnFuelingRecordsChange(List<FuelingRecord> fuelingRecords) {
+        Functions.logD("FragmentFueling -- OnFuelingRecordsChange");
 
-        CalcTotalData(float c, float v, float t) {
-            cost = c;
-            volume = v;
-            total = t;
-        }
+        if (mCalcTotalTask != null) mCalcTotalTask.cancel(false);
+
+        mCalcTotalTask = new CalcTotalTask(fuelingRecords);
+
+        mCalcTotalTask.execute();
     }
 
     class CalcTotalResult {
@@ -470,25 +468,10 @@ public class FragmentFueling extends FragmentFuel implements
 
     class CalcTotalTask extends AsyncTask<Void, Void, CalcTotalResult> {
 
-        final Cursor mCursor;
-        final List<CalcTotalData> calcTotalDataList = new ArrayList<>();
+        private final List<FuelingRecord> mFuelingRecords;
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            final int columnCost = mCursor.getColumnIndex(FuelingDBHelper.COLUMN_COST);
-            final int columnVolume = mCursor.getColumnIndex(FuelingDBHelper.COLUMN_VOLUME);
-            final int columnTotal = mCursor.getColumnIndex(FuelingDBHelper.COLUMN_TOTAL);
-
-            if (mCursor.moveToFirst()) do
-                calcTotalDataList.add(new CalcTotalData(mCursor.getFloat(columnCost),
-                        mCursor.getFloat(columnVolume), mCursor.getFloat(columnTotal)));
-            while (mCursor.moveToNext());
-        }
-
-        CalcTotalTask(Cursor cursor) {
-            mCursor = cursor;
+        CalcTotalTask(List<FuelingRecord> fuelingRecords) {
+            mFuelingRecords = fuelingRecords;
         }
 
         @Override
@@ -500,23 +483,26 @@ public class FragmentFueling extends FragmentFuel implements
 
             boolean completeData = true; // Во всех записях указаны объём заправки и текущий пробег
 
-            for (int i = 0; i < calcTotalDataList.size(); i++) {
-                costSum += calcTotalDataList.get(i).cost;
+            for (int i = 0; i < mFuelingRecords.size(); i++) {
+
+                if (isCancelled()) return null;
+
+                costSum += mFuelingRecords.get(i).getCost();
 
                 if (completeData) {
-                    volume = calcTotalDataList.get(i).volume;
-                    total = calcTotalDataList.get(i).total;
+                    volume = mFuelingRecords.get(i).getVolume();
+                    total = mFuelingRecords.get(i).getTotal();
 
                     if (volume == 0 || total == 0) completeData = false;
                     else {
                         // Сортировка записей по дате в обратном порядке
                         // 0 -- последняя заправка
+                        // Последний (i == 0) объём заправки не нужен -- неизвестно, сколько на ней будет пробег,
+                        // в volumeSum не включается
                         if (i == 0) lastTotal = total;
                         else {
-                            // Последний (i == 0) объём заправки не нужен -- неизвестно, сколько на ней будет пробег,
-                            // в volumeSum не включается
                             volumeSum += volume;
-                            if (i == calcTotalDataList.size() - 1) firstTotal = total;
+                            if (i == mFuelingRecords.size() - 1) firstTotal = total;
                         }
                     }
                 }
@@ -527,11 +513,14 @@ public class FragmentFueling extends FragmentFuel implements
             else {
                 average = 0;
                 averageCount = 0;
-                for (int i = 0; i < calcTotalDataList.size() - 1; i++) {
-                    lastTotal = calcTotalDataList.get(i).total;
+                for (int i = 0; i < mFuelingRecords.size() - 1; i++) {
+
+                    if (isCancelled()) return null;
+
+                    lastTotal = mFuelingRecords.get(i).getTotal();
                     if (lastTotal != 0) {
-                        volume = calcTotalDataList.get(i + 1).volume;
-                        total = calcTotalDataList.get(i + 1).total;
+                        volume = mFuelingRecords.get(i + 1).getVolume();
+                        total = mFuelingRecords.get(i + 1).getTotal();
                         if (volume != 0 && total != 0) {
                             average += (volume / (lastTotal - total)) * 100;
                             averageCount++;
@@ -553,6 +542,13 @@ public class FragmentFueling extends FragmentFuel implements
             mTextCostSum.setText(Functions.floatToString(calcTotalResult.costSum));
 
             Functions.logD("FragmentFueling -- CalcTotalTask: onPostExecute");
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+
+            Functions.logD("FragmentFueling -- CalcTotalTask: onCancelled");
         }
     }
 

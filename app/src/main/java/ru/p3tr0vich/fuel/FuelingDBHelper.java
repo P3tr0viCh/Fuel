@@ -11,13 +11,11 @@ import java.util.List;
 
 class FuelingDBHelper extends SQLiteOpenHelper {
 
-    @SuppressWarnings("WeakerAccess")
-    public static final String _ID = "_id";
-    @SuppressWarnings("WeakerAccess")
-    public static final String COLUMN_DATETIME = "datetime";
-    public static final String COLUMN_COST = "cost";
-    public static final String COLUMN_VOLUME = "volume";
-    public static final String COLUMN_TOTAL = "total";
+    private static final String _ID = "_id";
+    private static final String COLUMN_DATETIME = "datetime";
+    private static final String COLUMN_COST = "cost";
+    private static final String COLUMN_VOLUME = "volume";
+    private static final String COLUMN_TOTAL = "total";
 
     public static final int COLUMN_ID_INDEX = 0;
     public static final int COLUMN_DATETIME_INDEX = 1;

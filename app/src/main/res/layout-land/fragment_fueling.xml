@@ -27,84 +27,81 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewFueling"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/divider"
-            android:layout_alignParentBottom="false"
-            android:layout_alignParentStart="false"
-            android:layout_alignParentTop="false"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/layoutTotal"
             android:layout_below="@+id/toolbarDates"
             android:choiceMode="none"
-            android:drawSelectorOnTop="false"
-            android:footerDividersEnabled="false"
-            android:headerDividersEnabled="true"
             tools:listitem="@layout/fueling_listitem" />
 
         <com.pnikosis.materialishprogress.ProgressWheel
             android:id="@+id/progressWheelFueling"
             android:layout_width="@dimen/progress_wheel_fueling_size"
             android:layout_height="@dimen/progress_wheel_fueling_size"
-            android:layout_alignBottom="@+id/divider"
+            android:layout_alignBottom="@+id/layoutTotal"
             android:layout_alignParentTop="true"
             android:layout_centerInParent="true"
             android:visibility="gone"
             wheel:matProg_barColor="@color/primary"
             wheel:matProg_progressIndeterminate="true" />
 
-        <View
-            android:id="@+id/divider"
-            style="@style/AppTheme.Divider.Horizontal"
-            android:layout_above="@+id/layoutTotal" />
-
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/layoutTotal"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp">
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvAverageText"
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical"
-                android:text="@string/text_average_cons"
-                android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+            <View style="@style/AppTheme.Divider.Horizontal" />
 
-            <TextView
-                android:id="@+id/tvAverage"
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="8dp"
-                android:layout_toRightOf="@+id/tvAverageText"
-                android:gravity="center_vertical"
-                android:textAppearance="@style/AppTheme.TextAppearance.Texts"
-                tools:text="@string/list_item_volume" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
 
-            <TextView
-                android:id="@+id/tvCostSumText"
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="32dp"
-                android:layout_toRightOf="@+id/tvAverage"
-                android:gravity="center_vertical"
-                android:text="@string/text_sum_cost"
-                android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                <TextView
+                    android:id="@+id/tvAverageText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_centerVertical="true"
+                    android:gravity="center_vertical"
+                    android:text="@string/text_average_cons"
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
 
-            <TextView
-                android:id="@+id/tvCostSum"
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="8dp"
-                android:layout_toRightOf="@+id/tvCostSumText"
-                android:gravity="center_vertical"
-                android:textAppearance="@style/AppTheme.TextAppearance.Texts"
-                tools:text="@string/list_item_cost" />
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/tvAverage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_toRightOf="@+id/tvAverageText"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts"
+                    tools:text="@string/list_item_volume" />
+
+                <TextView
+                    android:id="@+id/tvCostSumText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="32dp"
+                    android:layout_toRightOf="@+id/tvAverage"
+                    android:gravity="center_vertical"
+                    android:text="@string/text_sum_cost"
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+
+                <TextView
+                    android:id="@+id/tvCostSum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_toRightOf="@+id/tvCostSumText"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts"
+                    tools:text="@string/list_item_cost" />
+            </RelativeLayout>
+        </LinearLayout>
     </RelativeLayout>
 
     <com.melnykov.fab.FloatingActionButton

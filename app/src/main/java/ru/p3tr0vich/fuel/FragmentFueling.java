@@ -24,7 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
@@ -52,8 +52,11 @@ public class FragmentFueling extends FragmentFuel implements
     private Toolbar mToolbarDates;
     private View mToolbarShadow;
 
+    private LinearLayout mLayoutTotal;
+
     private boolean mDateFromClicked;
     private boolean mToolbarDatesVisible;
+    private boolean mLayoutTotalVisible;
 
     private FuelingDBHelper db;
     private FuelingDBHelper.Filter mFilter;
@@ -126,6 +129,8 @@ public class FragmentFueling extends FragmentFuel implements
         mToolbarDates = (Toolbar) view.findViewById(R.id.toolbarDates);
         mToolbarShadow = view.findViewById(R.id.toolbarShadow);
 
+        mLayoutTotal = (LinearLayout) view.findViewById(R.id.layoutTotal);
+
         mRecyclerViewFueling = (RecyclerView) view.findViewById(R.id.recyclerViewFueling);
         mRecyclerViewFueling.setHasFixedSize(true);
         mRecyclerViewFueling.setItemAnimator(new DefaultItemAnimator());
@@ -138,6 +143,21 @@ public class FragmentFueling extends FragmentFuel implements
                 doPopup(v);
             }
         }, this));
+
+        if (Functions.isPhone())
+            mRecyclerViewFueling.addOnScrollListener(new OnRecyclerViewScrollListener(
+                    getResources().getDimensionPixelOffset(R.dimen.recycler_view_scroll_threshold)) {
+
+                @Override
+                void onScrollUp() {
+                    setTotalAndFabVisible(false);
+                }
+
+                @Override
+                void onScrollDown() {
+                    setTotalAndFabVisible(true);
+                }
+            });
 
         mProgressWheelFueling = (ProgressWheel) view.findViewById(R.id.progressWheelFueling);
 
@@ -153,7 +173,6 @@ public class FragmentFueling extends FragmentFuel implements
         });
         mFloatingActionButton.setScaleX(0.0f);
         mFloatingActionButton.setScaleY(0.0f);
-        mFloatingActionButton.attachToRecyclerView(mRecyclerViewFueling);
 
         mBtnDateFrom = (Button) view.findViewById(R.id.btnDateFrom);
         mBtnDateFrom.setOnClickListener(new View.OnClickListener() {
@@ -187,6 +206,8 @@ public class FragmentFueling extends FragmentFuel implements
 
         mToolbarDatesVisible = true;
         setToolbarDatesVisible(mFilter.filterMode == FuelingDBHelper.FilterMode.DATES, false);
+
+        mLayoutTotalVisible = true;
 
         updateFilterDateButtons(true, mFilter.dateFrom);
         updateFilterDateButtons(false, mFilter.dateTo);
@@ -226,7 +247,7 @@ public class FragmentFueling extends FragmentFuel implements
     public void onDestroy() {
         Functions.logD("FragmentFueling -- onDestroy");
 
-        mCalcTotalTask.cancel(false);
+        calcTotalTaskCancel();
 
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .edit()
@@ -258,6 +279,8 @@ public class FragmentFueling extends FragmentFuel implements
             doSetFilterMode(filterMode);
 
             getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
+
+            setTotalAndFabVisible(true);
 
             return false;
         } else {
@@ -422,7 +445,7 @@ public class FragmentFueling extends FragmentFuel implements
 
         scrollToId();
 
-        mFloatingActionButton.animate().scaleX(1.0f).scaleY(1.0f);
+        mFloatingActionButton.animate().scaleX(1.0f).scaleY(1.0f); // TODO: remove from
     }
 
     @Override
@@ -445,11 +468,15 @@ public class FragmentFueling extends FragmentFuel implements
         mIdForScroll = -1;
     }
 
+    private void calcTotalTaskCancel() {
+        if (mCalcTotalTask != null) mCalcTotalTask.cancel(false);
+    }
+
     @Override
     public void OnFuelingRecordsChange(List<FuelingRecord> fuelingRecords) {
         Functions.logD("FragmentFueling -- OnFuelingRecordsChange");
 
-        if (mCalcTotalTask != null) mCalcTotalTask.cancel(false);
+        calcTotalTaskCancel();
 
         mCalcTotalTask = new CalcTotalTask(fuelingRecords);
 
@@ -645,8 +672,6 @@ public class FragmentFueling extends FragmentFuel implements
                 -getResources().getDimensionPixelSize(R.dimen.toolbar_height); // minus!
         final int toolbarShadowHeight =
                 getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height);
-        final RelativeLayout.LayoutParams layoutParams =
-                (RelativeLayout.LayoutParams) mToolbarDates.getLayoutParams();
 
         if (animate) {
             final ValueAnimator valueAnimatorShadowShow = ValueAnimator.ofInt(0, toolbarShadowHeight);
@@ -674,7 +699,7 @@ public class FragmentFueling extends FragmentFuel implements
                     .setDuration(Const.ANIMATION_DURATION_TOOLBAR)
                     .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         public void onAnimationUpdate(ValueAnimator animation) {
-                            Functions.setViewTopMargin(mToolbarDates, layoutParams,
+                            Functions.setViewTopMargin(mToolbarDates,
                                     (Integer) animation.getAnimatedValue());
                         }
                     });
@@ -684,7 +709,39 @@ public class FragmentFueling extends FragmentFuel implements
                     valueAnimatorToolbar, valueAnimatorShadowHide);
             animatorSet.start();
         } else
-            Functions.setViewTopMargin(mToolbarDates, layoutParams, visible ? 0 : toolbarDatesTopHidden);
+            Functions.setViewTopMargin(mToolbarDates, visible ? 0 : toolbarDatesTopHidden);
+    }
+
+    private void setLayoutTotalVisible(final boolean visible) {
+        if (mLayoutTotalVisible == visible) return;
+
+        mLayoutTotalVisible = visible;
+
+        final ValueAnimator valueAnimator = ValueAnimator.ofInt(
+                (int) mLayoutTotal.getTranslationY(), visible ? 0 : mLayoutTotal.getHeight());
+        valueAnimator
+                .setDuration(visible ?
+                        Const.ANIMATION_DURATION_LAYOUT_TOTAL_SHOW :
+                        Const.ANIMATION_DURATION_LAYOUT_TOTAL_HIDE)
+                .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        int translationY = (Integer) animation.getAnimatedValue();
+
+                        mLayoutTotal.setTranslationY(translationY);
+                        Functions.setViewTopMargin(mLayoutTotal, -translationY);
+                    }
+                });
+        valueAnimator.start();
+    }
+
+    private void setTotalAndFabVisible(boolean visible) {
+        // TODO: есть баг при количестве записей позволяющем сделать прокрутку вверх при
+        // показанном лайоте, что приводит к его скрытию, после чего прокрутка вниз невозможна,
+        // так как записи начинают влезать по высоте.
+        // Три записи в альбомном режиме с показанным тулбаром выбора периода
+
+        mFloatingActionButton.toggle(visible, true);
+        setLayoutTotalVisible(visible);
     }
 
     private void updateFilterDateButtons(final boolean dateFrom, final Date date) {

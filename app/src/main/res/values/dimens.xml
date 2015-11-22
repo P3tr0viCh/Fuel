@@ -19,7 +19,10 @@
 
     <dimen name="menu_item_margin">16dp</dimen>
 
-    <dimen name="is_phone_in_portrait">1dp</dimen>
+    <dimen name="recycler_view_scroll_threshold">4dp</dimen>
+
+    <dimen name="is_phone">1dp</dimen>
+    <dimen name="is_portrait">1dp</dimen>
 
     <dimen name="abc_text_size_large_material" tools:override="true">16sp</dimen>
     <dimen name="abc_text_size_medium_material" tools:override="true">14sp</dimen>

@@ -194,13 +194,22 @@ public class Functions {
         view.requestLayout();
     }
 
-    public static void setViewTopMargin(View view, RelativeLayout.LayoutParams layoutParams, int topMargin) {
-        layoutParams.setMargins(layoutParams.leftMargin, topMargin, layoutParams.rightMargin, layoutParams.bottomMargin);
-        view.setLayoutParams(layoutParams);
+    public static void setViewTopMargin(View view, int topMargin) {
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) view.getLayoutParams();
+        params.setMargins(params.leftMargin, topMargin, params.rightMargin, params.bottomMargin);
+        view.setLayoutParams(params);
+    }
+
+    public static boolean isPhone() {
+        return sApplicationContext.getResources().getDimension(R.dimen.is_phone) != 0;
+    }
+
+    private static boolean isPortrait() {
+        return sApplicationContext.getResources().getDimension(R.dimen.is_portrait) != 0;
     }
 
     public static boolean isPhoneInPortrait() {
-        return sApplicationContext.getResources().getDimension(R.dimen.is_phone_in_portrait) != 0;
+        return isPhone() && isPortrait();
     }
 
     public static void logD(String msg) {

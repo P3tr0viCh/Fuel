@@ -17,7 +17,7 @@
 
     <View
         style="@style/AppTheme.Divider.Horizontal"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp" />
 

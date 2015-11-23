@@ -110,6 +110,8 @@ dependencies {
     //noinspection GroovyAssignabilityCheck
     compile support_preference14
     //noinspection GroovyAssignabilityCheck
+    compile support_cardview
+    //noinspection GroovyAssignabilityCheck
     compile support_recyclerview
 
     compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'

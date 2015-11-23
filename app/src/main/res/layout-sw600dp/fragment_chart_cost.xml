@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:cardview="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary_light"
@@ -11,20 +12,21 @@
         app:layout_scrollFlags="scroll|enterAlways"
         app:tabMode="scrollable" />
 
-    <FrameLayout
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:background="@drawable/drop_shadow"
-        android:orientation="vertical">
+        cardview:cardBackgroundColor="@color/window_background"
+        cardview:cardCornerRadius="@dimen/card_view_corner_radius"
+        cardview:cardElevation="@dimen/card_view_elevation">
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/chart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="16dp" />
-    </FrameLayout>
+    </android.support.v7.widget.CardView>
 </LinearLayout>

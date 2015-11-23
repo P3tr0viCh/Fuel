@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,19 +11,23 @@
         android:id="@+id/toolbarRecord"
         layout="@layout/toolbar" />
 
-    <FrameLayout
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_record_horizontal_margin"
         android:layout_marginRight="@dimen/activity_record_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:background="@drawable/drop_shadow">
+        cardview:cardBackgroundColor="@color/window_background"
+        cardview:cardCornerRadius="@dimen/card_view_corner_radius"
+        cardview:cardElevation="@dimen/card_view_elevation">
 
         <fragment
             android:id="@+id/fragmentFuelingRecordChange"
             android:name="ru.p3tr0vich.fuel.FragmentFuelingRecordChange"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
             tools:layout="@layout/fragment_fueling_record_change" />
-    </FrameLayout>
+    </android.support.v7.widget.CardView>
 </LinearLayout>

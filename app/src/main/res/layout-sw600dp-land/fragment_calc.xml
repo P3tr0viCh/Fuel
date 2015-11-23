@@ -1,243 +1,251 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary_light">
 
-    <LinearLayout
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_calc_horizontal_margin"
         android:layout_marginRight="@dimen/activity_calc_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:background="@drawable/drop_shadow"
-        android:orientation="horizontal"
-        android:paddingBottom="16dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:paddingTop="16dp">
+        cardview:cardBackgroundColor="@color/window_background"
+        cardview:cardCornerRadius="@dimen/card_view_corner_radius"
+        cardview:cardElevation="@dimen/card_view_elevation">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:paddingBottom="16dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textDistance"
-                    android:layout_width="110dp"
-                    android:layout_height="48dp"
-                    android:gravity="center_vertical"
-                    android:labelFor="@id/editDistance"
-                    android:text="@string/text_distance"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
-
-                <EditText
-                    android:id="@+id/editDistance"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:imeOptions="actionDone|flagNoExtractUi"
-                    android:inputType="number"
-                    android:selectAllOnFocus="false"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
-            </LinearLayout>
+                    android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btnMaps"
-                style="@style/AppTheme.Button.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_calc_map" />
+                    <TextView
+                        android:id="@+id/textDistance"
+                        android:layout_width="110dp"
+                        android:layout_height="48dp"
+                        android:gravity="center_vertical"
+                        android:labelFor="@id/editDistance"
+                        android:text="@string/text_distance"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
+                    <EditText
+                        android:id="@+id/editDistance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:imeOptions="actionDone|flagNoExtractUi"
+                        android:inputType="number"
+                        android:selectAllOnFocus="false"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textCost"
-                    android:layout_width="110dp"
-                    android:layout_height="48dp"
-                    android:gravity="center_vertical"
-                    android:labelFor="@id/editCost"
-                    android:text="@string/text_cost"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
-
-                <EditText
-                    android:id="@+id/editCost"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:imeOptions="actionDone|flagNoExtractUi"
-                    android:inputType="numberDecimal"
-                    android:selectAllOnFocus="false"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textVolume"
-                    android:layout_width="110dp"
-                    android:layout_height="48dp"
-                    android:gravity="center_vertical"
-                    android:labelFor="@id/editVolume"
-                    android:text="@string/text_volume"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
-
-                <EditText
-                    android:id="@+id/editVolume"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:imeOptions="actionDone|flagNoExtractUi"
-                    android:inputType="numberDecimal"
-                    android:selectAllOnFocus="false"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <View
-            style="@style/AppTheme.Divider.Vertical"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textPrice"
-                    android:layout_width="110dp"
-                    android:layout_height="48dp"
-                    android:gravity="center_vertical"
-                    android:labelFor="@id/editPrice"
-                    android:text="@string/text_price"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
-
-                <EditText
-                    android:id="@+id/editPrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:imeOptions="actionDone|flagNoExtractUi"
-                    android:inputType="numberDecimal"
-                    android:selectAllOnFocus="false"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutPriceEmpty"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="-8dp"
-                android:focusableInTouchMode="false"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <Space
-                    android:layout_width="110dp"
-                    android:layout_height="match_parent" />
-
-                <TextView
+                <Button
+                    android:id="@+id/btnMaps"
+                    style="@style/AppTheme.Button.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="@string/text_empty_price"
-                    android:textAppearance="@style/AppTheme.TextAppearance.ErrorValue" />
+                    android:text="@string/btn_calc_map" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textCost"
+                        android:layout_width="110dp"
+                        android:layout_height="48dp"
+                        android:gravity="center_vertical"
+                        android:labelFor="@id/editCost"
+                        android:text="@string/text_cost"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+
+                    <EditText
+                        android:id="@+id/editCost"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:imeOptions="actionDone|flagNoExtractUi"
+                        android:inputType="numberDecimal"
+                        android:selectAllOnFocus="false"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textVolume"
+                        android:layout_width="110dp"
+                        android:layout_height="48dp"
+                        android:gravity="center_vertical"
+                        android:labelFor="@id/editVolume"
+                        android:text="@string/text_volume"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+
+                    <EditText
+                        android:id="@+id/editVolume"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:imeOptions="actionDone|flagNoExtractUi"
+                        android:inputType="numberDecimal"
+                        android:selectAllOnFocus="false"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                </LinearLayout>
             </LinearLayout>
 
             <View
-                style="@style/AppTheme.Divider.Horizontal"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp" />
+                style="@style/AppTheme.Divider.Vertical"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-                <Spinner
-                    android:id="@+id/spinnerCons"
-                    style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:spinnerMode="dropdown" />
-
-                <Spinner
-                    android:id="@+id/spinnerSeason"
-                    style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:spinnerMode="dropdown" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textCons"
-                    android:layout_width="110dp"
-                    android:layout_height="48dp"
-                    android:gravity="center_vertical"
-                    android:labelFor="@id/editCons"
-                    android:text="@string/text_consumption"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
-
-                <EditText
-                    android:id="@+id/editCons"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:imeOptions="actionDone|flagNoExtractUi"
-                    android:inputType="numberDecimal"
-                    android:selectAllOnFocus="false"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
-            </LinearLayout>
+                    android:orientation="horizontal">
 
-            <LinearLayout
-                android:id="@+id/layoutConsEmpty"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="-8dp"
-                android:focusableInTouchMode="false"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                    <TextView
+                        android:id="@+id/textPrice"
+                        android:layout_width="110dp"
+                        android:layout_height="48dp"
+                        android:gravity="center_vertical"
+                        android:labelFor="@id/editPrice"
+                        android:text="@string/text_price"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
 
-                <Space
-                    android:layout_width="110dp"
-                    android:layout_height="match_parent" />
+                    <EditText
+                        android:id="@+id/editPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:imeOptions="actionDone|flagNoExtractUi"
+                        android:inputType="numberDecimal"
+                        android:selectAllOnFocus="false"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/layoutPriceEmpty"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="@string/text_empty_cons"
-                    android:textAppearance="@style/AppTheme.TextAppearance.ErrorValue" />
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginTop="-8dp"
+                    android:focusableInTouchMode="false"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <Space
+                        android:layout_width="110dp"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="@string/text_empty_price"
+                        android:textAppearance="@style/AppTheme.TextAppearance.ErrorValue" />
+                </LinearLayout>
+
+                <View
+                    style="@style/AppTheme.Divider.Horizontal"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/spinnerCons"
+                        style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:spinnerMode="dropdown" />
+
+                    <Spinner
+                        android:id="@+id/spinnerSeason"
+                        style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:spinnerMode="dropdown" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textCons"
+                        android:layout_width="110dp"
+                        android:layout_height="48dp"
+                        android:gravity="center_vertical"
+                        android:labelFor="@id/editCons"
+                        android:text="@string/text_consumption"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+
+                    <EditText
+                        android:id="@+id/editCons"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:imeOptions="actionDone|flagNoExtractUi"
+                        android:inputType="numberDecimal"
+                        android:selectAllOnFocus="false"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutConsEmpty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-8dp"
+                    android:focusableInTouchMode="false"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <Space
+                        android:layout_width="110dp"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="@string/text_empty_cons"
+                        android:textAppearance="@style/AppTheme.TextAppearance.ErrorValue" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </android.support.v7.widget.CardView>
 </FrameLayout>

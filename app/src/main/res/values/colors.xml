@@ -10,15 +10,19 @@
 
     <color name="primary_light">#CFD8DC</color>
 
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#727272</color>
+    <!-- 87% black -->
+    <color name="primary_text">#DE000000</color>
+    <!-- 54% black -->
+    <color name="secondary_text">#8A000000</color>
 
-    <color name="icons">#FFFFFF</color>
-    <color name="divider">#B6B6B6</color>
+    <color name="toolbar_title_text">#FFFFFFFF</color>
 
-    <color name="window_background">#FFFFFF</color>
+    <!-- 12% black -->
+    <color name="divider">#1F000000</color>
 
-    <color name="edit_error">#FF0000</color>
+    <color name="window_background">#FFFFFFFF</color>
+
+    <color name="edit_error">#DD2C00</color>
 
     <color name="menu_item_pressed">#EFEBEF</color>
 
@@ -27,12 +31,18 @@
     <color name="mdtp_accent_color_dark">@color/primary_dark</color>
 
     <!-- Replace colors in ThemeOverlay.AppCompat.Light for ToolBar and Widget.AppCompat.PopupMenu -->
-    <color name="background_material_light" tools:ignore="PrivateResource">@color/window_background</color>
-    <color name="primary_text_default_material_light" tools:ignore="PrivateResource">@color/primary_text</color>
-    <color name="secondary_text_default_material_light" tools:ignore="PrivateResource">@color/secondary_text</color>
+    <color name="background_material_light" tools:ignore="PrivateResource">
+        @color/window_background
+    </color>
+    <color name="primary_text_default_material_light" tools:ignore="PrivateResource">
+        @color/primary_text
+    </color>
+    <color name="secondary_text_default_material_light" tools:ignore="PrivateResource">
+        @color/secondary_text
+    </color>
 
-    <color name="chart_winter">#c8dae8</color>
-    <color name="chart_spring">#ff8dbe</color>
-    <color name="chart_summer">#719b25</color>
-    <color name="chart_autumn">#eeb063</color>
+    <color name="chart_winter">#C8DAE8</color>
+    <color name="chart_spring">#FF8DBE</color>
+    <color name="chart_summer">#719B25</color>
+    <color name="chart_autumn">#EEB063</color>
 </resources>

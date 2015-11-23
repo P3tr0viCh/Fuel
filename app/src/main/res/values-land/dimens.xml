@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="toolbar_height">48dp</dimen>
+    <dimen name="toolbar_dates_left_padding">56dp</dimen>
 
     <dimen name="is_phone">1dp</dimen>
     <dimen name="is_portrait">0dp</dimen>

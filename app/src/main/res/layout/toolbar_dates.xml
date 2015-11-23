@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/AppTheme.Toolbar">
+    style="@style/AppTheme.Toolbar"
+    android:paddingLeft="@dimen/toolbar_dates_left_padding"
+    android:paddingRight="@dimen/abc_action_bar_default_padding_end_material"
+    tools:ignore="PrivateResource">
 
     <Button
         android:id="@+id/btnDateFrom"
@@ -10,7 +13,7 @@
         android:layout_height="wrap_content"
         android:text=""
         android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-        android:textColor="@color/icons" />
+        android:textColor="@color/toolbar_title_text" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -19,7 +22,7 @@
         android:paddingRight="8dp"
         android:text="―"
         android:textAppearance="@style/AppTheme.TextAppearance.Texts"
-        android:textColor="@color/icons"
+        android:textColor="@color/toolbar_title_text"
         tools:ignore="HardcodedText" />
 
     <Button
@@ -29,5 +32,5 @@
         android:layout_height="wrap_content"
         android:text=""
         android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-        android:textColor="@color/icons" />
+        android:textColor="@color/toolbar_title_text" />
 </android.support.v7.widget.Toolbar>

@@ -124,6 +124,8 @@ public class FragmentFueling extends FragmentFuel implements
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Functions.logD("FragmentFueling -- onCreateView");
 
+        final boolean isPhone = Functions.isPhone();
+
         View view = inflater.inflate(R.layout.fragment_fueling, container, false);
 
         mToolbarDates = (Toolbar) view.findViewById(R.id.toolbarDates);
@@ -135,16 +137,16 @@ public class FragmentFueling extends FragmentFuel implements
         mRecyclerViewFueling.setHasFixedSize(true);
         mRecyclerViewFueling.setItemAnimator(new DefaultItemAnimator());
         mRecyclerViewFueling.addItemDecoration(
-                new DividerItemDecoration(getActivity(), null, false, true, FuelingAdapter.TYPE_FOOTER));
+                new DividerItemDecoration(getActivity(), isPhone ? -1 : FuelingAdapter.TYPE_FOOTER));
         mRecyclerViewFueling.setLayoutManager(new LinearLayoutManager(Functions.sApplicationContext));
         mRecyclerViewFueling.setAdapter(mFuelingAdapter = new FuelingAdapter(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doPopup(v);
             }
-        }, this));
+        }, this, isPhone, !isPhone));
 
-        if (Functions.isPhone())
+        if (isPhone)
             mRecyclerViewFueling.addOnScrollListener(new OnRecyclerViewScrollListener(
                     getResources().getDimensionPixelOffset(R.dimen.recycler_view_scroll_threshold)) {
 

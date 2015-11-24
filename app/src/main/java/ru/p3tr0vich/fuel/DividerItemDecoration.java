@@ -3,46 +3,26 @@ package ru.p3tr0vich.fuel;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
 import android.view.View;
 
-@SuppressWarnings("SameParameterValue")
+// TODO: не работает с orientation != LinearLayoutManager.VERTICAL
+
 class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private final Drawable mDivider;
 
-    private final boolean mShowFirstDivider;
-    private final boolean mShowLastDivider;
     private final int mFooterType;
 
-    public DividerItemDecoration(Context context, AttributeSet attrs, boolean showFirstDivider,
-                                 boolean showLastDivider, int footerType) {
-        final TypedArray a = context
-                .obtainStyledAttributes(attrs, new int[]{android.R.attr.listDivider});
+    public DividerItemDecoration(Context context, int footerType) {
+        final TypedArray a = context.obtainStyledAttributes(new int[]{android.R.attr.listDivider});
+
         mDivider = a.getDrawable(0);
         a.recycle();
 
-        mShowFirstDivider = showFirstDivider;
-        mShowLastDivider = showLastDivider;
         mFooterType = footerType;
-    }
-
-    @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
-                               RecyclerView.State state) {
-        super.getItemOffsets(outRect, view, parent, state);
-        if (mDivider == null) return;
-
-        if (parent.getChildAdapterPosition(view) < 1) return;
-
-        if (getOrientation(parent) == LinearLayoutManager.VERTICAL)
-            outRect.top = mDivider.getIntrinsicHeight();
-        else
-            outRect.left = mDivider.getIntrinsicWidth();
     }
 
     @Override
@@ -66,36 +46,22 @@ class DividerItemDecoration extends RecyclerView.ItemDecoration {
             bottom = parent.getHeight() - parent.getPaddingBottom();
         }
 
-        for (int i = mShowFirstDivider ? 0 : 1; i < childCount; i++) {
+        for (int i = 0; i < childCount - 1; i++) {
             View child = parent.getChildAt(i);
 
-            if (mFooterType > -1 && i == childCount - 1 &&
-                    parent.getAdapter().getItemViewType(parent.getChildAdapterPosition(child)) ==
+            if (mFooterType > -1 && i == childCount - 2 &&
+                    parent.getAdapter().getItemViewType(
+                            parent.getChildAdapterPosition(parent.getChildAt(i + 1))) ==
                             mFooterType)
                 return;
 
             RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
 
             if (orientation == LinearLayoutManager.VERTICAL) {
-                top = child.getTop() - params.topMargin;
-                bottom = top + size;
+                bottom = child.getBottom() - params.bottomMargin;
+                top = bottom - size;
             } else {
                 left = child.getLeft() - params.leftMargin;
-                right = left + size;
-            }
-            mDivider.setBounds(left, top, right, bottom);
-            mDivider.draw(c);
-        }
-
-        if (mShowLastDivider && childCount > 0) {
-            View child = parent.getChildAt(childCount - 1);
-
-            RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
-            if (orientation == LinearLayoutManager.VERTICAL) {
-                top = child.getBottom() + params.bottomMargin;
-                bottom = top + size;
-            } else {
-                left = child.getRight() + params.rightMargin;
                 right = left + size;
             }
             mDivider.setBounds(left, top, right, bottom);

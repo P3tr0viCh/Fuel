@@ -65,7 +65,7 @@
         <ImageButton
             android:id="@+id/ibMenu"
             android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_height="47dp"
             android:adjustViewBounds="false"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"

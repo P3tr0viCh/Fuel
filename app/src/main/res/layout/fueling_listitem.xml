@@ -78,7 +78,7 @@
         <ImageButton
             android:id="@+id/ibMenu"
             android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_height="47dp"
             android:layout_alignParentEnd="false"
             android:layout_alignParentLeft="false"
             android:layout_alignParentRight="true"

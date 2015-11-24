@@ -34,12 +34,14 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final OnFuelingRecordsChangeListener mOnFuelingRecordsChangeListener;
 
-    FuelingAdapter(View.OnClickListener onClickListener, OnFuelingRecordsChangeListener onFuelingRecordsChangeListener) {
+    FuelingAdapter(View.OnClickListener onClickListener,
+                   OnFuelingRecordsChangeListener onFuelingRecordsChangeListener,
+                   boolean showHeader, boolean showFooter) {
         super();
         setHasStableIds(true);
 
-        setShowHeader(true);
-        setShowFooter(true);
+        setShowHeader(showHeader);
+        setShowFooter(showFooter);
 
         mFuelingRecords = new ArrayList<>();
 
@@ -56,16 +58,15 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return mShowHeader == 1;
     }
 
-    private void setShowHeader(@SuppressWarnings("SameParameterValue") boolean showHeader) {
+    private void setShowHeader(boolean showHeader) {
         mShowHeader = showHeader ? 1 : 0;
     }
 
-    @SuppressWarnings("WeakerAccess")
-    public boolean isShowFooter() {
+    private boolean isShowFooter() {
         return mShowFooter == 1;
     }
 
-    private void setShowFooter(@SuppressWarnings("SameParameterValue") boolean showFooter) {
+    private void setShowFooter(boolean showFooter) {
         mShowFooter = showFooter ? 1 : 0;
     }
 

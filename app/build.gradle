@@ -52,7 +52,7 @@ android {
             ext.enableCrashlytics = false
         }
         release {
-            minifyEnabled false // TODO
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             //noinspection GroovyAssignabilityCheck
             signingConfig signingConfigs.release

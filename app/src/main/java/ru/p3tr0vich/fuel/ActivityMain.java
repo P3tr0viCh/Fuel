@@ -10,7 +10,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -52,8 +51,6 @@ public class ActivityMain extends AppCompatActivity implements
     private BroadcastReceiver mLoadingStatusReceiver;
 
     private int mCurrentFragmentId, mClickedMenuId;
-
-    private FuelingRecord deletedFuelingRecord = null;
 
     private Fragment findFragmentByTag(String fragmentTag) {
         return fragmentTag != null ?
@@ -271,39 +268,7 @@ public class ActivityMain extends AppCompatActivity implements
         if (recordAction != Const.RecordAction.DELETE)
             // ADD, UPDATE
             ActivityFuelingRecordChange.start(this, recordAction, fuelingRecord);
-        else {
-            deletedFuelingRecord = fuelingRecord;
-
-            if (getFragmentFueling().deleteRecord(fuelingRecord))
-                Snackbar
-                        .make(findViewById(R.id.layoutMain), R.string.message_record_deleted,
-                                Snackbar.LENGTH_LONG)
-                        .setAction(R.string.dialog_btn_cancel, undoClickListener)
-                        .setCallback(snackBarCallback)
-                        .show();
-        }
     }
-
-    private final View.OnClickListener undoClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Functions.logD("ActivityMain -- undoClickListener: " + deletedFuelingRecord.toString());
-
-            getFragmentFueling().addRecord(deletedFuelingRecord);
-
-            deletedFuelingRecord = null;
-        }
-    };
-
-    private final Snackbar.Callback snackBarCallback = new Snackbar.Callback() {
-        // Workaround for bug
-
-        @Override
-        public void onDismissed(Snackbar snackbar, int event) {
-            if (event == DISMISS_EVENT_SWIPE)
-                getFragmentFueling().updateFabPositionAfterSnackBarSwipe();
-        }
-    };
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

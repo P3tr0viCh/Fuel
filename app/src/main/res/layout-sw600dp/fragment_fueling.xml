@@ -69,8 +69,6 @@
                 android:id="@+id/progressWheelFueling"
                 android:layout_width="@dimen/progress_wheel_fueling_size"
                 android:layout_height="@dimen/progress_wheel_fueling_size"
-                android:layout_alignBottom="@+id/layoutTotal"
-                android:layout_alignParentTop="true"
                 android:layout_centerInParent="true"
                 android:visibility="gone"
                 wheel:matProg_barColor="@color/primary"

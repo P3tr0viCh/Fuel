@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
@@ -52,6 +54,7 @@ public class FragmentFueling extends FragmentFuel implements
     private Toolbar mToolbarDates;
     private View mToolbarShadow;
 
+    private RelativeLayout mLayoutMain;
     private LinearLayout mLayoutTotal;
 
     private boolean mDateFromClicked;
@@ -78,6 +81,9 @@ public class FragmentFueling extends FragmentFuel implements
 
     private boolean mDataChanged;
     private long mIdForScroll = -1; // TODO: onSaveInstanceState?
+
+    private Snackbar mSnackbar = null;
+    private FuelingRecord deletedFuelingRecord = null;
 
     private OnFilterChangeListener mOnFilterChangeListener;
     private OnRecordChangeListener mOnRecordChangeListener;
@@ -131,6 +137,7 @@ public class FragmentFueling extends FragmentFuel implements
         mToolbarDates = (Toolbar) view.findViewById(R.id.toolbarDates);
         mToolbarShadow = view.findViewById(R.id.toolbarShadow);
 
+        mLayoutMain = (RelativeLayout) view.findViewById(R.id.layoutMain);
         mLayoutTotal = (LinearLayout) view.findViewById(R.id.layoutTotal);
 
         mRecyclerViewFueling = (RecyclerView) view.findViewById(R.id.recyclerViewFueling);
@@ -157,7 +164,10 @@ public class FragmentFueling extends FragmentFuel implements
 
                 @Override
                 void onScrollDown() {
-                    setTotalAndFabVisible(true);
+                    if (mSnackbar == null)
+                        setTotalAndFabVisible(true);
+                    else if (!mSnackbar.isShown())
+                        setTotalAndFabVisible(true);
                 }
             });
 
@@ -338,13 +348,7 @@ public class FragmentFueling extends FragmentFuel implements
 
             if (needUpdateCurrentList(fuelingRecord)) {
                 mDataChanged = true;
-
-                int position = mFuelingAdapter.addRecord(fuelingRecord);
-
-                if (mFuelingAdapter.isShowHeader() && position == 1)
-                    position = FuelingAdapter.HEADER_POSITION;
-
-                scrollToPosition(position);
+                scrollToPosition(mFuelingAdapter.addRecord(fuelingRecord));
             }
         }
     }
@@ -353,19 +357,15 @@ public class FragmentFueling extends FragmentFuel implements
         if (db.updateRecord(fuelingRecord) > -1)
             if (needUpdateCurrentList(fuelingRecord)) {
                 mDataChanged = true;
-
-                int position = mFuelingAdapter.updateRecord(fuelingRecord);
-
-                if (position > -1 && !isItemVisible(position))
-                    scrollToPosition(position);
+                scrollToPosition(mFuelingAdapter.updateRecord(fuelingRecord));
             }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public boolean deleteRecord(FuelingRecord fuelingRecord) {
         boolean deleted = db.deleteRecord(fuelingRecord) > 0;
         if (deleted) {
             mDataChanged = true;
-
             mFuelingAdapter.deleteRecord(fuelingRecord);
         }
         return deleted;
@@ -383,7 +383,16 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     private void scrollToPosition(int position) {
-        mRecyclerViewFueling.scrollToPosition(position);
+        if (position < 0) return;
+
+        if (mFuelingAdapter.isShowHeader() && position == FuelingAdapter.HEADER_POSITION + 1)
+            position = FuelingAdapter.HEADER_POSITION;
+
+
+        if (isItemVisible(position)) return;
+
+        ((LinearLayoutManager) mRecyclerViewFueling.getLayoutManager())
+                .scrollToPositionWithOffset(position, 0);
     }
 
     private void setFilterDate(final Date dateFrom, final Date dateTo) {
@@ -458,15 +467,8 @@ public class FragmentFueling extends FragmentFuel implements
     private void scrollToId() {
         if (mIdForScroll == -1) return;
 
-        int position = mFuelingAdapter.findPositionById(mIdForScroll);
+        scrollToPosition(mFuelingAdapter.findPositionById(mIdForScroll));
 
-        if (position > -1) {
-            if (mFuelingAdapter.isShowHeader() && position == 1)
-                position = FuelingAdapter.HEADER_POSITION;
-
-            ((LinearLayoutManager) mRecyclerViewFueling.getLayoutManager())
-                    .scrollToPositionWithOffset(position, 0);
-        }
         mIdForScroll = -1;
     }
 
@@ -607,7 +609,19 @@ public class FragmentFueling extends FragmentFuel implements
                                 mOnRecordChangeListener.onRecordChange(Const.RecordAction.UPDATE, fuelingRecord);
                                 return true;
                             case R.id.action_fueling_delete:
-                                mOnRecordChangeListener.onRecordChange(Const.RecordAction.DELETE, fuelingRecord);
+//                                mOnRecordChangeListener.onRecordChange(Const.RecordAction.DELETE, fuelingRecord);
+
+                                deletedFuelingRecord = fuelingRecord;
+
+                                if (deleteRecord(fuelingRecord)) {
+                                    mSnackbar = Snackbar
+                                            .make(mLayoutMain, R.string.message_record_deleted,
+                                                    Snackbar.LENGTH_LONG)
+                                            .setAction(R.string.dialog_btn_cancel, undoClickListener)
+                                            .setCallback(snackBarCallback);
+                                    mSnackbar.show();
+                                }
+
                                 return true;
                             default:
                                 return false;
@@ -634,6 +648,27 @@ public class FragmentFueling extends FragmentFuel implements
             //
         }
     }
+
+    private final View.OnClickListener undoClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Functions.logD("FragmentFueling -- undoClickListener: " + deletedFuelingRecord.toString());
+
+            addRecord(deletedFuelingRecord);
+
+            deletedFuelingRecord = null;
+        }
+    };
+
+    private final Snackbar.Callback snackBarCallback = new Snackbar.Callback() {
+        // Workaround for bug
+
+        @Override
+        public void onDismissed(Snackbar snackbar, int event) {
+            if (event == DISMISS_EVENT_SWIPE)
+                mFloatingActionButton.toggle(true, true, true);
+        }
+    };
 
     public void setProgressBarVisible(boolean visible) {
         Functions.setProgressWheelVisible(mProgressWheelFueling, visible);
@@ -890,9 +925,5 @@ public class FragmentFueling extends FragmentFuel implements
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
         ).show(getFragmentManager(), null);
-    }
-
-    public void updateFabPositionAfterSnackBarSwipe() {
-        getActivity().findViewById(R.id.floatingActionButton).setTranslationY(0);
     }
 }

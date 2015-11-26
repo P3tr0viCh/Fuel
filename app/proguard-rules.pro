@@ -23,3 +23,5 @@
 -keepclassmembers class android.support.v7.widget.PopupMenu {
     private android.support.v7.view.menu.MenuPopupHelper mPopup;
 }
+
+-keep class com.github.mikephil.charting.animation.ChartAnimator { *; }

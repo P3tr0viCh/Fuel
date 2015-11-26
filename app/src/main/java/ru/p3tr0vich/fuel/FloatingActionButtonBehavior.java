@@ -24,6 +24,8 @@ public class FloatingActionButtonBehavior extends CoordinatorLayout.Behavior<Flo
         // FAB начинает сдвигаться вверх, только когда Snackbar приближается на
         // величину fab_margin_bottom_snackbar
 
+        if (!child.isVisible()) return false;
+
         float translationY = Math.min(0, dependency.getTranslationY() - dependency.getHeight() +
                 Functions.getDimensionPixelSize(R.dimen.fab_margin_bottom) -
                 Functions.getDimensionPixelSize(R.dimen.fab_margin_bottom_snackbar));

@@ -7,6 +7,7 @@ class Const {
     static final int ANIMATION_DURATION_TOOLBAR_SHADOW = 100;
     static final int ANIMATION_DURATION_LAYOUT_TOTAL_SHOW = 300;
     static final int ANIMATION_DURATION_LAYOUT_TOTAL_HIDE = 400;
+    static final int ANIMATION_DURATION_SYNC = 1000;
     static final int ANIMATION_CHART = 600;
 
     enum RecordAction {ADD, UPDATE, DELETE}

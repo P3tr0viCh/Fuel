@@ -23,9 +23,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -48,6 +52,8 @@ public class ActivityMain extends AppCompatActivity implements
     private ActionBarDrawerToggle mDrawerToggle;
     private NavigationView mNavigationView;
 
+    private ImageView mImgSync;
+    private Animation mAnimationSync;
     private TextView mBtnSync;
 
     private BroadcastReceiver mLoadingStatusReceiver;
@@ -120,14 +126,27 @@ public class ActivityMain extends AppCompatActivity implements
             }
         });
 
+        mAnimationSync = new RotateAnimation(360.0f, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        mAnimationSync.setInterpolator(new LinearInterpolator());
+        mAnimationSync.setDuration(Const.ANIMATION_DURATION_SYNC);
+        mAnimationSync.setRepeatCount(Animation.INFINITE);
+
+        mImgSync = (ImageView) findViewById(R.id.imgSync);
+
         mBtnSync = (TextView) findViewById(R.id.btnSync);
         mBtnSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startSync();
+                if (FuelingPreferenceManager.isSyncEnabled())
+                    startSync(true);
+                else {
+                    mClickedMenuId = R.id.action_settings; // TODO: open sync screen
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                }
             }
         });
-        updateSyncStatus(ServiceSync.isSyncInProcess());
+        updateSyncStatus();
 
         //noinspection ConstantConditions
         mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
@@ -153,8 +172,12 @@ public class ActivityMain extends AppCompatActivity implements
         mLoadingStatusReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                // TODO: null pointer
-                getFragmentFueling().setProgressBarVisible(intent.getBooleanExtra(EXTRA_LOADING, false));
+                FragmentFueling fragmentFueling = getFragmentFueling();
+
+                if (fragmentFueling != null)
+                    fragmentFueling.setProgressBarVisible(intent.getBooleanExtra(EXTRA_LOADING, false));
+                else
+                    Functions.logD("ActivityMain -- BroadcastReceiver.onReceive: fragmentFueling == null");
             }
         };
         LocalBroadcastManager.getInstance(this).registerReceiver(mLoadingStatusReceiver,
@@ -173,7 +196,7 @@ public class ActivityMain extends AppCompatActivity implements
                         ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).isInRoot());
         }
 
-        startSync();
+        startSync(savedInstanceState == null);
     }
 
     @Override
@@ -288,13 +311,11 @@ public class ActivityMain extends AppCompatActivity implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ServiceSync.REQUEST_CODE) {
-            if (resultCode == ServiceSync.STATUS_START) {
-                updateSyncStatus(true);
+            if (resultCode == ServiceSync.STATUS_START)
                 Functions.logD("ActivityMain -- onActivityResult: resultCode == STATUS_START");
-            } else if (resultCode == ServiceSync.STATUS_FINISH) {
-                updateSyncStatus(false);
+            else if (resultCode == ServiceSync.STATUS_FINISH)
                 Functions.logD("ActivityMain -- onActivityResult: resultCode == STATUS_FINISH");
-            }
+            updateSyncStatus();
             return;
         }
 
@@ -488,28 +509,52 @@ public class ActivityMain extends AppCompatActivity implements
         anim.start();
     }
 
-    private void startSync() {
-        if (ServiceSync.isSyncInProcess())
-            Functions.logD("ActivityMain -- startSync: isSyncInProcess == true");
-        else
-            Functions.logD("ActivityMain -- startSync: isSyncInProcess == false");
+    private void startSync(boolean start) {
+        // Вызывается всегда при старте приложения
+        // для обновления PendingIntent
+        // Синхронизация запускается только при запуске приложения
+        // start == (savedInstanceState == null)
 
-        startService(new Intent(this, ServiceSync.class)
-                .putExtra(ServiceSync.EXTRA_PENDING,
-                        createPendingResult(ServiceSync.REQUEST_CODE, new Intent(), 0)));
+        Functions.logD("ActivityMain -- startSync");
+
+        if (FuelingPreferenceManager.isSyncEnabled())
+            startService(new Intent(this, ServiceSync.class)
+                    .putExtra(ServiceSync.EXTRA_START, start)
+                    .putExtra(ServiceSync.EXTRA_PENDING,
+                            createPendingResult(ServiceSync.REQUEST_CODE, new Intent(), 0)));
     }
 
-    private void updateSyncStatus(boolean isSyncInProcess) {
+    private void updateSyncStatus() {
         String status;
 
-        if (isSyncInProcess)
-            status = getString(R.string.sync_sync, getString(R.string.sync_in_process));
-        else {
-            status = FuelingPreferenceManager.getLastSync();
+        if (ServiceSync.isSyncInProcess()) {
+            status = getString(R.string.sync_in_process);
 
-            status = !status.isEmpty() ?
-                    getString(R.string.sync_done, status) :
-                    getString(R.string.sync_sync, getString(R.string.sync_not_performed));
+            mImgSync.setImageResource(R.drawable.ic_sync_grey600_24dp);
+
+            mImgSync.startAnimation(mAnimationSync);
+        } else {
+            mImgSync.clearAnimation();
+
+            if (FuelingPreferenceManager.isSyncEnabled()) {
+                if (ServiceSync.isErrorInProcess()) {
+                    status = getString(R.string.sync_error);
+
+                    mImgSync.setImageResource(R.drawable.ic_sync_alert_grey600_24dp);
+                } else {
+                    status = FuelingPreferenceManager.getLastSync();
+
+                    status = !status.isEmpty() ?
+                            getString(R.string.sync_done, status) :
+                            getString(R.string.sync_not_performed);
+
+                    mImgSync.setImageResource(R.drawable.ic_sync_grey600_24dp);
+                }
+            } else {
+                status = getString(R.string.sync_disabled);
+
+                mImgSync.setImageResource(R.drawable.ic_sync_off_grey600_24dp);
+            }
         }
 
         mBtnSync.setText(status);

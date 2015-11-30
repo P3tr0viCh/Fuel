@@ -44,6 +44,17 @@
 
             <View style="@style/AppTheme.Divider.Horizontal" />
 
+            <ImageView
+                android:id="@+id/imgSync"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="0dp"
+                android:layout_marginStart="16dp"
+                android:scaleType="center"
+                android:src="@drawable/ic_sync_off_grey600_24dp"
+                tools:ignore="contentDescription" />
+
             <TextView
                 android:id="@+id/btnSync"
                 android:layout_width="match_parent"
@@ -53,9 +64,9 @@
                 android:gravity="center_vertical"
                 android:paddingEnd="16dp"
                 android:paddingStart="72dp"
-                android:text="Синхронизация"
                 android:textColor="@color/primary_text"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                tools:text="Синхронизация" />
 
         </RelativeLayout>
     </android.support.design.widget.NavigationView>

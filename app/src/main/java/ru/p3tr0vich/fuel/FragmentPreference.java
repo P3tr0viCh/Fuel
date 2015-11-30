@@ -44,7 +44,11 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Functions.logD("FragmentPreference -- onSharedPreferenceChanged: key == " + key);
+
         updatePreferenceSummary(findPreference(key));
+
+        if (key.equals(getString(R.string.pref_sync_enabled)))
+            updatePreferenceSummary(findPreference(getString(R.string.pref_sync_key)));
     }
 
     @Override
@@ -123,9 +127,11 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         else {
             String preferenceKey = getPreferenceScreen().getKey();
             if (preferenceKey.equals(getString(R.string.pref_def_key)))
-                return R.string.pref_def_header;
+                return R.string.pref_def_title;
             else if (preferenceKey.equals(getString(R.string.pref_cons_key)))
-                return R.string.pref_cons_header;
+                return R.string.pref_cons_title;
+            else if (preferenceKey.equals(getString(R.string.pref_sync_key)))
+                return R.string.pref_sync_title;
             else return -1;
         }
     }
@@ -163,6 +169,12 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
             Functions.logD("FragmentPreference -- updatePreferenceSummary: preference == null");
             return;
         }
+        String key = preference.getKey();
+        if (key == null) {
+            Functions.logD("FragmentPreference -- updatePreferenceSummary: key == null");
+            return;
+        }
+        Functions.logD("FragmentPreference -- updatePreferenceSummary: preference == " + key);
         if (preference instanceof EditTextPreference) {
             EditTextPreference editPref = (EditTextPreference) preference;
 
@@ -178,17 +190,23 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
             summary = summary + " (" + text + ")";
 
             editPref.setSummary(summary);
-        } else if (preference.getKey().equals(getString(R.string.pref_map_center_text))) {
+        } else if (key.equals(getString(R.string.pref_map_center_text))) {
             preference.setSummary(FuelingPreferenceManager.getMapCenterText());
+        } else if (key.equals(getString(R.string.pref_sync_key))) {
+            preference.setSummary(getString(FuelingPreferenceManager.isSyncEnabled() ?
+                    R.string.pref_sync_summary_on : R.string.pref_sync_summary_off));
+        } else if (key.equals(getString(R.string.pref_sync_enabled))) {
+            preference.setTitle(getString(FuelingPreferenceManager.isSyncEnabled() ?
+                    R.string.pref_sync_summary_on : R.string.pref_sync_summary_off));
         }
     }
 
     private void init(Preference preference) {
+        updatePreferenceSummary(preference);
         if (preference instanceof PreferenceScreen || preference instanceof PreferenceGroup) {
             for (int i = 0; i < ((PreferenceGroup) preference).getPreferenceCount(); i++)
                 init(((PreferenceGroup) preference).getPreference(i));
-        } else
-            updatePreferenceSummary(preference);
+        }
     }
 
     public void updateMapCenter() {

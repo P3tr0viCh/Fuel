@@ -78,6 +78,7 @@
         <item name="preferenceScreenStyle">@style/AppTheme.Preference.PreferenceScreen</item>
         <item name="preferenceCategoryStyle">@style/AppTheme.Preference.Category</item>
         <item name="preferenceStyle">@style/AppTheme.Preference</item>
+        <item name="switchPreferenceCompatStyle">@style/AppTheme.Preference.SwitchPreferenceCompat</item>
         <item name="dialogPreferenceStyle">@style/AppTheme.Preference.DialogPreference</item>
         <item name="editTextPreferenceStyle">
             @style/AppTheme.Preference.DialogPreference.EditTextPreference
@@ -85,6 +86,10 @@
     </style>
 
     <style name="AppTheme.Preference" parent="Preference.Material">
+        <item name="layout">@layout/apptheme_preference</item>
+    </style>
+
+    <style name="AppTheme.Preference.SwitchPreferenceCompat" parent="Preference.SwitchPreferenceCompat.Material">
         <item name="layout">@layout/apptheme_preference</item>
     </style>
 

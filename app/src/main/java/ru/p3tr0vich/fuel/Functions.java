@@ -42,7 +42,6 @@ public class Functions {
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     private static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd";
-    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm";
 
     public static Date sqlDateToDate(String sqlDate) {
         Date date = null;
@@ -74,11 +73,12 @@ public class Functions {
     }
 
     public static String dateToSQLite(Date date) {
-        return new SimpleDateFormat(SQLITE_DATE_FORMAT, Locale.getDefault()).format(date);
+        return (new SimpleDateFormat(SQLITE_DATE_FORMAT, Locale.getDefault())).format(date);
     }
 
     public static String dateTimeToString(Date date) {
-        return new SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(date);
+        return DateUtils.formatDateTime(sApplicationContext, date.getTime(),
+                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME);
     }
 
     public static String checkSQLiteDate(String sqlDate) throws ParseException {

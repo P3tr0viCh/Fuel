@@ -8,9 +8,9 @@ import java.util.Date;
 
 public class FuelingPreferenceManager {
 
-//    private static final String PREF_REVISION = "revision";
+    //    private static final String PREF_REVISION = "revision";
     private static final String PREF_CHANGED = "changed";
-    private static final String PREF_LAST_SYNC = "last time";
+    private static final String PREF_LAST_SYNC = "last sync time";
 
     private static final String PREF_DISTANCE = "distance";
     private static final String PREF_COST = "cost";
@@ -24,47 +24,46 @@ public class FuelingPreferenceManager {
     private static Context sContext;
     private static SharedPreferences sSharedPreferences;
 
-    private static boolean sUpdateChanged = true;
-
     public static void init(Context context) {
         sContext = context;
         sSharedPreferences = PreferenceManager.getDefaultSharedPreferences(sContext);
         sPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (sUpdateChanged) putChanged(true);
+                Functions.logD("FuelingPreferenceManager -- onSharedPreferenceChanged: key == " + key);
+
+                if (!(key.equals(PREF_CHANGED) ||
+                        key.equals(PREF_LAST_SYNC) ||
+                        key.equals(Functions.sApplicationContext.getString(R.string.pref_sync_enabled))))
+                    putChanged(true);
             }
         };
         sSharedPreferences.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
     }
 
     private static void putChanged(boolean changed) {
-        sUpdateChanged = false;
-
         sSharedPreferences
                 .edit()
                 .putBoolean(PREF_CHANGED, changed)
                 .apply();
-
-        sUpdateChanged = true;
 
         Functions.logD("FuelingPreferenceManager -- putChanged: changed == " + changed);
     }
 
     public static String getLastSync() {
         long date = sSharedPreferences.getLong(PREF_LAST_SYNC, Long.MIN_VALUE);
-        return date != Long.MIN_VALUE ? Functions.dateTimeToString(new Date(date)) : "" ;
+        return date != Long.MIN_VALUE ? Functions.dateTimeToString(new Date(date)) : "";
     }
 
     public static void putLastSync(Date dateTime) {
-        sUpdateChanged = false;
-
         sSharedPreferences
                 .edit()
                 .putLong(PREF_LAST_SYNC, dateTime.getTime())
                 .apply();
+    }
 
-        sUpdateChanged = true;
+    public static boolean isSyncEnabled() {
+        return sSharedPreferences.getBoolean(sContext.getString(R.string.pref_sync_enabled), false);
     }
 
 /*    public static int getRevision() {

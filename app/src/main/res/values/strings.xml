@@ -131,14 +131,14 @@
     </string-array>
 
     <string name="pref_def_key" translatable="false">key_def</string>
-    <string name="pref_def_header">Заправка по умолчанию</string>
-    <string name="pref_def_header_summary">Значения стоимости и объёма для новых записей</string>
+    <string name="pref_def_title">Заправка по умолчанию</string>
+    <string name="pref_def_summary">Значения стоимости и объёма для новых записей</string>
 
     <string name="pref_cons_key" translatable="false">key_cons</string>
-    <string name="pref_cons_header">Расход топлива</string>
-    <string name="pref_cons_header_summary">Расход топлива в различных режимах</string>
+    <string name="pref_cons_title">Расход топлива</string>
+    <string name="pref_cons_summary">Расход топлива в различных режимах</string>
 
-    <string name="pref_yandex_map_header">Яндекс.Карты. Начало маршрута</string>
+    <string name="pref_yandex_map_title">Яндекс.Карты. Начало маршрута</string>
 
     <string name="pref_summary_cost">Стоимость заправки по умолчанию для новых записей</string>
     <string name="pref_summary_volume">Объём заправки по умолчанию для новых записей</string>
@@ -171,8 +171,18 @@
     <string name="pref_map_center_latitude" translatable="false">map center latitude</string>
     <string name="pref_map_center_longitude" translatable="false">map center longitude</string>
 
-    <string name="sync_sync">Синхронизация:\n%s</string>
-    <string name="sync_in_process">в процессе</string>
-    <string name="sync_not_performed">не выполнялась</string>
-    <string name="sync_done">Синхронизировано:\n%s</string>
+    <string name="pref_sync_key" translatable="false">key_sync</string>
+    <string name="pref_sync_title">Синхронизация</string>
+    <string name="pref_sync_summary_on">Включена</string>
+    <string name="pref_sync_summary_off">Выключена</string>
+
+    <string name="pref_sync_enabled" translatable="false">sync</string>
+    <string name="pref_sync_enabled_on">Включена</string>
+    <string name="pref_sync_enabled_off">Выключена</string>
+
+    <string name="sync_error">Ошибка синхронизации</string>
+    <string name="sync_disabled">Синхронизация отключена</string>
+    <string name="sync_in_process">Выполняется синхронизация</string>
+    <string name="sync_not_performed">Синхронизация не выполнялась</string>
+    <string name="sync_done">Синхронизировано\n%s</string>
 </resources>

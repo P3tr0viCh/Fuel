@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,6 +27,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class ActivityMain extends AppCompatActivity implements
         FragmentFueling.OnFilterChangeListener,
@@ -48,6 +48,8 @@ public class ActivityMain extends AppCompatActivity implements
     private ActionBarDrawerToggle mDrawerToggle;
     private NavigationView mNavigationView;
 
+    private TextView mBtnSync;
+
     private BroadcastReceiver mLoadingStatusReceiver;
 
     private int mCurrentFragmentId, mClickedMenuId;
@@ -61,9 +63,15 @@ public class ActivityMain extends AppCompatActivity implements
         return (FragmentFueling) getSupportFragmentManager().findFragmentByTag(FragmentFueling.TAG);
     }
 
+    public static Intent getLoadingBroadcast(boolean startLoading) {
+        return new Intent(ACTION_LOADING).putExtra(EXTRA_LOADING, startLoading);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Functions.sApplicationContext = getApplicationContext();
+
+        FuelingPreferenceManager.init(Functions.sApplicationContext);
 
         Functions.logD("**************** ActivityMain -- onCreate ****************");
 
@@ -95,7 +103,6 @@ public class ActivityMain extends AppCompatActivity implements
         mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Functions.logD("ActivityMain -- mDrawerToggle: onClick");
                 ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).goToRootScreen();
             }
         });
@@ -112,6 +119,15 @@ public class ActivityMain extends AppCompatActivity implements
                 return true;
             }
         });
+
+        mBtnSync = (TextView) findViewById(R.id.btnSync);
+        mBtnSync.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startSync();
+            }
+        });
+        updateSyncStatus(ServiceSync.isSyncInProcess());
 
         //noinspection ConstantConditions
         mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
@@ -137,6 +153,7 @@ public class ActivityMain extends AppCompatActivity implements
         mLoadingStatusReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                // TODO: null pointer
                 getFragmentFueling().setProgressBarVisible(intent.getBooleanExtra(EXTRA_LOADING, false));
             }
         };
@@ -155,6 +172,8 @@ public class ActivityMain extends AppCompatActivity implements
                 mDrawerToggle.setDrawerIndicatorEnabled(
                         ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).isInRoot());
         }
+
+        startSync();
     }
 
     @Override
@@ -254,10 +273,6 @@ public class ActivityMain extends AppCompatActivity implements
         super.onDestroy();
     }
 
-    public static Intent getLoadingBroadcast(boolean startLoading) {
-        return new Intent(ACTION_LOADING).putExtra(EXTRA_LOADING, startLoading);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return false;
@@ -272,6 +287,17 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ServiceSync.REQUEST_CODE) {
+            if (resultCode == ServiceSync.STATUS_START) {
+                updateSyncStatus(true);
+                Functions.logD("ActivityMain -- onActivityResult: resultCode == STATUS_START");
+            } else if (resultCode == ServiceSync.STATUS_FINISH) {
+                updateSyncStatus(false);
+                Functions.logD("ActivityMain -- onActivityResult: resultCode == STATUS_FINISH");
+            }
+            return;
+        }
+
         if (resultCode != RESULT_OK) return;
 
         FuelingRecord fuelingRecord;
@@ -297,14 +323,10 @@ public class ActivityMain extends AppCompatActivity implements
             case ActivityYandexMap.REQUEST_CODE_MAP_CENTER:
                 Functions.logD("ActivityMain -- onActivityResult: ActivityYandexMap.REQUEST_CODE_MAP_CENTER");
                 ActivityYandexMap.MapCenter mapCenter = ActivityYandexMap.getMapCenter(data);
-                PreferenceManager.getDefaultSharedPreferences(this)
-                        .edit()
-                        .putString(getString(R.string.pref_map_center_text), mapCenter.text)
-                        .putLong(getString(R.string.pref_map_center_latitude),
-                                Double.doubleToRawLongBits(mapCenter.latitude))
-                        .putLong(getString(R.string.pref_map_center_longitude),
-                                Double.doubleToRawLongBits(mapCenter.longitude))
-                        .apply();
+
+                FuelingPreferenceManager.putMapCenter(mapCenter.text,
+                        mapCenter.latitude, mapCenter.longitude);
+
                 ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).updateMapCenter();
                 break;
         }
@@ -464,5 +486,32 @@ public class ActivityMain extends AppCompatActivity implements
         anim.setInterpolator(new DecelerateInterpolator());
         anim.setDuration(300);
         anim.start();
+    }
+
+    private void startSync() {
+        if (ServiceSync.isSyncInProcess())
+            Functions.logD("ActivityMain -- startSync: isSyncInProcess == true");
+        else
+            Functions.logD("ActivityMain -- startSync: isSyncInProcess == false");
+
+        startService(new Intent(this, ServiceSync.class)
+                .putExtra(ServiceSync.EXTRA_PENDING,
+                        createPendingResult(ServiceSync.REQUEST_CODE, new Intent(), 0)));
+    }
+
+    private void updateSyncStatus(boolean isSyncInProcess) {
+        String status;
+
+        if (isSyncInProcess)
+            status = getString(R.string.sync_sync, getString(R.string.sync_in_process));
+        else {
+            status = FuelingPreferenceManager.getLastSync();
+
+            status = !status.isEmpty() ?
+                    getString(R.string.sync_done, status) :
+                    getString(R.string.sync_sync, getString(R.string.sync_not_performed));
+        }
+
+        mBtnSync.setText(status);
     }
 }

@@ -1,7 +1,5 @@
 package ru.p3tr0vich.fuel;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.webkit.JavascriptInterface;
 
 class YandexMapJavascriptInterface {
@@ -24,20 +22,15 @@ class YandexMapJavascriptInterface {
     YandexMapJavascriptInterface(ActivityYandexMap activityYandexMap) {
         mActivityYandexMap = activityYandexMap;
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivityYandexMap);
-        mMapCenterLatitude = Double.longBitsToDouble(preferences.getLong(
-                mActivityYandexMap.getString(R.string.pref_map_center_latitude),
-                Double.doubleToLongBits(DEFAULT_MAP_CENTER_LATITUDE)));
-        mMapCenterLongitude = Double.longBitsToDouble(preferences.getLong(
-                mActivityYandexMap.getString(R.string.pref_map_center_longitude),
-                Double.doubleToLongBits(DEFAULT_MAP_CENTER_LONGITUDE)));
+        mMapCenterLatitude = FuelingPreferenceManager.getMapCenterLatitude();
+        mMapCenterLongitude = FuelingPreferenceManager.getMapCenterLongitude();
 
         mStartSearchControlPlaceholderContent =
                 mActivityYandexMap.getString(R.string.yandex_map_start_search_control_placeholder_content);
         mFinishSearchControlPlaceholderContent =
                 mActivityYandexMap.getString(R.string.yandex_map_finish_search_control_placeholder_content);
         mEmptyBalloonContent = "<h3>" +
-                mActivityYandexMap.getString(R.string.yandex_map_empty_geocode) +  "</h3>";
+                mActivityYandexMap.getString(R.string.yandex_map_empty_geocode) + "</h3>";
     }
 
     @JavascriptInterface

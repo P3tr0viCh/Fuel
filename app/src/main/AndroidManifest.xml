@@ -33,5 +33,11 @@
             android:configChanges="screenSize|orientation"
             android:label="@string/title_yandex_map"
             android:parentActivityName=".ActivityMain" />
+
+        <service
+            android:name=".ServiceSync"
+            android:enabled="true"
+            android:exported="false"></service>
     </application>
+
 </manifest>

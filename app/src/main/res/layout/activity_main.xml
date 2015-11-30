@@ -30,7 +30,33 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:clipToPadding="false"
         android:maxWidth="@dimen/drawer_max_width"
+        android:paddingBottom="@dimen/drawer_sync_height"
         app:headerLayout="@layout/drawer_header"
-        app:menu="@menu/menu_drawer" />
+        app:menu="@menu/menu_drawer">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/drawer_sync_height"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/drawer_sync_height_minus">
+
+            <View style="@style/AppTheme.Divider.Horizontal" />
+
+            <TextView
+                android:id="@+id/btnSync"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:gravity="center_vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="72dp"
+                android:text="Синхронизация"
+                android:textColor="@color/primary_text"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
+    </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

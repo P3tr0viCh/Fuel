@@ -4,11 +4,9 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
@@ -74,17 +72,32 @@ public class FragmentFueling extends FragmentFuel implements
     private ProgressWheel mProgressWheelFueling;
 
     private FloatingActionButton mFloatingActionButton;
+    private final Snackbar.Callback snackBarCallback = new Snackbar.Callback() {
+        // Workaround for bug
 
+        @Override
+        public void onDismissed(Snackbar snackbar, int event) {
+            if (event == DISMISS_EVENT_SWIPE)
+                mFloatingActionButton.toggle(true, true, true);
+        }
+    };
     private CalcTotalTask mCalcTotalTask;
     private TextView mTextAverage;
     private TextView mTextCostSum;
-
     private boolean mDataChanged;
     private long mIdForScroll = -1; // TODO: onSaveInstanceState?
-
     private Snackbar mSnackbar = null;
     private FuelingRecord deletedFuelingRecord = null;
+    private final View.OnClickListener undoClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Functions.logD("FragmentFueling -- undoClickListener: " + deletedFuelingRecord.toString());
 
+            addRecord(deletedFuelingRecord);
+
+            deletedFuelingRecord = null;
+        }
+    };
     private OnFilterChangeListener mOnFilterChangeListener;
     private OnRecordChangeListener mOnRecordChangeListener;
 
@@ -103,15 +116,10 @@ public class FragmentFueling extends FragmentFuel implements
         if (savedInstanceState == null) {
             Functions.logD("FragmentFueling -- onCreate: savedInstanceState == null");
 
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
             mFilter.filterMode = FuelingDBHelper.FilterMode.CURRENT_YEAR;
-            mFilter.dateFrom = Functions.sqlDateToDate(
-                    preferences.getString(getString(R.string.pref_filter_date_from),
-                            Functions.dateToSQLite(new Date())));
-            mFilter.dateTo = Functions.sqlDateToDate(
-                    preferences.getString(getString(R.string.pref_filter_date_to),
-                            Functions.dateToSQLite(new Date())));
+
+            mFilter.dateFrom = FuelingPreferenceManager.getFilterDateFrom();
+            mFilter.dateTo = FuelingPreferenceManager.getFilterDateTo();
 
             mDataChanged = false;
         } else {
@@ -261,11 +269,7 @@ public class FragmentFueling extends FragmentFuel implements
 
         calcTotalTaskCancel();
 
-        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .edit()
-                .putString(getString(R.string.pref_filter_date_from), Functions.dateToSQLite(mFilter.dateFrom))
-                .putString(getString(R.string.pref_filter_date_to), Functions.dateToSQLite(mFilter.dateTo))
-                .apply();
+        FuelingPreferenceManager.putFilterDate(mFilter.dateFrom, mFilter.dateTo);
 
         super.onDestroy();
     }
@@ -407,33 +411,6 @@ public class FragmentFueling extends FragmentFuel implements
         getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
     }
 
-    static class FuelingCursorLoader extends CursorLoader {
-
-        private final Context mContext;
-        private final FuelingDBHelper.Filter mFilter;
-
-        public FuelingCursorLoader(Context context, FuelingDBHelper.Filter filter) {
-            super(context);
-            mContext = context;
-            mFilter = filter;
-        }
-
-        @Override
-        public Cursor loadInBackground() {
-            Functions.logD("FragmentFueling -- loadInBackground");
-
-            LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(true));
-
-            FuelingDBHelper dbHelper = new FuelingDBHelper();
-            dbHelper.setFilter(mFilter);
-            try {
-                return dbHelper.getAllCursor();
-            } finally {
-                LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(false));
-            }
-        }
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
@@ -482,105 +459,9 @@ public class FragmentFueling extends FragmentFuel implements
 
         calcTotalTaskCancel();
 
-        mCalcTotalTask = new CalcTotalTask(fuelingRecords);
+        mCalcTotalTask = new CalcTotalTask(this, fuelingRecords);
 
         mCalcTotalTask.execute();
-    }
-
-    class CalcTotalResult {
-        final float average;
-        final float costSum;
-
-        CalcTotalResult(float a, float s) {
-            average = a;
-            costSum = s;
-        }
-    }
-
-    class CalcTotalTask extends AsyncTask<Void, Void, CalcTotalResult> {
-
-        private final List<FuelingRecord> mFuelingRecords;
-
-        CalcTotalTask(List<FuelingRecord> fuelingRecords) {
-            mFuelingRecords = fuelingRecords;
-        }
-
-        @Override
-        protected CalcTotalResult doInBackground(Void... params) {
-            float costSum = 0, volumeSum = 0;
-            float volume, total, firstTotal = 0, lastTotal = 0, average;
-
-            int averageCount;
-
-            boolean completeData = true; // Во всех записях указаны объём заправки и текущий пробег
-
-            for (int i = 0; i < mFuelingRecords.size(); i++) {
-
-                if (isCancelled()) return null;
-
-                costSum += mFuelingRecords.get(i).getCost();
-
-                if (completeData) {
-                    volume = mFuelingRecords.get(i).getVolume();
-                    total = mFuelingRecords.get(i).getTotal();
-
-                    if (volume == 0 || total == 0) completeData = false;
-                    else {
-                        // Сортировка записей по дате в обратном порядке
-                        // 0 -- последняя заправка
-                        // Последний (i == 0) объём заправки не нужен -- неизвестно, сколько на ней будет пробег,
-                        // в volumeSum не включается
-                        if (i == 0) lastTotal = total;
-                        else {
-                            volumeSum += volume;
-                            if (i == mFuelingRecords.size() - 1) firstTotal = total;
-                        }
-                    }
-                }
-            }
-
-            if (completeData)
-                average = volumeSum != 0 ? (volumeSum / (lastTotal - firstTotal)) * 100 : 0;
-            else {
-                average = 0;
-                averageCount = 0;
-                for (int i = 0; i < mFuelingRecords.size() - 1; i++) {
-
-                    if (isCancelled()) return null;
-
-                    lastTotal = mFuelingRecords.get(i).getTotal();
-                    if (lastTotal != 0) {
-                        volume = mFuelingRecords.get(i + 1).getVolume();
-                        total = mFuelingRecords.get(i + 1).getTotal();
-                        if (volume != 0 && total != 0) {
-                            average += (volume / (lastTotal - total)) * 100;
-                            averageCount++;
-                        }
-                    }
-                }
-
-                average = averageCount != 0 ? average / averageCount : 0;
-            }
-
-            return new CalcTotalResult(average, costSum);
-        }
-
-        @Override
-        protected void onPostExecute(CalcTotalResult calcTotalResult) {
-            super.onPostExecute(calcTotalResult);
-
-            mTextAverage.setText(Functions.floatToString(calcTotalResult.average));
-            mTextCostSum.setText(Functions.floatToString(calcTotalResult.costSum));
-
-            Functions.logD("FragmentFueling -- CalcTotalTask: onPostExecute");
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-
-            Functions.logD("FragmentFueling -- CalcTotalTask: onCancelled");
-        }
     }
 
     private void doPopup(final View v) {
@@ -649,38 +530,8 @@ public class FragmentFueling extends FragmentFuel implements
         }
     }
 
-    private final View.OnClickListener undoClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Functions.logD("FragmentFueling -- undoClickListener: " + deletedFuelingRecord.toString());
-
-            addRecord(deletedFuelingRecord);
-
-            deletedFuelingRecord = null;
-        }
-    };
-
-    private final Snackbar.Callback snackBarCallback = new Snackbar.Callback() {
-        // Workaround for bug
-
-        @Override
-        public void onDismissed(Snackbar snackbar, int event) {
-            if (event == DISMISS_EVENT_SWIPE)
-                mFloatingActionButton.toggle(true, true, true);
-        }
-    };
-
     public void setProgressBarVisible(boolean visible) {
         Functions.setProgressWheelVisible(mProgressWheelFueling, visible);
-    }
-
-    public interface OnFilterChangeListener {
-        // to Toolbar Spinner
-        void onFilterChange(FuelingDBHelper.FilterMode filterMode);
-    }
-
-    public interface OnRecordChangeListener {
-        void onRecordChange(Const.RecordAction recordAction, FuelingRecord fuelingRecord);
     }
 
     private FuelingDBHelper.Filter getFilter() {
@@ -925,5 +776,137 @@ public class FragmentFueling extends FragmentFuel implements
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
         ).show(getFragmentManager(), null);
+    }
+
+    public interface OnFilterChangeListener {
+        // to Toolbar Spinner
+        void onFilterChange(FuelingDBHelper.FilterMode filterMode);
+    }
+
+    public interface OnRecordChangeListener {
+        void onRecordChange(Const.RecordAction recordAction, FuelingRecord fuelingRecord);
+    }
+
+    static class FuelingCursorLoader extends CursorLoader {
+
+        private final Context mContext;
+        private final FuelingDBHelper.Filter mFilter;
+
+        public FuelingCursorLoader(Context context, FuelingDBHelper.Filter filter) {
+            super(context);
+            mContext = context;
+            mFilter = filter;
+        }
+
+        @Override
+        public Cursor loadInBackground() {
+            Functions.logD("FragmentFueling -- loadInBackground");
+
+            LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(true));
+
+            FuelingDBHelper dbHelper = new FuelingDBHelper();
+            dbHelper.setFilter(mFilter);
+            try {
+                return dbHelper.getAllCursor();
+            } finally {
+                LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(false));
+            }
+        }
+    }
+
+    static class CalcTotalResult {
+        final float average;
+        final float costSum;
+
+        CalcTotalResult(float a, float s) {
+            average = a;
+            costSum = s;
+        }
+    }
+
+    static class CalcTotalTask extends AsyncTask<Void, Void, CalcTotalResult> {
+
+        private final List<FuelingRecord> mFuelingRecords;
+        private FragmentFueling mFragmentFueling;
+
+        CalcTotalTask(FragmentFueling fragmentFueling, List<FuelingRecord> fuelingRecords) {
+            mFragmentFueling = fragmentFueling;
+            mFuelingRecords = fuelingRecords;
+        }
+
+        @Override
+        protected CalcTotalResult doInBackground(Void... params) {
+            float costSum = 0, volumeSum = 0;
+            float volume, total, firstTotal = 0, lastTotal = 0, average;
+
+            int averageCount;
+
+            boolean completeData = true; // Во всех записях указаны объём заправки и текущий пробег
+
+            for (int i = 0; i < mFuelingRecords.size(); i++) {
+
+                if (isCancelled()) return null;
+
+                costSum += mFuelingRecords.get(i).getCost();
+
+                if (completeData) {
+                    volume = mFuelingRecords.get(i).getVolume();
+                    total = mFuelingRecords.get(i).getTotal();
+
+                    if (volume == 0 || total == 0) completeData = false;
+                    else {
+                        // Сортировка записей по дате в обратном порядке
+                        // 0 -- последняя заправка
+                        // Последний (i == 0) объём заправки не нужен -- неизвестно, сколько на ней будет пробег,
+                        // в volumeSum не включается
+                        if (i == 0) lastTotal = total;
+                        else {
+                            volumeSum += volume;
+                            if (i == mFuelingRecords.size() - 1) firstTotal = total;
+                        }
+                    }
+                }
+            }
+
+            if (completeData)
+                average = volumeSum != 0 ? (volumeSum / (lastTotal - firstTotal)) * 100 : 0;
+            else {
+                average = 0;
+                averageCount = 0;
+                for (int i = 0; i < mFuelingRecords.size() - 1; i++) {
+
+                    if (isCancelled()) return null;
+
+                    lastTotal = mFuelingRecords.get(i).getTotal();
+                    if (lastTotal != 0) {
+                        volume = mFuelingRecords.get(i + 1).getVolume();
+                        total = mFuelingRecords.get(i + 1).getTotal();
+                        if (volume != 0 && total != 0) {
+                            average += (volume / (lastTotal - total)) * 100;
+                            averageCount++;
+                        }
+                    }
+                }
+
+                average = averageCount != 0 ? average / averageCount : 0;
+            }
+
+            return new CalcTotalResult(average, costSum);
+        }
+
+        @Override
+        protected void onPostExecute(CalcTotalResult calcTotalResult) {
+            mFragmentFueling.mTextAverage.setText(Functions.floatToString(calcTotalResult.average));
+            mFragmentFueling.mTextCostSum.setText(Functions.floatToString(calcTotalResult.costSum));
+
+            mFragmentFueling = null;
+
+            Functions.logD("FragmentFueling -- CalcTotalTask: onPostExecute");
+        }
+
+        @Override
+        protected void onCancelled() {
+            Functions.logD("FragmentFueling -- CalcTotalTask: onCancelled");
+        }
     }
 }

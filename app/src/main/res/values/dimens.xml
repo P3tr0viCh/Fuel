@@ -6,6 +6,8 @@
     <dimen name="activity_backup_horizontal_margin">16dp</dimen>
 
     <dimen name="drawer_max_width">280dp</dimen>
+    <dimen name="drawer_sync_height">48dp</dimen>
+    <dimen name="drawer_sync_height_minus">-48dp</dimen>
 
     <dimen name="toolbar_height">56dp</dimen>
     <dimen name="toolbar_shadow_height">4dp</dimen>

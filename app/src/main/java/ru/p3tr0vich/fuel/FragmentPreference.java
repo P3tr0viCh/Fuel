@@ -3,7 +3,6 @@ package ru.p3tr0vich.fuel;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -180,10 +179,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
             editPref.setSummary(summary);
         } else if (preference.getKey().equals(getString(R.string.pref_map_center_text))) {
-            preference.setSummary(
-                    PreferenceManager.getDefaultSharedPreferences(Functions.sApplicationContext)
-                            .getString(getString(R.string.pref_map_center_text),
-                                    YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_TEXT));
+            preference.setSummary(FuelingPreferenceManager.getMapCenterText());
         }
     }
 

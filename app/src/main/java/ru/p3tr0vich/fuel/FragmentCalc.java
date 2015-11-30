@@ -1,9 +1,7 @@
 package ru.p3tr0vich.fuel;
 
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -36,7 +34,7 @@ public class FragmentCalc extends FragmentFuel implements
 
     private boolean mCalculating;
 
-    private final float[][] arrCons = {{0, 0, 0}, {0, 0, 0}};
+    private float[][] arrCons = {{0, 0, 0}, {0, 0, 0}};
 
     private enum CalcAction {DISTANCE, COST, VOLUME}
 
@@ -162,45 +160,26 @@ public class FragmentCalc extends FragmentFuel implements
     }
 
     private void loadPrefs() {
-        SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mEditDistance.setText(FuelingPreferenceManager.getCalcDistance());
+        mEditCost.setText(FuelingPreferenceManager.getCalcCost());
+        mEditVolume.setText(FuelingPreferenceManager.getCalcVolume());
 
-        mEditDistance.setText(sPref.getString(Const.PREF_DISTANCE, ""));
-        mEditCost.setText(sPref.getString(Const.PREF_COST, ""));
-        mEditVolume.setText(sPref.getString(Const.PREF_VOLUME, ""));
+        mEditPrice.setText(FuelingPreferenceManager.getCalcPrice());
 
-        mEditPrice.setText(sPref.getString(Const.PREF_PRICE, ""));
+        arrCons = FuelingPreferenceManager.getCalcCons();
 
-        loadCons(sPref);
-
-        mSpinnerCons.setSelection(sPref.getInt(Const.PREF_CONS, 0));
-        mSpinnerSeason.setSelection(sPref.getInt(Const.PREF_SEASON, 0));
-    }
-
-    private void loadCons(SharedPreferences sPref) {
-        if (sPref == null) sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-        arrCons[0][0] = Functions.textToFloat(sPref.getString(getString(R.string.pref_summer_city), "0"));
-        arrCons[0][1] = Functions.textToFloat(sPref.getString(getString(R.string.pref_summer_highway), "0"));
-        arrCons[0][2] = Functions.textToFloat(sPref.getString(getString(R.string.pref_summer_mixed), "0"));
-        arrCons[1][0] = Functions.textToFloat(sPref.getString(getString(R.string.pref_winter_city), "0"));
-        arrCons[1][1] = Functions.textToFloat(sPref.getString(getString(R.string.pref_winter_highway), "0"));
-        arrCons[1][2] = Functions.textToFloat(sPref.getString(getString(R.string.pref_winter_mixed), "0"));
+        mSpinnerCons.setSelection(FuelingPreferenceManager.getCalcSelectedCons());
+        mSpinnerSeason.setSelection(FuelingPreferenceManager.getCalcSelectedSeason());
     }
 
     private void savePrefs() {
-        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .edit()
-
-                .putString(Const.PREF_DISTANCE, mEditDistance.getText().toString())
-                .putString(Const.PREF_COST, mEditCost.getText().toString())
-                .putString(Const.PREF_VOLUME, mEditVolume.getText().toString())
-
-                .putString(Const.PREF_PRICE, mEditPrice.getText().toString())
-
-                .putInt(Const.PREF_CONS, mSpinnerCons.getSelectedItemPosition())
-                .putInt(Const.PREF_SEASON, mSpinnerSeason.getSelectedItemPosition())
-
-                .apply();
+        FuelingPreferenceManager.putCalc(
+                mEditDistance.getText().toString(),
+                mEditCost.getText().toString(),
+                mEditVolume.getText().toString(),
+                mEditPrice.getText().toString(),
+                mSpinnerCons.getSelectedItemPosition(),
+                mSpinnerSeason.getSelectedItemPosition());
     }
 
     private void selectConsFromSpinners() {

@@ -2,9 +2,7 @@ package ru.p3tr0vich.fuel;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -57,12 +55,10 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
                 mDate = new Date();
 
-                SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
                 mFuelingRecord = new FuelingRecord(-1, "",
-                        Functions.textToFloat(sPref.getString(getString(R.string.pref_def_cost), "0")),
-                        Functions.textToFloat(sPref.getString(getString(R.string.pref_def_volume), "0")),
-                        sPref.getFloat(getString(R.string.pref_last_total), 0), true);
+                        FuelingPreferenceManager.getDefaultCost(),
+                        FuelingPreferenceManager.getDefaultVolume(),
+                        FuelingPreferenceManager.getLastTotal(), true);
                 break;
             case UPDATE:
                 getActivity().setTitle(R.string.dialog_caption_update);
@@ -142,10 +138,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
                 Activity activity = getActivity();
 
-                PreferenceManager.getDefaultSharedPreferences(activity)
-                        .edit()
-                        .putFloat(getString(R.string.pref_last_total), mFuelingRecord.getTotal())
-                        .apply();
+                FuelingPreferenceManager.putLastTotal(mFuelingRecord.getTotal());
 
                 activity.setResult(Activity.RESULT_OK,
                         mFuelingRecord.toIntent()

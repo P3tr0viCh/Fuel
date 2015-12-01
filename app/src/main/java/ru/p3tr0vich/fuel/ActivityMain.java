@@ -38,6 +38,7 @@ public class ActivityMain extends AppCompatActivity implements
         FragmentFueling.OnRecordChangeListener,
         FragmentInterface.OnFragmentChangeListener,
         FragmentPreference.OnPreferenceScreenChangeListener,
+        FragmentPreference.OnPreferenceSyncEnabledChangeListener,
         FragmentBackup.OnDataLoadedFromBackupListener {
 
     private static final String ACTION_LOADING = "ru.p3tr0vich.fuel.ACTION_LOADING";
@@ -197,6 +198,7 @@ public class ActivityMain extends AppCompatActivity implements
         }
 
         startSync(savedInstanceState == null);
+//        FuelingPreferenceManager.putRevision(-1);
     }
 
     @Override
@@ -558,5 +560,10 @@ public class ActivityMain extends AppCompatActivity implements
         }
 
         mBtnSync.setText(status);
+    }
+
+    @Override
+    public void OnPreferenceSyncEnabledChanged() {
+        updateSyncStatus();
     }
 }

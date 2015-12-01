@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class FuelingPreferenceManager {
 
-    //    private static final String PREF_REVISION = "revision";
+    private static final String PREF_REVISION = "revision";
     private static final String PREF_CHANGED = "changed";
     private static final String PREF_LAST_SYNC = "last sync time";
 
@@ -30,10 +32,11 @@ public class FuelingPreferenceManager {
         sPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                Functions.logD("FuelingPreferenceManager -- onSharedPreferenceChanged: key == " + key);
+//                Functions.logD("FuelingPreferenceManager -- onSharedPreferenceChanged: key == " + key);
 
                 if (!(key.equals(PREF_CHANGED) ||
                         key.equals(PREF_LAST_SYNC) ||
+                        key.equals(PREF_REVISION) ||
                         key.equals(Functions.sApplicationContext.getString(R.string.pref_sync_enabled))))
                     putChanged(true);
             }
@@ -41,7 +44,11 @@ public class FuelingPreferenceManager {
         sSharedPreferences.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
     }
 
-    private static void putChanged(boolean changed) {
+    public static boolean isChanged() {
+        return sSharedPreferences.getBoolean(PREF_CHANGED, false);
+    }
+
+    public static void putChanged(boolean changed) {
         sSharedPreferences
                 .edit()
                 .putBoolean(PREF_CHANGED, changed)
@@ -66,25 +73,18 @@ public class FuelingPreferenceManager {
         return sSharedPreferences.getBoolean(sContext.getString(R.string.pref_sync_enabled), false);
     }
 
-/*    public static int getRevision() {
+    public static int getRevision() {
         return sSharedPreferences.getInt(PREF_REVISION, -1);
     }
 
-    public static void incRevision() {
-        int revision = getRevision();
-        revision++;
-
-        sSyncInProcess = true;
-
+    public static void putRevision(int revision) {
         sSharedPreferences
                 .edit()
                 .putInt(PREF_REVISION, revision)
                 .apply();
 
-        sSyncInProcess = false;
-
-        Functions.logD("FuelingPreferenceManager -- incRevision: revision == " + revision);
-    }*/
+        Functions.logD("FuelingPreferenceManager -- putRevision: revision == " + revision);
+    }
 
     public static Date getFilterDateFrom() {
         String result = sSharedPreferences.getString(sContext.getString(R.string.pref_filter_date_from), "");
@@ -209,5 +209,42 @@ public class FuelingPreferenceManager {
                 .putLong(sContext.getString(R.string.pref_map_center_longitude),
                         Double.doubleToRawLongBits(longitude))
                 .apply();
+    }
+
+    public static List<String> getPreferences() {
+
+        String key;
+        List<String> result = new ArrayList<>();
+
+        // Стоимость по умолчанию
+        key = sContext.getString(R.string.pref_def_cost);
+        result.add(key + '=' + sSharedPreferences.getString(key, "0"));
+
+        // Объём по умолчанию
+        key = sContext.getString(R.string.pref_def_volume);
+        result.add(key + '=' + sSharedPreferences.getString(key, "0"));
+
+        // Последний пробег
+        key = sContext.getString(R.string.pref_last_total);
+        result.add(key + '=' + String.valueOf(sSharedPreferences.getFloat(key, 0)));
+
+        // Местоположение
+        key = sContext.getString(R.string.pref_map_center_text);
+        result.add(key + '=' + String.valueOf(getMapCenterText()));
+
+        // Широта
+        key = sContext.getString(R.string.pref_map_center_latitude);
+        result.add(key + '=' + String.valueOf(getMapCenterLatitude()));
+
+        // Долгота
+        key = sContext.getString(R.string.pref_map_center_longitude);
+        result.add(key + '=' + String.valueOf(getMapCenterLongitude()));
+
+        return result;
+    }
+
+    public static void setPreferences(List<String> preferences) {
+        for (String preference : preferences)
+            Functions.logD("FuelingPreferenceManager -- setPreferences: " + preference);
     }
 }

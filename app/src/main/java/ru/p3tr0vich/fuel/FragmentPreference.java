@@ -22,8 +22,9 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
     private static final String KEY_PREFERENCE_SCREEN = "KEY_PREFERENCE_SCREEN";
 
-    private OnPreferenceScreenChangeListener mOnPreferenceScreenChangeListener;
     private OnFragmentChangeListener mOnFragmentChangeListener;
+    private OnPreferenceScreenChangeListener mOnPreferenceScreenChangeListener;
+    private OnPreferenceSyncEnabledChangeListener mOnPreferenceSyncEnabledChangeListener;
 
     private boolean isInRoot;
     private PreferenceScreen rootPreferenceScreen;
@@ -37,6 +38,10 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         void OnPreferenceScreenChanged(CharSequence title);
     }
 
+    public interface OnPreferenceSyncEnabledChangeListener {
+        void OnPreferenceSyncEnabledChanged();
+    }
+
     public boolean isInRoot() {
         return isInRoot;
     }
@@ -47,8 +52,10 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
         updatePreferenceSummary(findPreference(key));
 
-        if (key.equals(getString(R.string.pref_sync_enabled)))
+        if (key.equals(getString(R.string.pref_sync_enabled))) {
             updatePreferenceSummary(findPreference(getString(R.string.pref_sync_key)));
+            mOnPreferenceSyncEnabledChangeListener.OnPreferenceSyncEnabledChanged();
+        }
     }
 
     @Override
@@ -141,11 +148,13 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         super.onAttach(context);
         Functions.logD("FragmentPreference -- onAttach (context)");
         try {
-            mOnPreferenceScreenChangeListener = (OnPreferenceScreenChangeListener) context;
             mOnFragmentChangeListener = (OnFragmentChangeListener) context;
+            mOnPreferenceScreenChangeListener = (OnPreferenceScreenChangeListener) context;
+            mOnPreferenceSyncEnabledChangeListener = (OnPreferenceSyncEnabledChangeListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() +
-                    " must implement OnPreferenceScreenChangeListener, OnFragmentChangeListener");
+                    " must implement OnPreferenceScreenChangeListener, OnFragmentChangeListener, " +
+                    "OnPreferenceSyncEnabledChangeListener");
         }
     }
 
@@ -169,12 +178,15 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
             Functions.logD("FragmentPreference -- updatePreferenceSummary: preference == null");
             return;
         }
+
         String key = preference.getKey();
         if (key == null) {
             Functions.logD("FragmentPreference -- updatePreferenceSummary: key == null");
             return;
         }
+
         Functions.logD("FragmentPreference -- updatePreferenceSummary: preference == " + key);
+
         if (preference instanceof EditTextPreference) {
             EditTextPreference editPref = (EditTextPreference) preference;
 

@@ -14,14 +14,14 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CacheSyncHelper {
+class CacheSyncHelper {
 
     private static final String DIR_SYNC = "sync";
     private static final String DIR_PREFERENCES = "preferences";
     private static final String FILE_PREFERENCES_REVISION = "REVISION";
     private static final String FILE_PREFERENCES = "PREFERENCES";
 
-    private Context mContext;
+    private final Context mContext;
 
     CacheSyncHelper(Context context) {
         mContext = context;

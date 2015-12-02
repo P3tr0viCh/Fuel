@@ -75,46 +75,46 @@ public class FragmentBackup extends FragmentFuel {
         FragmentDialogProgress.show(this, mDatabaseBackupXmlHelper, doSave);
     }
 
-    private void stopOperationXml(DatabaseBackupXmlHelper.Result result) {
+    private void stopOperationXml(@DatabaseBackupXmlHelper.Result int result) {
         String resultMessage;
 
         switch (result) {
-            case RESULT_SAVE_OK:
+            case DatabaseBackupXmlHelper.RESULT_SAVE_OK:
                 resultMessage = "File '" + mDatabaseBackupXmlHelper.getFileName() + "' save in '" +
                         mDatabaseBackupXmlHelper.getExternalDirectory() + "' without errors";
                 break;
-            case RESULT_LOAD_OK:
+            case DatabaseBackupXmlHelper.RESULT_LOAD_OK:
                 resultMessage = "File '" + mDatabaseBackupXmlHelper.getFileName() + "' load from '" +
                         mDatabaseBackupXmlHelper.getExternalDirectory() + "' without errors";
                 break;
-            case ERROR_MKDIRS:
+            case DatabaseBackupXmlHelper.RESULT_ERROR_MKDIRS:
                 resultMessage = getString(R.string.message_error_mkdirs, mDatabaseBackupXmlHelper.getExternalDirectory());
                 break;
-            case ERROR_CREATE_XML:
+            case DatabaseBackupXmlHelper.RESULT_ERROR_CREATE_XML:
                 resultMessage = getString(R.string.message_error_create_xml);
                 break;
-            case ERROR_CREATE_FILE:
+            case DatabaseBackupXmlHelper.RESULT_ERROR_CREATE_FILE:
                 resultMessage = getString(R.string.message_error_create_file,
                         mDatabaseBackupXmlHelper.getFileName(),
                         mDatabaseBackupXmlHelper.getExternalDirectory());
                 break;
-            case ERROR_SAVE_FILE:
+            case DatabaseBackupXmlHelper.RESULT_ERROR_SAVE_FILE:
                 resultMessage = getString(R.string.message_error_save_file,
                         mDatabaseBackupXmlHelper.getFileName(),
                         mDatabaseBackupXmlHelper.getExternalDirectory());
                 break;
-            case ERROR_DIR_NOT_EXISTS:
+            case DatabaseBackupXmlHelper.RESULT_ERROR_DIR_NOT_EXISTS:
                 resultMessage = getString(R.string.message_error_dir_not_exists, mDatabaseBackupXmlHelper.getExternalDirectory());
                 break;
-            case ERROR_FILE_NOT_EXISTS:
+            case DatabaseBackupXmlHelper.RESULT_ERROR_FILE_NOT_EXISTS:
                 resultMessage = getString(R.string.message_error_file_not_exists,
                         mDatabaseBackupXmlHelper.getFileName(),
                         mDatabaseBackupXmlHelper.getExternalDirectory());
                 break;
-            case ERROR_READ_FILE:
+            case DatabaseBackupXmlHelper.RESULT_ERROR_READ_FILE:
                 resultMessage = getString(R.string.message_error_read_file);
                 break;
-            case ERROR_PARSE_XML:
+            case DatabaseBackupXmlHelper.RESULT_ERROR_PARSE_XML:
                 resultMessage = getString(R.string.message_error_parse_xml);
                 break;
             default:
@@ -123,9 +123,9 @@ public class FragmentBackup extends FragmentFuel {
 
         Functions.logD("FragmentBackup -- stopOperationXml: " + resultMessage);
 
-        if (result == DatabaseBackupXmlHelper.Result.RESULT_SAVE_OK)
+        if (result == DatabaseBackupXmlHelper.RESULT_SAVE_OK)
             Toast.makeText(getActivity(), getString(R.string.message_save_file_ok), Toast.LENGTH_SHORT).show();
-        else if (result == DatabaseBackupXmlHelper.Result.RESULT_LOAD_OK) {
+        else if (result == DatabaseBackupXmlHelper.RESULT_LOAD_OK) {
             Toast.makeText(getActivity(), getString(R.string.message_load_file_ok), Toast.LENGTH_SHORT).show();
             mOnDataLoadedFromBackupListener.onDataLoadedFromBackup();
         } else

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class FuelingPreferenceManager {
+class FuelingPreferenceManager {
 
     private static final String PREF_REVISION = "revision";
     private static final String PREF_CHANGED = "changed";
@@ -22,6 +22,7 @@ public class FuelingPreferenceManager {
     private static final String PREF_CONS = "consumption";
     private static final String PREF_SEASON = "season";
 
+    @SuppressWarnings("WeakerAccess")
     static SharedPreferences.OnSharedPreferenceChangeListener sPreferenceChangeListener;
     private static Context sContext;
     private static SharedPreferences sSharedPreferences;

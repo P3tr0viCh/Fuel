@@ -4,7 +4,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.IntDef;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,13 +55,22 @@ class FuelingDBHelper extends SQLiteOpenHelper {
                     ");";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-    enum FilterMode {CURRENT_YEAR, YEAR, DATES, ALL}
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({FILTER_MODE_CURRENT_YEAR, FILTER_MODE_YEAR, FILTER_MODE_DATES, FILTER_MODE_ALL})
+    public @interface FilterMode {
+    }
+
+    public static final int FILTER_MODE_CURRENT_YEAR = 0;
+    public static final int FILTER_MODE_YEAR = 1;
+    public static final int FILTER_MODE_DATES = 2;
+    public static final int FILTER_MODE_ALL = 3;
 
     static class Filter {
         public Date dateFrom;
         public Date dateTo;
         public int year;
-        public FilterMode filterMode;
+        @FilterMode
+        public int filterMode;
     }
 
     private final Filter mFilter;
@@ -66,7 +78,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     public FuelingDBHelper() {
         super(Functions.sApplicationContext, DATABASE_NAME, null, DATABASE_VERSION);
         mFilter = new Filter();
-        mFilter.filterMode = FilterMode.ALL;
+        mFilter.filterMode = FILTER_MODE_ALL;
     }
 
     @Override
@@ -171,11 +183,11 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
     private String filterModeToSql() {
         switch (mFilter.filterMode) {
-            case YEAR:
-            case CURRENT_YEAR:
+            case FILTER_MODE_YEAR:
+            case FILTER_MODE_CURRENT_YEAR:
                 return WHERE + COLUMN_DATETIME + String.format(IN_YEAR,
-                        mFilter.filterMode == FilterMode.YEAR ? mFilter.year : Functions.getCurrentYear());
-            case DATES:
+                        mFilter.filterMode == FILTER_MODE_YEAR ? mFilter.year : Functions.getCurrentYear());
+            case FILTER_MODE_DATES:
                 return WHERE + COLUMN_DATETIME + String.format(IN_DATES,
                         Functions.dateToSQLite(mFilter.dateFrom), Functions.dateToSQLite(mFilter.dateTo));
             default:

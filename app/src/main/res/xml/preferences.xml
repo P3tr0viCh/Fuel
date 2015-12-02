@@ -104,6 +104,7 @@
         android:icon="@drawable/ic_sync_grey600_24dp"
         android:key="@string/pref_sync_key"
         android:title="@string/pref_sync_title">
+        <!--suppress AndroidElementNotAllowed -->
         <android.support.v7.preference.SwitchPreferenceCompat
             android:key="@string/pref_sync_enabled"
             android:switchTextOff="@string/pref_sync_enabled_off"

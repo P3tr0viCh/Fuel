@@ -35,8 +35,9 @@ public class FragmentDialogProgress extends DialogFragment {
         fragmentDialogProgress.show(parent.getFragmentManager(), TAG);
     }
 
-    public static DatabaseBackupXmlHelper.Result getResult(Intent data) {
-        return (DatabaseBackupXmlHelper.Result) data.getSerializableExtra(EXTRA_XML_RESULT);
+    @DatabaseBackupXmlHelper.Result
+    public static int getResult(Intent data) {
+        return DatabaseBackupXmlHelper.intToResult(data.getIntExtra(EXTRA_XML_RESULT, -1));
     }
 
     private void setTask(AsyncTaskOperationXml asyncTaskOperationXml) {
@@ -79,7 +80,7 @@ public class FragmentDialogProgress extends DialogFragment {
         super.onDestroyView();
     }
 
-    void stopTask(DatabaseBackupXmlHelper.Result result) {
+    void stopTask(@DatabaseBackupXmlHelper.Result int result) {
         Functions.logD("FragmentDialogProgress -- stopTask: getTargetFragment() != null " + Boolean.toString(getTargetFragment() != null));
 
         if (isResumed()) {

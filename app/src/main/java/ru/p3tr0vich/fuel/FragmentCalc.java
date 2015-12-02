@@ -2,6 +2,7 @@ package ru.p3tr0vich.fuel;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -14,6 +15,9 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 public class FragmentCalc extends FragmentFuel implements
         AdapterView.OnItemSelectedListener, View.OnClickListener {
@@ -36,7 +40,14 @@ public class FragmentCalc extends FragmentFuel implements
 
     private float[][] arrCons = {{0, 0, 0}, {0, 0, 0}};
 
-    private enum CalcAction {DISTANCE, COST, VOLUME}
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({CALC_ACTION_DISTANCE, CALC_ACTION_COST, CALC_ACTION_VOLUME})
+    private @interface CalcAction {
+    }
+
+    private static final int CALC_ACTION_DISTANCE = 0;
+    private static final int CALC_ACTION_COST = 1;
+    private static final int CALC_ACTION_VOLUME = 2;
 
     @Override
     public int getFragmentId() {
@@ -74,7 +85,7 @@ public class FragmentCalc extends FragmentFuel implements
         view.findViewById(R.id.btnMaps).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityYandexMap.start(getActivity(), ActivityYandexMap.MapType.DISTANCE);
+                ActivityYandexMap.start(getActivity(), ActivityYandexMap.MAP_TYPE_DISTANCE);
             }
         });
 
@@ -218,23 +229,23 @@ public class FragmentCalc extends FragmentFuel implements
             switch (editText.getId()) {
                 case R.id.editPrice:
                     checkTextOnEmpty(editText);
-                    doCalculate(CalcAction.DISTANCE);
+                    doCalculate(CALC_ACTION_DISTANCE);
                     break;
                 case R.id.editCost:
-                    doCalculate(CalcAction.COST);
+                    doCalculate(CALC_ACTION_COST);
                     break;
                 case R.id.editCons:
                     checkTextOnEmpty(editText);
                 case R.id.editDistance:
-                    doCalculate(CalcAction.DISTANCE);
+                    doCalculate(CALC_ACTION_DISTANCE);
                     break;
                 case R.id.editVolume:
-                    doCalculate(CalcAction.VOLUME);
+                    doCalculate(CALC_ACTION_VOLUME);
             }
         }
     }
 
-    private void doCalculate(CalcAction calcAction) {
+    private void doCalculate(@CalcAction int calcAction) {
 
         if (mCalculating) return;
 
@@ -258,19 +269,19 @@ public class FragmentCalc extends FragmentFuel implements
             distancePerOneFuel = (float) (100.0 / cons);
 
             switch (calcAction) {
-                case DISTANCE:
+                case CALC_ACTION_DISTANCE:
                     volume = distance / distancePerOneFuel;
                     cost = price * volume;
                     Functions.floatToText(mEditVolume, volume, true);
                     Functions.floatToText(mEditCost, cost, true);
                     break;
-                case COST:
+                case CALC_ACTION_COST:
                     volume = cost / price;
                     distance = distancePerOneFuel * volume;
                     Functions.floatToText(mEditVolume, volume, true);
                     Functions.floatToText(mEditDistance, distance, true);
                     break;
-                case VOLUME:
+                case CALC_ACTION_VOLUME:
                     cost = price * volume;
                     distance = distancePerOneFuel * volume;
                     Functions.floatToText(mEditCost, cost, true);

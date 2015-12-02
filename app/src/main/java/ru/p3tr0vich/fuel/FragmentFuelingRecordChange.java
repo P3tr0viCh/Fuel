@@ -22,7 +22,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
     private static final String INTENT_EXTRA = "EXTRA_DATE";
 
-    private Const.RecordAction mRecordAction;
+    private @Const.RecordAction int mRecordAction;
 
     private Date mDate;
 
@@ -50,7 +50,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         mRecordAction = ActivityFuelingRecordChange.getAction(intent);
 
         switch (mRecordAction) {
-            case ADD:
+            case Const.RECORD_ACTION_ADD:
                 getActivity().setTitle(R.string.dialog_caption_add);
 
                 mDate = new Date();
@@ -60,7 +60,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                         FuelingPreferenceManager.getDefaultVolume(),
                         FuelingPreferenceManager.getLastTotal(), true);
                 break;
-            case UPDATE:
+            case Const.RECORD_ACTION_UPDATE:
                 getActivity().setTitle(R.string.dialog_caption_update);
 
                 mFuelingRecord = new FuelingRecord(intent);
@@ -142,7 +142,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
                 activity.setResult(Activity.RESULT_OK,
                         mFuelingRecord.toIntent()
-                                .putExtra(ActivityFuelingRecordChange.INTENT_EXTRA_ACTION, mRecordAction.ordinal()));
+                                .putExtra(ActivityFuelingRecordChange.INTENT_EXTRA_ACTION, mRecordAction));
                 activity.finish();
                 return true;
         }

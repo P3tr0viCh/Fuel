@@ -69,7 +69,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
                 .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
-                        ActivityYandexMap.start(getActivity(), ActivityYandexMap.MapType.CENTER);
+                        ActivityYandexMap.start(getActivity(), ActivityYandexMap.MAP_TYPE_CENTER);
 
                         return true;
                     }

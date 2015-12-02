@@ -304,8 +304,8 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
-    public void onRecordChange(Const.RecordAction recordAction, FuelingRecord fuelingRecord) {
-        if (recordAction != Const.RecordAction.DELETE)
+    public void onRecordChange(@Const.RecordAction int recordAction, FuelingRecord fuelingRecord) {
+        if (recordAction != Const.RECORD_ACTION_DELETE)
             // ADD, UPDATE
             ActivityFuelingRecordChange.start(this, recordAction, fuelingRecord);
     }
@@ -331,10 +331,10 @@ public class ActivityMain extends AppCompatActivity implements
                 fuelingRecord = new FuelingRecord(data);
 
                 switch (ActivityFuelingRecordChange.getAction(data)) {
-                    case ADD:
+                    case Const.RECORD_ACTION_ADD:
                         fragmentFueling.addRecord(fuelingRecord);
                         break;
-                    case UPDATE:
+                    case Const.RECORD_ACTION_UPDATE:
                         fragmentFueling.updateRecord(fuelingRecord);
                         break;
                 }
@@ -355,22 +355,23 @@ public class ActivityMain extends AppCompatActivity implements
         }
     }
 
-    private static FuelingDBHelper.FilterMode positionToFilterMode(int position) {
+    @FuelingDBHelper.FilterMode
+    private static int positionToFilterMode(int position) {
         switch (position) {
             case 0:
-                return FuelingDBHelper.FilterMode.CURRENT_YEAR;
+                return FuelingDBHelper.FILTER_MODE_CURRENT_YEAR;
             case 1:
-                return FuelingDBHelper.FilterMode.DATES;
+                return FuelingDBHelper.FILTER_MODE_DATES;
             default:
-                return FuelingDBHelper.FilterMode.ALL;
+                return FuelingDBHelper.FILTER_MODE_ALL;
         }
     }
 
-    private static int filterModeToPosition(FuelingDBHelper.FilterMode filterMode) {
+    private static int filterModeToPosition(@FuelingDBHelper.FilterMode int filterMode) {
         switch (filterMode) {
-            case CURRENT_YEAR:
+            case FuelingDBHelper.FILTER_MODE_CURRENT_YEAR:
                 return 0;
-            case DATES:
+            case FuelingDBHelper.FILTER_MODE_DATES:
                 return 1;
             default:
                 return 2;
@@ -378,7 +379,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
-    public void onFilterChange(FuelingDBHelper.FilterMode filterMode) {
+    public void onFilterChange(@FuelingDBHelper.FilterMode int filterMode) {
         Functions.logD("ActivityMain -- onFilterChange");
 
         int position = filterModeToPosition(filterMode);

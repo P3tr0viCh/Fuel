@@ -17,7 +17,7 @@ public class ServiceSync extends Service {
     public static final String EXTRA_START = "ru.p3tr0vich.fuel.EXTRA_START";
     public static final String EXTRA_PENDING = "ru.p3tr0vich.fuel.EXTRA_PENDING";
 
-    PendingIntent mPendingIntent;
+    private PendingIntent mPendingIntent;
 
     private static boolean mSyncInProcess = false;
     private static boolean mErrorInProcess = false;

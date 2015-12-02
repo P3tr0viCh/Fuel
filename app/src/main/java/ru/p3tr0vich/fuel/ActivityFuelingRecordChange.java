@@ -13,17 +13,18 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
     public static final String INTENT_EXTRA_ACTION = "EXTRA_ACTION";
     public static final int REQUEST_CODE = 2309;
 
-    public static void start(Activity parent, Const.RecordAction recordAction, FuelingRecord fuelingRecord) {
+    public static void start(Activity parent, @Const.RecordAction int recordAction, FuelingRecord fuelingRecord) {
         Intent intent = new Intent(parent, ActivityFuelingRecordChange.class);
 
-        intent.putExtra(INTENT_EXTRA_ACTION, recordAction.ordinal());
-        if (recordAction == Const.RecordAction.UPDATE)
+        intent.putExtra(INTENT_EXTRA_ACTION, recordAction);
+        if (recordAction == Const.RECORD_ACTION_UPDATE)
             fuelingRecord.toIntent(intent);
 
         parent.startActivityForResult(intent, REQUEST_CODE);
     }
 
-    public static Const.RecordAction getAction(Intent data) {
+    @Const.RecordAction
+    public static int getAction(Intent data) {
         return Functions.intToRecordAction(data.getIntExtra(INTENT_EXTRA_ACTION, -1));
     }
 

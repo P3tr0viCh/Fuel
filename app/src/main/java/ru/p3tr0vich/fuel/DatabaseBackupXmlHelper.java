@@ -1,6 +1,7 @@
 package ru.p3tr0vich.fuel;
 
 import android.os.Environment;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.util.Xml;
 
@@ -15,6 +16,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.text.ParseException;
@@ -61,11 +64,26 @@ public class DatabaseBackupXmlHelper {
     private File mFileName;
     private File mFullFileName;
 
-    public enum Result {
-        RESULT_SAVE_OK, RESULT_LOAD_OK, ERROR_MKDIRS, ERROR_CREATE_XML,
-        ERROR_CREATE_FILE, ERROR_SAVE_FILE, ERROR_DIR_NOT_EXISTS, ERROR_FILE_NOT_EXISTS,
-        ERROR_READ_FILE, ERROR_PARSE_XML
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({RESULT_SAVE_OK, RESULT_LOAD_OK, RESULT_ERROR_MKDIRS,
+            RESULT_ERROR_CREATE_XML, RESULT_ERROR_CREATE_FILE,
+            RESULT_ERROR_SAVE_FILE, RESULT_ERROR_DIR_NOT_EXISTS,
+            RESULT_ERROR_FILE_NOT_EXISTS, RESULT_ERROR_READ_FILE,
+            RESULT_ERROR_PARSE_XML
+    })
+    public @interface Result {
     }
+
+    public static final int RESULT_SAVE_OK = 0;
+    public static final int RESULT_LOAD_OK = 1;
+    public static final int RESULT_ERROR_MKDIRS = 2;
+    public static final int RESULT_ERROR_CREATE_XML = 3;
+    public static final int RESULT_ERROR_CREATE_FILE = 4;
+    public static final int RESULT_ERROR_SAVE_FILE = 5;
+    public static final int RESULT_ERROR_DIR_NOT_EXISTS = 6;
+    public static final int RESULT_ERROR_FILE_NOT_EXISTS = 7;
+    public static final int RESULT_ERROR_READ_FILE = 8;
+    public static final int RESULT_ERROR_PARSE_XML = 9;
 
     private static final String DEFAULT_DIR = "backup";
     private static final String DEFAULT_NAME = "ru.p3tr0vich.fuel.database.xml";
@@ -280,25 +298,26 @@ public class DatabaseBackupXmlHelper {
         }
     }
 
-    public Result save(@NonNull List<FuelingRecord> fuelingRecordList) {
+    @Result
+    public int save(@NonNull List<FuelingRecord> fuelingRecordList) {
 
         mFullFileName = new File(mExternalDirectory.getPath(), mFileName.getName());
 
         if (!mExternalDirectory.exists()) if (!mExternalDirectory.mkdirs())
-            return Result.ERROR_MKDIRS;
+            return RESULT_ERROR_MKDIRS;
 
         String xmlString;
         try {
             xmlString = createXml(fuelingRecordList);
         } catch (Exception e) {
-            return Result.ERROR_CREATE_XML;
+            return RESULT_ERROR_CREATE_XML;
         }
 
         try {
             if (!mFullFileName.createNewFile()) if (!mFullFileName.isFile())
-                return Result.ERROR_CREATE_FILE;
+                return RESULT_ERROR_CREATE_FILE;
         } catch (IOException e) {
-            return Result.ERROR_CREATE_FILE;
+            return RESULT_ERROR_CREATE_FILE;
         }
 
         ByteBuffer buff = ByteBuffer.wrap(xmlString.getBytes());
@@ -307,7 +326,7 @@ public class DatabaseBackupXmlHelper {
         try {
             mFileChannel = new FileOutputStream(mFullFileName).getChannel();
         } catch (FileNotFoundException e) {
-            return Result.ERROR_CREATE_FILE;
+            return RESULT_ERROR_CREATE_FILE;
         }
 
         try {
@@ -317,35 +336,62 @@ public class DatabaseBackupXmlHelper {
                 mFileChannel.close();
             }
         } catch (IOException e) {
-            return Result.ERROR_SAVE_FILE;
+            return RESULT_ERROR_SAVE_FILE;
         }
 
-        return Result.RESULT_SAVE_OK;
+        return RESULT_SAVE_OK;
     }
 
-    public Result load(@NonNull List<FuelingRecord> fuelingRecordList) {
+    @Result
+    public int load(@NonNull List<FuelingRecord> fuelingRecordList) {
 
         mFullFileName = new File(mExternalDirectory.getPath(), mFileName.getName());
 
-        if (!mExternalDirectory.exists()) return Result.ERROR_DIR_NOT_EXISTS;
+        if (!mExternalDirectory.exists()) return RESULT_ERROR_DIR_NOT_EXISTS;
 
-        if (!mFullFileName.exists() || !mFullFileName.isFile()) return Result.ERROR_FILE_NOT_EXISTS;
+        if (!mFullFileName.exists() || !mFullFileName.isFile()) return RESULT_ERROR_FILE_NOT_EXISTS;
 
         FileInputStream fileInputStream;
         try {
             fileInputStream = new FileInputStream(mFullFileName);
         } catch (FileNotFoundException e) {
-            return Result.ERROR_FILE_NOT_EXISTS;
+            return RESULT_ERROR_FILE_NOT_EXISTS;
         }
 
         try {
             parseXml(fileInputStream, fuelingRecordList);
         } catch (XmlPullParserException e) {
-            return Result.ERROR_PARSE_XML;
+            return RESULT_ERROR_PARSE_XML;
         } catch (IOException e) {
-            return Result.ERROR_READ_FILE;
+            return RESULT_ERROR_READ_FILE;
         }
 
-        return Result.RESULT_LOAD_OK;
+        return RESULT_LOAD_OK;
+    }
+
+    @Result
+    public static int intToResult(int i) {
+        switch (i) {
+            case RESULT_LOAD_OK:
+                return RESULT_LOAD_OK;
+            case RESULT_ERROR_MKDIRS:
+                return RESULT_ERROR_MKDIRS;
+            case RESULT_ERROR_CREATE_XML:
+                return RESULT_ERROR_CREATE_XML;
+            case RESULT_ERROR_CREATE_FILE:
+                return RESULT_ERROR_CREATE_FILE;
+            case RESULT_ERROR_SAVE_FILE:
+                return RESULT_ERROR_SAVE_FILE;
+            case RESULT_ERROR_DIR_NOT_EXISTS:
+                return RESULT_ERROR_DIR_NOT_EXISTS;
+            case RESULT_ERROR_FILE_NOT_EXISTS:
+                return RESULT_ERROR_FILE_NOT_EXISTS;
+            case RESULT_ERROR_READ_FILE:
+                return RESULT_ERROR_READ_FILE;
+            case RESULT_ERROR_PARSE_XML:
+                return RESULT_ERROR_PARSE_XML;
+            default:
+                return RESULT_SAVE_OK;
+        }
     }
 }

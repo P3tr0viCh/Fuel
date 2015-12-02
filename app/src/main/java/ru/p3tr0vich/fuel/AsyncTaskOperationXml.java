@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import java.util.ArrayList;
 import java.util.List;
 
-class AsyncTaskOperationXml extends AsyncTask<Void, Void, DatabaseBackupXmlHelper.Result> {
+class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
 
     private FragmentDialogProgress mFragmentDialogProgress;
     private final DatabaseBackupXmlHelper mDatabaseBackupXmlHelper;
@@ -23,10 +23,11 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, DatabaseBackupXmlHelpe
     }
 
     @Override
-    protected DatabaseBackupXmlHelper.Result doInBackground(Void... params) {
+    protected Integer doInBackground(Void... params) {
         List<FuelingRecord> fuelingRecordList;
 
-        DatabaseBackupXmlHelper.Result result;
+        @DatabaseBackupXmlHelper.Result
+        int result;
 
         FuelingDBHelper dbHelper = new FuelingDBHelper();
 
@@ -39,7 +40,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, DatabaseBackupXmlHelpe
 
             result = mDatabaseBackupXmlHelper.load(fuelingRecordList);
 
-            if (result == DatabaseBackupXmlHelper.Result.RESULT_LOAD_OK)
+            if (result == DatabaseBackupXmlHelper.RESULT_LOAD_OK)
                 dbHelper.insertRecords(fuelingRecordList);
         }
 
@@ -47,7 +48,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, DatabaseBackupXmlHelpe
     }
 
     @Override
-    protected void onPostExecute(DatabaseBackupXmlHelper.Result result) {
+    protected void onPostExecute(Integer result) {
         Functions.logD("OperationXml -- onPostExecute: mFragmentDialogProgress != null " + Boolean.toString(mFragmentDialogProgress != null));
 
         if (mFragmentDialogProgress != null) mFragmentDialogProgress.stopTask(result);

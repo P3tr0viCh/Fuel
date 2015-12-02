@@ -210,7 +210,7 @@ public class FragmentChartCost extends FragmentFuel implements
         super.onCreate(savedInstanceState);
 
         mFilter = new FuelingDBHelper.Filter();
-        mFilter.filterMode = FuelingDBHelper.FilterMode.YEAR;
+        mFilter.filterMode = FuelingDBHelper.FILTER_MODE_YEAR;
 
         if (savedInstanceState == null) {
             Functions.logD("FragmentChartCost -- onCreate: savedInstanceState == null");

@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +27,9 @@ import android.widget.Toast;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 public class ActivityYandexMap extends AppCompatActivity {
 
     public static final int REQUEST_CODE_DISTANCE = 8829;
@@ -43,7 +47,9 @@ public class ActivityYandexMap extends AppCompatActivity {
     private static final String MAP_HTML_DISTANCE = "file:///android_asset/distanceCalculator.html";
     private static final String MAP_HTML_CENTER = "file:///android_asset/mapCenter.html";
 
-    private MapType mType;
+    private
+    @MapType
+    int mType;
 
     private boolean mLoading = true;
     private int mDistance = 0;
@@ -54,7 +60,13 @@ public class ActivityYandexMap extends AppCompatActivity {
     private FrameLayout mWebViewPlaceholder;
     private WebView mWebView;
 
-    enum MapType {DISTANCE, CENTER}
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({MAP_TYPE_DISTANCE, MAP_TYPE_CENTER})
+    public @interface MapType {
+    }
+
+    public static final int MAP_TYPE_DISTANCE = 0;
+    public static final int MAP_TYPE_CENTER = 1;
 
     static class MapCenter {
         String text;
@@ -77,10 +89,11 @@ public class ActivityYandexMap extends AppCompatActivity {
         }
     }
 
-    public static void start(FragmentActivity parent, MapType mapType) {
+    public static void start(FragmentActivity parent, @MapType int mapType) {
         if (Functions.isInternetConnected())
-            parent.startActivityForResult(new Intent(parent, ActivityYandexMap.class).putExtra(EXTRA_TYPE, mapType),
-                    mapType == MapType.DISTANCE ? REQUEST_CODE_DISTANCE : REQUEST_CODE_MAP_CENTER);
+            parent.startActivityForResult(new Intent(parent, ActivityYandexMap.class)
+                            .putExtra(EXTRA_TYPE, mapType),
+                    mapType == MAP_TYPE_DISTANCE ? REQUEST_CODE_DISTANCE : REQUEST_CODE_MAP_CENTER);
         else
             FragmentDialogMessage.showMessage(parent,
                     parent.getString(R.string.title_message_error),
@@ -107,7 +120,13 @@ public class ActivityYandexMap extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_yandex_map);
 
-        mType = (MapType) getIntent().getSerializableExtra(EXTRA_TYPE);
+        switch (getIntent().getIntExtra(EXTRA_TYPE, -1)) {
+            case MAP_TYPE_DISTANCE:
+                mType = MAP_TYPE_DISTANCE;
+                break;
+            case MAP_TYPE_CENTER:
+                mType = MAP_TYPE_CENTER;
+        }
         mMapCenter = new MapCenter();
         mMapCenter.text = getString(R.string.yandex_map_map_center_title);
 
@@ -131,10 +150,10 @@ public class ActivityYandexMap extends AppCompatActivity {
         Functions.logD("ActivityYandexMap -- initUI: mLoading == " + mLoading);
 
         switch (mType) {
-            case DISTANCE:
+            case MAP_TYPE_DISTANCE:
                 setDistance(mDistance);
                 break;
-            case CENTER:
+            case MAP_TYPE_CENTER:
                 setMapCenter(
                         mMapCenter.text,
                         mMapCenter.title,
@@ -190,10 +209,10 @@ public class ActivityYandexMap extends AppCompatActivity {
             });
 
             switch (mType) {
-                case DISTANCE:
+                case MAP_TYPE_DISTANCE:
                     mWebView.loadUrl(MAP_HTML_DISTANCE);
                     break;
-                case CENTER:
+                case MAP_TYPE_CENTER:
                     mWebView.loadUrl(MAP_HTML_CENTER);
                     break;
             }
@@ -242,7 +261,7 @@ public class ActivityYandexMap extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(
-                mType == MapType.DISTANCE ? R.menu.menu_yandex_map : R.menu.menu_yandex_map_center,
+                mType == MAP_TYPE_DISTANCE ? R.menu.menu_yandex_map : R.menu.menu_yandex_map_center,
                 menu);
         return true;
     }
@@ -250,7 +269,7 @@ public class ActivityYandexMap extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (mType) {
-            case DISTANCE:
+            case MAP_TYPE_DISTANCE:
                 if (mDistance > 0)
                     switch (item.getItemId()) {
                         case R.id.action_done_x2:
@@ -262,7 +281,7 @@ public class ActivityYandexMap extends AppCompatActivity {
                 else
                     Toast.makeText(this, R.string.text_empty_distance, Toast.LENGTH_SHORT).show();
                 return true;
-            case CENTER:
+            case MAP_TYPE_CENTER:
                 setResult(RESULT_OK, new Intent()
                         .putExtra(INTENT_MAP_CENTER_TEXT, mMapCenter.text)
                         .putExtra(INTENT_MAP_CENTER_LATITUDE, mMapCenter.latitude)

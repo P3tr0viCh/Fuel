@@ -1,12 +1,15 @@
 package ru.p3tr0vich.fuel;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 class FuelingPreferenceManager {
 
@@ -33,12 +36,12 @@ class FuelingPreferenceManager {
         sPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-//                Functions.logD("FuelingPreferenceManager -- onSharedPreferenceChanged: key == " + key);
+                Functions.logD("FuelingPreferenceManager -- onSharedPreferenceChanged: key == " + key);
 
-                if (!(key.equals(PREF_CHANGED) ||
-                        key.equals(PREF_LAST_SYNC) ||
-                        key.equals(PREF_REVISION) ||
-                        key.equals(Functions.sApplicationContext.getString(R.string.pref_sync_enabled))))
+                if (!key.equals(PREF_CHANGED) &&
+                        !key.equals(PREF_LAST_SYNC) &&
+                        !key.equals(PREF_REVISION) &&
+                        !key.equals(sContext.getString(R.string.pref_sync_enabled)))
                     putChanged(true);
             }
         };
@@ -212,40 +215,77 @@ class FuelingPreferenceManager {
                 .apply();
     }
 
+    public static String getString(String key, String defValue) {
+        return sSharedPreferences.getString(key, defValue);
+    }
+
     public static List<String> getPreferences() {
 
-        String key;
+//        sSharedPreferences.edit()
+//                .remove("Yandex_Maps")
+//                .remove("chb2")
+//                .remove("wifi enabled")
+//                .remove("last time")
+//                .remove("prefer wifi")
+//                .apply();
+
+        Object value;
         List<String> result = new ArrayList<>();
 
-        // Стоимость по умолчанию
-        key = sContext.getString(R.string.pref_def_cost);
-        result.add(key + '=' + sSharedPreferences.getString(key, "0"));
+        Map<String, ?> map = sSharedPreferences.getAll();
 
-        // Объём по умолчанию
-        key = sContext.getString(R.string.pref_def_volume);
-        result.add(key + '=' + sSharedPreferences.getString(key, "0"));
+        for (String mapKey : map.keySet()) {
+            value = map.get(mapKey);
 
-        // Последний пробег
-        key = sContext.getString(R.string.pref_last_total);
-        result.add(key + '=' + String.valueOf(sSharedPreferences.getFloat(key, 0)));
+            Functions.logD(mapKey + "=(" + value.getClass().getName() + ") " +
+                    value.toString());
 
-        // Местоположение
-        key = sContext.getString(R.string.pref_map_center_text);
-        result.add(key + '=' + String.valueOf(getMapCenterText()));
+            if (!mapKey.equals(PREF_CHANGED) &&
+                    !mapKey.equals(PREF_LAST_SYNC) &&
+                    !mapKey.equals(PREF_REVISION) &&
+                    !mapKey.equals(sContext.getString(R.string.pref_sync_enabled))) {
 
-        // Широта
-        key = sContext.getString(R.string.pref_map_center_latitude);
-        result.add(key + '=' + String.valueOf(getMapCenterLatitude()));
+                result.add(mapKey + '=' + String.valueOf(value));
+            }
+        }
 
-        // Долгота
-        key = sContext.getString(R.string.pref_map_center_longitude);
-        result.add(key + '=' + String.valueOf(getMapCenterLongitude()));
+        for (String preference : result) Functions.logD(preference);
 
         return result;
     }
 
-    public static void setPreferences(List<String> preferences) {
-        for (String preference : preferences)
-            Functions.logD("FuelingPreferenceManager -- setPreferences: " + preference);
+    @SuppressLint("CommitPrefEdits")
+    public static void setPreferences(@NonNull List<String> preferences) {
+        int index;
+        String key, value;
+
+        sSharedPreferences.unregisterOnSharedPreferenceChangeListener(sPreferenceChangeListener);
+
+        SharedPreferences.Editor editor = sSharedPreferences.edit();
+
+        for (String preference : preferences) {
+//            Functions.logD("FuelingPreferenceManager -- setPreferences: " + preference);
+
+            index = preference.indexOf('=');
+
+            if (index == -1) continue;
+
+            key = preference.substring(0, index);
+
+            value = preference.substring(index + 1);
+
+            if (key.isEmpty() || value.isEmpty()) continue;
+
+            if (key.equals(PREF_CONS) || key.equals(PREF_SEASON))
+                editor.putInt(key, Integer.decode(value));
+            else if (key.equals(sContext.getString(R.string.pref_map_center_latitude)) ||
+                    key.equals(sContext.getString(R.string.pref_map_center_longitude)))
+                editor.putLong(key, Long.decode(value));
+            else
+                editor.putString(key, value);
+        }
+        editor.commit();
+
+        sSharedPreferences.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
     }
 }

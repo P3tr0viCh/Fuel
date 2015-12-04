@@ -3,6 +3,7 @@ package ru.p3tr0vich.fuel;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -50,10 +51,10 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Functions.logD("FragmentPreference -- onSharedPreferenceChanged: key == " + key);
 
-        updatePreferenceSummary(findPreference(key));
+        updatePreferenceSummary(key);
 
         if (key.equals(getString(R.string.pref_sync_enabled))) {
-            updatePreferenceSummary(findPreference(getString(R.string.pref_sync_key)));
+            updatePreferenceSummary(R.string.pref_sync_key);
             mOnPreferenceSyncEnabledChangeListener.OnPreferenceSyncEnabledChanged();
         }
     }
@@ -173,19 +174,27 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         super.onStop();
     }
 
+    private void updatePreferenceSummary(String key) {
+        updatePreferenceSummary(findPreference(key));
+    }
+
+    private void updatePreferenceSummary(@StringRes int resId) {
+        updatePreferenceSummary(getString(resId));
+    }
+
     private void updatePreferenceSummary(Preference preference) {
         if (preference == null) {
-            Functions.logD("FragmentPreference -- updatePreferenceSummary: preference == null");
+//            Functions.logD("FragmentPreference -- updatePreferenceSummary: preference == null");
             return;
         }
 
         String key = preference.getKey();
         if (key == null) {
-            Functions.logD("FragmentPreference -- updatePreferenceSummary: key == null");
+//            Functions.logD("FragmentPreference -- updatePreferenceSummary: key == null");
             return;
         }
 
-        Functions.logD("FragmentPreference -- updatePreferenceSummary: preference == " + key);
+//        Functions.logD("FragmentPreference -- updatePreferenceSummary: preference == " + key);
 
         if (preference instanceof EditTextPreference) {
             EditTextPreference editPref = (EditTextPreference) preference;
@@ -193,7 +202,9 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
             String summary, text;
 
             summary = (String) editPref.getSummary();
-            text = editPref.getText();
+//            text = editPref.getText() not updated after sync;
+            text = FuelingPreferenceManager.getString(key, "");
+            editPref.setText(text);
 
             if (TextUtils.isEmpty(text)) text = "0";
 
@@ -222,6 +233,6 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     }
 
     public void updateMapCenter() {
-        updatePreferenceSummary(findPreference(getString(R.string.pref_map_center_text)));
+        updatePreferenceSummary(R.string.pref_map_center_text);
     }
 }

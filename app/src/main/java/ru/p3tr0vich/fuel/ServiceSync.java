@@ -5,7 +5,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class ServiceSync extends Service {
 
@@ -65,45 +67,43 @@ public class ServiceSync extends Service {
                 mSyncInProcess = true;
                 mErrorInProcess = false;
 
-//                Random rand = new Random();
-
                 try {
                     mPendingIntent.send(STATUS_START);
-                    try {
 
-//                    if (rand.nextBoolean()) {
-//                        Functions.logD("ServiceSync -- doInBackground: error");
-//                        mErrorInProcess = true;
-//                    }
+//                        if (new Random().nextBoolean()) {
+//                            Functions.logD("ServiceSync -- doInBackground: error");
+//                            mErrorInProcess = true;
+//                        }
 
-                        CacheSyncHelper cacheSyncHelper = new CacheSyncHelper(ServiceSync.this);
+                    CacheSyncHelper cacheSyncHelper = new CacheSyncHelper(ServiceSync.this);
 
-                        // TODO:
-                        // Копируем файл с номером ревизии с сервера в папку кэша.
-                        // Если нет доступа к серверу mErrorInProcess == true.
-                        // Если файла нет, игнорируем.
+                    // TODO:
+                    // Копируем файл с номером ревизии с сервера в папку кэша.
+                    // Если нет доступа к серверу mErrorInProcess == true.
+                    // Если файла нет, игнорируем.
 
-                        if (!mErrorInProcess) {
+                    if (!mErrorInProcess) {
 
-                            int serverRevision = cacheSyncHelper.getRevision();
-                            // serverRevision == -1, если синхронизация не производилась
-                            // или файлы синхронизации отсутствуют на сервере
+                        int serverRevision = cacheSyncHelper.getRevision();
+                        // serverRevision == -1, если синхронизация не производилась
+                        // или файлы синхронизации отсутствуют на сервере
 
-                            int localRevision = FuelingPreferenceManager.getRevision();
-                            // localRevision == 0, если программа запускается первый раз
+                        int localRevision = FuelingPreferenceManager.getRevision();
+                        // localRevision == 0, если программа запускается первый раз
 
-                            Functions.logD("ServiceSync -- doInBackground: serverRevision == " +
-                                    serverRevision + ", localRevision == " + localRevision);
+                        Functions.logD("ServiceSync -- doInBackground: serverRevision == " +
+                                serverRevision + ", localRevision == " + localRevision);
 
-                            if (localRevision < serverRevision) {
+                        mErrorInProcess = !save(cacheSyncHelper, 0);
+//                            mErrorInProcess = !load(cacheSyncHelper, 0);
+
+/*                            if (localRevision < serverRevision) {
                                 // Синхронизация уже выполнялась на другом устройстве.
                                 // Текущие изменения теряются.
 
                                 Functions.logD("ServiceSync -- doInBackground: localRevision < serverRevision");
 
                                 if (load(cacheSyncHelper)) {
-                                    FuelingPreferenceManager.putChanged(false);
-                                    FuelingPreferenceManager.putRevision(serverRevision);
                                 } else
                                     mErrorInProcess = true;
                             } else if (localRevision > serverRevision) {
@@ -115,7 +115,6 @@ public class ServiceSync extends Service {
                                 Functions.logD("ServiceSync -- doInBackground: localRevision > serverRevision");
 
                                 if (save(cacheSyncHelper, localRevision))
-                                    FuelingPreferenceManager.putChanged(false);
                                 else
                                     mErrorInProcess = true;
                             } else { // localRevision == serverRevision
@@ -130,13 +129,11 @@ public class ServiceSync extends Service {
                                     localRevision++;
 
                                     if (save(cacheSyncHelper, localRevision)) {
-                                        FuelingPreferenceManager.putChanged(false);
-                                        FuelingPreferenceManager.putRevision(localRevision);
                                     } else
                                         mErrorInProcess = true;
                                 } else
                                     Functions.logD("ServiceSync -- doInBackground: isChanged == false");
-                            }
+                            }*/
 
 /*                        for (int i = 0; i < 10; i++) {
 
@@ -144,28 +141,22 @@ public class ServiceSync extends Service {
 
                             Functions.logD("ServiceSync -- doInBackground: " + String.valueOf(i));
                         }*/
-                        }
-
-                        if (!mErrorInProcess) FuelingPreferenceManager.putLastSync(new Date());
-
-                        stopSelf();
-
-                        mSyncInProcess = false;
-                    } catch (Exception e) {
-                        stopSelf();
-
-                        mErrorInProcess = true;
-                        mSyncInProcess = false;
-
-                        Functions.logD("ServiceSync -- doInBackground: catch (Exception e): " + e.toString());
                     }
 
+                    if (!mErrorInProcess) FuelingPreferenceManager.putLastSync(new Date());
+
+                    stopSelf();
+
+                    mSyncInProcess = false;
+
                     mPendingIntent.send(STATUS_FINISH);
-                } catch (PendingIntent.CanceledException e) {
+                } catch (Exception e) {
                     stopSelf();
 
                     mErrorInProcess = true;
                     mSyncInProcess = false;
+
+                    Functions.logD("ServiceSync -- doInBackground: catch (Exception e): " + e.toString());
                 }
             }
         }).start();
@@ -178,7 +169,7 @@ public class ServiceSync extends Service {
         // Передать файл настроек из папки кэша на сервер
         // Передать файл с номером ревизии из папки кэша на сервер,
 
-        if (cacheSyncHelper.savePreferences())
+        if (cacheSyncHelper.savePreferences(FuelingPreferenceManager.getPreferences()))
             Functions.logD("ServiceSync -- save: cacheSyncHelper.savePreferences() OK");
         else {
             Functions.logD("ServiceSync -- save: cacheSyncHelper.savePreferences() ERROR");
@@ -203,10 +194,13 @@ public class ServiceSync extends Service {
             return false;
         }*/
 
+        FuelingPreferenceManager.putChanged(false);
+        FuelingPreferenceManager.putRevision(revision);
+
         return true;
     }
 
-    private boolean load(CacheSyncHelper cacheSyncHelper) {
+    private boolean load(CacheSyncHelper cacheSyncHelper, int revision) {
         // Получить файл настроек с сервера и сохранить в папку кэша
 
         /*        if (!ServerSyncHelper.loadPreferences()) {
@@ -214,13 +208,19 @@ public class ServiceSync extends Service {
             return false;
         } */
 
-        if (cacheSyncHelper.loadPreferences())
+        List<String> preferences = new ArrayList<>();
+
+        if (cacheSyncHelper.loadPreferences(preferences)) {
             Functions.logD("ServiceSync -- load: cacheSyncHelper.loadPreferences() OK");
-        else {
+
+            FuelingPreferenceManager.setPreferences(preferences);
+            FuelingPreferenceManager.putChanged(false);
+            FuelingPreferenceManager.putRevision(revision);
+
+            return true;
+        } else {
             Functions.logD("ServiceSync -- load: cacheSyncHelper.loadPreferences() ERROR");
             return false;
         }
-
-        return true;
     }
 }

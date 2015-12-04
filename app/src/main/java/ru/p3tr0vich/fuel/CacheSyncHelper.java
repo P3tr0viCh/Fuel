@@ -1,6 +1,7 @@
 package ru.p3tr0vich.fuel;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,7 +12,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 class CacheSyncHelper {
@@ -67,9 +67,7 @@ class CacheSyncHelper {
         }
     }
 
-    public boolean loadPreferences() {
-        List<String> preferences = new ArrayList<>();
-
+    public boolean loadPreferences(@NonNull List<String> preferences) {
         File filePreferences = new File(getDirPreferences(), FILE_PREFERENCES);
 
         if (!filePreferences.exists() || !filePreferences.isFile()) {
@@ -101,18 +99,14 @@ class CacheSyncHelper {
 
             fileInputStream.close();
 
-            FuelingPreferenceManager.setPreferences(preferences);
-
             return true;
         } catch (IOException e) {
-            Functions.logD("CacheSyncHelper -- getRevision: IOException");
+            Functions.logD("CacheSyncHelper -- loadPreferences: IOException");
             return false;
         }
     }
 
-    public boolean savePreferences() {
-        List<String> preferences = FuelingPreferenceManager.getPreferences();
-
+    public boolean savePreferences(@NonNull List<String> preferences) {
         File dirPreferences = getDirPreferences();
 
         if (!dirPreferences.exists()) if (!dirPreferences.mkdirs()) {
@@ -156,6 +150,7 @@ class CacheSyncHelper {
 
             return true;
         } catch (IOException e) {
+            Functions.logD("CacheSyncHelper -- savePreferences: IOException");
             return false;
         }
     }
@@ -201,6 +196,7 @@ class CacheSyncHelper {
 
             return true;
         } catch (IOException e) {
+            Functions.logD("CacheSyncHelper -- saveRevision: IOException");
             return false;
         }
     }

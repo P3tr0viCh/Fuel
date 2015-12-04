@@ -1,5 +1,7 @@
 package ru.p3tr0vich.fuel;
 
+// TODO: focusable and nextFocusUp
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.IntDef;

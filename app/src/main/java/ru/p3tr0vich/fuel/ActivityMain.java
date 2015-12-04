@@ -459,7 +459,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void OnPreferenceScreenChanged(CharSequence title) {
-        Functions.logD("ActivityMain -- OnPreferenceScreenChanged: title == " + title);
+//        Functions.logD("ActivityMain -- OnPreferenceScreenChanged: title == " + title);
 
         setTitle(title == null ? getString(R.string.title_prefs) : title);
         toggleDrawer(mDrawerToggle, mDrawerLayout, title != null);

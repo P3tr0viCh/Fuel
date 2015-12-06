@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ServiceSync extends Service {
+public class SyncService extends Service {
 
     public static final int REQUEST_CODE = 3619;
 
@@ -24,7 +24,7 @@ public class ServiceSync extends Service {
     private static boolean mSyncInProcess = false;
     private static boolean mErrorInProcess = false;
 
-    public ServiceSync() {
+    public SyncService() {
     }
 
     public static boolean isSyncInProcess() {
@@ -37,12 +37,12 @@ public class ServiceSync extends Service {
 
     @Override
     public void onCreate() {
-        Functions.logD("ServiceSync -- onCreate");
+        Functions.logD("SyncService -- onCreate");
     }
 
     @Override
     public void onDestroy() {
-        Functions.logD("ServiceSync -- onDestroy");
+        Functions.logD("SyncService -- onDestroy");
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ServiceSync extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Functions.logD("ServiceSync -- onStartCommand: startId == " + startId);
+        Functions.logD("SyncService -- onStartCommand: startId == " + startId);
 
         mPendingIntent = intent.getParcelableExtra(EXTRA_PENDING);
 
@@ -75,7 +75,8 @@ public class ServiceSync extends Service {
 //                            mErrorInProcess = true;
 //                        }
 
-                    CacheSyncHelper cacheSyncHelper = new CacheSyncHelper(ServiceSync.this);
+                    SyncFiles syncFiles = new SyncFiles(SyncService.this);
+                    SyncLocal syncLocal = new SyncLocal(syncFiles);
 
                     // TODO:
                     // Копируем файл с номером ревизии с сервера в папку кэша.
@@ -84,18 +85,18 @@ public class ServiceSync extends Service {
 
                     if (!mErrorInProcess) {
 
-                        int serverRevision = cacheSyncHelper.getRevision();
+                        int serverRevision = syncLocal.getRevision();
                         // serverRevision == -1, если синхронизация не производилась
                         // или файлы синхронизации отсутствуют на сервере
 
                         int localRevision = FuelingPreferenceManager.getRevision();
                         // localRevision == 0, если программа запускается первый раз
 
-                        Functions.logD("ServiceSync -- doInBackground: serverRevision == " +
+                        Functions.logD("SyncService -- doInBackground: serverRevision == " +
                                 serverRevision + ", localRevision == " + localRevision);
 
-                        mErrorInProcess = !save(cacheSyncHelper, 0);
-//                            mErrorInProcess = !load(cacheSyncHelper, 0);
+                        mErrorInProcess = !save(syncLocal, 0);
+//                        mErrorInProcess = !load(syncLocal, 0);
 
 /*                            if (localRevision < serverRevision) {
                                 // Синхронизация уже выполнялась на другом устройстве.
@@ -103,7 +104,7 @@ public class ServiceSync extends Service {
 
                                 Functions.logD("ServiceSync -- doInBackground: localRevision < serverRevision");
 
-                                if (load(cacheSyncHelper)) {
+                                if (load(syncLocal)) {
                                 } else
                                     mErrorInProcess = true;
                             } else if (localRevision > serverRevision) {
@@ -114,7 +115,7 @@ public class ServiceSync extends Service {
 
                                 Functions.logD("ServiceSync -- doInBackground: localRevision > serverRevision");
 
-                                if (save(cacheSyncHelper, localRevision))
+                                if (save(syncLocal, localRevision))
                                 else
                                     mErrorInProcess = true;
                             } else { // localRevision == serverRevision
@@ -128,7 +129,7 @@ public class ServiceSync extends Service {
 
                                     localRevision++;
 
-                                    if (save(cacheSyncHelper, localRevision)) {
+                                    if (save(syncLocal, localRevision)) {
                                     } else
                                         mErrorInProcess = true;
                                 } else
@@ -156,30 +157,31 @@ public class ServiceSync extends Service {
                     mErrorInProcess = true;
                     mSyncInProcess = false;
 
-                    Functions.logD("ServiceSync -- doInBackground: catch (Exception e): " + e.toString());
+                    Functions.logD("SyncService -- doInBackground: exception == " + e.toString());
                 }
+                // TODO: delete local files
             }
         }).start();
     }
 
-    private boolean save(CacheSyncHelper cacheSyncHelper, int revision) {
+    private boolean save(SyncLocal syncLocal, int revision) {
         // Сохранить настройки в файл в папке кэша
         // Сохранить номер ревизии в файл в папке кэша
 
         // Передать файл настроек из папки кэша на сервер
         // Передать файл с номером ревизии из папки кэша на сервер,
 
-        if (cacheSyncHelper.savePreferences(FuelingPreferenceManager.getPreferences()))
-            Functions.logD("ServiceSync -- save: cacheSyncHelper.savePreferences() OK");
+        if (syncLocal.savePreferences(FuelingPreferenceManager.getPreferences()))
+            Functions.logD("SyncService -- save: syncLocal.savePreferences() OK");
         else {
-            Functions.logD("ServiceSync -- save: cacheSyncHelper.savePreferences() ERROR");
+            Functions.logD("SyncService -- save: syncLocal.savePreferences() ERROR");
             return false;
         }
 
-        if (cacheSyncHelper.saveRevision(revision))
-            Functions.logD("ServiceSync -- save: cacheSyncHelper.saveRevision(" + revision + ") OK");
+        if (syncLocal.saveRevision(revision))
+            Functions.logD("SyncService -- save: syncLocal.saveRevision(" + revision + ") OK");
         else {
-            Functions.logD("ServiceSync -- save: cacheSyncHelper.saveRevision(" + revision + ") ERROR");
+            Functions.logD("SyncService -- save: syncLocal.saveRevision(" + revision + ") ERROR");
             return false;
         }
 
@@ -200,7 +202,7 @@ public class ServiceSync extends Service {
         return true;
     }
 
-    private boolean load(CacheSyncHelper cacheSyncHelper, int revision) {
+    private boolean load(SyncLocal syncLocal, int revision) {
         // Получить файл настроек с сервера и сохранить в папку кэша
 
         /*        if (!ServerSyncHelper.loadPreferences()) {
@@ -210,8 +212,8 @@ public class ServiceSync extends Service {
 
         List<String> preferences = new ArrayList<>();
 
-        if (cacheSyncHelper.loadPreferences(preferences)) {
-            Functions.logD("ServiceSync -- load: cacheSyncHelper.loadPreferences() OK");
+        if (syncLocal.loadPreferences(preferences)) {
+            Functions.logD("SyncService -- load: syncLocal.loadPreferences() OK");
 
             FuelingPreferenceManager.setPreferences(preferences);
             FuelingPreferenceManager.putChanged(false);
@@ -219,7 +221,7 @@ public class ServiceSync extends Service {
 
             return true;
         } else {
-            Functions.logD("ServiceSync -- load: cacheSyncHelper.loadPreferences() ERROR");
+            Functions.logD("SyncService -- load: syncLocal.loadPreferences() ERROR");
             return false;
         }
     }

@@ -312,10 +312,10 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ServiceSync.REQUEST_CODE) {
-            if (resultCode == ServiceSync.STATUS_START)
+        if (requestCode == SyncService.REQUEST_CODE) {
+            if (resultCode == SyncService.STATUS_START)
                 Functions.logD("ActivityMain -- onActivityResult: resultCode == STATUS_START");
-            else if (resultCode == ServiceSync.STATUS_FINISH)
+            else if (resultCode == SyncService.STATUS_FINISH)
                 Functions.logD("ActivityMain -- onActivityResult: resultCode == STATUS_FINISH");
             updateSyncStatus();
             return;
@@ -521,16 +521,16 @@ public class ActivityMain extends AppCompatActivity implements
         Functions.logD("ActivityMain -- startSync");
 
         if (FuelingPreferenceManager.isSyncEnabled())
-            startService(new Intent(this, ServiceSync.class)
-                    .putExtra(ServiceSync.EXTRA_START, start)
-                    .putExtra(ServiceSync.EXTRA_PENDING,
-                            createPendingResult(ServiceSync.REQUEST_CODE, new Intent(), 0)));
+            startService(new Intent(this, SyncService.class)
+                    .putExtra(SyncService.EXTRA_START, start)
+                    .putExtra(SyncService.EXTRA_PENDING,
+                            createPendingResult(SyncService.REQUEST_CODE, new Intent(), 0)));
     }
 
     private void updateSyncStatus() {
         String status;
 
-        if (ServiceSync.isSyncInProcess()) {
+        if (SyncService.isSyncInProcess()) {
             status = getString(R.string.sync_in_process);
 
             mImgSync.setImageResource(R.drawable.ic_sync_grey600_24dp);
@@ -540,7 +540,7 @@ public class ActivityMain extends AppCompatActivity implements
             mImgSync.clearAnimation();
 
             if (FuelingPreferenceManager.isSyncEnabled()) {
-                if (ServiceSync.isErrorInProcess()) {
+                if (SyncService.isErrorInProcess()) {
                     status = getString(R.string.sync_error);
 
                     mImgSync.setImageResource(R.drawable.ic_sync_alert_grey600_24dp);

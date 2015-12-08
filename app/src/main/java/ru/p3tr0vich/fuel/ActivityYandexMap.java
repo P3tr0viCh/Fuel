@@ -47,9 +47,8 @@ public class ActivityYandexMap extends AppCompatActivity {
     private static final String MAP_HTML_DISTANCE = "file:///android_asset/distanceCalculator.html";
     private static final String MAP_HTML_CENTER = "file:///android_asset/mapCenter.html";
 
-    private
     @MapType
-    int mType;
+    private int mType;
 
     private boolean mLoading = true;
     private int mDistance = 0;

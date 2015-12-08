@@ -25,6 +25,8 @@ class FuelingPreferenceManager {
     private static final String PREF_CONS = "consumption";
     private static final String PREF_SEASON = "season";
 
+    public static final String SYNC_ERROR = "error";
+
     @SuppressWarnings("WeakerAccess")
     static SharedPreferences.OnSharedPreferenceChangeListener sPreferenceChangeListener;
     private static Context sContext;
@@ -62,15 +64,21 @@ class FuelingPreferenceManager {
     }
 
     public static String getLastSync() {
-        long date = sSharedPreferences.getLong(PREF_LAST_SYNC, Long.MIN_VALUE);
-        return date != Long.MIN_VALUE ? Functions.dateTimeToString(new Date(date)) : "";
+        String lastSync =  sSharedPreferences.getString(PREF_LAST_SYNC, "");
+        Functions.logD("FuelingPreferenceManager -- getLastSync: lastSync == " + lastSync);
+        return lastSync;
     }
 
     public static void putLastSync(Date dateTime) {
+        putLastSync(Functions.dateTimeToString(dateTime));
+    }
+
+    public static void putLastSync(String dateTime) {
         sSharedPreferences
                 .edit()
-                .putLong(PREF_LAST_SYNC, dateTime.getTime())
+                .putString(PREF_LAST_SYNC, dateTime)
                 .apply();
+        Functions.logD("FuelingPreferenceManager -- putLastSync: dateTime == " + dateTime);
     }
 
     public static boolean isSyncEnabled() {

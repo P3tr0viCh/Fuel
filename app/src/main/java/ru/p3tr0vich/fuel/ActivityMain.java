@@ -3,9 +3,11 @@ package ru.p3tr0vich.fuel;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SyncStatusObserver;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -20,6 +22,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +37,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 public class ActivityMain extends AppCompatActivity implements
+        SyncStatusObserver,
         FragmentFueling.OnFilterChangeListener,
         FragmentFueling.OnRecordChangeListener,
         FragmentInterface.OnFragmentChangeListener,
@@ -52,6 +56,9 @@ public class ActivityMain extends AppCompatActivity implements
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private NavigationView mNavigationView;
+
+    private SyncAccount mSyncAccount;
+    private Object mSyncMonitor;
 
     private ImageView mImgSync;
     private Animation mAnimationSync;
@@ -76,10 +83,6 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Functions.sApplicationContext = getApplicationContext();
-
-        FuelingPreferenceManager.init(Functions.sApplicationContext);
-
         Functions.logD("**************** ActivityMain -- onCreate ****************");
 
         super.onCreate(savedInstanceState);
@@ -127,6 +130,8 @@ public class ActivityMain extends AppCompatActivity implements
             }
         });
 
+        mSyncAccount = new SyncAccount(Functions.sApplicationContext);
+
         mAnimationSync = new RotateAnimation(360.0f, 0.0f,
                 Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         mAnimationSync.setInterpolator(new LinearInterpolator());
@@ -140,7 +145,7 @@ public class ActivityMain extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 if (FuelingPreferenceManager.isSyncEnabled())
-                    startSync(true);
+                    startSync();
                 else {
                     mClickedMenuId = R.id.action_settings; // TODO: open sync screen
                     mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -178,11 +183,14 @@ public class ActivityMain extends AppCompatActivity implements
                 if (fragmentFueling != null)
                     fragmentFueling.setProgressBarVisible(intent.getBooleanExtra(EXTRA_LOADING, false));
                 else
-                    Functions.logD("ActivityMain -- BroadcastReceiver.onReceive: fragmentFueling == null");
+                    Functions.logD("ActivityMain -- mLoadingStatusReceiver.onReceive: fragmentFueling == null");
             }
         };
-        LocalBroadcastManager.getInstance(this).registerReceiver(mLoadingStatusReceiver,
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mLoadingStatusReceiver,
                 new IntentFilter(ACTION_LOADING));
+
+        mSyncMonitor = ContentResolver.addStatusChangeListener(
+                ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
 
         if (savedInstanceState == null) {
             mCurrentFragmentId = R.id.action_fueling;
@@ -190,14 +198,14 @@ public class ActivityMain extends AppCompatActivity implements
                     .add(R.id.contentFrame, new FragmentFueling(), FragmentFueling.TAG)
                     .setTransition(FragmentTransaction.TRANSIT_NONE)
                     .commit();
+
+            if (!isSyncActive()) startSync();
         } else {
             mCurrentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID);
             if (mCurrentFragmentId == R.id.action_settings)
                 mDrawerToggle.setDrawerIndicatorEnabled(
                         ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).isInRoot());
         }
-
-        startSync(savedInstanceState == null);
 //        FuelingPreferenceManager.putRevision(-1);
     }
 
@@ -294,6 +302,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
+        ContentResolver.removeStatusChangeListener(mSyncMonitor);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mLoadingStatusReceiver);
         super.onDestroy();
     }
@@ -312,15 +321,6 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == SyncService.REQUEST_CODE) {
-            if (resultCode == SyncService.STATUS_START)
-                Functions.logD("ActivityMain -- onActivityResult: resultCode == STATUS_START");
-            else if (resultCode == SyncService.STATUS_FINISH)
-                Functions.logD("ActivityMain -- onActivityResult: resultCode == STATUS_FINISH");
-            updateSyncStatus();
-            return;
-        }
-
         if (resultCode != RESULT_OK) return;
 
         FuelingRecord fuelingRecord;
@@ -512,26 +512,23 @@ public class ActivityMain extends AppCompatActivity implements
         anim.start();
     }
 
-    private void startSync(boolean start) {
-        // Вызывается всегда при старте приложения
-        // для обновления PendingIntent
-        // Синхронизация запускается только при запуске приложения
-        // start == (savedInstanceState == null)
-
+    private void startSync() {
         Functions.logD("ActivityMain -- startSync");
 
-        if (FuelingPreferenceManager.isSyncEnabled())
-            startService(new Intent(this, SyncService.class)
-                    .putExtra(SyncService.EXTRA_START, start)
-                    .putExtra(SyncService.EXTRA_PENDING,
-                            createPendingResult(SyncService.REQUEST_CODE, new Intent(), 0)));
+        Bundle extras = new Bundle();
+        extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+
+        ContentResolver.requestSync(mSyncAccount.getAccount(), mSyncAccount.getAuthority(), extras);
+    }
+
+    private boolean isSyncActive() {
+        return ContentResolver.isSyncActive(mSyncAccount.getAccount(), mSyncAccount.getAuthority());
     }
 
     private void updateSyncStatus() {
-        String status;
-
-        if (SyncService.isSyncInProcess()) {
-            status = getString(R.string.sync_in_process);
+        if (isSyncActive()) {
+            mBtnSync.setText(getString(R.string.sync_in_process));
 
             mImgSync.setImageResource(R.drawable.ic_sync_grey600_24dp);
 
@@ -540,31 +537,43 @@ public class ActivityMain extends AppCompatActivity implements
             mImgSync.clearAnimation();
 
             if (FuelingPreferenceManager.isSyncEnabled()) {
-                if (SyncService.isErrorInProcess()) {
-                    status = getString(R.string.sync_error);
+//                String lastSync = FuelingPreferenceManager.getLastSync();
+
+                String lastSync = mSyncAccount.getUserData(SyncAccount.KEY_LAST_SYNC);
+
+                Functions.logD("ActivityMain -- updateSyncStatus: lastSync == " + lastSync);
+
+                if (lastSync.equals(FuelingPreferenceManager.SYNC_ERROR)) {
+                    mBtnSync.setText(getString(R.string.sync_error));
 
                     mImgSync.setImageResource(R.drawable.ic_sync_alert_grey600_24dp);
                 } else {
-                    status = FuelingPreferenceManager.getLastSync();
-
-                    status = !status.isEmpty() ?
-                            getString(R.string.sync_done, status) :
-                            getString(R.string.sync_not_performed);
+                    mBtnSync.setText(TextUtils.isEmpty(lastSync) ?
+                            getString(R.string.sync_not_performed) :
+                            getString(R.string.sync_done, lastSync));
 
                     mImgSync.setImageResource(R.drawable.ic_sync_grey600_24dp);
                 }
             } else {
-                status = getString(R.string.sync_disabled);
+                mBtnSync.setText(getString(R.string.sync_disabled));
 
                 mImgSync.setImageResource(R.drawable.ic_sync_off_grey600_24dp);
             }
         }
-
-        mBtnSync.setText(status);
     }
 
     @Override
     public void OnPreferenceSyncEnabledChanged() {
-        updateSyncStatus();
+//        updateSyncStatus();
+    }
+
+    @Override
+    public void onStatusChanged(int which) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateSyncStatus();
+            }
+        });
     }
 }

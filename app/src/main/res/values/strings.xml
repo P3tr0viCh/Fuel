@@ -180,6 +180,10 @@
     <string name="pref_sync_enabled_on">Включена</string>
     <string name="pref_sync_enabled_off">Выключена</string>
 
+    <string name="sync_authority" translatable="false">ru.p3tr0vich.fuel</string>
+    <string name="sync_account_name" translatable="false">Sync</string>
+    <string name="sync_account_type" translatable="false">ru.p3tr0vich.fuel</string>
+
     <string name="sync_error">Ошибка синхронизации</string>
     <string name="sync_disabled">Синхронизация отключена</string>
     <string name="sync_in_process">Выполняется синхронизация</string>

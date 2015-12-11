@@ -6,16 +6,15 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 class FuelingPreferenceManager {
 
-    private static final String PREF_REVISION = "revision";
-    private static final String PREF_CHANGED = "changed";
-    private static final String PREF_LAST_SYNC = "last sync time";
+    public static final String PREF_REVISION = "revision";
+    public static final String PREF_CHANGED = "changed";
 
     private static final String PREF_DISTANCE = "distance";
     private static final String PREF_COST = "cost";
@@ -25,23 +24,23 @@ class FuelingPreferenceManager {
     private static final String PREF_CONS = "consumption";
     private static final String PREF_SEASON = "season";
 
-    public static final String SYNC_ERROR = "error";
-
     @SuppressWarnings("WeakerAccess")
+    // private - поле удаляется сборщиком мусора
     static SharedPreferences.OnSharedPreferenceChangeListener sPreferenceChangeListener;
     private static Context sContext;
     private static SharedPreferences sSharedPreferences;
 
     public static void init(Context context) {
         sContext = context;
+
         sSharedPreferences = PreferenceManager.getDefaultSharedPreferences(sContext);
+
         sPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 Functions.logD("FuelingPreferenceManager -- onSharedPreferenceChanged: key == " + key);
 
                 if (!key.equals(PREF_CHANGED) &&
-                        !key.equals(PREF_LAST_SYNC) &&
                         !key.equals(PREF_REVISION) &&
                         !key.equals(sContext.getString(R.string.pref_sync_enabled)))
                     putChanged(true);
@@ -61,24 +60,6 @@ class FuelingPreferenceManager {
                 .apply();
 
         Functions.logD("FuelingPreferenceManager -- putChanged: changed == " + changed);
-    }
-
-    public static String getLastSync() {
-        String lastSync =  sSharedPreferences.getString(PREF_LAST_SYNC, "");
-        Functions.logD("FuelingPreferenceManager -- getLastSync: lastSync == " + lastSync);
-        return lastSync;
-    }
-
-    public static void putLastSync(Date dateTime) {
-        putLastSync(Functions.dateTimeToString(dateTime));
-    }
-
-    public static void putLastSync(String dateTime) {
-        sSharedPreferences
-                .edit()
-                .putString(PREF_LAST_SYNC, dateTime)
-                .apply();
-        Functions.logD("FuelingPreferenceManager -- putLastSync: dateTime == " + dateTime);
     }
 
     public static boolean isSyncEnabled() {
@@ -227,7 +208,7 @@ class FuelingPreferenceManager {
         return sSharedPreferences.getString(key, defValue);
     }
 
-    public static List<String> getPreferences() {
+    public static HashMap<String, Object> getPreferences() {
 
 //        sSharedPreferences.edit()
 //                .remove("Yandex_Maps")
@@ -235,29 +216,32 @@ class FuelingPreferenceManager {
 //                .remove("wifi enabled")
 //                .remove("last time")
 //                .remove("prefer wifi")
+//                .remove("last sync time")
 //                .apply();
 
         Object value;
-        List<String> result = new ArrayList<>();
+//        List<String> result = new ArrayList<>();
 
         Map<String, ?> map = sSharedPreferences.getAll();
 
-        for (String mapKey : map.keySet()) {
-            value = map.get(mapKey);
+        HashMap<String, Object> result = new HashMap<>();
 
-            Functions.logD(mapKey + "=(" + value.getClass().getName() + ") " +
-                    value.toString());
+        for (String key : map.keySet()) {
+            value = map.get(key);
 
-            if (!mapKey.equals(PREF_CHANGED) &&
-                    !mapKey.equals(PREF_LAST_SYNC) &&
-                    !mapKey.equals(PREF_REVISION) &&
-                    !mapKey.equals(sContext.getString(R.string.pref_sync_enabled))) {
+//            Functions.logD(key + "=(" + value.getClass().getName() + ") " +
+//                    value.toString());
 
-                result.add(mapKey + '=' + String.valueOf(value));
+            if (!key.equals(PREF_CHANGED) &&
+                    !key.equals(PREF_REVISION) &&
+                    !key.equals(sContext.getString(R.string.pref_sync_enabled))) {
+
+                result.put(key, value);
+//                result.add(key + '=' + String.valueOf(value));
             }
         }
 
-        for (String preference : result) Functions.logD(preference);
+//        for (String preference : result) Functions.logD(preference);
 
         return result;
     }

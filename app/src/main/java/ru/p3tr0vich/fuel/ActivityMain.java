@@ -145,7 +145,7 @@ public class ActivityMain extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 if (FuelingPreferenceManager.isSyncEnabled())
-                    startSync();
+                    if (!mSyncAccount.isSyncActive()) startSync();
                 else {
                     mClickedMenuId = R.id.action_settings; // TODO: open sync screen
                     mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -199,7 +199,8 @@ public class ActivityMain extends AppCompatActivity implements
                     .setTransition(FragmentTransaction.TRANSIT_NONE)
                     .commit();
 
-            if (!isSyncActive()) startSync();
+            if (FuelingPreferenceManager.isSyncEnabled() && !mSyncAccount.isSyncActive())
+                startSync();
         } else {
             mCurrentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID);
             if (mCurrentFragmentId == R.id.action_settings)
@@ -522,49 +523,47 @@ public class ActivityMain extends AppCompatActivity implements
         ContentResolver.requestSync(mSyncAccount.getAccount(), mSyncAccount.getAuthority(), extras);
     }
 
-    private boolean isSyncActive() {
-        return ContentResolver.isSyncActive(mSyncAccount.getAccount(), mSyncAccount.getAuthority());
-    }
-
     private void updateSyncStatus() {
-        if (isSyncActive()) {
-            mBtnSync.setText(getString(R.string.sync_in_process));
+        String text;
+        int imgId;
+        boolean syncActive = mSyncAccount.isSyncActive();
 
-            mImgSync.setImageResource(R.drawable.ic_sync_grey600_24dp);
-
-            mImgSync.startAnimation(mAnimationSync);
+        if (syncActive) {
+            text = getString(R.string.sync_in_process);
+            imgId = R.drawable.ic_sync_grey600_24dp;
         } else {
-            mImgSync.clearAnimation();
-
             if (FuelingPreferenceManager.isSyncEnabled()) {
-//                String lastSync = FuelingPreferenceManager.getLastSync();
-
-                String lastSync = mSyncAccount.getUserData(SyncAccount.KEY_LAST_SYNC);
+                String lastSync = mSyncAccount.getLastSync();
 
                 Functions.logD("ActivityMain -- updateSyncStatus: lastSync == " + lastSync);
 
-                if (lastSync.equals(FuelingPreferenceManager.SYNC_ERROR)) {
-                    mBtnSync.setText(getString(R.string.sync_error));
-
-                    mImgSync.setImageResource(R.drawable.ic_sync_alert_grey600_24dp);
+                if (TextUtils.isEmpty(lastSync)) {
+                    text = getString(R.string.sync_not_performed);
+                    imgId = R.drawable.ic_sync_grey600_24dp;
+                } else if (lastSync.equals(SyncAccount.SYNC_ERROR)) {
+                    text = getString(R.string.sync_error);
+                    imgId = R.drawable.ic_sync_alert_grey600_24dp;
                 } else {
-                    mBtnSync.setText(TextUtils.isEmpty(lastSync) ?
-                            getString(R.string.sync_not_performed) :
-                            getString(R.string.sync_done, lastSync));
-
-                    mImgSync.setImageResource(R.drawable.ic_sync_grey600_24dp);
+                    text = getString(R.string.sync_done, lastSync);
+                    imgId = R.drawable.ic_sync_grey600_24dp;
                 }
             } else {
-                mBtnSync.setText(getString(R.string.sync_disabled));
-
-                mImgSync.setImageResource(R.drawable.ic_sync_off_grey600_24dp);
+                text = getString(R.string.sync_disabled);
+                imgId = R.drawable.ic_sync_off_grey600_24dp;
             }
         }
+
+        mBtnSync.setText(text);
+        mImgSync.setImageResource(imgId);
+
+        if (syncActive) mImgSync.startAnimation(mAnimationSync);
+        else mImgSync.clearAnimation();
     }
 
     @Override
-    public void OnPreferenceSyncEnabledChanged() {
-//        updateSyncStatus();
+    public void OnPreferenceSyncEnabledChanged(final boolean enabled) {
+        mSyncAccount.setIsSyncable(enabled);
+        updateSyncStatus();
     }
 
     @Override

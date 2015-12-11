@@ -52,4 +52,21 @@ class FileIO {
 
         fileOutputStream.close();
     }
+
+    public static void makeDir(File dir) throws IOException {
+        if (dir.exists()) return;
+
+        if (!dir.mkdirs())
+            throw new IOException("FileIO -- makeDir: can not create dir " + dir.toString());
+    }
+
+    public static void createFile(File file) throws IOException {
+        if (file.exists()) {
+            if (!file.isFile())
+                throw new IOException("FileIO -- createFile: " + file.toString()
+                        + " exists and is not a file");
+        } else
+            //noinspection ResultOfMethodCallIgnored
+            file.createNewFile();
+    }
 }

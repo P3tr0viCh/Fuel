@@ -5,9 +5,13 @@ import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
 
+import java.util.Date;
+
 public class SyncAccount {
 
-    public static final String KEY_LAST_SYNC = "KEY_LAST_SYNC";
+    private static final String KEY_LAST_SYNC = "KEY_LAST_SYNC";
+
+    public static final String SYNC_ERROR = "error";
 
     private final AccountManager mAccountManager;
 
@@ -48,8 +52,7 @@ public class SyncAccount {
             account = new Account(getAccountName(), getAccountType());
 
             if (mAccountManager.addAccountExplicitly(account, null, null)) {
-                ContentResolver.setIsSyncable(account, getAuthority(),
-                        FuelingPreferenceManager.isSyncEnabled() ? 1 : 0);
+                setIsSyncable(account, FuelingPreferenceManager.isSyncEnabled());
 
                 Functions.logD("SyncAccount -- getAccount: addAccountExplicitly == true");
             } else {
@@ -60,11 +63,32 @@ public class SyncAccount {
         return account;
     }
 
-    public void setUserData(final String key, final String value) {
+    public boolean isSyncActive() {
+        return ContentResolver.isSyncActive(getAccount(), getAuthority());
+    }
+
+    private void setIsSyncable(final Account account, final boolean syncable) {
+        ContentResolver.setIsSyncable(account, getAuthority(), syncable ? 1 : 0);
+    }
+
+    public void setIsSyncable(final boolean syncable) {
+        setIsSyncable(getAccount(), syncable);
+    }
+
+    private void setUserData(final String key, final String value) {
         mAccountManager.setUserData(getAccount(), key, value);
     }
 
-    public String getUserData(final String key) {
+    private String getUserData(final String key) {
         return mAccountManager.getUserData(getAccount(), key);
+    }
+
+    public void setLastSync(final Date dateTime) {
+        setUserData(KEY_LAST_SYNC, dateTime != null ?
+                Functions.dateTimeToString(dateTime) : SYNC_ERROR);
+    }
+
+    public String getLastSync() {
+        return getUserData(KEY_LAST_SYNC);
     }
 }

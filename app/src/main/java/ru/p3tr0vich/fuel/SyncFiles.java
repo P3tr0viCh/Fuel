@@ -12,22 +12,26 @@ class SyncFiles {
     private static final String FILE_PREFERENCES_REVISION = "REVISION";
     private static final String FILE_PREFERENCES = "PREFERENCES";
 
-    private final Context mContext;
+    private final File mLocalDirPreferences;
+    private final File mLocalFilePreferences;
+    private final File mLocalFilePreferencesRevision;
 
     SyncFiles(@NonNull Context context) {
-        mContext = context;
-    }
-
-    public File getDirPreferences() {
-        return new File(mContext.getCacheDir() + File.separator + DIR_SYNC +
+        mLocalDirPreferences = new File(context.getCacheDir() + File.separator + DIR_SYNC +
                 File.separator + DIR_PREFERENCES);
+        mLocalFilePreferences = new File(mLocalDirPreferences, FILE_PREFERENCES);
+        mLocalFilePreferencesRevision = new File(mLocalDirPreferences, FILE_PREFERENCES_REVISION);
     }
 
-    public File getFilePreferencesRevision() {
-        return new File(getDirPreferences(), FILE_PREFERENCES_REVISION);
+    public File getLocalDirPreferences() {
+        return mLocalDirPreferences;
     }
 
-    public File getFilePreferences() {
-        return new File(getDirPreferences(), FILE_PREFERENCES);
+    public File getLocalFilePreferences() {
+        return mLocalFilePreferences;
+    }
+
+    public File getLocalFilePreferencesRevision() {
+        return mLocalFilePreferencesRevision;
     }
 }

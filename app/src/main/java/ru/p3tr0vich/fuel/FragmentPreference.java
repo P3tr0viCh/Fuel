@@ -40,7 +40,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     }
 
     public interface OnPreferenceSyncEnabledChangeListener {
-        void OnPreferenceSyncEnabledChanged();
+        void OnPreferenceSyncEnabledChanged(final boolean enabled);
     }
 
     public boolean isInRoot() {
@@ -55,7 +55,8 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
         if (key.equals(getString(R.string.pref_sync_enabled))) {
             updatePreferenceSummary(R.string.pref_sync_key);
-            mOnPreferenceSyncEnabledChangeListener.OnPreferenceSyncEnabledChanged();
+            mOnPreferenceSyncEnabledChangeListener.OnPreferenceSyncEnabledChanged(
+                    sharedPreferences.getBoolean(key, false));
         }
     }
 

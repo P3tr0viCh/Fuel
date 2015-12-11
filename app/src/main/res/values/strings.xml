@@ -176,7 +176,7 @@
     <string name="pref_sync_summary_on">Включена</string>
     <string name="pref_sync_summary_off">Выключена</string>
 
-    <string name="pref_sync_enabled" translatable="false">sync</string>
+    <string name="pref_sync_enabled" translatable="false">sync enabled</string>
     <string name="pref_sync_enabled_on">Включена</string>
     <string name="pref_sync_enabled_off">Выключена</string>
 

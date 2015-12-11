@@ -3,6 +3,7 @@ package ru.p3tr0vich.fuel;
 import android.support.annotation.NonNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ class SyncLocal {
     }
 
     public int getRevision() {
-        File fileRevision = mSyncFiles.getFilePreferencesRevision();
+        File fileRevision = mSyncFiles.getLocalFilePreferencesRevision();
 
         if (!fileRevision.exists() || !fileRevision.isFile()) {
             Functions.logD("SyncLocal -- getRevision: fileRevision not exists");
@@ -33,74 +34,42 @@ class SyncLocal {
         }
     }
 
-    public boolean loadPreferences(@NonNull List<String> preferences) {
-        File filePreferences = mSyncFiles.getFilePreferences();
+    public void loadPreferences(@NonNull List<String> preferences) throws IOException {
+        File filePreferences = mSyncFiles.getLocalFilePreferences();
 
+        FileIO.checkExists(filePreferences);
         if (!filePreferences.exists() || !filePreferences.isFile()) {
-            Functions.logD("SyncLocal -- loadPreferences: filePreferences not exists");
-            return false;
+            throw new IOException("SyncLocal -- loadPreferences: " + filePreferences.toString() +
+                    " not exists or not is a file");
         }
 
-        try {
-            FileIO.read(filePreferences, preferences);
-
-            return true;
-        } catch (Exception e) {
-            Functions.logD("SyncLocal -- loadPreferences: exception == " + e.toString());
-            return false;
-        }
+        FileIO.read(filePreferences, preferences);
     }
 
-    public boolean savePreferences(@NonNull List<String> preferences) {
-        File dirPreferences = mSyncFiles.getDirPreferences();
+    public void savePreferences(@NonNull List<String> preferences) throws IOException {
+        File dirPreferences = mSyncFiles.getLocalDirPreferences();
 
-        if (!dirPreferences.exists()) if (!dirPreferences.mkdirs()) {
-            Functions.logD("SyncLocal -- savePreferences: can not create dirPreferences");
-            return false;
-        }
+        FileIO.makeDir(dirPreferences);
 
-        File filePreferences = mSyncFiles.getFilePreferences();
+        File filePreferences = mSyncFiles.getLocalFilePreferences();
 
-        try {
-            if (!filePreferences.createNewFile()) if (!filePreferences.isFile()) {
-                Functions.logD("SyncLocal -- savePreferences: can not create filePreferences");
-                return false;
-            }
+        FileIO.createFile(filePreferences);
 
-            FileIO.write(filePreferences, preferences);
-
-            return true;
-        } catch (Exception e) {
-            Functions.logD("SyncLocal -- savePreferences: exception == " + e.toString());
-            return false;
-        }
+        FileIO.write(filePreferences, preferences);
     }
 
-    public boolean saveRevision(int revision) {
-        File dirPreferences = mSyncFiles.getDirPreferences();
+    public void saveRevision(int revision) throws IOException {
+        File dirPreferences = mSyncFiles.getLocalDirPreferences();
 
-        if (!dirPreferences.exists()) if (!dirPreferences.mkdirs()) {
-            Functions.logD("SyncLocal -- saveRevision: can not create dirPreferences");
-            return false;
-        }
+        FileIO.makeDir(dirPreferences);
 
-        File fileRevision = mSyncFiles.getFilePreferencesRevision();
+        File fileRevision = mSyncFiles.getLocalFilePreferencesRevision();
 
-        try {
-            if (!fileRevision.createNewFile()) if (!fileRevision.isFile()) {
-                Functions.logD("SyncLocal -- saveRevision: can not create fileRevision");
-                return false;
-            }
+        FileIO.createFile(fileRevision);
 
-            List<String> strings = new ArrayList<>();
-            strings.add(String.valueOf(revision));
+        List<String> strings = new ArrayList<>();
+        strings.add(String.valueOf(revision));
 
-            FileIO.write(fileRevision, strings);
-
-            return true;
-        } catch (Exception e) {
-            Functions.logD("SyncLocal -- saveRevision: exception == " + e.toString());
-            return false;
-        }
+        FileIO.write(fileRevision, strings);
     }
 }

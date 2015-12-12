@@ -5,13 +5,7 @@ import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
 
-import java.util.Date;
-
 public class SyncAccount {
-
-    private static final String KEY_LAST_SYNC = "KEY_LAST_SYNC";
-
-    public static final String SYNC_ERROR = "error";
 
     private final AccountManager mAccountManager;
 
@@ -73,22 +67,5 @@ public class SyncAccount {
 
     public void setIsSyncable(final boolean syncable) {
         setIsSyncable(getAccount(), syncable);
-    }
-
-    private void setUserData(final String key, final String value) {
-        mAccountManager.setUserData(getAccount(), key, value);
-    }
-
-    private String getUserData(final String key) {
-        return mAccountManager.getUserData(getAccount(), key);
-    }
-
-    public void setLastSync(final Date dateTime) {
-        setUserData(KEY_LAST_SYNC, dateTime != null ?
-                Functions.dateTimeToString(dateTime) : SYNC_ERROR);
-    }
-
-    public String getLastSync() {
-        return getUserData(KEY_LAST_SYNC);
     }
 }

@@ -533,14 +533,14 @@ public class ActivityMain extends AppCompatActivity implements
             imgId = R.drawable.ic_sync_grey600_24dp;
         } else {
             if (FuelingPreferenceManager.isSyncEnabled()) {
-                String lastSync = mSyncAccount.getLastSync();
+                String lastSync = FuelingPreferenceManager.getLastSync();
 
                 Functions.logD("ActivityMain -- updateSyncStatus: lastSync == " + lastSync);
 
                 if (TextUtils.isEmpty(lastSync)) {
                     text = getString(R.string.sync_not_performed);
                     imgId = R.drawable.ic_sync_grey600_24dp;
-                } else if (lastSync.equals(SyncAccount.SYNC_ERROR)) {
+                } else if (lastSync.equals(FuelingPreferenceManager.SYNC_ERROR)) {
                     text = getString(R.string.sync_error);
                     imgId = R.drawable.ic_sync_alert_grey600_24dp;
                 } else {

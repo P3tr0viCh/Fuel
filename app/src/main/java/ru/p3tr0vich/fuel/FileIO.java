@@ -69,4 +69,10 @@ class FileIO {
             //noinspection ResultOfMethodCallIgnored
             file.createNewFile();
     }
+
+    public static void checkExists(File file) throws IOException {
+        if (!file.exists() || !file.isFile())
+            throw new IOException("FileIO -- checkExists: " + file.toString() +
+                    " not exists or not is a file");
+    }
 }

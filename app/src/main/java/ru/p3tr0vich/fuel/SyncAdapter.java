@@ -3,10 +3,8 @@ package ru.p3tr0vich.fuel;
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.RemoteException;
 
@@ -26,24 +24,25 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                               ContentProviderClient provider, SyncResult syncResult) {
         Functions.logD("SyncAdapter -- onPerformSync: start");
 
+        SyncFiles syncFiles = new SyncFiles(getContext());
+        SyncLocal syncLocal = new SyncLocal(syncFiles);
+        SyncPreferencesAdapter syncPreferencesAdapter =
+                new SyncPreferencesAdapter(provider);
+
         try {
 
             try {
-                Cursor cursor = provider.query(SyncProvider.URI, null, FuelingPreferenceManager.PREF_CHANGED, null, null);
+                Functions.logD("SyncAdapter -- onPerformSync: preferences is changed == " +
+                        syncPreferencesAdapter.isChanged());
 
-                if (cursor != null) {
-                    if (cursor.moveToFirst()) {
-                        do {
-                            Functions.logD("SyncAdapter -- onPerformSync: cursor == " +
-                                    cursor.getString(0));
-                        } while (cursor.moveToNext());
-                    }
-                    cursor.close();
-                }
+                Functions.logD("SyncAdapter -- onPerformSync: preferences put changed");
+
+                syncPreferencesAdapter.putChanged();
+
+                Functions.logD("SyncAdapter -- onPerformSync: preferences is changed == " +
+                        syncPreferencesAdapter.isChanged());
             } catch (RemoteException e) {
                 syncResult.databaseError = true;
-                e.printStackTrace();
-                return;
             }
 
 //            Random random = new Random();
@@ -75,9 +74,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 //                Functions.logD("SyncAdapter -- onPerformSync: " + String.valueOf(i));
 //            }
 
-            SyncFiles syncFiles = new SyncFiles(getContext());
-            SyncLocal syncLocal = new SyncLocal(syncFiles);
-
             // TODO:
             // Копируем файл с номером ревизии с сервера в папку кэша.
             // Если нет доступа к серверу syncResult.stats.numAuthExceptions++;.
@@ -103,7 +99,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 //                syncResult.stats.numIoExceptions++;
 //            }
         } finally {
-            new SyncAccount(getContext()).setLastSync(syncResult.hasError() ? null : new Date());
+            try {
+                syncPreferencesAdapter.putLastSync(syncResult.hasError() ? null : new Date());
+            } catch (RemoteException e) {
+                syncResult.databaseError = true;
+            }
 
             Functions.logD("SyncAdapter -- onPerformSync: stop" +
                     (syncResult.hasError() ? ", errors == " + syncResult.toString() : ", all ok"));
@@ -117,7 +117,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         // Передать файл настроек из папки кэша на сервер
         // Передать файл с номером ревизии из папки кэша на сервер,
 
-        syncLocal.savePreferences(FuelingPreferenceManager.getPreferences());
+//        syncLocal.savePreferences(FuelingPreferenceManager.getPreferences());
 
         Functions.logD("SyncAdapter -- save: syncLocal.savePreferences() OK");
 
@@ -136,8 +136,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             return false;
         }*/
 
-        FuelingPreferenceManager.putChanged(false);
-        FuelingPreferenceManager.putRevision(revision);
+//        FuelingPreferenceManager.putChanged(false);
+//        FuelingPreferenceManager.putRevision(revision);
     }
 
     private void load(SyncLocal syncLocal, int revision) throws IOException {
@@ -157,61 +157,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         Functions.logD("SyncAdapter -- load: syncLocal.loadPreferences() OK");
 
-        FuelingPreferenceManager.setPreferences(preferences);
-        FuelingPreferenceManager.putChanged(false);
-        FuelingPreferenceManager.putRevision(revision);
-    }
-
-    private void providerUpdate(ContentProviderClient provider, ContentValues contentValues) throws RemoteException {
-        provider.update(SyncProvider.URI, contentValues, null, null);
-    }
-
-    private void providerSetPreferences(ContentProviderClient provider, List<String> preferences) throws RemoteException {
-        ContentValues contentValues = new ContentValues();
-
-        providerUpdate(provider, contentValues);
-    }
-
-    private void providerPutChanged(ContentProviderClient provider) throws RemoteException {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(FuelingPreferenceManager.PREF_CHANGED, false);
-        providerUpdate(provider, contentValues);
-    }
-
-    private void providerPutRevision(ContentProviderClient provider, int revision) throws RemoteException {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(FuelingPreferenceManager.PREF_REVISION, revision);
-        providerUpdate(provider, contentValues);
-    }
-
-    private List<String> providerGetPreferences(ContentProviderClient provider, String preference) throws RemoteException {
-        Cursor cursor = provider.query(SyncProvider.URI, null, preference, null, null);
-
-        List<String> result = new ArrayList<>();
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                do {
-                    Functions.logD("SyncAdapter -- onPerformSync: cursor == " +
-                            cursor.getString(0) + '=' + cursor.getString(1));
-                    result.add(cursor.getString(0) + '=' + cursor.getString(1));
-                } while (cursor.moveToNext());
-            }
-            cursor.close();
-        }
-
-        return result;
-    }
-
-    private int providerGetRevision(ContentProviderClient provider) throws RemoteException,
-            NumberFormatException, IndexOutOfBoundsException {
-        List<String> result = providerGetPreferences(provider, FuelingPreferenceManager.PREF_REVISION);
-        return Integer.decode(result.get(0));
-    }
-
-    private boolean providerIsChanged(ContentProviderClient provider) throws RemoteException,
-            NumberFormatException, IndexOutOfBoundsException {
-        List<String> result = providerGetPreferences(provider, FuelingPreferenceManager.PREF_CHANGED);
-        return Boolean.valueOf(result.get(0));
+//        FuelingPreferenceManager.setPreferences(preferences);
+//        FuelingPreferenceManager.putChanged(false);
+//        FuelingPreferenceManager.putRevision(revision);
     }
 }

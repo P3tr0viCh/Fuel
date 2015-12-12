@@ -18,18 +18,14 @@ class SyncLocal {
     public int getRevision() {
         File fileRevision = mSyncFiles.getLocalFilePreferencesRevision();
 
-        if (!fileRevision.exists() || !fileRevision.isFile()) {
-            Functions.logD("SyncLocal -- getRevision: fileRevision not exists");
-            return -1;
-        }
-
-        List<String> strings = new ArrayList<>();
         try {
+            FileIO.checkExists(fileRevision);
+
+            List<String> strings = new ArrayList<>();
             FileIO.read(fileRevision, strings);
 
             return Integer.decode(strings.get(0));
         } catch (Exception e) {
-            Functions.logD("SyncLocal -- getRevision: exception == " + e.toString());
             return -1;
         }
     }
@@ -38,10 +34,6 @@ class SyncLocal {
         File filePreferences = mSyncFiles.getLocalFilePreferences();
 
         FileIO.checkExists(filePreferences);
-        if (!filePreferences.exists() || !filePreferences.isFile()) {
-            throw new IOException("SyncLocal -- loadPreferences: " + filePreferences.toString() +
-                    " not exists or not is a file");
-        }
 
         FileIO.read(filePreferences, preferences);
     }

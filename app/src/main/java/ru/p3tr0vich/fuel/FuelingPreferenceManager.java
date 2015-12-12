@@ -1,20 +1,27 @@
 package ru.p3tr0vich.fuel;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 class FuelingPreferenceManager {
 
     public static final String PREF_REVISION = "revision";
     public static final String PREF_CHANGED = "changed";
+    public static final String PREF_LAST_SYNC = "last sync";
+
+    public static final String SYNC_ERROR = "error";
 
     private static final String PREF_DISTANCE = "distance";
     private static final String PREF_COST = "cost";
@@ -24,11 +31,25 @@ class FuelingPreferenceManager {
     private static final String PREF_CONS = "consumption";
     private static final String PREF_SEASON = "season";
 
+    // R.string.pref_map_center_latitude
+    private static final String PREF_MAP_CENTER_LATITUDE = "map center latitude";
+    // R.string.pref_map_center_longitude
+    private static final String PREF_MAP_CENTER_LONGITUDE = "map center longitude";
+
     @SuppressWarnings("WeakerAccess")
     // private - поле удаляется сборщиком мусора
     static SharedPreferences.OnSharedPreferenceChangeListener sPreferenceChangeListener;
     private static Context sContext;
     private static SharedPreferences sSharedPreferences;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({PREFERENCE_TYPE_STRING, PREFERENCE_TYPE_INT, PREFERENCE_TYPE_LONG})
+    public @interface PreferenceType {
+    }
+
+    public static final int PREFERENCE_TYPE_STRING = 0;
+    public static final int PREFERENCE_TYPE_INT = 1;
+    public static final int PREFERENCE_TYPE_LONG = 2;
 
     public static void init(Context context) {
         sContext = context;
@@ -42,6 +63,7 @@ class FuelingPreferenceManager {
 
                 if (!key.equals(PREF_CHANGED) &&
                         !key.equals(PREF_REVISION) &&
+                        !key.equals(PREF_LAST_SYNC) &&
                         !key.equals(sContext.getString(R.string.pref_sync_enabled)))
                     putChanged(true);
             }
@@ -53,7 +75,7 @@ class FuelingPreferenceManager {
         return sSharedPreferences.getBoolean(PREF_CHANGED, false);
     }
 
-    public static void putChanged(boolean changed) {
+    public static void putChanged(final boolean changed) {
         sSharedPreferences
                 .edit()
                 .putBoolean(PREF_CHANGED, changed)
@@ -70,13 +92,25 @@ class FuelingPreferenceManager {
         return sSharedPreferences.getInt(PREF_REVISION, -1);
     }
 
-    public static void putRevision(int revision) {
+    public static void putRevision(final int revision) {
         sSharedPreferences
                 .edit()
                 .putInt(PREF_REVISION, revision)
                 .apply();
 
         Functions.logD("FuelingPreferenceManager -- putRevision: revision == " + revision);
+    }
+
+    public static String getLastSync() {
+        return sSharedPreferences.getString(PREF_LAST_SYNC, "");
+    }
+
+    public static void putLastSync(final Date dateTime) {
+        sSharedPreferences
+                .edit()
+                .putString(PREF_LAST_SYNC, dateTime != null ?
+                        Functions.dateTimeToString(dateTime) : SYNC_ERROR)
+                .apply();
     }
 
     public static Date getFilterDateFrom() {
@@ -91,7 +125,7 @@ class FuelingPreferenceManager {
         return Functions.sqlDateToDate(result);
     }
 
-    public static void putFilterDate(Date dateFrom, Date dateTo) {
+    public static void putFilterDate(final Date dateFrom, final Date dateTo) {
         sSharedPreferences
                 .edit()
                 .putString(sContext.getString(R.string.pref_filter_date_from), Functions.dateToSQLite(dateFrom))
@@ -111,7 +145,7 @@ class FuelingPreferenceManager {
         return sSharedPreferences.getFloat(sContext.getString(R.string.pref_last_total), 0);
     }
 
-    public static void putLastTotal(float lastTotal) {
+    public static void putLastTotal(final float lastTotal) {
         sSharedPreferences
                 .edit()
                 .putFloat(sContext.getString(R.string.pref_last_total), lastTotal)
@@ -162,8 +196,8 @@ class FuelingPreferenceManager {
         return sSharedPreferences.getInt(PREF_SEASON, 0);
     }
 
-    public static void putCalc(String distance, String cost, String volume, String price,
-                               int cons, int season) {
+    public static void putCalc(final String distance, final String cost, final String volume,
+                               final String price, final int cons, final int season) {
         sSharedPreferences
                 .edit()
                 .putString(PREF_DISTANCE, distance)
@@ -183,32 +217,33 @@ class FuelingPreferenceManager {
 
     public static double getMapCenterLatitude() {
         return Double.longBitsToDouble(sSharedPreferences.getLong(
-                sContext.getString(R.string.pref_map_center_latitude),
+                PREF_MAP_CENTER_LATITUDE,
                 Double.doubleToLongBits(YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_LATITUDE)));
     }
 
     public static double getMapCenterLongitude() {
         return Double.longBitsToDouble(sSharedPreferences.getLong(
-                sContext.getString(R.string.pref_map_center_longitude),
+                PREF_MAP_CENTER_LONGITUDE,
                 Double.doubleToLongBits(YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_LONGITUDE)));
     }
 
-    public static void putMapCenter(String text, double latitude, double longitude) {
+    public static void putMapCenter(final String text, final double latitude, final double longitude) {
         sSharedPreferences
                 .edit()
                 .putString(sContext.getString(R.string.pref_map_center_text), text)
-                .putLong(sContext.getString(R.string.pref_map_center_latitude),
+                .putLong(PREF_MAP_CENTER_LATITUDE,
                         Double.doubleToRawLongBits(latitude))
-                .putLong(sContext.getString(R.string.pref_map_center_longitude),
+                .putLong(PREF_MAP_CENTER_LONGITUDE,
                         Double.doubleToRawLongBits(longitude))
                 .apply();
     }
 
-    public static String getString(String key, String defValue) {
+    public static String getString(final String key, final String defValue) {
         return sSharedPreferences.getString(key, defValue);
     }
 
-    public static HashMap<String, Object> getPreferences() {
+    @NonNull
+    public static ContentValues getPreferences(@Nullable String preference) {
 
 //        sSharedPreferences.edit()
 //                .remove("Yandex_Maps")
@@ -219,65 +254,98 @@ class FuelingPreferenceManager {
 //                .remove("last sync time")
 //                .apply();
 
-        Object value;
-//        List<String> result = new ArrayList<>();
+        ContentValues result = new ContentValues();
 
-        Map<String, ?> map = sSharedPreferences.getAll();
+        if (TextUtils.isEmpty(preference)) {
+            Object value;
 
-        HashMap<String, Object> result = new HashMap<>();
+            Map<String, ?> map = sSharedPreferences.getAll();
 
-        for (String key : map.keySet()) {
-            value = map.get(key);
+            for (String key : map.keySet())
+                if (!key.equals(PREF_CHANGED) &&
+                        !key.equals(PREF_REVISION) &&
+                        !key.equals(PREF_LAST_SYNC) &&
+                        !key.equals(sContext.getString(R.string.pref_sync_enabled))) {
 
-//            Functions.logD(key + "=(" + value.getClass().getName() + ") " +
-//                    value.toString());
+                    value = map.get(key);
 
-            if (!key.equals(PREF_CHANGED) &&
-                    !key.equals(PREF_REVISION) &&
-                    !key.equals(sContext.getString(R.string.pref_sync_enabled))) {
-
-                result.put(key, value);
-//                result.add(key + '=' + String.valueOf(value));
+                    if (value instanceof String)
+                        result.put(key, (String) value);
+                    else if (value instanceof Long)
+                        result.put(key, (Long) value);
+                    else if (value instanceof Integer)
+                        result.put(key, (Integer) value);
+                    else if (value instanceof Boolean)
+                        result.put(key, (Boolean) value);
+                }
+        } else {
+            switch (preference) {
+                case PREF_CHANGED:
+                    result.put(preference, isChanged());
+                    break;
+                case PREF_REVISION:
+                    result.put(preference, getRevision());
+                    break;
+                case PREF_LAST_SYNC:
+                    result.put(preference, getLastSync());
+                    break;
             }
         }
 
-//        for (String preference : result) Functions.logD(preference);
+        for (String key : result.keySet())
+            Functions.logD("FuelingPreferenceManager -- getPreferences: key == " + key
+                    + ", value == " + result.getAsString(key));
 
         return result;
     }
 
     @SuppressLint("CommitPrefEdits")
-    public static void setPreferences(@NonNull List<String> preferences) {
-        int index;
-        String key, value;
+    public static void setPreferences(@Nullable ContentValues preferences,
+                                      @Nullable String preference) {
+        if (preferences == null || preferences.size() == 0) return;
 
         sSharedPreferences.unregisterOnSharedPreferenceChangeListener(sPreferenceChangeListener);
 
         SharedPreferences.Editor editor = sSharedPreferences.edit();
 
-        for (String preference : preferences) {
-//            Functions.logD("FuelingPreferenceManager -- setPreferences: " + preference);
-
-            index = preference.indexOf('=');
-
-            if (index == -1) continue;
-
-            key = preference.substring(0, index);
-
-            value = preference.substring(index + 1);
-
-            if (key.isEmpty() || value.isEmpty()) continue;
-
-            if (key.equals(PREF_CONS) || key.equals(PREF_SEASON))
-                editor.putInt(key, Integer.decode(value));
-            else if (key.equals(sContext.getString(R.string.pref_map_center_latitude)) ||
-                    key.equals(sContext.getString(R.string.pref_map_center_longitude)))
-                editor.putLong(key, Long.decode(value));
-            else
-                editor.putString(key, value);
-        }
+        for (String key : preferences.keySet())
+            put(editor, key, preferences.get(key));
         editor.commit();
 
         sSharedPreferences.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
+    }
+
+    public static void put(@NonNull SharedPreferences.Editor editor,
+                           @NonNull String key, Object value) {
+        if (value instanceof String)
+            editor.putString(key, (String) value);
+        else if (value instanceof Long)
+            editor.putLong(key, (Long) value);
+        else if (value instanceof Integer)
+            editor.putInt(key, (Integer) value);
+        else if (value instanceof Boolean)
+            editor.putBoolean(key, (Boolean) value);
+    }
+
+    public static void put(@NonNull String key, Object value) {
+        SharedPreferences.Editor editor = sSharedPreferences.edit();
+
+        put(editor, key, value);
+
+        editor.apply();
+    }
+
+    @PreferenceType
+    public static int getPreferenceType(@NonNull String key) {
+        switch (key) {
+            case PREF_CONS:
+            case PREF_SEASON:
+                return PREFERENCE_TYPE_INT;
+            case PREF_MAP_CENTER_LATITUDE:
+            case PREF_MAP_CENTER_LONGITUDE:
+                return PREFERENCE_TYPE_LONG;
+            default:
+                return PREFERENCE_TYPE_STRING;
+        }
     }
 }

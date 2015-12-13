@@ -144,9 +144,9 @@ public class ActivityMain extends AppCompatActivity implements
         mBtnSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (FuelingPreferenceManager.isSyncEnabled())
+                if (FuelingPreferenceManager.isSyncEnabled()) {
                     if (!mSyncAccount.isSyncActive()) startSync();
-                else {
+                } else {
                     mClickedMenuId = R.id.action_settings; // TODO: open sync screen
                     mDrawerLayout.closeDrawer(GravityCompat.START);
                 }
@@ -162,7 +162,7 @@ public class ActivityMain extends AppCompatActivity implements
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        Functions.logD("ActivityMain -- onItemSelected");
+//                        Functions.logD("ActivityMain -- onItemSelected");
 
                         FragmentFueling fragmentFueling = getFragmentFueling();
                         if (fragmentFueling != null && fragmentFueling.isVisible())
@@ -381,7 +381,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onFilterChange(@FuelingDBHelper.FilterMode int filterMode) {
-        Functions.logD("ActivityMain -- onFilterChange");
+//        Functions.logD("ActivityMain -- onFilterChange");
 
         int position = filterModeToPosition(filterMode);
 
@@ -396,7 +396,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onFragmentChange(int fragmentId) {
-        Functions.logD("ActivityMain -- onFragmentChange");
+//        Functions.logD("ActivityMain -- onFragmentChange");
 
         mCurrentFragmentId = mClickedMenuId = fragmentId;
 
@@ -535,7 +535,7 @@ public class ActivityMain extends AppCompatActivity implements
             if (FuelingPreferenceManager.isSyncEnabled()) {
                 String lastSync = FuelingPreferenceManager.getLastSync();
 
-                Functions.logD("ActivityMain -- updateSyncStatus: lastSync == " + lastSync);
+//                Functions.logD("ActivityMain -- updateSyncStatus: lastSync == " + lastSync);
 
                 if (TextUtils.isEmpty(lastSync)) {
                     text = getString(R.string.sync_not_performed);

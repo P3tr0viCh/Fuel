@@ -56,7 +56,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         if (key.equals(getString(R.string.pref_sync_enabled))) {
             updatePreferenceSummary(R.string.pref_sync_key);
             mOnPreferenceSyncEnabledChangeListener.OnPreferenceSyncEnabledChanged(
-                    sharedPreferences.getBoolean(key, false));
+                    FuelingPreferenceManager.isSyncEnabled());
         }
     }
 

@@ -4,6 +4,7 @@ package ru.p3tr0vich.fuel;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.nfc.FormatException;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,22 +22,34 @@ public class SyncPreferencesAdapter {
     }
 
     @NonNull
-    private ContentValues query(@Nullable String preference) throws RemoteException {
+    private ContentValues query(@Nullable String preference) throws RemoteException, FormatException {
 
         final Cursor cursor = mProvider.query(SyncProvider.URI_PREFERENCES, null, preference, null, null);
 
+        if (cursor == null || cursor.getCount() == 0)
+            throw new FormatException("SyncPreferencesAdapter -- query: cursor == null || cursor.getCount() == 0");
+
         ContentValues result = new ContentValues();
 
-        if (cursor != null) {
-            if (cursor.moveToFirst())
-                do {
-                    result.put(cursor.getString(0), cursor.getString(1));
+        String key;
 
-                    Functions.logD("SyncPreferencesAdapter -- query: preference == " +
-                            cursor.getString(0) + '=' + cursor.getString(1));
-                } while (cursor.moveToNext());
-            cursor.close();
-        }
+        if (cursor.moveToFirst())
+            do {
+                key = cursor.getString(0);
+
+                switch (FuelingPreferenceManager.getPreferenceType(key)) {
+                    case FuelingPreferenceManager.PREFERENCE_TYPE_STRING:
+                        result.put(key, cursor.getString(1));
+                        break;
+                    case FuelingPreferenceManager.PREFERENCE_TYPE_INT:
+                        result.put(key, cursor.getInt(1));
+                        break;
+                    case FuelingPreferenceManager.PREFERENCE_TYPE_LONG:
+                        result.put(key, cursor.getLong(1));
+                        break;
+                }
+            } while (cursor.moveToNext());
+        cursor.close();
 
         return result;
     }
@@ -47,19 +60,31 @@ public class SyncPreferencesAdapter {
     }
 
     @NonNull
-    public List<String> getPreferences() throws RemoteException {
+    public List<String> getPreferences() throws RemoteException, FormatException {
         ContentValues contentValues = query(null);
 
         List<String> result = new ArrayList<>();
 
-        for (String key : contentValues.keySet()) {
-            result.add(key + '=' + contentValues.getAsString(key));
-        }
+        for (String key : contentValues.keySet())
+            switch (FuelingPreferenceManager.getPreferenceType(key)) {
+                case FuelingPreferenceManager.PREFERENCE_TYPE_STRING:
+                    result.add(key + '=' + contentValues.getAsString(key));
+                    break;
+                case FuelingPreferenceManager.PREFERENCE_TYPE_INT:
+                    result.add(key + '=' + String.valueOf(contentValues.getAsInteger(key)));
+                    break;
+                case FuelingPreferenceManager.PREFERENCE_TYPE_LONG:
+                    result.add(key + '=' + String.valueOf(contentValues.getAsLong(key)));
+                    break;
+            }
+
+//        for (String preference : result)
+//            Functions.logD("SyncPreferencesAdapter -- getPreferences: preference == " + preference);
 
         return result;
     }
 
-    public void setPreferences(@NonNull List<String> preferences) throws RemoteException {
+    public void setPreferences(@NonNull List<String> preferences) throws RemoteException, NumberFormatException {
         ContentValues contentValues = new ContentValues();
 
         int index;
@@ -74,7 +99,7 @@ public class SyncPreferencesAdapter {
 
             value = preference.substring(index + 1);
 
-            if (key.isEmpty()/* || value.isEmpty()*/) continue;
+            if (key.isEmpty()) continue;
 
             switch (FuelingPreferenceManager.getPreferenceType(key)) {
                 case FuelingPreferenceManager.PREFERENCE_TYPE_STRING:
@@ -92,7 +117,7 @@ public class SyncPreferencesAdapter {
         update(contentValues, null);
     }
 
-    public boolean isChanged() throws RemoteException {
+    public boolean isChanged() throws RemoteException, FormatException {
         return query(FuelingPreferenceManager.PREF_CHANGED)
                 .getAsBoolean(FuelingPreferenceManager.PREF_CHANGED);
     }
@@ -103,7 +128,7 @@ public class SyncPreferencesAdapter {
         update(contentValues, FuelingPreferenceManager.PREF_CHANGED);
     }
 
-    public int getRevision() throws RemoteException {
+    public int getRevision() throws RemoteException, FormatException {
         return query(FuelingPreferenceManager.PREF_REVISION)
                 .getAsInteger(FuelingPreferenceManager.PREF_REVISION);
     }
@@ -117,7 +142,7 @@ public class SyncPreferencesAdapter {
     public void putLastSync(@Nullable Date dateTime) throws RemoteException {
         ContentValues contentValues = new ContentValues();
         contentValues.put(FuelingPreferenceManager.PREF_LAST_SYNC,
-                dateTime != null ? dateTime.getTime() : null);
+                dateTime != null ? Functions.dateTimeToString(dateTime) : null);
         update(contentValues, FuelingPreferenceManager.PREF_LAST_SYNC);
     }
 }

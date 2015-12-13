@@ -301,6 +301,8 @@ public class DatabaseBackupXmlHelper {
     @Result
     public int save(@NonNull List<FuelingRecord> fuelingRecordList) {
 
+        // TODO: use FileIO
+
         mFullFileName = new File(mExternalDirectory.getPath(), mFileName.getName());
 
         if (!mExternalDirectory.exists()) if (!mExternalDirectory.mkdirs())

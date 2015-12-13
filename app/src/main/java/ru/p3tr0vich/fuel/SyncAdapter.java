@@ -5,6 +5,7 @@ import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.SyncResult;
+import android.nfc.FormatException;
 import android.os.Bundle;
 import android.os.RemoteException;
 
@@ -26,8 +27,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         SyncFiles syncFiles = new SyncFiles(getContext());
         SyncLocal syncLocal = new SyncLocal(syncFiles);
-        SyncPreferencesAdapter syncPreferencesAdapter =
-                new SyncPreferencesAdapter(provider);
+        SyncPreferencesAdapter syncPreferencesAdapter = new SyncPreferencesAdapter(provider);
 
         try {
 
@@ -41,7 +41,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 Functions.logD("SyncAdapter -- onPerformSync: preferences is changed == " +
                         syncPreferencesAdapter.isChanged());
-            } catch (RemoteException e) {
+
+                syncPreferencesAdapter.getPreferences();
+
+            } catch (RemoteException | FormatException e) {
                 syncResult.databaseError = true;
             }
 

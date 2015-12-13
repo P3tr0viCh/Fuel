@@ -105,11 +105,10 @@ class FuelingPreferenceManager {
         return sSharedPreferences.getString(PREF_LAST_SYNC, "");
     }
 
-    public static void putLastSync(final Date dateTime) {
+    public static void putLastSync(final String dateTime) {
         sSharedPreferences
                 .edit()
-                .putString(PREF_LAST_SYNC, dateTime != null ?
-                        Functions.dateTimeToString(dateTime) : SYNC_ERROR)
+                .putString(PREF_LAST_SYNC, dateTime != null ? dateTime : SYNC_ERROR)
                 .apply();
     }
 
@@ -257,8 +256,6 @@ class FuelingPreferenceManager {
         ContentValues result = new ContentValues();
 
         if (TextUtils.isEmpty(preference)) {
-            Object value;
-
             Map<String, ?> map = sSharedPreferences.getAll();
 
             for (String key : map.keySet())
@@ -267,18 +264,19 @@ class FuelingPreferenceManager {
                         !key.equals(PREF_LAST_SYNC) &&
                         !key.equals(sContext.getString(R.string.pref_sync_enabled))) {
 
-                    value = map.get(key);
-
-                    if (value instanceof String)
-                        result.put(key, (String) value);
-                    else if (value instanceof Long)
-                        result.put(key, (Long) value);
-                    else if (value instanceof Integer)
-                        result.put(key, (Integer) value);
-                    else if (value instanceof Boolean)
-                        result.put(key, (Boolean) value);
+                    switch (getPreferenceType(key)) {
+                        case PREFERENCE_TYPE_INT:
+                            result.put(key, (Integer) map.get(key));
+                            break;
+                        case PREFERENCE_TYPE_LONG:
+                            result.put(key, (Long) map.get(key));
+                            break;
+                        case PREFERENCE_TYPE_STRING:
+                            result.put(key, (String) map.get(key));
+                            break;
+                    }
                 }
-        } else {
+        } else
             switch (preference) {
                 case PREF_CHANGED:
                     result.put(preference, isChanged());
@@ -290,11 +288,10 @@ class FuelingPreferenceManager {
                     result.put(preference, getLastSync());
                     break;
             }
-        }
 
-        for (String key : result.keySet())
-            Functions.logD("FuelingPreferenceManager -- getPreferences: key == " + key
-                    + ", value == " + result.getAsString(key));
+//        for (String key : result.keySet())
+//            Functions.logD("FuelingPreferenceManager -- getPreferences: key == " + key
+//                    + ", value == " + result.getAsString(key));
 
         return result;
     }
@@ -304,35 +301,40 @@ class FuelingPreferenceManager {
                                       @Nullable String preference) {
         if (preferences == null || preferences.size() == 0) return;
 
-        sSharedPreferences.unregisterOnSharedPreferenceChangeListener(sPreferenceChangeListener);
+        if (TextUtils.isEmpty(preference)) {
+            sSharedPreferences.unregisterOnSharedPreferenceChangeListener(sPreferenceChangeListener);
 
-        SharedPreferences.Editor editor = sSharedPreferences.edit();
+            SharedPreferences.Editor editor = sSharedPreferences.edit();
 
-        for (String key : preferences.keySet())
-            put(editor, key, preferences.get(key));
-        editor.commit();
+            for (String key : preferences.keySet())
+                switch (getPreferenceType(key)) {
+                    case PREFERENCE_TYPE_INT:
+                        editor.putInt(key, preferences.getAsInteger(key));
+                        break;
+                    case PREFERENCE_TYPE_LONG:
+                        editor.putLong(key, preferences.getAsLong(key));
+                        break;
+                    case PREFERENCE_TYPE_STRING:
+                        editor.putString(key, preferences.getAsString(key));
+                        break;
+                }
 
-        sSharedPreferences.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
-    }
+            editor.commit();
 
-    public static void put(@NonNull SharedPreferences.Editor editor,
-                           @NonNull String key, Object value) {
-        if (value instanceof String)
-            editor.putString(key, (String) value);
-        else if (value instanceof Long)
-            editor.putLong(key, (Long) value);
-        else if (value instanceof Integer)
-            editor.putInt(key, (Integer) value);
-        else if (value instanceof Boolean)
-            editor.putBoolean(key, (Boolean) value);
-    }
-
-    public static void put(@NonNull String key, Object value) {
-        SharedPreferences.Editor editor = sSharedPreferences.edit();
-
-        put(editor, key, value);
-
-        editor.apply();
+            sSharedPreferences.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
+        } else {
+            switch (preference) {
+                case PREF_CHANGED:
+                    putChanged(preferences.getAsBoolean(preference));
+                    break;
+                case PREF_REVISION:
+                    putRevision(preferences.getAsInteger(preference));
+                    break;
+                case PREF_LAST_SYNC:
+                    putLastSync(preferences.getAsString(preference));
+                    break;
+            }
+        }
     }
 
     @PreferenceType

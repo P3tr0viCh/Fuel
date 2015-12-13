@@ -280,12 +280,12 @@ public class FragmentFueling extends FragmentFuel implements
 
         outState.putBoolean(KEY_DATA_CHANGED, mDataChanged);
 
-        Functions.logD("FragmentFueling -- onSaveInstanceState");
+//        Functions.logD("FragmentFueling -- onSaveInstanceState");
     }
 
     @Override
     public void onDestroy() {
-        Functions.logD("FragmentFueling -- onDestroy");
+//        Functions.logD("FragmentFueling -- onDestroy");
 
         calcTotalTaskCancel();
 
@@ -305,8 +305,8 @@ public class FragmentFueling extends FragmentFuel implements
         // true - фильтр не изменился.
         // false - фильтр изменён и вызван рестарт лоадер (список полностью обновлён).
 
-        Functions.logD("FragmentFueling -- setFilterMode: new FilterMode == " + filterMode +
-                ", current FilterMode == " + mFilter.filterMode);
+//        Functions.logD("FragmentFueling -- setFilterMode: new FilterMode == " + filterMode +
+//                ", current FilterMode == " + mFilter.filterMode);
 
         if (mFilter.filterMode != filterMode) {
 
@@ -443,7 +443,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Functions.logD("FragmentFueling -- onLoadFinished");
+//        Functions.logD("FragmentFueling -- onLoadFinished");
 
         mFuelingAdapter.setShowYear(mFilter.filterMode != FuelingDBHelper.FILTER_MODE_CURRENT_YEAR);
 
@@ -475,7 +475,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void OnFuelingRecordsChange(List<FuelingRecord> fuelingRecords) {
-        Functions.logD("FragmentFueling -- OnFuelingRecordsChange");
+//        Functions.logD("FragmentFueling -- OnFuelingRecordsChange");
 
         calcTotalTaskCancel();
 
@@ -560,7 +560,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void onAttach(Context context) {
-        Functions.logD("FragmentFueling -- onAttach");
+//        Functions.logD("FragmentFueling -- onAttach");
         super.onAttach(context);
         try {
             mOnFilterChangeListener = (OnFilterChangeListener) context;
@@ -820,7 +820,7 @@ public class FragmentFueling extends FragmentFuel implements
 
         @Override
         public Cursor loadInBackground() {
-            Functions.logD("FragmentFueling -- loadInBackground");
+//            Functions.logD("FragmentFueling -- loadInBackground");
 
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(true));
 
@@ -921,12 +921,12 @@ public class FragmentFueling extends FragmentFuel implements
 
             mFragmentFueling = null;
 
-            Functions.logD("FragmentFueling -- CalcTotalTask: onPostExecute");
+//            Functions.logD("FragmentFueling -- CalcTotalTask: onPostExecute");
         }
 
         @Override
         protected void onCancelled() {
-            Functions.logD("FragmentFueling -- CalcTotalTask: onCancelled");
+//            Functions.logD("FragmentFueling -- CalcTotalTask: onCancelled");
         }
     }
 }

@@ -10,7 +10,7 @@ public abstract class FragmentFuel extends Fragment implements FragmentInterface
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Functions.logD("FragmentFuel -- onAttach (context)");
+//        Functions.logD("FragmentFuel -- onAttach (context)");
         try {
             mOnFragmentChangeListener = (OnFragmentChangeListener) context;
         } catch (ClassCastException e) {
@@ -22,7 +22,7 @@ public abstract class FragmentFuel extends Fragment implements FragmentInterface
     @Override
     public void onStart() {
         super.onStart();
-        Functions.logD("FragmentFuel -- onStart");
+//        Functions.logD("FragmentFuel -- onStart");
         mOnFragmentChangeListener.onFragmentChange(getFragmentId());
     }
 }

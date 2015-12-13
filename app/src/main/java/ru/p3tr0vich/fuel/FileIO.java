@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -63,16 +64,16 @@ class FileIO {
     public static void createFile(File file) throws IOException {
         if (file.exists()) {
             if (!file.isFile())
-                throw new IOException("FileIO -- createFile: " + file.toString()
+                throw new FileNotFoundException("FileIO -- createFile: " + file.toString()
                         + " exists and is not a file");
         } else
             //noinspection ResultOfMethodCallIgnored
             file.createNewFile();
     }
 
-    public static void checkExists(File file) throws IOException {
+    public static void checkExists(File file) throws FileNotFoundException {
         if (!file.exists() || !file.isFile())
-            throw new IOException("FileIO -- checkExists: " + file.toString() +
+            throw new FileNotFoundException("FileIO -- checkExists: " + file.toString() +
                     " not exists or not is a file");
     }
 }

@@ -249,14 +249,17 @@ class FuelingPreferenceManager {
 //                .remove("chb2")
 //                .remove("wifi enabled")
 //                .remove("last time")
+//                .remove("sync")
 //                .remove("prefer wifi")
 //                .remove("last sync time")
 //                .apply();
-
+//
         ContentValues result = new ContentValues();
 
         if (TextUtils.isEmpty(preference)) {
             Map<String, ?> map = sSharedPreferences.getAll();
+
+            Object value;
 
             for (String key : map.keySet())
                 if (!key.equals(PREF_CHANGED) &&
@@ -264,17 +267,12 @@ class FuelingPreferenceManager {
                         !key.equals(PREF_LAST_SYNC) &&
                         !key.equals(sContext.getString(R.string.pref_sync_enabled))) {
 
-                    switch (getPreferenceType(key)) {
-                        case PREFERENCE_TYPE_INT:
-                            result.put(key, (Integer) map.get(key));
-                            break;
-                        case PREFERENCE_TYPE_LONG:
-                            result.put(key, (Long) map.get(key));
-                            break;
-                        case PREFERENCE_TYPE_STRING:
-                            result.put(key, (String) map.get(key));
-                            break;
-                    }
+                    value = map.get(key);
+
+                    if (value instanceof Integer) result.put(key, (Integer) value);
+                    else if (value instanceof Long) result.put(key, (Long) value);
+                    else if (value instanceof String) result.put(key, (String) value);
+                    else if (value instanceof Boolean) result.put(key, (Boolean) value);
                 }
         } else
             switch (preference) {
@@ -306,18 +304,16 @@ class FuelingPreferenceManager {
 
             SharedPreferences.Editor editor = sSharedPreferences.edit();
 
-            for (String key : preferences.keySet())
-                switch (getPreferenceType(key)) {
-                    case PREFERENCE_TYPE_INT:
-                        editor.putInt(key, preferences.getAsInteger(key));
-                        break;
-                    case PREFERENCE_TYPE_LONG:
-                        editor.putLong(key, preferences.getAsLong(key));
-                        break;
-                    case PREFERENCE_TYPE_STRING:
-                        editor.putString(key, preferences.getAsString(key));
-                        break;
-                }
+            Object value;
+
+            for (String key : preferences.keySet()) {
+                value = preferences.get(key);
+
+                if (value instanceof Integer) editor.putInt(key, (Integer) value);
+                else if (value instanceof Long) editor.putLong(key, (Long) value);
+                else if (value instanceof String) editor.putString(key, (String) value);
+                else if (value instanceof Boolean) editor.putBoolean(key, (Boolean) value);
+            }
 
             editor.commit();
 

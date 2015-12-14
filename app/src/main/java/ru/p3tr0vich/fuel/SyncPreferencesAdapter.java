@@ -26,8 +26,10 @@ public class SyncPreferencesAdapter {
 
         final Cursor cursor = mProvider.query(SyncProvider.URI_PREFERENCES, null, preference, null, null);
 
-        if (cursor == null || cursor.getCount() == 0)
-            throw new FormatException("SyncPreferencesAdapter -- query: cursor == null || cursor.getCount() == 0");
+        if (cursor == null)
+            throw new FormatException("SyncPreferencesAdapter -- query: cursor == null");
+        else if (cursor.getCount() == 0)
+            throw new FormatException("SyncPreferencesAdapter -- query: cursor.getCount() == 0");
 
         ContentValues result = new ContentValues();
 
@@ -61,6 +63,7 @@ public class SyncPreferencesAdapter {
 
     @NonNull
     public List<String> getPreferences() throws RemoteException, FormatException {
+
         ContentValues contentValues = query(null);
 
         List<String> result = new ArrayList<>();

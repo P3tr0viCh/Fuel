@@ -30,42 +30,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         SyncPreferencesAdapter syncPreferencesAdapter = new SyncPreferencesAdapter(provider);
 
         try {
-
-            try {
-                Functions.logD("SyncAdapter -- onPerformSync: preferences is changed == " +
-                        syncPreferencesAdapter.isChanged());
-
-                Functions.logD("SyncAdapter -- onPerformSync: preferences put changed");
-
-                syncPreferencesAdapter.putChanged();
-
-                Functions.logD("SyncAdapter -- onPerformSync: preferences is changed == " +
-                        syncPreferencesAdapter.isChanged());
-
-                syncPreferencesAdapter.getPreferences();
-
-            } catch (RemoteException | FormatException e) {
-                syncResult.databaseError = true;
-            }
-
-//            Random random = new Random();
-//
-//            if (random.nextBoolean()) {
-//                Functions.logD("SyncAdapter -- onPerformSync: error auth");
-//
-//                syncResult.stats.numAuthExceptions++;
-//
-//                return;
-//            }
-//
-//            if (random.nextBoolean()) {
-//                Functions.logD("SyncAdapter -- onPerformSync: error IO");
-//
-//                syncResult.stats.numIoExceptions++;
-//
-//                return;
-//            }
-//
 //            for (int i = 0; i < 10; i++) {
 //
 //                try {
@@ -82,25 +46,30 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             // Если нет доступа к серверу syncResult.stats.numAuthExceptions++;.
             // Если файла нет, игнорируем.
 
-//            int serverRevision = syncLocal.getRevision();
-            // serverRevision == -1, если синхронизация не производилась
-            // или файлы синхронизации отсутствуют на сервере
+            int serverRevision = syncLocal.getRevision();
+//            serverRevision == -1, если синхронизация не производилась
+//            или файлы синхронизации отсутствуют на сервере
 
-//            int localRevision = FuelingPreferenceManager.getRevision();
-            // localRevision == 0, если программа запускается первый раз
+            int localRevision = syncPreferencesAdapter.getRevision();
+//            localRevision == 0, если программа запускается первый раз
 
-//            Functions.logD("SyncAdapter -- onPerformSync: serverRevision == " +
-//                    serverRevision + ", localRevision == " + localRevision);
-//
-//            Functions.logD("SyncAdapter -- onPerformSync: FuelingPreferenceManager.isChanged == " +
-//                    FuelingPreferenceManager.isChanged());
+            boolean isChanged = syncPreferencesAdapter.isChanged();
 
-//            try {
-//                save(syncLocal, 0);
-//                load(syncLocal, 0);
-//            } catch (IOException e) {
-//                syncResult.stats.numIoExceptions++;
-//            }
+            Functions.logD("SyncAdapter -- onPerformSync: " +
+                    "serverRevision == " + serverRevision + ", localRevision == " + localRevision +
+                    ", preference changed == " + isChanged);
+
+            save(syncLocal, syncPreferencesAdapter, 0);
+//            load(syncLocal, syncPreferencesAdapter, 0);
+
+        } catch (Exception e) {
+            if (e instanceof RemoteException) syncResult.databaseError = true;
+            else if (e instanceof IOException) syncResult.stats.numIoExceptions++;
+            else if (e instanceof FormatException) syncResult.stats.numParseExceptions++;
+//            else if (e instanceof AccountsException) syncResult.stats.numAuthExceptions++;
+            else syncResult.databaseError = true;
+
+            Functions.logD("SyncAdapter -- onPerformSync: error  == " + e.toString());
         } finally {
             try {
                 syncPreferencesAdapter.putLastSync(syncResult.hasError() ? null : new Date());
@@ -113,14 +82,21 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void save(SyncLocal syncLocal, int revision) throws IOException {
+    private void save(SyncLocal syncLocal, SyncPreferencesAdapter syncPreferencesAdapter, int revision)
+            throws IOException, RemoteException, FormatException {
         // Сохранить настройки в файл в папке кэша
         // Сохранить номер ревизии в файл в папке кэша
 
         // Передать файл настроек из папки кэша на сервер
         // Передать файл с номером ревизии из папки кэша на сервер,
 
-//        syncLocal.savePreferences(FuelingPreferenceManager.getPreferences());
+        Functions.logD("SyncAdapter -- save: start");
+
+        List<String> preferences = syncPreferencesAdapter.getPreferences();
+
+        Functions.logD("SyncAdapter -- save: syncPreferencesAdapter.getPreferences() OK");
+
+        syncLocal.savePreferences(preferences);
 
         Functions.logD("SyncAdapter -- save: syncLocal.savePreferences() OK");
 
@@ -139,11 +115,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             return false;
         }*/
 
-//        FuelingPreferenceManager.putChanged(false);
-//        FuelingPreferenceManager.putRevision(revision);
+        syncPreferencesAdapter.putChanged();
+        syncPreferencesAdapter.putRevision(revision);
     }
 
-    private void load(SyncLocal syncLocal, int revision) throws IOException {
+    private void load(SyncLocal syncLocal, SyncPreferencesAdapter syncPreferencesAdapter, int revision)
+            throws IOException, RemoteException {
         // Получить файл настроек с сервера и сохранить в папку кэша
 
         /*        if (!ServerSyncHelper.loadPreferences()) {
@@ -160,8 +137,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         Functions.logD("SyncAdapter -- load: syncLocal.loadPreferences() OK");
 
-//        FuelingPreferenceManager.setPreferences(preferences);
-//        FuelingPreferenceManager.putChanged(false);
-//        FuelingPreferenceManager.putRevision(revision);
+        syncPreferencesAdapter.setPreferences(preferences);
+
+        Functions.logD("SyncAdapter -- load: syncPreferencesAdapter.setPreferences() OK");
+
+        syncPreferencesAdapter.putChanged();
+        syncPreferencesAdapter.putRevision(revision);
     }
 }

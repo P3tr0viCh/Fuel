@@ -129,7 +129,7 @@ public class FragmentBackup extends FragmentFuel {
             Toast.makeText(getActivity(), getString(R.string.message_load_file_ok), Toast.LENGTH_SHORT).show();
             mOnDataLoadedFromBackupListener.onDataLoadedFromBackup();
         } else
-            FragmentDialogMessage.showMessage(this, getString(R.string.title_message_error), resultMessage);
+            FragmentDialogMessage.show(getActivity(), getString(R.string.title_message_error), resultMessage);
     }
 
     private void saveToXml() {

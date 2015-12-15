@@ -16,11 +16,15 @@ class SyncFiles {
     private final File mLocalFilePreferences;
     private final File mLocalFilePreferencesRevision;
 
+    private final File mServerDirPreferences;
+
     SyncFiles(@NonNull Context context) {
         mLocalDirPreferences = new File(context.getCacheDir() + File.separator + DIR_SYNC +
                 File.separator + DIR_PREFERENCES);
         mLocalFilePreferences = new File(mLocalDirPreferences, FILE_PREFERENCES);
         mLocalFilePreferencesRevision = new File(mLocalDirPreferences, FILE_PREFERENCES_REVISION);
+
+        mServerDirPreferences = new File(DIR_PREFERENCES);
     }
 
     public File getLocalDirPreferences() {
@@ -33,5 +37,9 @@ class SyncFiles {
 
     public File getLocalFilePreferencesRevision() {
         return mLocalFilePreferencesRevision;
+    }
+
+    public File getServerDirPreferences() {
+        return mServerDirPreferences;
     }
 }

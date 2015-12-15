@@ -8,6 +8,10 @@ import android.content.SyncResult;
 import android.nfc.FormatException;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.text.TextUtils;
+
+import com.yandex.disk.rest.exceptions.ServerIOException;
+import com.yandex.disk.rest.exceptions.http.HttpCodeException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,9 +29,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                               ContentProviderClient provider, SyncResult syncResult) {
         Functions.logD("SyncAdapter -- onPerformSync: start");
 
+        SyncPreferencesAdapter syncPreferencesAdapter = new SyncPreferencesAdapter(provider);
         SyncFiles syncFiles = new SyncFiles(getContext());
         SyncLocal syncLocal = new SyncLocal(syncFiles);
-        SyncPreferencesAdapter syncPreferencesAdapter = new SyncPreferencesAdapter(provider);
+        SyncAccount syncAccount = new SyncAccount(getContext());
+
+        String yandexDiskToken = syncAccount.getYandexDiskToken();
+
+        SyncYandexDisk syncYandexDisk = new SyncYandexDisk(syncFiles, yandexDiskToken);
 
         try {
 //            for (int i = 0; i < 10; i++) {
@@ -40,6 +49,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 //
 //                Functions.logD("SyncAdapter -- onPerformSync: " + String.valueOf(i));
 //            }
+
+            if (TextUtils.isEmpty(yandexDiskToken)) {
+                syncResult.stats.numAuthExceptions++;
+                Functions.logD("SyncAdapter -- onPerformSync: error  == empty Yandex.Disk token");
+                return;
+            }
 
             // TODO:
             // Копируем файл с номером ревизии с сервера в папку кэша.
@@ -59,14 +74,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     "serverRevision == " + serverRevision + ", localRevision == " + localRevision +
                     ", preference changed == " + isChanged);
 
-            save(syncLocal, syncPreferencesAdapter, 0);
+            save(syncLocal, syncYandexDisk, syncPreferencesAdapter, 0);
 //            load(syncLocal, syncPreferencesAdapter, 0);
 
         } catch (Exception e) {
             if (e instanceof RemoteException) syncResult.databaseError = true;
             else if (e instanceof IOException) syncResult.stats.numIoExceptions++;
             else if (e instanceof FormatException) syncResult.stats.numParseExceptions++;
-//            else if (e instanceof AccountsException) syncResult.stats.numAuthExceptions++;
+            else if (e instanceof HttpCodeException) {
+                if (((HttpCodeException) e).getCode() == 401) { // 401 -- не авторизован
+                    syncResult.stats.numAuthExceptions++;
+                    syncAccount.setYandexDiskToken(null);
+                } else
+                    syncResult.stats.numIoExceptions++;
+            } else if (e instanceof ServerIOException) syncResult.stats.numIoExceptions++;
             else syncResult.databaseError = true;
 
             Functions.logD("SyncAdapter -- onPerformSync: error  == " + e.toString());
@@ -82,8 +103,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void save(SyncLocal syncLocal, SyncPreferencesAdapter syncPreferencesAdapter, int revision)
-            throws IOException, RemoteException, FormatException {
+    private void save(SyncLocal syncLocal, SyncYandexDisk syncYandexDisk,
+                      SyncPreferencesAdapter syncPreferencesAdapter, int revision)
+            throws IOException, RemoteException, FormatException, ServerIOException {
         // Сохранить настройки в файл в папке кэша
         // Сохранить номер ревизии в файл в папке кэша
 
@@ -104,16 +126,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         Functions.logD("SyncAdapter -- save: syncLocal.saveRevision() OK");
 
-        // TODO:
-/*        if (!ServerSyncHelper.savePreferences()) {
-            Functions.logD("ServiceSync -- save: error ServerSyncHelper.savePreferences");
-            return false;
-        }
+        syncYandexDisk.makeDirPreferences();
 
-        if (!ServerSyncHelper.saveRevision()) {
-            Functions.logD("ServiceSync -- save: error ServerSyncHelper.saveRevision");
-            return false;
-        }*/
+        Functions.logD("SyncAdapter -- save: syncLocal.makeDirPreferences() OK");
+
+        syncYandexDisk.savePreferences();
+
+        Functions.logD("SyncAdapter -- save: syncYandexDisk.saveRevision() OK");
+
+        syncYandexDisk.saveRevision();
+
+        Functions.logD("SyncAdapter -- save: syncYandexDisk.saveRevision() OK");
 
         syncPreferencesAdapter.putChanged();
         syncPreferencesAdapter.putRevision(revision);

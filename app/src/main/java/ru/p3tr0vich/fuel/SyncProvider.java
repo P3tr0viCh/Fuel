@@ -15,9 +15,6 @@ public class SyncProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        Functions.sApplicationContext = getContext();
-        Functions.logD("SyncProvider -- onCreate");
-
         return true;
     }
 

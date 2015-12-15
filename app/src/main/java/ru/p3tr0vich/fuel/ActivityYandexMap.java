@@ -94,7 +94,7 @@ public class ActivityYandexMap extends AppCompatActivity {
                             .putExtra(EXTRA_TYPE, mapType),
                     mapType == MAP_TYPE_DISTANCE ? REQUEST_CODE_DISTANCE : REQUEST_CODE_MAP_CENTER);
         else
-            FragmentDialogMessage.showMessage(parent,
+            FragmentDialogMessage.show(parent,
                     parent.getString(R.string.title_message_error),
                     parent.getString(R.string.message_error_no_internet));
     }

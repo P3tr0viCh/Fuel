@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SyncStatusObserver;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -35,7 +36,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ActivityMain extends AppCompatActivity implements
         SyncStatusObserver,
@@ -133,6 +133,8 @@ public class ActivityMain extends AppCompatActivity implements
 
         mSyncAccount = new SyncAccount(Functions.sApplicationContext);
 
+//        mSyncAccount.setYandexDiskToken(null);
+
         mAnimationSync = new RotateAnimation(360.0f, 0.0f,
                 Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         mAnimationSync.setInterpolator(new LinearInterpolator());
@@ -147,10 +149,16 @@ public class ActivityMain extends AppCompatActivity implements
             public void onClick(View v) {
                 if (FuelingPreferenceManager.isSyncEnabled()) {
                     if (!mSyncAccount.isSyncActive()) {
-                        if (mSyncAccount.isYandexDiskTokenEmpty())
-                            showNeedAuthDialog();
-                        else
-                            startSync();
+                        if (Functions.isInternetConnected()) {
+                            if (mSyncAccount.isYandexDiskTokenEmpty())
+                                showNeedAuthDialog();
+                            else
+                                startSync();
+                        } else
+                            FragmentDialogMessage.show(ActivityMain.this,
+                                    getString(R.string.title_message_error),
+                                    getString(R.string.message_error_no_internet));
+
                     }
                 } else {
                     mClickedMenuId = R.id.action_settings; // TODO: open sync screen
@@ -205,7 +213,10 @@ public class ActivityMain extends AppCompatActivity implements
                     .setTransition(FragmentTransaction.TRANSIT_NONE)
                     .commit();
 
-            if (FuelingPreferenceManager.isSyncEnabled() && !mSyncAccount.isSyncActive())
+            if (FuelingPreferenceManager.isSyncEnabled() &&
+                    !mSyncAccount.isSyncActive() &&
+                    !mSyncAccount.isYandexDiskTokenEmpty() &&
+                    Functions.isInternetConnected())
                 startSync();
         } else {
             mCurrentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID);
@@ -360,7 +371,7 @@ public class ActivityMain extends AppCompatActivity implements
                 ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).updateMapCenter();
                 break;
             case FragmentDialogQuestion.REQUEST_CODE:
-                Toast.makeText(this, "TODO!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SyncYandexDisk.AUTH_URL)));
         }
     }
 

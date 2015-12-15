@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 
 public class FragmentDialogQuestion extends DialogFragment {
 
@@ -37,7 +37,7 @@ public class FragmentDialogQuestion extends DialogFragment {
         dialogQuestion.show(parent.getFragmentManager(), TAG);
     }
 
-    public static void show(AppCompatActivity parent, String title, String message, String positiveButtonText) {
+    public static void show(FragmentActivity parent, String title, String message, String positiveButtonText) {
         FragmentDialogQuestion dialogQuestion = getInstance(title, message, positiveButtonText);
         dialogQuestion.setTargetFragment(null, REQUEST_CODE);
         dialogQuestion.show(parent.getSupportFragmentManager(), TAG);

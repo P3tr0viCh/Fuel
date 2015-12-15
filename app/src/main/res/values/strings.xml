@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Учёт топлива</string>
+
     <string name="title_calc">Калькулятор</string>
     <string name="title_prefs">Настройки</string>
     <string name="title_backup">Резервная копия</string>
@@ -82,7 +83,7 @@
     <string name="btn_calc_map">Подсчитать на Яндекс.Карты</string>
 
     <string name="message_dialog_load_from_xml">Загрузить данные из файла XML?\nИмеющиеся в базе данных записи будут безвозвратно удалены</string>
-    <string name="message_dialog_auth">Bla-bla-bla</string>
+    <string name="message_dialog_auth">Для выполнения синхронизации необходим доступ к папке приложения на Яндекс.Диске.\nСейчас будет открыта страница авторизации Яндекса, на которой нужно войти в сервисы Яндекса, после чего разрешить доступ.\nВ случае положительного разрешения, приложение "Учёт топлива" не получит доступа к данным, хранящимся на Яндекс.Диске, кроме файлов, находящихся в папке приложения, не получит введённого имени пользователя и пароля, а также не получит доступа к остальным сервисам Яндекса.\nВ случае отказа синхронизация выполняться не будет.</string>
 
     <string name="message_progress_save">Подождите, выполняется сохранение в файл…</string>
     <string name="message_progress_load">Подождите, выполняется чтение файла…</string>
@@ -193,4 +194,6 @@
     <string name="sync_in_process">Синхронизация выполняется</string>
     <string name="sync_not_performed">Синхронизация не выполнялась</string>
     <string name="sync_done">Синхронизировано\n%s</string>
+
+    <string name="scheme_yandex_disk">ru.p3tr0vich.fuel</string>
 </resources>

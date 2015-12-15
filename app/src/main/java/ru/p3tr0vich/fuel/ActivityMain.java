@@ -35,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ActivityMain extends AppCompatActivity implements
         SyncStatusObserver,
@@ -145,7 +146,12 @@ public class ActivityMain extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 if (FuelingPreferenceManager.isSyncEnabled()) {
-                    if (!mSyncAccount.isSyncActive()) startSync();
+                    if (!mSyncAccount.isSyncActive()) {
+                        if (mSyncAccount.isYandexDiskTokenEmpty())
+                            showNeedAuthDialog();
+                        else
+                            startSync();
+                    }
                 } else {
                     mClickedMenuId = R.id.action_settings; // TODO: open sync screen
                     mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -353,6 +359,8 @@ public class ActivityMain extends AppCompatActivity implements
 
                 ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).updateMapCenter();
                 break;
+            case FragmentDialogQuestion.REQUEST_CODE:
+                Toast.makeText(this, "TODO!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -533,19 +541,22 @@ public class ActivityMain extends AppCompatActivity implements
             imgId = R.drawable.ic_sync_grey600_24dp;
         } else {
             if (FuelingPreferenceManager.isSyncEnabled()) {
-                String lastSync = FuelingPreferenceManager.getLastSync();
-
-//                Functions.logD("ActivityMain -- updateSyncStatus: lastSync == " + lastSync);
-
-                if (TextUtils.isEmpty(lastSync)) {
-                    text = getString(R.string.sync_not_performed);
-                    imgId = R.drawable.ic_sync_grey600_24dp;
-                } else if (lastSync.equals(FuelingPreferenceManager.SYNC_ERROR)) {
-                    text = getString(R.string.sync_error);
-                    imgId = R.drawable.ic_sync_alert_grey600_24dp;
+                if (mSyncAccount.isYandexDiskTokenEmpty()) {
+                    text = getString(R.string.sync_no_token);
+                    imgId = R.drawable.ic_sync_off_grey600_24dp;
                 } else {
-                    text = getString(R.string.sync_done, lastSync);
-                    imgId = R.drawable.ic_sync_grey600_24dp;
+                    String lastSync = FuelingPreferenceManager.getLastSync();
+
+                    if (TextUtils.isEmpty(lastSync)) {
+                        text = getString(R.string.sync_not_performed);
+                        imgId = R.drawable.ic_sync_grey600_24dp;
+                    } else if (lastSync.equals(FuelingPreferenceManager.SYNC_ERROR)) {
+                        text = getString(R.string.sync_error);
+                        imgId = R.drawable.ic_sync_alert_grey600_24dp;
+                    } else {
+                        text = getString(R.string.sync_done, lastSync);
+                        imgId = R.drawable.ic_sync_grey600_24dp;
+                    }
                 }
             } else {
                 text = getString(R.string.sync_disabled);
@@ -564,6 +575,8 @@ public class ActivityMain extends AppCompatActivity implements
     public void OnPreferenceSyncEnabledChanged(final boolean enabled) {
         mSyncAccount.setIsSyncable(enabled);
         updateSyncStatus();
+        if (enabled && mSyncAccount.isYandexDiskTokenEmpty())
+            showNeedAuthDialog();
     }
 
     @Override
@@ -574,5 +587,10 @@ public class ActivityMain extends AppCompatActivity implements
                 updateSyncStatus();
             }
         });
+    }
+
+    private void showNeedAuthDialog() {
+        FragmentDialogQuestion.show(this, getString(R.string.dialog_caption_auth),
+                getString(R.string.message_dialog_auth), getString(R.string.dialog_btn_ok));
     }
 }

@@ -4,8 +4,11 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.text.TextUtils;
 
 public class SyncAccount {
+
+    private static final String YANDEX_DISK_TOKEN = "yandex disk token";
 
     private final AccountManager mAccountManager;
 
@@ -67,5 +70,25 @@ public class SyncAccount {
 
     public void setIsSyncable(final boolean syncable) {
         setIsSyncable(getAccount(), syncable);
+    }
+
+    private String getUserData(final String key) {
+        return mAccountManager.getUserData(getAccount(), key);
+    }
+
+    private void setUserData(final String key, final String value) {
+        mAccountManager.setUserData(getAccount(), key, value);
+    }
+
+    public String getYandexDiskToken() {
+        return getUserData(YANDEX_DISK_TOKEN);
+    }
+
+    public boolean isYandexDiskTokenEmpty() {
+        return TextUtils.isEmpty(getYandexDiskToken());
+    }
+
+    public void setYandexDiskToken(final String token) {
+        setUserData(YANDEX_DISK_TOKEN, token);
     }
 }

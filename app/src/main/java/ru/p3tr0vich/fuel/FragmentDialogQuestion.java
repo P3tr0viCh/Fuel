@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 
 public class FragmentDialogQuestion extends DialogFragment {
 
@@ -18,29 +19,48 @@ public class FragmentDialogQuestion extends DialogFragment {
     private static final String MESSAGE = "message";
     private static final String POSITIVE_BUTTON_TEXT = "positive_button_text";
 
-    public static void show(Fragment parent, String title, String message, String positiveButtonText) {
+    private static FragmentDialogQuestion getInstance(String title, String message, String positiveButtonText) {
         Bundle args = new Bundle();
-        args.putString(FragmentDialogQuestion.TITLE, title);
-        args.putString(FragmentDialogQuestion.MESSAGE, message);
-        args.putString(FragmentDialogQuestion.POSITIVE_BUTTON_TEXT, positiveButtonText);
+        args.putString(TITLE, title);
+        args.putString(MESSAGE, message);
+        args.putString(POSITIVE_BUTTON_TEXT, positiveButtonText);
 
         FragmentDialogQuestion dialogQuestion = new FragmentDialogQuestion();
         dialogQuestion.setArguments(args);
+
+        return dialogQuestion;
+    }
+
+    public static void show(Fragment parent, String title, String message, String positiveButtonText) {
+        FragmentDialogQuestion dialogQuestion = getInstance(title, message, positiveButtonText);
         dialogQuestion.setTargetFragment(parent, REQUEST_CODE);
         dialogQuestion.show(parent.getFragmentManager(), TAG);
+    }
+
+    public static void show(AppCompatActivity parent, String title, String message, String positiveButtonText) {
+        FragmentDialogQuestion dialogQuestion = getInstance(title, message, positiveButtonText);
+        dialogQuestion.setTargetFragment(null, REQUEST_CODE);
+        dialogQuestion.show(parent.getSupportFragmentManager(), TAG);
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Bundle arguments = getArguments();
         return new AlertDialog.Builder(getActivity())
-                .setTitle(getArguments().getString(TITLE))
-                .setMessage(getArguments().getString(MESSAGE))
+                .setTitle(arguments.getString(TITLE))
+                .setMessage(arguments.getString(MESSAGE))
 
-                .setPositiveButton(getArguments().getString(POSITIVE_BUTTON_TEXT), new DialogInterface.OnClickListener() {
+                .setPositiveButton(arguments.getString(POSITIVE_BUTTON_TEXT), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        getTargetFragment().onActivityResult(REQUEST_CODE, Activity.RESULT_OK, null);
+                        Fragment fragment = getTargetFragment();
+                        if (fragment != null) fragment.onActivityResult(REQUEST_CODE, Activity.RESULT_OK, null);
+                        else {
+                            Activity activity = getActivity();
+                            if (activity instanceof ActivityMain)
+                                ((ActivityMain) activity).onActivityResult(REQUEST_CODE, Activity.RESULT_OK, null);
+                        }
                     }
                 })
 

@@ -61,6 +61,13 @@ class FileIO {
             throw new IOException("FileIO -- makeDir: can not create dir " + dir.toString());
     }
 
+    public static void deleteFile(File file) throws IOException {
+        if (!file.exists()) return;
+
+        if (!file.delete())
+            throw new IOException("FileIO -- deleteFile: can not delete file " + file.toString());
+    }
+
     public static void createFile(File file) throws IOException {
         if (file.exists()) {
             if (!file.isFile())

@@ -6,7 +6,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.text.TextUtils;
 
-public class SyncAccount {
+class SyncAccount {
 
     private static final String YANDEX_DISK_TOKEN = "yandex disk token";
 
@@ -72,10 +72,12 @@ public class SyncAccount {
         setIsSyncable(getAccount(), syncable);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private String getUserData(final String key) {
         return mAccountManager.getUserData(getAccount(), key);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void setUserData(final String key, final String value) {
         mAccountManager.setUserData(getAccount(), key, value);
     }

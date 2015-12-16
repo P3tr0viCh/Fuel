@@ -172,8 +172,6 @@
     <string name="pref_filter_date_to" translatable="false">filter date to</string>
 
     <string name="pref_map_center_text" translatable="false">map center text</string>
-    <string name="pref_map_center_latitude" translatable="false">map center latitude</string>
-    <string name="pref_map_center_longitude" translatable="false">map center longitude</string>
 
     <string name="pref_sync_key" translatable="false">key_sync</string>
     <string name="pref_sync_title">Синхронизация</string>

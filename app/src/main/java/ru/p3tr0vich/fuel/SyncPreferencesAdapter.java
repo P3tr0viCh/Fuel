@@ -1,6 +1,5 @@
 package ru.p3tr0vich.fuel;
 
-
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SyncPreferencesAdapter {
+class SyncPreferencesAdapter {
 
     private final ContentProviderClient mProvider;
 

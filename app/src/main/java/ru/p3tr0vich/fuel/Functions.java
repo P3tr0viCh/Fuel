@@ -35,8 +35,6 @@ import java.util.Locale;
 
 public class Functions {
 
-    public static Context sApplicationContext;
-
     private static final String LOG_TAG = "XXX";
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
@@ -59,7 +57,7 @@ public class Functions {
         int flags = DateUtils.FORMAT_SHOW_DATE;
         flags = withYear ? flags | DateUtils.FORMAT_SHOW_YEAR : flags | DateUtils.FORMAT_NO_YEAR;
         if (abbrevMonth) flags = flags | DateUtils.FORMAT_ABBREV_MONTH;
-        return DateUtils.formatDateTime(sApplicationContext, date.getTime(), flags);
+        return DateUtils.formatDateTime(ApplicationFueling.getContext(), date.getTime(), flags);
     }
 
     public static String dateToString(Date date, boolean withYear) {
@@ -77,7 +75,7 @@ public class Functions {
     }
 
     public static String dateTimeToString(Date date) {
-        return DateUtils.formatDateTime(sApplicationContext, date.getTime(),
+        return DateUtils.formatDateTime(ApplicationFueling.getContext(), date.getTime(),
                 DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME);
     }
 
@@ -125,13 +123,13 @@ public class Functions {
         editText.requestFocus();
         editText.selectAll();
         InputMethodManager inputMethodManager = (InputMethodManager)
-                sApplicationContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                ApplicationFueling.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
     }
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager)
-                sApplicationContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                ApplicationFueling.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         View view = activity.getCurrentFocus();
         if (view != null)
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -140,11 +138,11 @@ public class Functions {
     public static void setProgressWheelVisible(ProgressWheel progressWheel, boolean visible) {
         if (visible) {
             progressWheel.startAnimation(AnimationUtils.loadAnimation(
-                    sApplicationContext, android.R.anim.fade_in));
+                    ApplicationFueling.getContext(), android.R.anim.fade_in));
             progressWheel.setVisibility(View.VISIBLE);
         } else {
             progressWheel.startAnimation(AnimationUtils.loadAnimation(
-                    sApplicationContext, android.R.anim.fade_out));
+                    ApplicationFueling.getContext(), android.R.anim.fade_out));
             progressWheel.setVisibility(View.GONE);
         }
     }
@@ -158,7 +156,7 @@ public class Functions {
 
     public static boolean isInternetConnected() {
         ConnectivityManager connectivityManager =
-                (ConnectivityManager) sApplicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) ApplicationFueling.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 @SuppressWarnings("deprecation")
@@ -188,7 +186,8 @@ public class Functions {
         spinner.setAdapter(adapter);
 
         int px = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                Const.TOOLBAR_SPINNER_DROPDOWN_OFFSET, sApplicationContext.getResources().getDisplayMetrics()));
+                Const.TOOLBAR_SPINNER_DROPDOWN_OFFSET,
+                ApplicationFueling.getContext().getResources().getDisplayMetrics()));
 
         spinner.setDropDownVerticalOffset(-px);
 
@@ -209,23 +208,27 @@ public class Functions {
     }
 
     public static boolean isPhone() {
-        return sApplicationContext.getResources().getDimension(R.dimen.is_phone) != 0;
+        return ApplicationFueling.getContext().getResources().getDimension(R.dimen.is_phone) != 0;
     }
 
     private static boolean isPortrait() {
-        return sApplicationContext.getResources().getDimension(R.dimen.is_portrait) != 0;
+        return ApplicationFueling.getContext().getResources().getDimension(R.dimen.is_portrait) != 0;
     }
 
     public static boolean isPhoneInPortrait() {
         return isPhone() && isPortrait();
     }
 
+    public static boolean isDebuggable() {
+        return (ApplicationFueling.getContext().getApplicationInfo().flags &
+                ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+    }
+
     public static void logD(String msg) {
-        if ((sApplicationContext.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0)
-            Log.d(LOG_TAG, msg);
+        if (isDebuggable()) Log.d(LOG_TAG, msg);
     }
 
     public static int getDimensionPixelSize(@DimenRes int id) {
-        return sApplicationContext.getResources().getDimensionPixelSize(id);
+        return ApplicationFueling.getContext().getResources().getDimensionPixelSize(id);
     }
 }

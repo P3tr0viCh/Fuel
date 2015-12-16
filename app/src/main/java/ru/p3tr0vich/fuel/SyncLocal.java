@@ -39,10 +39,6 @@ class SyncLocal {
     }
 
     public void savePreferences(@NonNull List<String> preferences) throws IOException {
-        File dirPreferences = mSyncFiles.getLocalDirPreferences();
-
-        FileIO.makeDir(dirPreferences);
-
         File filePreferences = mSyncFiles.getLocalFilePreferences();
 
         FileIO.createFile(filePreferences);
@@ -51,10 +47,6 @@ class SyncLocal {
     }
 
     public void saveRevision(int revision) throws IOException {
-        File dirPreferences = mSyncFiles.getLocalDirPreferences();
-
-        FileIO.makeDir(dirPreferences);
-
         File fileRevision = mSyncFiles.getLocalFilePreferencesRevision();
 
         FileIO.createFile(fileRevision);
@@ -63,5 +55,14 @@ class SyncLocal {
         strings.add(String.valueOf(revision));
 
         FileIO.write(fileRevision, strings);
+    }
+
+    public void makeDirs() throws IOException {
+        FileIO.makeDir(mSyncFiles.getLocalDirPreferences());
+    }
+
+    public void deleteFiles() throws IOException {
+        FileIO.deleteFile(mSyncFiles.getLocalFilePreferencesRevision());
+        FileIO.deleteFile(mSyncFiles.getLocalFilePreferences());
     }
 }

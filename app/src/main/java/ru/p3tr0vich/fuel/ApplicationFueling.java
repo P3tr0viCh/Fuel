@@ -1,12 +1,20 @@
 package ru.p3tr0vich.fuel;
 
 import android.app.Application;
+import android.content.Context;
 
 public class ApplicationFueling extends Application {
+
+    private static Context CONTEXT;
+
     @Override
     public void onCreate() {
         super.onCreate();
-        Functions.sApplicationContext = getApplicationContext();
-        FuelingPreferenceManager.init(Functions.sApplicationContext);
+        CONTEXT = getApplicationContext();
+        FuelingPreferenceManager.init(CONTEXT);
+    }
+
+    public static Context getContext() {
+        return CONTEXT;
     }
 }

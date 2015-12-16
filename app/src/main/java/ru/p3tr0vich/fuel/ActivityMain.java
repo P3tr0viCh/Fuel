@@ -131,7 +131,7 @@ public class ActivityMain extends AppCompatActivity implements
             }
         });
 
-        mSyncAccount = new SyncAccount(Functions.sApplicationContext);
+        mSyncAccount = new SyncAccount(ApplicationFueling.getContext());
 
 //        mSyncAccount.setYandexDiskToken(null);
 

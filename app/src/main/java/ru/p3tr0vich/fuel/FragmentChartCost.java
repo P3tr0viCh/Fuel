@@ -285,9 +285,9 @@ public class FragmentChartCost extends FragmentFuel implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case ChartCursorLoader.ID:
-                return new ChartCursorLoader(Functions.sApplicationContext, mFilter);
+                return new ChartCursorLoader(ApplicationFueling.getContext(), mFilter);
             case YearsCursorLoader.ID:
-                return new YearsCursorLoader(Functions.sApplicationContext);
+                return new YearsCursorLoader(ApplicationFueling.getContext());
             default:
                 return null;
         }

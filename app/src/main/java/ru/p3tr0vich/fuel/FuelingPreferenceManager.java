@@ -71,11 +71,11 @@ class FuelingPreferenceManager {
         sSharedPreferences.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
     }
 
-    public static boolean isChanged() {
+    private static boolean isChanged() {
         return sSharedPreferences.getBoolean(PREF_CHANGED, false);
     }
 
-    public static void putChanged(final boolean changed) {
+    private static void putChanged(final boolean changed) {
         sSharedPreferences
                 .edit()
                 .putBoolean(PREF_CHANGED, changed)
@@ -88,11 +88,11 @@ class FuelingPreferenceManager {
         return sSharedPreferences.getBoolean(sContext.getString(R.string.pref_sync_enabled), false);
     }
 
-    public static int getRevision() {
+    private static int getRevision() {
         return sSharedPreferences.getInt(PREF_REVISION, -1);
     }
 
-    public static void putRevision(final int revision) {
+    private static void putRevision(final int revision) {
         sSharedPreferences
                 .edit()
                 .putInt(PREF_REVISION, revision)
@@ -105,7 +105,7 @@ class FuelingPreferenceManager {
         return sSharedPreferences.getString(PREF_LAST_SYNC, "");
     }
 
-    public static void putLastSync(final String dateTime) {
+    private static void putLastSync(final String dateTime) {
         sSharedPreferences
                 .edit()
                 .putString(PREF_LAST_SYNC, dateTime != null ? dateTime : SYNC_ERROR)
@@ -237,6 +237,7 @@ class FuelingPreferenceManager {
                 .apply();
     }
 
+    @SuppressWarnings("SameParameterValue")
     public static String getString(final String key, final String defValue) {
         return sSharedPreferences.getString(key, defValue);
     }

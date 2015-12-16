@@ -173,7 +173,7 @@ public class FragmentFueling extends FragmentFuel implements
         mRecyclerViewFueling.setItemAnimator(new DefaultItemAnimator());
         mRecyclerViewFueling.addItemDecoration(
                 new DividerItemDecoration(getActivity(), isPhone ? -1 : FuelingAdapter.TYPE_FOOTER));
-        mRecyclerViewFueling.setLayoutManager(new LinearLayoutManager(Functions.sApplicationContext));
+        mRecyclerViewFueling.setLayoutManager(new LinearLayoutManager(ApplicationFueling.getContext()));
         mRecyclerViewFueling.setAdapter(mFuelingAdapter = new FuelingAdapter(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -435,7 +435,7 @@ public class FragmentFueling extends FragmentFuel implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_LIST_ID:
-                return new FuelingCursorLoader(Functions.sApplicationContext, mFilter);
+                return new FuelingCursorLoader(ApplicationFueling.getContext(), mFilter);
             default:
                 return null;
         }

@@ -3,7 +3,7 @@ package ru.p3tr0vich.fuel;
 import android.app.Application;
 import android.content.Context;
 
-public class ApplicationFueling extends Application {
+public class ApplicationFuel extends Application {
 
     private static Context CONTEXT;
 

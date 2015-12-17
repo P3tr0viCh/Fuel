@@ -11,6 +11,8 @@ import android.content.SyncStatusObserver;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -49,6 +51,8 @@ public class ActivityMain extends AppCompatActivity implements
     private static final String ACTION_LOADING = "ru.p3tr0vich.fuel.ACTION_LOADING";
     private static final String EXTRA_LOADING = "ru.p3tr0vich.fuel.EXTRA_LOADING";
 
+    private static final String ACTION_START_SYNC = "ru.p3tr0vich.fuel.ACTION_START_SYNC";
+
     private static final String KEY_CURRENT_FRAGMENT_ID = "KEY_CURRENT_FRAGMENT_ID";
 
     private Toolbar mToolbarMain;
@@ -66,20 +70,34 @@ public class ActivityMain extends AppCompatActivity implements
     private TextView mBtnSync;
 
     private BroadcastReceiver mLoadingStatusReceiver;
+    private BroadcastReceiver mStartSyncReceiver;
 
     private int mCurrentFragmentId, mClickedMenuId;
 
-    private Fragment findFragmentByTag(String fragmentTag) {
+    @Nullable
+    private Fragment findFragmentByTag(@Nullable String fragmentTag) {
         return fragmentTag != null ?
                 getSupportFragmentManager().findFragmentByTag(fragmentTag) : null;
     }
 
+    @Nullable
     private FragmentFueling getFragmentFueling() {
         return (FragmentFueling) getSupportFragmentManager().findFragmentByTag(FragmentFueling.TAG);
     }
 
+    @Nullable
+    private FragmentPreference getFragmentPreference() {
+        return (FragmentPreference) getSupportFragmentManager().findFragmentByTag(FragmentPreference.TAG);
+    }
+
+    @NonNull
     public static Intent getLoadingBroadcast(boolean startLoading) {
         return new Intent(ACTION_LOADING).putExtra(EXTRA_LOADING, startLoading);
+    }
+
+    @NonNull
+    public static Intent getStartSyncBroadcast() {
+        return new Intent(ACTION_START_SYNC);
     }
 
     @Override
@@ -114,7 +132,8 @@ public class ActivityMain extends AppCompatActivity implements
         mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).goToRootScreen();
+                FragmentPreference fragmentPreference = getFragmentPreference();
+                if (fragmentPreference != null) fragmentPreference.goToRootScreen();
             }
         });
 
@@ -131,15 +150,11 @@ public class ActivityMain extends AppCompatActivity implements
             }
         });
 
-        mSyncAccount = new SyncAccount(ApplicationFueling.getContext());
+        mSyncAccount = new SyncAccount(ApplicationFuel.getContext());
 
-//        mSyncAccount.setYandexDiskToken(null);
+        mSyncAccount.setYandexDiskToken(null);
 
-        mAnimationSync = new RotateAnimation(360.0f, 0.0f,
-                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        mAnimationSync.setInterpolator(new LinearInterpolator());
-        mAnimationSync.setDuration(Const.ANIMATION_DURATION_SYNC);
-        mAnimationSync.setRepeatCount(Animation.INFINITE);
+        initAnimationSync();
 
         mImgSync = (ImageView) findViewById(R.id.imgSync);
 
@@ -147,27 +162,39 @@ public class ActivityMain extends AppCompatActivity implements
         mBtnSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (FuelingPreferenceManager.isSyncEnabled()) {
-                    if (!mSyncAccount.isSyncActive()) {
-                        if (Functions.isInternetConnected()) {
-                            if (mSyncAccount.isYandexDiskTokenEmpty())
-                                showNeedAuthDialog();
-                            else
-                                startSync();
-                        } else
-                            FragmentDialogMessage.show(ActivityMain.this,
-                                    getString(R.string.title_message_error),
-                                    getString(R.string.message_error_no_internet));
-
-                    }
-                } else {
-                    mClickedMenuId = R.id.action_settings; // TODO: open sync screen
-                    mDrawerLayout.closeDrawer(GravityCompat.START);
-                }
+                startSync(true);
             }
         });
+
         updateSyncStatus();
 
+        initToolbarSpinner();
+
+        initLoadingStatusReceiver();
+        initStartSyncReceiver();
+
+        mSyncMonitor = ContentResolver.addStatusChangeListener(
+                ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
+
+        if (savedInstanceState == null) {
+            mCurrentFragmentId = R.id.action_fueling;
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.contentFrame, new FragmentFueling(), FragmentFueling.TAG)
+                    .setTransition(FragmentTransaction.TRANSIT_NONE)
+                    .commit();
+
+            startSync(false);
+        } else {
+            mCurrentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID);
+            if (mCurrentFragmentId == R.id.action_settings) {
+                FragmentPreference fragmentPreference = getFragmentPreference();
+                if (fragmentPreference != null)
+                    mDrawerToggle.setDrawerIndicatorEnabled(fragmentPreference.isInRoot());
+            }
+        }
+    }
+
+    private void initToolbarSpinner() {
         //noinspection ConstantConditions
         mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
 
@@ -176,8 +203,6 @@ public class ActivityMain extends AppCompatActivity implements
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                        Functions.logD("ActivityMain -- onItemSelected");
-
                         FragmentFueling fragmentFueling = getFragmentFueling();
                         if (fragmentFueling != null && fragmentFueling.isVisible())
                             fragmentFueling.setFilterMode(positionToFilterMode(position));
@@ -188,7 +213,17 @@ public class ActivityMain extends AppCompatActivity implements
 
                     }
                 });
+    }
 
+    private void initAnimationSync() {
+        mAnimationSync = new RotateAnimation(360.0f, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        mAnimationSync.setInterpolator(new LinearInterpolator());
+        mAnimationSync.setDuration(Const.ANIMATION_DURATION_SYNC);
+        mAnimationSync.setRepeatCount(Animation.INFINITE);
+    }
+
+    private void initLoadingStatusReceiver() {
         mLoadingStatusReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -202,29 +237,17 @@ public class ActivityMain extends AppCompatActivity implements
         };
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mLoadingStatusReceiver,
                 new IntentFilter(ACTION_LOADING));
+    }
 
-        mSyncMonitor = ContentResolver.addStatusChangeListener(
-                ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
-
-        if (savedInstanceState == null) {
-            mCurrentFragmentId = R.id.action_fueling;
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.contentFrame, new FragmentFueling(), FragmentFueling.TAG)
-                    .setTransition(FragmentTransaction.TRANSIT_NONE)
-                    .commit();
-
-            if (FuelingPreferenceManager.isSyncEnabled() &&
-                    !mSyncAccount.isSyncActive() &&
-                    !mSyncAccount.isYandexDiskTokenEmpty() &&
-                    Functions.isInternetConnected())
-                startSync();
-        } else {
-            mCurrentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID);
-            if (mCurrentFragmentId == R.id.action_settings)
-                mDrawerToggle.setDrawerIndicatorEnabled(
-                        ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).isInRoot());
-        }
-//        FuelingPreferenceManager.putRevision(-1);
+    private void initStartSyncReceiver() {
+        mStartSyncReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                startSync(false);
+            }
+        };
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mStartSyncReceiver,
+                new IntentFilter(ACTION_START_SYNC));
     }
 
     @Override
@@ -234,24 +257,23 @@ public class ActivityMain extends AppCompatActivity implements
         outState.putInt(KEY_CURRENT_FRAGMENT_ID, mCurrentFragmentId);
     }
 
-    private Fragment getFragmentNewInstance(String fragmentTag) {
-        if (fragmentTag == null) return null;
-        if (findFragmentByTag(fragmentTag) == null)
-            switch (fragmentTag) {
-                case FragmentCalc.TAG:
-                    return new FragmentCalc();
-                case FragmentChartCost.TAG:
-                    return new FragmentChartCost();
-                case FragmentPreference.TAG:
-                    return new FragmentPreference();
-                case FragmentBackup.TAG:
-                    return new FragmentBackup();
-                case FragmentAbout.TAG:
-                    return new FragmentAbout();
-                default:
-                    return null;
-            }
-        else return null;
+    @Nullable
+    private Fragment getFragmentNewInstance(@Nullable String fragmentTag) {
+        if (findFragmentByTag(fragmentTag) == null) return null;
+        switch (fragmentTag) {
+            case FragmentCalc.TAG:
+                return new FragmentCalc();
+            case FragmentChartCost.TAG:
+                return new FragmentChartCost();
+            case FragmentPreference.TAG:
+                return new FragmentPreference();
+            case FragmentBackup.TAG:
+                return new FragmentBackup();
+            case FragmentAbout.TAG:
+                return new FragmentAbout();
+            default:
+                return null;
+        }
     }
 
     private void selectItem(int menuId) {
@@ -261,8 +283,10 @@ public class ActivityMain extends AppCompatActivity implements
 
         Fragment fragment;
         FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentFueling fragmentFueling = getFragmentFueling();
 
-        if (!getFragmentFueling().isVisible()) fragmentManager.popBackStack();
+        if (fragmentFueling != null)
+            if (!fragmentFueling.isVisible()) fragmentManager.popBackStack();
 
         switch (menuId) {
             case R.id.action_calc:
@@ -297,7 +321,8 @@ public class ActivityMain extends AppCompatActivity implements
             mDrawerLayout.closeDrawer(GravityCompat.START);
         else {
             if (mCurrentFragmentId == R.id.action_settings) {
-                if (((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).goToRootScreen())
+                FragmentPreference fragmentPreference = getFragmentPreference();
+                if (fragmentPreference != null && fragmentPreference.goToRootScreen())
                     return;
             }
             if (getSupportFragmentManager().getBackStackEntryCount() != 0)
@@ -321,6 +346,7 @@ public class ActivityMain extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         ContentResolver.removeStatusChangeListener(mSyncMonitor);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mStartSyncReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mLoadingStatusReceiver);
         super.onDestroy();
     }
@@ -341,12 +367,13 @@ public class ActivityMain extends AppCompatActivity implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) return;
 
-        FuelingRecord fuelingRecord;
-        FragmentFueling fragmentFueling = getFragmentFueling();
-
         switch (requestCode) {
             case ActivityFuelingRecordChange.REQUEST_CODE:
-                fuelingRecord = new FuelingRecord(data);
+                FragmentFueling fragmentFueling = getFragmentFueling();
+
+                if (fragmentFueling == null) return;
+
+                FuelingRecord fuelingRecord = new FuelingRecord(data);
 
                 switch (ActivityFuelingRecordChange.getAction(data)) {
                     case Const.RECORD_ACTION_ADD:
@@ -358,8 +385,9 @@ public class ActivityMain extends AppCompatActivity implements
                 }
                 break;
             case ActivityYandexMap.REQUEST_CODE_DISTANCE:
-                ((FragmentCalc) findFragmentByTag(FragmentCalc.TAG))
-                        .setDistance(ActivityYandexMap.getDistance(data));
+                FragmentCalc fragmentCalc = (FragmentCalc) findFragmentByTag(FragmentCalc.TAG);
+                if (fragmentCalc != null)
+                    fragmentCalc.setDistance(ActivityYandexMap.getDistance(data));
                 break;
             case ActivityYandexMap.REQUEST_CODE_MAP_CENTER:
                 Functions.logD("ActivityMain -- onActivityResult: ActivityYandexMap.REQUEST_CODE_MAP_CENTER");
@@ -367,8 +395,8 @@ public class ActivityMain extends AppCompatActivity implements
 
                 FuelingPreferenceManager.putMapCenter(mapCenter.text,
                         mapCenter.latitude, mapCenter.longitude);
-
-                ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).updateMapCenter();
+                FragmentPreference fragmentPreference = getFragmentPreference();
+                if (fragmentPreference != null) fragmentPreference.updateMapCenter();
                 break;
             case FragmentDialogQuestion.REQUEST_CODE:
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SyncYandexDisk.AUTH_URL)));
@@ -410,7 +438,8 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onDataLoadedFromBackup() {
-        getFragmentFueling().forceLoad();
+        FragmentFueling fragmentFueling = getFragmentFueling();
+        if (fragmentFueling != null) fragmentFueling.forceLoad();
     }
 
     @Override
@@ -419,7 +448,7 @@ public class ActivityMain extends AppCompatActivity implements
 
         mCurrentFragmentId = mClickedMenuId = fragmentId;
 
-        int titleId, subtitleId = -1;
+        int titleId = -1, subtitleId = -1;
         boolean showSpinner = false;
 
         switch (fragmentId) {
@@ -431,7 +460,9 @@ public class ActivityMain extends AppCompatActivity implements
                 subtitleId = R.string.title_chart_cost_subtitle;
                 break;
             case R.id.action_settings:
-                titleId = ((FragmentPreference) findFragmentByTag(FragmentPreference.TAG)).getTitleId();
+                FragmentPreference fragmentPreference = getFragmentPreference();
+                if (fragmentPreference != null)
+                    titleId = fragmentPreference.getTitleId();
                 break;
             case R.id.action_backup:
                 titleId = R.string.title_backup;
@@ -440,7 +471,6 @@ public class ActivityMain extends AppCompatActivity implements
                 titleId = R.string.title_about;
                 break;
             default:
-                titleId = -1;
                 showSpinner = true;
         }
 
@@ -532,14 +562,40 @@ public class ActivityMain extends AppCompatActivity implements
         anim.start();
     }
 
-    private void startSync() {
+    public void startSync(boolean showDialogs) {
         Functions.logD("ActivityMain -- startSync");
 
-        Bundle extras = new Bundle();
-        extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        if (FuelingPreferenceManager.isSyncEnabled()) {
+            if (!mSyncAccount.isSyncActive()) {
+                if (!mSyncAccount.isYandexDiskTokenEmpty()) {
+                    if (Functions.isInternetConnected()) {
 
-        ContentResolver.requestSync(mSyncAccount.getAccount(), mSyncAccount.getAuthority(), extras);
+                        Bundle extras = new Bundle();
+                        extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+                        extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+
+                        ContentResolver.requestSync(mSyncAccount.getAccount(), mSyncAccount.getAuthority(), extras);
+                    } else {
+                        Functions.logD("ActivityMain -- startSync: Internet disconnected");
+                        if (showDialogs) FragmentDialogMessage.show(ActivityMain.this,
+                                getString(R.string.title_message_error),
+                                getString(R.string.message_error_no_internet));
+                    }
+                } else {
+                    Functions.logD("ActivityMain -- startSync: Yandex.Disk token empty");
+                    if (showDialogs) showDialogNeedAuth();
+                }
+            } else
+                Functions.logD("ActivityMain -- startSync: sync active");
+        } else {
+            Functions.logD("ActivityMain -- startSync: sync disabled");
+            if (showDialogs) {
+                // TODO: open sync screen
+                // TODO: open if not open drawer
+                mClickedMenuId = R.id.action_settings;
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+            }
+        }
     }
 
     private void updateSyncStatus() {
@@ -587,7 +643,7 @@ public class ActivityMain extends AppCompatActivity implements
         mSyncAccount.setIsSyncable(enabled);
         updateSyncStatus();
         if (enabled && mSyncAccount.isYandexDiskTokenEmpty())
-            showNeedAuthDialog();
+            showDialogNeedAuth();
     }
 
     @Override
@@ -600,7 +656,7 @@ public class ActivityMain extends AppCompatActivity implements
         });
     }
 
-    private void showNeedAuthDialog() {
+    private void showDialogNeedAuth() {
         FragmentDialogQuestion.show(this, getString(R.string.dialog_caption_auth),
                 getString(R.string.message_dialog_auth), getString(R.string.dialog_btn_ok));
     }

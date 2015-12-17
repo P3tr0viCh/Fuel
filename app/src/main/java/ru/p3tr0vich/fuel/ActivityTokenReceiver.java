@@ -1,7 +1,9 @@
 package ru.p3tr0vich.fuel;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
@@ -16,6 +18,8 @@ public class ActivityTokenReceiver extends AppCompatActivity {
 
         if (getIntent() != null && getIntent().getData() != null) {
             Uri data = getIntent().getData();
+
+            Functions.logD("ActivityTokenReceiver -- onCreate: data == " + data.toString());
 
             setIntent(null);
 
@@ -37,5 +41,11 @@ public class ActivityTokenReceiver extends AppCompatActivity {
         }
 
         finish();
+
+        Intent intent = new Intent(getApplicationContext(), ActivityMain.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+
+        LocalBroadcastManager.getInstance(this).sendBroadcast(ActivityMain.getStartSyncBroadcast());
     }
 }

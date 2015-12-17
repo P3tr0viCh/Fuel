@@ -173,7 +173,7 @@ public class FragmentFueling extends FragmentFuel implements
         mRecyclerViewFueling.setItemAnimator(new DefaultItemAnimator());
         mRecyclerViewFueling.addItemDecoration(
                 new DividerItemDecoration(getActivity(), isPhone ? -1 : FuelingAdapter.TYPE_FOOTER));
-        mRecyclerViewFueling.setLayoutManager(new LinearLayoutManager(ApplicationFueling.getContext()));
+        mRecyclerViewFueling.setLayoutManager(new LinearLayoutManager(ApplicationFuel.getContext()));
         mRecyclerViewFueling.setAdapter(mFuelingAdapter = new FuelingAdapter(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -435,7 +435,7 @@ public class FragmentFueling extends FragmentFuel implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_LIST_ID:
-                return new FuelingCursorLoader(ApplicationFueling.getContext(), mFilter);
+                return new FuelingCursorLoader(ApplicationFuel.getContext(), mFilter);
             default:
                 return null;
         }
@@ -809,12 +809,10 @@ public class FragmentFueling extends FragmentFuel implements
 
     static class FuelingCursorLoader extends CursorLoader {
 
-        private final Context mContext;
         private final FuelingDBHelper.Filter mFilter;
 
         public FuelingCursorLoader(Context context, FuelingDBHelper.Filter filter) {
             super(context);
-            mContext = context;
             mFilter = filter;
         }
 
@@ -822,14 +820,14 @@ public class FragmentFueling extends FragmentFuel implements
         public Cursor loadInBackground() {
 //            Functions.logD("FragmentFueling -- loadInBackground");
 
-            LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(true));
+            LocalBroadcastManager.getInstance(getContext()).sendBroadcast(ActivityMain.getLoadingBroadcast(true));
 
             FuelingDBHelper dbHelper = new FuelingDBHelper();
             dbHelper.setFilter(mFilter);
             try {
                 return dbHelper.getAllCursor();
             } finally {
-                LocalBroadcastManager.getInstance(mContext).sendBroadcast(ActivityMain.getLoadingBroadcast(false));
+                LocalBroadcastManager.getInstance(getContext()).sendBroadcast(ActivityMain.getLoadingBroadcast(false));
             }
         }
     }

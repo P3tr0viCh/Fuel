@@ -76,7 +76,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private final Filter mFilter;
 
     public FuelingDBHelper() {
-        super(ApplicationFueling.getContext(), DATABASE_NAME, null, DATABASE_VERSION);
+        super(ApplicationFuel.getContext(), DATABASE_NAME, null, DATABASE_VERSION);
         mFilter = new Filter();
         mFilter.filterMode = FILTER_MODE_ALL;
     }

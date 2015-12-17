@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".ApplicationFueling"
+        android:name=".ApplicationFuel"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_scheme"
         android:icon="@mipmap/ic_launcher"
@@ -40,17 +40,20 @@
             android:configChanges="screenSize|orientation"
             android:label="@string/title_yandex_map"
             android:parentActivityName=".ActivityMain" />
-        <activity android:name=".ActivityTokenReceiver">
+        <activity
+            android:name=".ActivityTokenReceiver">
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="@string/scheme_yandex_disk" />
+                <data
+                    android:host="@string/host_yandex_disk"
+                    android:scheme="@string/scheme_yandex_disk" />
             </intent-filter>
         </activity>
-
 
         <service
             android:name=".AuthenticatorService"

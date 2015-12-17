@@ -193,5 +193,6 @@
     <string name="sync_not_performed">Синхронизация не выполнялась</string>
     <string name="sync_done">Синхронизировано\n%s</string>
 
-    <string name="scheme_yandex_disk">ru.p3tr0vich.fuel</string>
+    <string name="scheme_yandex_disk">x-oauth-ru-p3tr0vich-fuel</string>
+    <string name="host_yandex_disk">yandex-disk-token</string>
 </resources>

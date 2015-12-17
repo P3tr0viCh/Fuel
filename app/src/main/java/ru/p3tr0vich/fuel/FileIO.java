@@ -54,21 +54,21 @@ class FileIO {
         fileOutputStream.close();
     }
 
-    public static void makeDir(File dir) throws IOException {
+    public static void makeDir(@NonNull File dir) throws IOException {
         if (dir.exists()) return;
 
         if (!dir.mkdirs())
             throw new IOException("FileIO -- makeDir: can not create dir " + dir.toString());
     }
 
-    public static void deleteFile(File file) throws IOException {
+    public static void deleteFile(@NonNull File file) throws IOException {
         if (!file.exists()) return;
 
         if (!file.delete())
             throw new IOException("FileIO -- deleteFile: can not delete file " + file.toString());
     }
 
-    public static void createFile(File file) throws IOException {
+    public static void createFile(@NonNull File file) throws IOException {
         if (file.exists()) {
             if (!file.isFile())
                 throw new FileNotFoundException("FileIO -- createFile: " + file.toString()
@@ -78,7 +78,7 @@ class FileIO {
             file.createNewFile();
     }
 
-    public static void checkExists(File file) throws FileNotFoundException {
+    public static void checkExists(@NonNull File file) throws FileNotFoundException {
         if (!file.exists() || !file.isFile())
             throw new FileNotFoundException("FileIO -- checkExists: " + file.toString() +
                     " not exists or not is a file");

@@ -57,7 +57,7 @@ public class Functions {
         int flags = DateUtils.FORMAT_SHOW_DATE;
         flags = withYear ? flags | DateUtils.FORMAT_SHOW_YEAR : flags | DateUtils.FORMAT_NO_YEAR;
         if (abbrevMonth) flags = flags | DateUtils.FORMAT_ABBREV_MONTH;
-        return DateUtils.formatDateTime(ApplicationFueling.getContext(), date.getTime(), flags);
+        return DateUtils.formatDateTime(ApplicationFuel.getContext(), date.getTime(), flags);
     }
 
     public static String dateToString(Date date, boolean withYear) {
@@ -75,7 +75,7 @@ public class Functions {
     }
 
     public static String dateTimeToString(Date date) {
-        return DateUtils.formatDateTime(ApplicationFueling.getContext(), date.getTime(),
+        return DateUtils.formatDateTime(ApplicationFuel.getContext(), date.getTime(),
                 DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME);
     }
 
@@ -123,13 +123,13 @@ public class Functions {
         editText.requestFocus();
         editText.selectAll();
         InputMethodManager inputMethodManager = (InputMethodManager)
-                ApplicationFueling.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                ApplicationFuel.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
     }
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager)
-                ApplicationFueling.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                ApplicationFuel.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         View view = activity.getCurrentFocus();
         if (view != null)
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -138,11 +138,11 @@ public class Functions {
     public static void setProgressWheelVisible(ProgressWheel progressWheel, boolean visible) {
         if (visible) {
             progressWheel.startAnimation(AnimationUtils.loadAnimation(
-                    ApplicationFueling.getContext(), android.R.anim.fade_in));
+                    ApplicationFuel.getContext(), android.R.anim.fade_in));
             progressWheel.setVisibility(View.VISIBLE);
         } else {
             progressWheel.startAnimation(AnimationUtils.loadAnimation(
-                    ApplicationFueling.getContext(), android.R.anim.fade_out));
+                    ApplicationFuel.getContext(), android.R.anim.fade_out));
             progressWheel.setVisibility(View.GONE);
         }
     }
@@ -156,7 +156,7 @@ public class Functions {
 
     public static boolean isInternetConnected() {
         ConnectivityManager connectivityManager =
-                (ConnectivityManager) ApplicationFueling.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) ApplicationFuel.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 @SuppressWarnings("deprecation")
@@ -187,7 +187,7 @@ public class Functions {
 
         int px = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 Const.TOOLBAR_SPINNER_DROPDOWN_OFFSET,
-                ApplicationFueling.getContext().getResources().getDisplayMetrics()));
+                ApplicationFuel.getContext().getResources().getDisplayMetrics()));
 
         spinner.setDropDownVerticalOffset(-px);
 
@@ -208,11 +208,11 @@ public class Functions {
     }
 
     public static boolean isPhone() {
-        return ApplicationFueling.getContext().getResources().getDimension(R.dimen.is_phone) != 0;
+        return ApplicationFuel.getContext().getResources().getDimension(R.dimen.is_phone) != 0;
     }
 
     private static boolean isPortrait() {
-        return ApplicationFueling.getContext().getResources().getDimension(R.dimen.is_portrait) != 0;
+        return ApplicationFuel.getContext().getResources().getDimension(R.dimen.is_portrait) != 0;
     }
 
     public static boolean isPhoneInPortrait() {
@@ -220,7 +220,7 @@ public class Functions {
     }
 
     public static boolean isDebuggable() {
-        return (ApplicationFueling.getContext().getApplicationInfo().flags &
+        return (ApplicationFuel.getContext().getApplicationInfo().flags &
                 ApplicationInfo.FLAG_DEBUGGABLE) != 0;
     }
 
@@ -229,6 +229,6 @@ public class Functions {
     }
 
     public static int getDimensionPixelSize(@DimenRes int id) {
-        return ApplicationFueling.getContext().getResources().getDimensionPixelSize(id);
+        return ApplicationFuel.getContext().getResources().getDimensionPixelSize(id);
     }
 }

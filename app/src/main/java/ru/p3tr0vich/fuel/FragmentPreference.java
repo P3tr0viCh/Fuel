@@ -163,14 +163,12 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     @Override
     public void onStart() {
         super.onStart();
-        Functions.logD("FragmentPreference -- onStart");
         mOnFragmentChangeListener.onFragmentChange(getFragmentId());
         rootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onStop() {
-        Functions.logD("FragmentPreference -- onStop");
         rootPreferenceScreen.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         super.onStop();
     }

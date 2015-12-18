@@ -107,11 +107,72 @@ public class ActivityMain extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initToolbar();
+        initToolbarSpinner();
+        initDrawer();
+
+        mSyncAccount = new SyncAccount(ApplicationFuel.getContext());
+
+        mSyncAccount.setYandexDiskToken(null);
+
+        initAnimationSync();
+        initSyncViews();
+
+        updateSyncStatus();
+
+        initLoadingStatusReceiver();
+        initStartSyncReceiver();
+
+        mSyncMonitor = ContentResolver.addStatusChangeListener(
+                ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
+
+        if (savedInstanceState == null) {
+            mCurrentFragmentId = R.id.action_fueling;
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.contentFrame, new FragmentFueling(), FragmentFueling.TAG)
+                    .setTransition(FragmentTransaction.TRANSIT_NONE)
+                    .commit();
+
+            startSync(false);
+        } else {
+            mCurrentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID);
+            if (mCurrentFragmentId == R.id.action_settings) {
+                FragmentPreference fragmentPreference = getFragmentPreference();
+                if (fragmentPreference != null)
+                    mDrawerToggle.setDrawerIndicatorEnabled(fragmentPreference.isInRoot());
+            }
+        }
+    }
+
+    private void initToolbar() {
         mToolbarMain = (Toolbar) findViewById(R.id.toolbarMain);
         setSupportActionBar(mToolbarMain);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
+    private void initToolbarSpinner() {
+        //noinspection ConstantConditions
+        mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
+
+        Functions.addSpinnerInToolbar(getSupportActionBar(), mToolbarMain, mToolbarSpinner,
+                ArrayAdapter.createFromResource(this, R.array.filter_dates, R.layout.toolbar_spinner_item),
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        FragmentFueling fragmentFueling = getFragmentFueling();
+                        if (fragmentFueling != null && fragmentFueling.isVisible())
+                            fragmentFueling.setFilterMode(positionToFilterMode(position));
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+    }
+
+    private void initDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mDrawerToggle = new ActionBarDrawerToggle(this,
                 mDrawerLayout, mToolbarMain, R.string.app_name, R.string.app_name) {
@@ -149,13 +210,17 @@ public class ActivityMain extends AppCompatActivity implements
                 return true;
             }
         });
+    }
 
-        mSyncAccount = new SyncAccount(ApplicationFuel.getContext());
+    private void initAnimationSync() {
+        mAnimationSync = new RotateAnimation(360.0f, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        mAnimationSync.setInterpolator(new LinearInterpolator());
+        mAnimationSync.setDuration(Const.ANIMATION_DURATION_SYNC);
+        mAnimationSync.setRepeatCount(Animation.INFINITE);
+    }
 
-//        mSyncAccount.setYandexDiskToken(null);
-
-        initAnimationSync();
-
+    private void initSyncViews() {
         mImgSync = (ImageView) findViewById(R.id.imgSync);
 
         mBtnSync = (TextView) findViewById(R.id.btnSync);
@@ -165,62 +230,6 @@ public class ActivityMain extends AppCompatActivity implements
                 startSync(true);
             }
         });
-
-        updateSyncStatus();
-
-        initToolbarSpinner();
-
-        initLoadingStatusReceiver();
-        initStartSyncReceiver();
-
-        mSyncMonitor = ContentResolver.addStatusChangeListener(
-                ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
-
-        if (savedInstanceState == null) {
-            mCurrentFragmentId = R.id.action_fueling;
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.contentFrame, new FragmentFueling(), FragmentFueling.TAG)
-                    .setTransition(FragmentTransaction.TRANSIT_NONE)
-                    .commit();
-
-            startSync(false);
-        } else {
-            mCurrentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID);
-            if (mCurrentFragmentId == R.id.action_settings) {
-                FragmentPreference fragmentPreference = getFragmentPreference();
-                if (fragmentPreference != null)
-                    mDrawerToggle.setDrawerIndicatorEnabled(fragmentPreference.isInRoot());
-            }
-        }
-    }
-
-    private void initToolbarSpinner() {
-        //noinspection ConstantConditions
-        mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
-
-        Functions.addSpinnerInToolbar(getSupportActionBar(), mToolbarMain, mToolbarSpinner,
-                ArrayAdapter.createFromResource(this, R.array.filter_dates, R.layout.toolbar_spinner_item),
-                new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        FragmentFueling fragmentFueling = getFragmentFueling();
-                        if (fragmentFueling != null && fragmentFueling.isVisible())
-                            fragmentFueling.setFilterMode(positionToFilterMode(position));
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
-    }
-
-    private void initAnimationSync() {
-        mAnimationSync = new RotateAnimation(360.0f, 0.0f,
-                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        mAnimationSync.setInterpolator(new LinearInterpolator());
-        mAnimationSync.setDuration(Const.ANIMATION_DURATION_SYNC);
-        mAnimationSync.setRepeatCount(Animation.INFINITE);
     }
 
     private void initLoadingStatusReceiver() {
@@ -648,7 +657,9 @@ public class ActivityMain extends AppCompatActivity implements
     @Override
     public void OnPreferenceSyncEnabledChanged(final boolean enabled) {
         mSyncAccount.setIsSyncable(enabled);
+
         updateSyncStatus();
+
         if (enabled && mSyncAccount.isYandexDiskTokenEmpty())
             showDialogNeedAuth();
     }
@@ -664,7 +675,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void showDialogNeedAuth() {
-        FragmentDialogQuestion.show(this, getString(R.string.dialog_caption_auth),
-                getString(R.string.message_dialog_auth), getString(R.string.dialog_btn_ok));
+        FragmentDialogQuestion.show(this, R.string.dialog_caption_auth,
+                R.string.message_dialog_auth, R.string.dialog_btn_agree, R.string.dialog_btn_disagree);
     }
 }

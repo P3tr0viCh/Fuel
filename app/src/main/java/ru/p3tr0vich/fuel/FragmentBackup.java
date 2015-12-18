@@ -137,8 +137,8 @@ public class FragmentBackup extends FragmentFuel {
     }
 
     private void loadFromXml() { // TODO: Сохранять старые в old?
-        FragmentDialogQuestion.show(this, getString(R.string.dialog_caption_load_from_xml),
-                getString(R.string.message_dialog_load_from_xml), getString(R.string.dialog_btn_load));
+        FragmentDialogQuestion.show(this, R.string.dialog_caption_load_from_xml,
+                R.string.message_dialog_load_from_xml, R.string.dialog_btn_load, null);
     }
 
     @Override

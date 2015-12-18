@@ -33,7 +33,6 @@ public class ActivityTokenReceiver extends AppCompatActivity {
                     Functions.logD("ActivityTokenReceiver -- onCreate: token == " + token);
 
                     new SyncAccount(this).setYandexDiskToken(token);
-                    // TODO: updateSyncStatus
                 } else
                     Functions.logD("ActivityTokenReceiver -- onCreate: empty token");
             } else

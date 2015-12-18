@@ -70,12 +70,14 @@
     <string name="dialog_caption_add">Новая запись</string>
     <string name="dialog_caption_update">Изменение записи</string>
     <string name="dialog_caption_load_from_xml">Предупреждение</string>
-    <string name="dialog_caption_auth">Авторизация</string>
+    <string name="dialog_caption_auth">Использовать Яндекс.Диск для синхронизации?</string>
 
     <string name="dialog_btn_ok">OK</string>
     <string name="dialog_btn_cancel">ОТМЕНА</string>
     <string name="dialog_btn_done">ГОТОВО</string>
     <string name="dialog_btn_load">ЗАГРУЗИТЬ</string>
+    <string name="dialog_btn_agree">СОГЛАСЕН</string>
+    <string name="dialog_btn_disagree">НЕТ</string>
 
     <string name="btn_backup_save">Сохранить</string>
     <string name="btn_backup_load">Загрузить</string>
@@ -83,7 +85,7 @@
     <string name="btn_calc_map">Подсчитать на Яндекс.Карты</string>
 
     <string name="message_dialog_load_from_xml">Загрузить данные из файла XML?\nИмеющиеся в базе данных записи будут безвозвратно удалены</string>
-    <string name="message_dialog_auth">Для выполнения синхронизации необходим доступ к папке приложения на Яндекс.Диске.\nСейчас будет открыта страница авторизации Яндекса, на которой нужно войти в сервисы Яндекса, после чего разрешить доступ.\nВ случае положительного разрешения, приложение "Учёт топлива" не получит доступа к данным, хранящимся на Яндекс.Диске, кроме файлов, находящихся в папке приложения, не получит введённого имени пользователя и пароля, а также не получит доступа к остальным сервисам Яндекса.\nВ случае отказа синхронизация выполняться не будет.</string>
+    <string name="message_dialog_auth">Сейчас будет открыта страница авторизации Яндекса, на которой нужно войти в сервисы Яндекса, после чего разрешить доступ.\nВ случае положительного выбора, приложение «Учёт топлива» не получит доступа к файлам, хранящимся на Яндекс.Диске, кроме файлов, находящихся в папке приложения «Учёт топлива», не получит введённого имени пользователя и пароля, а также не получит доступа к остальным сервисам Яндекса.\nВ случае отказа синхронизация выполняться не будет.</string>
 
     <string name="message_progress_save">Подождите, выполняется сохранение в файл…</string>
     <string name="message_progress_load">Подождите, выполняется чтение файла…</string>

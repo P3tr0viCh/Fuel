@@ -55,11 +55,14 @@ public class FragmentDialogQuestion extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         Fragment fragment = getTargetFragment();
-                        if (fragment != null) fragment.onActivityResult(REQUEST_CODE, Activity.RESULT_OK, null);
+                        if (fragment != null)
+                            fragment.onActivityResult(getTargetRequestCode(),
+                                    Activity.RESULT_OK, null);
                         else {
                             Activity activity = getActivity();
-                            if (activity instanceof ActivityMain)
-                                ((ActivityMain) activity).onActivityResult(REQUEST_CODE, Activity.RESULT_OK, null);
+                            if (activity instanceof ActivityMain) // TODO: use listener?
+                                ((ActivityMain) activity).onActivityResult(getTargetRequestCode(),
+                                        Activity.RESULT_OK, null);
                         }
                     }
                 })

@@ -152,7 +152,7 @@ public class ActivityMain extends AppCompatActivity implements
 
         mSyncAccount = new SyncAccount(ApplicationFuel.getContext());
 
-        mSyncAccount.setYandexDiskToken(null);
+//        mSyncAccount.setYandexDiskToken(null);
 
         initAnimationSync();
 
@@ -259,7 +259,9 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Nullable
     private Fragment getFragmentNewInstance(@Nullable String fragmentTag) {
-        if (findFragmentByTag(fragmentTag) == null) return null;
+        if (fragmentTag == null) return null;
+        if (findFragmentByTag(fragmentTag) != null) return null;
+
         switch (fragmentTag) {
             case FragmentCalc.TAG:
                 return new FragmentCalc();
@@ -382,6 +384,8 @@ public class ActivityMain extends AppCompatActivity implements
                     case Const.RECORD_ACTION_UPDATE:
                         fragmentFueling.updateRecord(fuelingRecord);
                         break;
+                    case Const.RECORD_ACTION_DELETE:
+                        break;
                 }
                 break;
             case ActivityYandexMap.REQUEST_CODE_DISTANCE:
@@ -419,10 +423,13 @@ public class ActivityMain extends AppCompatActivity implements
         switch (filterMode) {
             case FuelingDBHelper.FILTER_MODE_CURRENT_YEAR:
                 return 0;
+            case FuelingDBHelper.FILTER_MODE_YEAR:
             case FuelingDBHelper.FILTER_MODE_DATES:
                 return 1;
-            default:
+            case FuelingDBHelper.FILTER_MODE_ALL:
                 return 2;
+            default:
+                return 0;
         }
     }
 

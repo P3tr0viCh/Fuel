@@ -12,10 +12,8 @@ import com.yandex.disk.rest.json.Link;
 import java.io.IOException;
 
 class SyncYandexDisk {
-    private static final String CLIENT_ID = "5c1778f5bd58490a9ea471a150f25550";
-//    private static final String CLIENT_SECRET = "b7771c64e8a54741bf71d8b679ffd44a";
-
-    public static final String AUTH_URL = "https://oauth.yandex.ru/authorize?response_type=token&client_id=" + CLIENT_ID;
+    public static final String AUTH_URL = "https://oauth.yandex.ru/authorize?response_type=token&client_id=" +
+            SyncYandexDiskSecret.CLIENT_ID;
 
     public static final String PATTERN_ACCESS_TOKEN = "access_token=(.*?)(&|$)";
 

@@ -149,9 +149,7 @@ public class Functions {
 
     @Const.RecordAction
     public static int intToRecordAction(int i) {
-        if (i == Const.RECORD_ACTION_ADD) return Const.RECORD_ACTION_ADD;
-        else if (i == Const.RECORD_ACTION_UPDATE) return Const.RECORD_ACTION_UPDATE;
-        else return Const.RECORD_ACTION_DELETE;
+        return i;
     }
 
     public static boolean isInternetConnected() {

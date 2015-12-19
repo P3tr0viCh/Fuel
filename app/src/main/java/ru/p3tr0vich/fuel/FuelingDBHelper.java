@@ -190,6 +190,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
             case FILTER_MODE_DATES:
                 return WHERE + COLUMN_DATETIME + String.format(IN_DATES,
                         Functions.dateToSQLite(mFilter.dateFrom), Functions.dateToSQLite(mFilter.dateTo));
+            case FILTER_MODE_ALL:
             default:
                 return "";
         }

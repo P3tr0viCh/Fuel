@@ -1,5 +1,6 @@
 package ru.p3tr0vich.fuel;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -39,6 +40,7 @@ public class FragmentDialogQuestion extends DialogFragment {
         return dialogQuestion;
     }
 
+    @SuppressWarnings("SameParameterValue")
     public static void show(@NonNull Fragment parent,
                             @Nullable @StringRes Integer titleId,
                             @NonNull @StringRes Integer messageId,
@@ -51,6 +53,7 @@ public class FragmentDialogQuestion extends DialogFragment {
         dialogQuestion.show(parent.getFragmentManager(), TAG);
     }
 
+    @SuppressWarnings("SameParameterValue")
     public static void show(@NonNull AppCompatActivity parent,
                             @Nullable @StringRes Integer titleId,
                             @NonNull @StringRes Integer messageId,
@@ -74,11 +77,13 @@ public class FragmentDialogQuestion extends DialogFragment {
 
         textId = arguments.getInt(TITLE);
         if (textId != 0) {
-            final TextView titleView = new TextView(getContext().getApplicationContext());
-            titleView.setText(textId);
-            titleView.setTextColor(R.color.primary_text);
-            titleView.setTextSize(12);
-            builder.setCustomTitle(titleView);
+            @SuppressLint("InflateParams")
+            TextView customTitle = (TextView) getActivity().getLayoutInflater()
+                    .inflate(R.layout.apptheme_dialog_title, null, false);
+
+            customTitle.setText(textId);
+
+            builder.setCustomTitle(customTitle);
         }
 
         builder.setMessage(arguments.getInt(MESSAGE));
@@ -107,8 +112,6 @@ public class FragmentDialogQuestion extends DialogFragment {
 
         builder.setNegativeButton(textId, null);
 
-        AlertDialog dialog = builder.setCancelable(true).create();
-
-        return dialog;
+        return builder.setCancelable(true).create();
     }
 }

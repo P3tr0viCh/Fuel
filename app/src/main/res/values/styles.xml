@@ -54,6 +54,21 @@
         <item name="android:textColor">@color/primary</item>
     </style>
 
+    <style name="AppTheme.TextAppearance.DialogWindowTitle" parent="@style/TextAppearance.AppCompat.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTheme.DialogTitle">
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:textAppearance">@style/AppTheme.TextAppearance.DialogWindowTitle</item>
+    </style>
+
     <style name="AppTheme.AlertDialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/accent</item>
     </style>
@@ -78,7 +93,8 @@
         <item name="preferenceScreenStyle">@style/AppTheme.Preference.PreferenceScreen</item>
         <item name="preferenceCategoryStyle">@style/AppTheme.Preference.Category</item>
         <item name="preferenceStyle">@style/AppTheme.Preference</item>
-        <item name="switchPreferenceCompatStyle">@style/AppTheme.Preference.SwitchPreferenceCompat</item>
+        <item name="switchPreferenceCompatStyle">@style/AppTheme.Preference.SwitchPreferenceCompat
+        </item>
         <item name="dialogPreferenceStyle">@style/AppTheme.Preference.DialogPreference</item>
         <item name="editTextPreferenceStyle">
             @style/AppTheme.Preference.DialogPreference.EditTextPreference

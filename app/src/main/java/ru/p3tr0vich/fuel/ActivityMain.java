@@ -113,7 +113,7 @@ public class ActivityMain extends AppCompatActivity implements
 
         mSyncAccount = new SyncAccount(ApplicationFuel.getContext());
 
-        mSyncAccount.setYandexDiskToken(null);
+//        mSyncAccount.setYandexDiskToken(null);
 
         initAnimationSync();
         initSyncViews();
@@ -578,7 +578,8 @@ public class ActivityMain extends AppCompatActivity implements
         anim.start();
     }
 
-    public void startSync(boolean showDialogs) {
+    // TODO: start on preference change
+    private void startSync(boolean showDialogs) {
         Functions.logD("ActivityMain -- startSync");
 
         if (FuelingPreferenceManager.isSyncEnabled()) {

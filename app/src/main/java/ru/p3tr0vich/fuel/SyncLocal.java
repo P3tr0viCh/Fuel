@@ -19,10 +19,10 @@ class SyncLocal {
         File fileRevision = mSyncFiles.getLocalFilePreferencesRevision();
 
         try {
-            FileIO.checkExists(fileRevision);
+            FileIOUtils.checkExists(fileRevision);
 
             List<String> strings = new ArrayList<>();
-            FileIO.read(fileRevision, strings);
+            FileIOUtils.read(fileRevision, strings);
 
             return Integer.decode(strings.get(0));
         } catch (Exception e) {
@@ -33,36 +33,36 @@ class SyncLocal {
     public void loadPreferences(@NonNull List<String> preferences) throws IOException {
         File filePreferences = mSyncFiles.getLocalFilePreferences();
 
-        FileIO.checkExists(filePreferences);
+        FileIOUtils.checkExists(filePreferences);
 
-        FileIO.read(filePreferences, preferences);
+        FileIOUtils.read(filePreferences, preferences);
     }
 
     public void savePreferences(@NonNull List<String> preferences) throws IOException {
         File filePreferences = mSyncFiles.getLocalFilePreferences();
 
-        FileIO.createFile(filePreferences);
+        FileIOUtils.createFile(filePreferences);
 
-        FileIO.write(filePreferences, preferences);
+        FileIOUtils.write(filePreferences, preferences);
     }
 
     public void saveRevision(int revision) throws IOException {
         File fileRevision = mSyncFiles.getLocalFilePreferencesRevision();
 
-        FileIO.createFile(fileRevision);
+        FileIOUtils.createFile(fileRevision);
 
         List<String> strings = new ArrayList<>();
         strings.add(String.valueOf(revision));
 
-        FileIO.write(fileRevision, strings);
+        FileIOUtils.write(fileRevision, strings);
     }
 
     public void makeDirs() throws IOException {
-        FileIO.makeDir(mSyncFiles.getLocalDirPreferences());
+        FileIOUtils.makeDir(mSyncFiles.getLocalDirPreferences());
     }
 
     public void deleteFiles() throws IOException {
-        FileIO.deleteFile(mSyncFiles.getLocalFilePreferencesRevision());
-        FileIO.deleteFile(mSyncFiles.getLocalFilePreferences());
+        FileIOUtils.deleteFile(mSyncFiles.getLocalFilePreferencesRevision());
+        FileIOUtils.deleteFile(mSyncFiles.getLocalFilePreferences());
     }
 }

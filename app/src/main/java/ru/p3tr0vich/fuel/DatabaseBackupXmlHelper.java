@@ -71,7 +71,7 @@ public class DatabaseBackupXmlHelper {
             RESULT_ERROR_FILE_NOT_EXISTS, RESULT_ERROR_READ_FILE,
             RESULT_ERROR_PARSE_XML
     })
-    public @interface Result {
+    public @interface BackupResult {
     }
 
     public static final int RESULT_SAVE_OK = 0;
@@ -298,15 +298,16 @@ public class DatabaseBackupXmlHelper {
         }
     }
 
-    @Result
+    @BackupResult
     public int save(@NonNull List<FuelingRecord> fuelingRecordList) {
-
-        // TODO: use FileIO
 
         mFullFileName = new File(mExternalDirectory.getPath(), mFileName.getName());
 
-        if (!mExternalDirectory.exists()) if (!mExternalDirectory.mkdirs())
+        try {
+            FileIOUtils.makeDir(mExternalDirectory);
+        } catch (IOException e) {
             return RESULT_ERROR_MKDIRS;
+        }
 
         String xmlString;
         try {
@@ -316,8 +317,7 @@ public class DatabaseBackupXmlHelper {
         }
 
         try {
-            if (!mFullFileName.createNewFile()) if (!mFullFileName.isFile())
-                return RESULT_ERROR_CREATE_FILE;
+            FileIOUtils.createFile(mFullFileName);
         } catch (IOException e) {
             return RESULT_ERROR_CREATE_FILE;
         }
@@ -344,14 +344,18 @@ public class DatabaseBackupXmlHelper {
         return RESULT_SAVE_OK;
     }
 
-    @Result
+    @BackupResult
     public int load(@NonNull List<FuelingRecord> fuelingRecordList) {
 
         mFullFileName = new File(mExternalDirectory.getPath(), mFileName.getName());
 
         if (!mExternalDirectory.exists()) return RESULT_ERROR_DIR_NOT_EXISTS;
 
-        if (!mFullFileName.exists() || !mFullFileName.isFile()) return RESULT_ERROR_FILE_NOT_EXISTS;
+        try {
+            FileIOUtils.checkExists(mFullFileName);
+        } catch (FileNotFoundException e) {
+            return RESULT_ERROR_FILE_NOT_EXISTS;
+        }
 
         FileInputStream fileInputStream;
         try {
@@ -371,29 +375,8 @@ public class DatabaseBackupXmlHelper {
         return RESULT_LOAD_OK;
     }
 
-    @Result
+    @BackupResult
     public static int intToResult(int i) {
-        switch (i) {
-            case RESULT_LOAD_OK:
-                return RESULT_LOAD_OK;
-            case RESULT_ERROR_MKDIRS:
-                return RESULT_ERROR_MKDIRS;
-            case RESULT_ERROR_CREATE_XML:
-                return RESULT_ERROR_CREATE_XML;
-            case RESULT_ERROR_CREATE_FILE:
-                return RESULT_ERROR_CREATE_FILE;
-            case RESULT_ERROR_SAVE_FILE:
-                return RESULT_ERROR_SAVE_FILE;
-            case RESULT_ERROR_DIR_NOT_EXISTS:
-                return RESULT_ERROR_DIR_NOT_EXISTS;
-            case RESULT_ERROR_FILE_NOT_EXISTS:
-                return RESULT_ERROR_FILE_NOT_EXISTS;
-            case RESULT_ERROR_READ_FILE:
-                return RESULT_ERROR_READ_FILE;
-            case RESULT_ERROR_PARSE_XML:
-                return RESULT_ERROR_PARSE_XML;
-            default:
-                return RESULT_SAVE_OK;
-        }
+        return i;
     }
 }

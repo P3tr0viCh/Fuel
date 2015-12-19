@@ -92,7 +92,7 @@ class FuelingPreferenceManager {
         return sSharedPreferences.getInt(PREF_REVISION, -1);
     }
 
-    private static void putRevision(final int revision) {
+    public static void putRevision(final int revision) {
         sSharedPreferences
                 .edit()
                 .putInt(PREF_REVISION, revision)
@@ -254,7 +254,7 @@ class FuelingPreferenceManager {
 //                .remove("prefer wifi")
 //                .remove("last sync time")
 //                .apply();
-//
+
         ContentValues result = new ContentValues();
 
         if (TextUtils.isEmpty(preference)) {

@@ -26,7 +26,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
     protected Integer doInBackground(Void... params) {
         List<FuelingRecord> fuelingRecordList;
 
-        @DatabaseBackupXmlHelper.Result
+        @DatabaseBackupXmlHelper.BackupResult
         int result;
 
         FuelingDBHelper dbHelper = new FuelingDBHelper();

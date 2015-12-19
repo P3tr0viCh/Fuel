@@ -75,7 +75,7 @@ public class FragmentBackup extends FragmentFuel {
         FragmentDialogProgress.show(this, mDatabaseBackupXmlHelper, doSave);
     }
 
-    private void stopOperationXml(@DatabaseBackupXmlHelper.Result int result) {
+    private void stopOperationXml(@DatabaseBackupXmlHelper.BackupResult int result) {
         String resultMessage;
 
         switch (result) {
@@ -124,9 +124,9 @@ public class FragmentBackup extends FragmentFuel {
         Functions.logD("FragmentBackup -- stopOperationXml: " + resultMessage);
 
         if (result == DatabaseBackupXmlHelper.RESULT_SAVE_OK)
-            Toast.makeText(getActivity(), getString(R.string.message_save_file_ok), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.message_save_file_ok, Toast.LENGTH_SHORT).show();
         else if (result == DatabaseBackupXmlHelper.RESULT_LOAD_OK) {
-            Toast.makeText(getActivity(), getString(R.string.message_load_file_ok), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.message_load_file_ok, Toast.LENGTH_SHORT).show();
             mOnDataLoadedFromBackupListener.onDataLoadedFromBackup();
         } else
             FragmentDialogMessage.show(getActivity(), getString(R.string.title_message_error), resultMessage);
@@ -138,7 +138,7 @@ public class FragmentBackup extends FragmentFuel {
 
     private void loadFromXml() { // TODO: Сохранять старые в old?
         FragmentDialogQuestion.show(this, R.string.dialog_caption_load_from_xml,
-                R.string.message_dialog_load_from_xml, R.string.dialog_btn_load, null);
+                R.string.message_dialog_load_from_xml, R.string.dialog_btn_load, R.string.dialog_btn_disagree);
     }
 
     @Override

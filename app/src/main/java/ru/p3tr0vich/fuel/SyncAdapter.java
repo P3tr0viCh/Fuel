@@ -72,7 +72,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 //            или файлы синхронизации отсутствуют на сервере
 
             int localRevision = syncPreferencesAdapter.getRevision();
-//            localRevision == 0, если программа запускается первый раз
+//            localRevision == -1, если программа запускается первый раз
 
             boolean isChanged = syncPreferencesAdapter.isChanged();
 
@@ -90,21 +90,21 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 localRevision = serverRevision;
             } else if (localRevision > serverRevision) {
-                // 1. Сихронизация выполняется в первый раз
-                // (localRevision == 0 > serverRevision == -1).
-                // 2. Файлы синхронизации были удалены
-                // (localRevision > 0 > serverRevision == -1).
+                // Файлы синхронизации были удалены
+                // (localRevision > -1 > serverRevision == -1).
 
                 Functions.logD("SyncAdapter -- onPerformSync: localRevision > serverRevision");
 
                 save(syncLocal, syncYandexDisk, syncPreferencesAdapter, localRevision);
             } else /* localRevision == serverRevision */ {
-                // Синхронизация была выполнена.
+                // 1. Сихронизация выполняется в первый раз
+                // (localRevision == -1 and serverRevision == -1).
+                // 2. Синхронизация была выполнена.
                 // Если настройки были изменены, сохранить их на сервер.
 
                 Functions.logD("SyncAdapter -- onPerformSync: localRevision == serverRevision");
 
-                if (isChanged) {
+                if (isChanged || localRevision == -1) {
                     localRevision++;
                     save(syncLocal, syncYandexDisk, syncPreferencesAdapter, localRevision);
                 }

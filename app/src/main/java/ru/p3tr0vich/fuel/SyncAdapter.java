@@ -98,13 +98,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 save(syncLocal, syncYandexDisk, syncPreferencesAdapter, localRevision);
             } else /* localRevision == serverRevision */ {
                 // 1. Сихронизация выполняется в первый раз
-                // (localRevision == -1 and serverRevision == -1).
-                // 2. Синхронизация была выполнена.
+                // (localRevision == -1, serverRevision == -1, changed == true).
+                // 2. Настройки синхронизированы.
                 // Если настройки были изменены, сохранить их на сервер.
 
                 Functions.logD("SyncAdapter -- onPerformSync: localRevision == serverRevision");
 
-                if (isChanged || localRevision == -1) {
+                if (isChanged) {
                     localRevision++;
                     save(syncLocal, syncYandexDisk, syncPreferencesAdapter, localRevision);
                 }

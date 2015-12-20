@@ -69,7 +69,7 @@
             android:adjustViewBounds="false"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
-            android:src="@drawable/ic_more_vert_black_24dp"
+            android:src="@mipmap/ic_more_vert_black_24dp"
             tools:ignore="ContentDescription" />
     </LinearLayout>
 </layout>

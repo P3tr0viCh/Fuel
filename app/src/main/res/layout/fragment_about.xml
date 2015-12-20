@@ -18,7 +18,7 @@
             android:layout_height="72dp"
             android:layout_gravity="start|center"
             android:scaleType="center"
-            android:src="@mipmap/ic_launcher"
+            android:src="@mipmap/ic_launcher_72dp"
             tools:ignore="contentDescription"
             android:layout_marginRight="16dp" />
 

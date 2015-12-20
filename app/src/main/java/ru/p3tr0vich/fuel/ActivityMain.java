@@ -622,29 +622,29 @@ public class ActivityMain extends AppCompatActivity implements
 
         if (syncActive) {
             text = getString(R.string.sync_in_process);
-            imgId = R.drawable.ic_sync_grey600_24dp;
+            imgId = R.mipmap.ic_sync_grey600_24dp;
         } else {
             if (FuelingPreferenceManager.isSyncEnabled()) {
                 if (mSyncAccount.isYandexDiskTokenEmpty()) {
                     text = getString(R.string.sync_no_token);
-                    imgId = R.drawable.ic_sync_off_grey600_24dp;
+                    imgId = R.mipmap.ic_sync_off_grey600_24dp;
                 } else {
                     String lastSync = FuelingPreferenceManager.getLastSync();
 
                     if (TextUtils.isEmpty(lastSync)) {
                         text = getString(R.string.sync_not_performed);
-                        imgId = R.drawable.ic_sync_grey600_24dp;
+                        imgId = R.mipmap.ic_sync_grey600_24dp;
                     } else if (lastSync.equals(FuelingPreferenceManager.SYNC_ERROR)) {
                         text = getString(R.string.sync_error);
-                        imgId = R.drawable.ic_sync_alert_grey600_24dp;
+                        imgId = R.mipmap.ic_sync_alert_grey600_24dp;
                     } else {
                         text = getString(R.string.sync_done, lastSync);
-                        imgId = R.drawable.ic_sync_grey600_24dp;
+                        imgId = R.mipmap.ic_sync_grey600_24dp;
                     }
                 }
             } else {
                 text = getString(R.string.sync_disabled);
-                imgId = R.drawable.ic_sync_off_grey600_24dp;
+                imgId = R.mipmap.ic_sync_off_grey600_24dp;
             }
         }
 

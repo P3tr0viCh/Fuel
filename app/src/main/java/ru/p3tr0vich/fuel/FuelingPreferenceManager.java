@@ -72,7 +72,7 @@ class FuelingPreferenceManager {
     }
 
     private static boolean isChanged() {
-        return sSharedPreferences.getBoolean(PREF_CHANGED, false);
+        return sSharedPreferences.getBoolean(PREF_CHANGED, true);
     }
 
     private static void putChanged(final boolean changed) {
@@ -92,7 +92,7 @@ class FuelingPreferenceManager {
         return sSharedPreferences.getInt(PREF_REVISION, -1);
     }
 
-    public static void putRevision(final int revision) {
+    private static void putRevision(final int revision) {
         sSharedPreferences
                 .edit()
                 .putInt(PREF_REVISION, revision)

@@ -3,6 +3,7 @@ package ru.p3tr0vich.fuel;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
@@ -21,7 +22,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
     public static final String TAG = "FragmentPreference";
 
-    private static final String KEY_PREFERENCE_SCREEN = "KEY_PREFERENCE_SCREEN";
+    public static final String KEY_PREFERENCE_SCREEN = "KEY_PREFERENCE_SCREEN";
 
     private OnFragmentChangeListener mOnFragmentChangeListener;
     private OnPreferenceScreenChangeListener mOnPreferenceScreenChangeListener;
@@ -77,15 +78,17 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
                     }
                 });
 
+        String preferenceKey = null;
+
         if (bundle == null) {
-            Functions.logD("FragmentPreference -- onCreatePreferences: bundle == null");
-            isInRoot = true;
-        } else {
-            Functions.logD("FragmentPreference -- onCreatePreferences: bundle != null");
-            String preferenceKey = bundle.getString(KEY_PREFERENCE_SCREEN);
-            isInRoot = preferenceKey == null;
-            if (!isInRoot) setPreferenceScreen((PreferenceScreen) findPreference(preferenceKey));
-        }
+            Bundle arguments = getArguments();
+            if (arguments != null)
+                preferenceKey = arguments.getString(KEY_PREFERENCE_SCREEN);
+        } else
+            preferenceKey = bundle.getString(KEY_PREFERENCE_SCREEN);
+
+        isInRoot = preferenceKey == null;
+        if (!isInRoot) navigateToScreen((PreferenceScreen) findPreference(preferenceKey));
     }
 
     @Override
@@ -115,34 +118,37 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
     @Override
     public void onNavigateToScreen(PreferenceScreen preferenceScreen) {
-        if (preferenceScreen != null) {
-            isInRoot = false;
+        navigateToScreen(preferenceScreen);
+
+        super.onNavigateToScreen(preferenceScreen);
+    }
+
+    private void navigateToScreen(@Nullable PreferenceScreen preferenceScreen) {
+        isInRoot = preferenceScreen == null;
+
+        if (isInRoot) {
+            setPreferenceScreen(rootPreferenceScreen);
+            mOnPreferenceScreenChangeListener.OnPreferenceScreenChanged(null);
+        } else {
             setPreferenceScreen(preferenceScreen);
             mOnPreferenceScreenChangeListener.OnPreferenceScreenChanged(preferenceScreen.getTitle());
         }
-        super.onNavigateToScreen(preferenceScreen);
     }
 
     public boolean goToRootScreen() {
         if (isInRoot) return false;
-        isInRoot = true;
-        setPreferenceScreen(rootPreferenceScreen);
-        mOnPreferenceScreenChangeListener.OnPreferenceScreenChanged(null);
+
+        navigateToScreen(null);
+
         return true;
     }
 
-    public int getTitleId() {
-        if (isInRoot) return R.string.title_prefs;
-        else {
-            String preferenceKey = getPreferenceScreen().getKey();
-            if (preferenceKey.equals(getString(R.string.pref_def_key)))
-                return R.string.pref_def_title;
-            else if (preferenceKey.equals(getString(R.string.pref_cons_key)))
-                return R.string.pref_cons_title;
-            else if (preferenceKey.equals(getString(R.string.pref_sync_key)))
-                return R.string.pref_sync_title;
-            else return -1;
-        }
+    public void goToSyncScreen() {
+        navigateToScreen((PreferenceScreen) findPreference(getString(R.string.pref_sync_key)));
+    }
+
+    public String getTitle() {
+        return isInRoot ? getString(R.string.title_prefs) : (String) getPreferenceScreen().getTitle();
     }
 
     @Override

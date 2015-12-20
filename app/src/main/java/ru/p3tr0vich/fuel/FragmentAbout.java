@@ -1,5 +1,4 @@
 package ru.p3tr0vich.fuel;
-// TODO: Размер значка
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;

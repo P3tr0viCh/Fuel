@@ -73,6 +73,7 @@ public class ActivityMain extends AppCompatActivity implements
     private BroadcastReceiver mStartSyncReceiver;
 
     private int mCurrentFragmentId, mClickedMenuId;
+    private boolean mOpenPreferenceSync = false;
 
     @Nullable
     private Fragment findFragmentByTag(@Nullable String fragmentTag) {
@@ -203,6 +204,7 @@ public class ActivityMain extends AppCompatActivity implements
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 mClickedMenuId = menuItem.getItemId();
+                mOpenPreferenceSync = false;
                 if (mCurrentFragmentId == R.id.action_settings && mCurrentFragmentId != mClickedMenuId)
                     mDrawerToggle.setDrawerIndicatorEnabled(true);
 
@@ -288,7 +290,16 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void selectItem(int menuId) {
-        if (mCurrentFragmentId == menuId) return;
+        if (mCurrentFragmentId == menuId) {
+            FragmentPreference fragmentPreference = getFragmentPreference();
+            if (fragmentPreference != null) {
+                if (mOpenPreferenceSync)
+                    fragmentPreference.goToSyncScreen();
+                else
+                    fragmentPreference.goToRootScreen();
+                return;
+            }
+        }
 
         String fragmentTag = null;
 
@@ -318,12 +329,24 @@ public class ActivityMain extends AppCompatActivity implements
 
         fragment = getFragmentNewInstance(fragmentTag);
 
-        if (fragment != null)
+        if (fragment != null) {
+            if (mOpenPreferenceSync) {
+                Bundle bundle = new Bundle();
+
+                bundle.putString(FragmentPreference.KEY_PREFERENCE_SCREEN,
+                        getString(R.string.pref_sync_key));
+
+                fragment.setArguments(bundle);
+
+                mOpenPreferenceSync = false;
+            }
+
             fragmentManager.beginTransaction()
                     .replace(R.id.contentFrame, fragment, fragmentTag)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .addToBackStack(null)
                     .commit();
+        }
     }
 
     @Override
@@ -444,8 +467,6 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onFilterChange(@FuelingDBHelper.FilterMode int filterMode) {
-//        Functions.logD("ActivityMain -- onFilterChange");
-
         int position = filterModeToPosition(filterMode);
 
         if (position != mToolbarSpinner.getSelectedItemPosition())
@@ -460,11 +481,10 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onFragmentChange(int fragmentId) {
-//        Functions.logD("ActivityMain -- onFragmentChange");
-
         mCurrentFragmentId = mClickedMenuId = fragmentId;
 
         int titleId = -1, subtitleId = -1;
+        String title = null;
         boolean showSpinner = false;
 
         switch (fragmentId) {
@@ -478,7 +498,7 @@ public class ActivityMain extends AppCompatActivity implements
             case R.id.action_settings:
                 FragmentPreference fragmentPreference = getFragmentPreference();
                 if (fragmentPreference != null)
-                    titleId = fragmentPreference.getTitleId();
+                    title = fragmentPreference.getTitle();
                 break;
             case R.id.action_backup:
                 titleId = R.string.title_backup;
@@ -490,8 +510,9 @@ public class ActivityMain extends AppCompatActivity implements
                 showSpinner = true;
         }
 
-        setTitle(titleId);
+        if (title == null) setTitle(titleId); else setTitle(title);
         setSubtitle(subtitleId);
+
         mToolbarSpinner.setVisibility(showSpinner ? View.VISIBLE : View.GONE);
 
         mNavigationView.getMenu().findItem(fragmentId).setChecked(true);
@@ -533,7 +554,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     private void toggleDrawer(final ActionBarDrawerToggle actionBarDrawerToggle, final DrawerLayout drawerLayout,
                               final boolean showArrow) {
-        if (mDrawerToggle.isDrawerIndicatorEnabled() != showArrow) return;
+        if (mDrawerToggle == null || mDrawerToggle.isDrawerIndicatorEnabled() != showArrow) return;
 
         float start, end;
 
@@ -607,10 +628,13 @@ public class ActivityMain extends AppCompatActivity implements
         } else {
             Functions.logD("ActivityMain -- startSync: sync disabled");
             if (showDialogs) {
-                // TODO: open sync screen
-                // TODO: open if not open drawer
                 mClickedMenuId = R.id.action_settings;
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                mOpenPreferenceSync = true;
+
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                else
+                    selectItem(mClickedMenuId);
             }
         }
     }

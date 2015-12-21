@@ -3,7 +3,6 @@ package ru.p3tr0vich.fuel;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
@@ -45,6 +44,6 @@ public class ActivityTokenReceiver extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
 
-        LocalBroadcastManager.getInstance(this).sendBroadcast(ActivityMain.getStartSyncBroadcast());
+        ActivityMain.sendStartSyncBroadcast();
     }
 }

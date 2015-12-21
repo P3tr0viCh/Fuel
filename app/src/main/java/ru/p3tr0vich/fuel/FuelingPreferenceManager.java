@@ -31,14 +31,12 @@ class FuelingPreferenceManager {
     private static final String PREF_CONS = "consumption";
     private static final String PREF_SEASON = "season";
 
-    // R.string.pref_map_center_latitude
     private static final String PREF_MAP_CENTER_LATITUDE = "map center latitude";
-    // R.string.pref_map_center_longitude
     private static final String PREF_MAP_CENTER_LONGITUDE = "map center longitude";
 
     @SuppressWarnings("WeakerAccess")
     // private - поле удаляется сборщиком мусора
-    static SharedPreferences.OnSharedPreferenceChangeListener sPreferenceChangeListener;
+    static SharedPreferences.OnSharedPreferenceChangeListener sPreferenceChangeListener; // TODO: this
     private static Context sContext;
     private static SharedPreferences sSharedPreferences;
 
@@ -50,6 +48,12 @@ class FuelingPreferenceManager {
     public static final int PREFERENCE_TYPE_STRING = 0;
     public static final int PREFERENCE_TYPE_INT = 1;
     public static final int PREFERENCE_TYPE_LONG = 2;
+
+    private static OnPreferencesChangedListener mOnPreferencesChangedListener = null;
+
+    interface OnPreferencesChangedListener {
+        void onPreferencesChanged();
+    }
 
     public static void init(Context context) {
         sContext = context;
@@ -71,7 +75,11 @@ class FuelingPreferenceManager {
         sSharedPreferences.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
     }
 
-    private static boolean isChanged() {
+    public static void registerOnPreferencesChangedListener(OnPreferencesChangedListener onPreferencesChangedListener) {
+        mOnPreferencesChangedListener = onPreferencesChangedListener;
+    }
+
+    public static boolean isChanged() {
         return sSharedPreferences.getBoolean(PREF_CHANGED, true);
     }
 
@@ -82,6 +90,8 @@ class FuelingPreferenceManager {
                 .apply();
 
         Functions.logD("FuelingPreferenceManager -- putChanged: changed == " + changed);
+
+        if (mOnPreferencesChangedListener != null) mOnPreferencesChangedListener.onPreferencesChanged();
     }
 
     public static boolean isSyncEnabled() {
@@ -141,13 +151,13 @@ class FuelingPreferenceManager {
     }
 
     public static float getLastTotal() {
-        return sSharedPreferences.getFloat(sContext.getString(R.string.pref_last_total), 0);
+        return Functions.textToFloat(sSharedPreferences.getString(sContext.getString(R.string.pref_last_total), "0"));
     }
 
     public static void putLastTotal(final float lastTotal) {
         sSharedPreferences
                 .edit()
-                .putFloat(sContext.getString(R.string.pref_last_total), lastTotal)
+                .putString(sContext.getString(R.string.pref_last_total), String.valueOf(lastTotal))
                 .apply();
     }
 

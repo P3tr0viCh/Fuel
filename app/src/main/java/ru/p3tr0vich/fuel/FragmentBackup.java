@@ -24,6 +24,11 @@ public class FragmentBackup extends FragmentFuel {
     }
 
     @Override
+    public int getTitleId() {
+        return R.string.title_backup;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

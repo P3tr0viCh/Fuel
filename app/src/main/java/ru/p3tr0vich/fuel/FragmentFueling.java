@@ -12,7 +12,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -820,14 +819,12 @@ public class FragmentFueling extends FragmentFuel implements
         public Cursor loadInBackground() {
 //            Functions.logD("FragmentFueling -- loadInBackground");
 
-            LocalBroadcastManager.getInstance(getContext()).sendBroadcast(ActivityMain.getLoadingBroadcast(true));
+            ActivityMain.sendLoadingBroadcast(true);
 
-            FuelingDBHelper dbHelper = new FuelingDBHelper();
-            dbHelper.setFilter(mFilter);
             try {
-                return dbHelper.getAllCursor();
+                return new FuelingDBHelper(mFilter).getAllCursor();
             } finally {
-                LocalBroadcastManager.getInstance(getContext()).sendBroadcast(ActivityMain.getLoadingBroadcast(false));
+                ActivityMain.sendLoadingBroadcast(false);
             }
         }
     }

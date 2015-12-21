@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -70,7 +71,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         public Date dateTo;
         public int year;
         @FilterMode
-        public int filterMode;
+        public int filterMode = FILTER_MODE_ALL;
     }
 
     private final Filter mFilter;
@@ -78,7 +79,11 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     public FuelingDBHelper() {
         super(ApplicationFuel.getContext(), DATABASE_NAME, null, DATABASE_VERSION);
         mFilter = new Filter();
-        mFilter.filterMode = FILTER_MODE_ALL;
+    }
+
+    public FuelingDBHelper(@NonNull Filter filter) {
+        this();
+        setFilter(filter);
     }
 
     @Override
@@ -92,7 +97,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         db.execSQL(DATABASE_CREATE);
     }
 
-    public void setFilter(Filter filter) {
+    public void setFilter(@NonNull Filter filter) {
         mFilter.filterMode = filter.filterMode;
         mFilter.year = filter.year;
         mFilter.dateFrom = filter.dateFrom;
@@ -121,7 +126,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         return fuelingRecord;
     }
 
-    private long doInsertRecord(SQLiteDatabase db, FuelingRecord fuelingRecord) {
+    private long doInsertRecord(@NonNull SQLiteDatabase db, @NonNull FuelingRecord fuelingRecord) {
         ContentValues cv = new ContentValues();
 
         cv.put(COLUMN_DATETIME, fuelingRecord.getSQLiteDate());
@@ -132,7 +137,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         return db.insert(TABLE_NAME, null, cv); // TODO: add throw
     }
 
-    public long insertRecord(FuelingRecord fuelingRecord) {
+    public long insertRecord(@NonNull FuelingRecord fuelingRecord) {
         SQLiteDatabase db = getWritableDatabase();
 
         long id = doInsertRecord(db, fuelingRecord);
@@ -142,7 +147,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public void insertRecords(List<FuelingRecord> fuelingRecordList) {
+    public void insertRecords(@NonNull List<FuelingRecord> fuelingRecordList) {
         SQLiteDatabase db = getWritableDatabase();
 
         db.execSQL(DROP_TABLE);
@@ -154,7 +159,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public int updateRecord(FuelingRecord fuelingRecord) {
+    public int updateRecord(@NonNull FuelingRecord fuelingRecord) {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues cv = new ContentValues();
@@ -171,7 +176,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public int deleteRecord(FuelingRecord fuelingRecord) {
+    public int deleteRecord(@NonNull FuelingRecord fuelingRecord) {
         SQLiteDatabase db = getWritableDatabase();
 
         int count = db.delete(TABLE_NAME, _ID + "=?", new String[]{String.valueOf(fuelingRecord.getId())});
@@ -181,6 +186,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         return count;
     }
 
+    @NonNull
     private String filterModeToSql() {
         switch (mFilter.filterMode) {
             case FILTER_MODE_YEAR:
@@ -220,6 +226,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         return getReadableDatabase().rawQuery(sql, null);
     }
 
+    @NonNull
     public List<FuelingRecord> getAllRecords() {
         List<FuelingRecord> fuelingRecords = new ArrayList<>();
 

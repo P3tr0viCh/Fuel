@@ -46,6 +46,7 @@ public class ActivityMain extends AppCompatActivity implements
         FragmentInterface.OnFragmentChangeListener,
         FragmentPreference.OnPreferenceScreenChangeListener,
         FragmentPreference.OnPreferenceSyncEnabledChangeListener,
+        FuelingPreferenceManager.OnPreferencesChangedListener,
         FragmentBackup.OnDataLoadedFromBackupListener {
 
     private static final String ACTION_LOADING = "ru.p3tr0vich.fuel.ACTION_LOADING";
@@ -68,6 +69,8 @@ public class ActivityMain extends AppCompatActivity implements
     private ImageView mImgSync;
     private Animation mAnimationSync;
     private TextView mBtnSync;
+
+    private TimerPreferenceChanged mTimerPreferenceChanged;
 
     private BroadcastReceiver mLoadingStatusReceiver;
     private BroadcastReceiver mStartSyncReceiver;
@@ -92,13 +95,22 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @NonNull
-    public static Intent getLoadingBroadcast(boolean startLoading) {
+    private static Intent getLoadingBroadcast(boolean startLoading) {
         return new Intent(ACTION_LOADING).putExtra(EXTRA_LOADING, startLoading);
     }
 
     @NonNull
-    public static Intent getStartSyncBroadcast() {
+    private static Intent getStartSyncBroadcast() {
         return new Intent(ACTION_START_SYNC);
+    }
+
+    public static void sendLoadingBroadcast(boolean startLoading) {
+        LocalBroadcastManager.getInstance(ApplicationFuel.getContext())
+                .sendBroadcast(getLoadingBroadcast(startLoading));
+    }
+
+    public static void sendStartSyncBroadcast() {
+        LocalBroadcastManager.getInstance(ApplicationFuel.getContext()).sendBroadcast(getStartSyncBroadcast());
     }
 
     @Override
@@ -143,6 +155,8 @@ public class ActivityMain extends AppCompatActivity implements
                     mDrawerToggle.setDrawerIndicatorEnabled(fragmentPreference.isInRoot());
             }
         }
+
+        FuelingPreferenceManager.registerOnPreferencesChangedListener(this);
     }
 
     private void initToolbar() {
@@ -246,8 +260,8 @@ public class ActivityMain extends AppCompatActivity implements
                     Functions.logD("ActivityMain -- mLoadingStatusReceiver.onReceive: fragmentFueling == null");
             }
         };
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mLoadingStatusReceiver,
-                new IntentFilter(ACTION_LOADING));
+        LocalBroadcastManager.getInstance(getApplicationContext())
+                .registerReceiver(mLoadingStatusReceiver, new IntentFilter(ACTION_LOADING));
     }
 
     private void initStartSyncReceiver() {
@@ -257,8 +271,8 @@ public class ActivityMain extends AppCompatActivity implements
                 startSync(false);
             }
         };
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mStartSyncReceiver,
-                new IntentFilter(ACTION_START_SYNC));
+        LocalBroadcastManager.getInstance(getApplicationContext())
+                .registerReceiver(mStartSyncReceiver, new IntentFilter(ACTION_START_SYNC));
     }
 
     @Override
@@ -379,7 +393,10 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
+        FuelingPreferenceManager.registerOnPreferencesChangedListener(null);
+
         ContentResolver.removeStatusChangeListener(mSyncMonitor);
+
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mStartSyncReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mLoadingStatusReceiver);
         super.onDestroy();
@@ -480,48 +497,17 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
-    public void onFragmentChange(int fragmentId) {
-        mCurrentFragmentId = mClickedMenuId = fragmentId;
+    public void onFragmentChange(FragmentInterface fragment) {
+        mCurrentFragmentId = mClickedMenuId = fragment.getFragmentId();
 
-        int titleId = -1, subtitleId = -1;
-        String title = null;
-        boolean showSpinner = false;
+        setTitle(fragment.getTitle());
+        setSubtitle(fragment.getSubtitle());
 
-        switch (fragmentId) {
-            case R.id.action_calc:
-                titleId = R.string.title_calc;
-                break;
-            case R.id.action_chart_cost:
-                titleId = R.string.title_chart_cost;
-                subtitleId = R.string.title_chart_cost_subtitle;
-                break;
-            case R.id.action_settings:
-                FragmentPreference fragmentPreference = getFragmentPreference();
-                if (fragmentPreference != null)
-                    title = fragmentPreference.getTitle();
-                break;
-            case R.id.action_backup:
-                titleId = R.string.title_backup;
-                break;
-            case R.id.action_about:
-                titleId = R.string.title_about;
-                break;
-            default:
-                showSpinner = true;
-        }
-
-        if (title == null) setTitle(titleId); else setTitle(title);
-        setSubtitle(subtitleId);
+        boolean showSpinner = fragment instanceof FragmentFueling;
 
         mToolbarSpinner.setVisibility(showSpinner ? View.VISIBLE : View.GONE);
 
-        mNavigationView.getMenu().findItem(fragmentId).setChecked(true);
-    }
-
-    @Override
-    public void setTitle(int resId) {
-        if (resId != -1) setTitle(getString(resId));
-        else setTitle(null);
+        mNavigationView.getMenu().findItem(mCurrentFragmentId).setChecked(true);
     }
 
     @Override
@@ -539,17 +525,14 @@ public class ActivityMain extends AppCompatActivity implements
         }
     }
 
-    private void setSubtitle(int resId) {
-        if (resId != -1) mToolbarMain.setSubtitle(resId);
-        else mToolbarMain.setSubtitle(null);
+    private void setSubtitle(@Nullable String subtitle) {
+        mToolbarMain.setSubtitle(subtitle);
     }
 
     @Override
-    public void OnPreferenceScreenChanged(CharSequence title) {
-//        Functions.logD("ActivityMain -- OnPreferenceScreenChanged: title == " + title);
-
-        setTitle(title == null ? getString(R.string.title_prefs) : title);
-        toggleDrawer(mDrawerToggle, mDrawerLayout, title != null);
+    public void OnPreferenceScreenChanged(@NonNull CharSequence title, boolean isInRoot) {
+        setTitle(title);
+        toggleDrawer(mDrawerToggle, mDrawerLayout, !isInRoot);
     }
 
     private void toggleDrawer(final ActionBarDrawerToggle actionBarDrawerToggle, final DrawerLayout drawerLayout,
@@ -602,6 +585,8 @@ public class ActivityMain extends AppCompatActivity implements
     // TODO: start on preference change
     private void startSync(boolean showDialogs) {
         Functions.logD("ActivityMain -- startSync");
+
+        if (true) return;
 
         if (FuelingPreferenceManager.isSyncEnabled()) {
             if (!mSyncAccount.isSyncActive()) {
@@ -702,5 +687,12 @@ public class ActivityMain extends AppCompatActivity implements
     private void showDialogNeedAuth() {
         FragmentDialogQuestion.show(this, R.string.dialog_caption_auth,
                 R.string.message_dialog_auth, R.string.dialog_btn_agree, R.string.dialog_btn_disagree);
+    }
+
+    @Override
+    public void onPreferencesChanged() {
+        if (mTimerPreferenceChanged != null) mTimerPreferenceChanged.cancel();
+
+        mTimerPreferenceChanged = TimerPreferenceChanged.start();
     }
 }

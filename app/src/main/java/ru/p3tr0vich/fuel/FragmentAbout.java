@@ -18,6 +18,11 @@ public class FragmentAbout extends FragmentFuel {
     }
 
     @Override
+    public int getTitleId() {
+        return R.string.title_about;
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_about, container, false);

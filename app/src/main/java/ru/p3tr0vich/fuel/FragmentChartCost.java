@@ -58,6 +58,16 @@ public class FragmentChartCost extends FragmentFuel implements
         return R.id.action_chart_cost;
     }
 
+    @Override
+    public int getTitleId() {
+        return R.string.title_chart_cost;
+    }
+
+    @Override
+    public int getSubtitleId() {
+        return R.string.title_chart_cost_subtitle;
+    }
+
     private int getYearFromPosition(int index) {
         return mYears[index];
     }
@@ -258,9 +268,7 @@ public class FragmentChartCost extends FragmentFuel implements
         public Cursor loadInBackground() {
             Functions.logD("FragmentChartCost -- ChartCursorLoader: loadInBackground");
 
-            FuelingDBHelper dbHelper = new FuelingDBHelper();
-            dbHelper.setFilter(mFilter);
-            return dbHelper.getSumByMonthsForYear();
+            return new FuelingDBHelper(mFilter).getSumByMonthsForYear();
         }
     }
 
@@ -276,8 +284,7 @@ public class FragmentChartCost extends FragmentFuel implements
         public Cursor loadInBackground() {
             Functions.logD("FragmentChartCost -- YearsCursorLoader: loadInBackground");
 
-            FuelingDBHelper dbHelper = new FuelingDBHelper();
-            return dbHelper.getYears();
+            return new FuelingDBHelper().getYears();
         }
     }
 

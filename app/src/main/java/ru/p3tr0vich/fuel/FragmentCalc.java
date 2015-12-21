@@ -56,6 +56,11 @@ public class FragmentCalc extends FragmentFuel implements
         return R.id.action_calc;
     }
 
+    @Override
+    public int getTitleId() {
+        return R.string.title_calc;
+    }
+
     @Nullable
     @SuppressLint("InflateParams")
     @Override

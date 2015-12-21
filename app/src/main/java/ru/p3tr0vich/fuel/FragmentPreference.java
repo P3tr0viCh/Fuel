@@ -3,6 +3,7 @@ package ru.p3tr0vich.fuel;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.preference.EditTextPreference;
@@ -36,8 +37,30 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         return R.id.action_settings;
     }
 
+    @Override
+    public int getTitleId() {
+        return -1;
+    }
+
+    @Override
+    @NonNull
+    public String getTitle() {
+        return isInRoot ? getString(R.string.title_prefs) : (String) getPreferenceScreen().getTitle();
+    }
+
+    @Override
+    public int getSubtitleId() {
+        return -1;
+    }
+
+    @Nullable
+    @Override
+    public String getSubtitle() {
+        return null;
+    }
+
     public interface OnPreferenceScreenChangeListener {
-        void OnPreferenceScreenChanged(CharSequence title);
+        void OnPreferenceScreenChanged(@NonNull CharSequence title, boolean isInRoot);
     }
 
     public interface OnPreferenceSyncEnabledChangeListener {
@@ -126,13 +149,9 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     private void navigateToScreen(@Nullable PreferenceScreen preferenceScreen) {
         isInRoot = preferenceScreen == null;
 
-        if (isInRoot) {
-            setPreferenceScreen(rootPreferenceScreen);
-            mOnPreferenceScreenChangeListener.OnPreferenceScreenChanged(null);
-        } else {
-            setPreferenceScreen(preferenceScreen);
-            mOnPreferenceScreenChangeListener.OnPreferenceScreenChanged(preferenceScreen.getTitle());
-        }
+        setPreferenceScreen(isInRoot ? rootPreferenceScreen : preferenceScreen);
+
+        mOnPreferenceScreenChangeListener.OnPreferenceScreenChanged(getTitle(), isInRoot);
     }
 
     public boolean goToRootScreen() {
@@ -147,14 +166,9 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         navigateToScreen((PreferenceScreen) findPreference(getString(R.string.pref_sync_key)));
     }
 
-    public String getTitle() {
-        return isInRoot ? getString(R.string.title_prefs) : (String) getPreferenceScreen().getTitle();
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Functions.logD("FragmentPreference -- onAttach (context)");
         try {
             mOnFragmentChangeListener = (OnFragmentChangeListener) context;
             mOnPreferenceScreenChangeListener = (OnPreferenceScreenChangeListener) context;
@@ -169,7 +183,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     @Override
     public void onStart() {
         super.onStart();
-        mOnFragmentChangeListener.onFragmentChange(getFragmentId());
+        mOnFragmentChangeListener.onFragmentChange(this);
         rootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 

@@ -12,7 +12,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -34,8 +33,6 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Functions {
-
-    private static final String LOG_TAG = "XXX";
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
@@ -220,10 +217,6 @@ public class Functions {
     public static boolean isDebuggable() {
         return (ApplicationFuel.getContext().getApplicationInfo().flags &
                 ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-    }
-
-    public static void logD(String msg) {
-        if (isDebuggable()) Log.d(LOG_TAG, msg);
     }
 
     public static int getDimensionPixelSize(@DimenRes int id) {

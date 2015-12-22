@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
-class FileIOUtils {
+class UtilsFileIO {
 
     public static void read(@NonNull File file, @NonNull List<String> strings) throws IOException {
         FileInputStream fileInputStream = new FileInputStream(file);
@@ -58,20 +58,20 @@ class FileIOUtils {
         if (dir.exists()) return;
 
         if (!dir.mkdirs())
-            throw new IOException("FileIOUtils -- makeDir: can not create dir " + dir.toString());
+            throw new IOException("UtilsFileIO -- makeDir: can not create dir " + dir.toString());
     }
 
     public static void deleteFile(@NonNull File file) throws IOException {
         if (!file.exists()) return;
 
         if (!file.delete())
-            throw new IOException("FileIOUtils -- deleteFile: can not delete file " + file.toString());
+            throw new IOException("UtilsFileIO -- deleteFile: can not delete file " + file.toString());
     }
 
     public static void createFile(@NonNull File file) throws IOException {
         if (file.exists()) {
             if (!file.isFile())
-                throw new FileNotFoundException("FileIOUtils -- createFile: " + file.toString()
+                throw new FileNotFoundException("UtilsFileIO -- createFile: " + file.toString()
                         + " exists and is not a file");
         } else
             //noinspection ResultOfMethodCallIgnored
@@ -80,7 +80,7 @@ class FileIOUtils {
 
     public static void checkExists(@NonNull File file) throws FileNotFoundException {
         if (!file.exists() || !file.isFile())
-            throw new FileNotFoundException("FileIOUtils -- checkExists: " + file.toString() +
+            throw new FileNotFoundException("UtilsFileIO -- checkExists: " + file.toString() +
                     " not exists or not is a file");
     }
 }

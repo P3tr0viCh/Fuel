@@ -11,7 +11,7 @@ public class ApplicationFuel extends Application {
     public void onCreate() {
         super.onCreate();
         CONTEXT = getApplicationContext();
-        FuelingPreferenceManager.init(CONTEXT);
+        PreferenceManagerFuel.init(CONTEXT);
     }
 
     public static Context getContext() {

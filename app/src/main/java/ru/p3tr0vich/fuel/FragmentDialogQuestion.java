@@ -17,7 +17,7 @@ import android.widget.TextView;
 public class FragmentDialogQuestion extends DialogFragment {
 
     public static final int REQUEST_CODE = 9106;
-    public static final String TAG = "DialogQuestion";
+    public static final String TAG = "FragmentDialogQuestion";
 
     private static final String TITLE = "title";
     private static final String MESSAGE = "message";

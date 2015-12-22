@@ -8,6 +8,8 @@ import android.text.TextUtils;
 
 class SyncAccount {
 
+    private static final String TAG = "SyncAccount";
+
     private static final String YANDEX_DISK_TOKEN = "yandex disk token";
 
     private final AccountManager mAccountManager;
@@ -49,11 +51,11 @@ class SyncAccount {
             account = new Account(getAccountName(), getAccountType());
 
             if (mAccountManager.addAccountExplicitly(account, null, null)) {
-                setIsSyncable(account, FuelingPreferenceManager.isSyncEnabled());
+                setIsSyncable(account, PreferenceManagerFuel.isSyncEnabled());
 
-                Functions.logD("SyncAccount -- getAccount: addAccountExplicitly == true");
+                UtilsLog.d(TAG, "getAccount", "addAccountExplicitly == true");
             } else {
-                Functions.logD("SyncAccount -- getAccount: addAccountExplicitly == false");
+                UtilsLog.d(TAG, "getAccount", "addAccountExplicitly == false");
             }
         }
 

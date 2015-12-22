@@ -82,10 +82,6 @@ public class FragmentChartCost extends FragmentFuel implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (savedInstanceState == null)
-            Functions.logD("FragmentChartCost -- onCreateView: savedInstanceState == null");
-        else
-            Functions.logD("FragmentChartCost -- onCreateView: savedInstanceState != null");
 
         View view = inflater.inflate(R.layout.fragment_chart_cost, container, false);
 
@@ -126,7 +122,6 @@ public class FragmentChartCost extends FragmentFuel implements
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                Functions.logD("FragmentChartCost -- onTabSelected");
                 if (!mUpdateYearInProcess) setYear(getYearFromPosition(tab.getPosition()));
             }
 
@@ -181,8 +176,6 @@ public class FragmentChartCost extends FragmentFuel implements
     };
 
     private void updateYears() {
-        Functions.logD("FragmentChartCost -- updateYears, mFilter.year = " + mFilter.year);
-
         mUpdateYearInProcess = true;
         for (int year : mYears)
             mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(year)));
@@ -207,8 +200,6 @@ public class FragmentChartCost extends FragmentFuel implements
     }
 
     private void setYear(int year) {
-        Functions.logD("FragmentChartCost -- setYear: year == " + year + ", mFilter.year = " + mFilter.year);
-
         if (year == mFilter.year) return;
 
         mFilter.year = year;
@@ -223,8 +214,6 @@ public class FragmentChartCost extends FragmentFuel implements
         mFilter.filterMode = FuelingDBHelper.FILTER_MODE_YEAR;
 
         if (savedInstanceState == null) {
-            Functions.logD("FragmentChartCost -- onCreate: savedInstanceState == null");
-
             for (int i = 0; i < 12; i++) mSums[i] = 0;
 
             mFilter.year = Functions.getCurrentYear();
@@ -232,8 +221,6 @@ public class FragmentChartCost extends FragmentFuel implements
             getLoaderManager().initLoader(YearsCursorLoader.ID, null, this);
             getLoaderManager().initLoader(ChartCursorLoader.ID, null, this);
         } else {
-            Functions.logD("FragmentChartCost -- onCreate: savedInstanceState != null");
-
             mFilter.year = savedInstanceState.getInt(KEY_FILTER_YEAR);
             mYears = savedInstanceState.getIntArray(KEY_YEARS);
             mSums = savedInstanceState.getFloatArray(KEY_SUMS);
@@ -249,8 +236,6 @@ public class FragmentChartCost extends FragmentFuel implements
         outState.putIntArray(KEY_YEARS, mYears);
         outState.putFloatArray(KEY_SUMS, mSums);
         outState.putBoolean(KEY_IS_DATA, mIsData);
-
-        Functions.logD("FragmentChartCost -- onSaveInstanceState");
     }
 
     static class ChartCursorLoader extends CursorLoader {
@@ -266,8 +251,6 @@ public class FragmentChartCost extends FragmentFuel implements
 
         @Override
         public Cursor loadInBackground() {
-            Functions.logD("FragmentChartCost -- ChartCursorLoader: loadInBackground");
-
             return new FuelingDBHelper(mFilter).getSumByMonthsForYear();
         }
     }
@@ -282,8 +265,6 @@ public class FragmentChartCost extends FragmentFuel implements
 
         @Override
         public Cursor loadInBackground() {
-            Functions.logD("FragmentChartCost -- YearsCursorLoader: loadInBackground");
-
             return new FuelingDBHelper().getYears();
         }
     }
@@ -304,8 +285,6 @@ public class FragmentChartCost extends FragmentFuel implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
             case ChartCursorLoader.ID:
-                Functions.logD("FragmentChartCost -- ChartCursorLoader: onLoadFinished");
-
                 float sum;
                 String month;
 
@@ -317,8 +296,6 @@ public class FragmentChartCost extends FragmentFuel implements
                     sum = data.getFloat(0);
                     month = data.getString(1);
 
-                    Functions.logD("FragmentChartCost -- SUM == " + sum + ", MONTH == " + month);
-
                     mSums[Integer.parseInt(month) - 1] = sum;
                 } while (data.moveToNext());
 
@@ -326,8 +303,6 @@ public class FragmentChartCost extends FragmentFuel implements
 
                 break;
             case YearsCursorLoader.ID:
-                Functions.logD("FragmentChartCost -- YearsCursorLoader: onLoadFinished");
-
                 int i = 0, year, count = data.getCount();
 
                 if (count > 0) {
@@ -335,8 +310,6 @@ public class FragmentChartCost extends FragmentFuel implements
 
                     if (data.moveToFirst()) do {
                         year = data.getInt(0);
-
-                        Functions.logD("FragmentChartCost -- YEAR == " + year);
 
                         mYears[i] = year;
                         i++;

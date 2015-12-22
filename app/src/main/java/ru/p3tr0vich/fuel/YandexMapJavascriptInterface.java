@@ -22,8 +22,8 @@ class YandexMapJavascriptInterface {
     YandexMapJavascriptInterface(ActivityYandexMap activityYandexMap) {
         mActivityYandexMap = activityYandexMap;
 
-        mMapCenterLatitude = FuelingPreferenceManager.getMapCenterLatitude();
-        mMapCenterLongitude = FuelingPreferenceManager.getMapCenterLongitude();
+        mMapCenterLatitude = PreferenceManagerFuel.getMapCenterLatitude();
+        mMapCenterLongitude = PreferenceManagerFuel.getMapCenterLongitude();
 
         mStartSearchControlPlaceholderContent =
                 mActivityYandexMap.getString(R.string.yandex_map_start_search_control_placeholder_content);

@@ -15,6 +15,8 @@ import java.util.List;
 
 class FuelingDBHelper extends SQLiteOpenHelper {
 
+    private static final String TAG = "FuelingDBHelper";
+
     private static final String _ID = "_id";
     private static final String COLUMN_DATETIME = "datetime";
     private static final String COLUMN_COST = "cost";
@@ -205,7 +207,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     public Cursor getAllCursor() {
         String sql = SELECT_ALL + filterModeToSql() + ORDER_BY_DATE;
 
-        Functions.logD("FuelingDBHelper -- getAllCursor (sql == " + sql + ")");
+        UtilsLog.d(TAG, "getAllCursor", "sql == " + sql);
 
         return getReadableDatabase().rawQuery(sql, null);
     }
@@ -213,7 +215,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     public Cursor getYears() {
         String sql = SELECT_YEARS + String.format(SELECT_YEARS_WHERE, Functions.getCurrentYear());
 
-        Functions.logD("FuelingDBHelper -- getYears (sql == " + sql + ")");
+        UtilsLog.d(TAG, "getYears", "sql == " + sql);
 
         return getReadableDatabase().rawQuery(sql, null);
     }
@@ -221,7 +223,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     public Cursor getSumByMonthsForYear() {
         String sql = SELECT_SUM_BY_MONTHS_IN_YEAR + filterModeToSql() + GROUP_BY_MONTH;
 
-        Functions.logD("FuelingDBHelper -- getSumByMonthsForYear (sql == " + sql + ")");
+        UtilsLog.d(TAG, "getSumByMonthsForYear", "sql == " + sql);
 
         return getReadableDatabase().rawQuery(sql, null);
     }

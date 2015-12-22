@@ -7,6 +7,8 @@ import java.util.List;
 
 class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
 
+    private static final String TAG = "AsyncTaskOperationXml";
+
     private FragmentDialogProgress mFragmentDialogProgress;
     private final DatabaseBackupXmlHelper mDatabaseBackupXmlHelper;
 
@@ -18,7 +20,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
     }
 
     void setFragmentDialogProgress(FragmentDialogProgress fragmentDialogProgress) {
-        Functions.logD("OperationXml -- setFragmentDialogProgress");
+        UtilsLog.d(TAG, "setFragmentDialogProgress");
         mFragmentDialogProgress = fragmentDialogProgress;
     }
 
@@ -49,7 +51,8 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
 
     @Override
     protected void onPostExecute(Integer result) {
-        Functions.logD("OperationXml -- onPostExecute: mFragmentDialogProgress != null " + Boolean.toString(mFragmentDialogProgress != null));
+        UtilsLog.d(TAG, "onPostExecute", "mFragmentDialogProgress != null " +
+                Boolean.toString(mFragmentDialogProgress != null));
 
         if (mFragmentDialogProgress != null) mFragmentDialogProgress.stopTask(result);
     }

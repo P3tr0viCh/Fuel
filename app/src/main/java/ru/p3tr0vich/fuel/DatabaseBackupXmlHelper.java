@@ -304,7 +304,7 @@ public class DatabaseBackupXmlHelper {
         mFullFileName = new File(mExternalDirectory.getPath(), mFileName.getName());
 
         try {
-            FileIOUtils.makeDir(mExternalDirectory);
+            UtilsFileIO.makeDir(mExternalDirectory);
         } catch (IOException e) {
             return RESULT_ERROR_MKDIRS;
         }
@@ -317,7 +317,7 @@ public class DatabaseBackupXmlHelper {
         }
 
         try {
-            FileIOUtils.createFile(mFullFileName);
+            UtilsFileIO.createFile(mFullFileName);
         } catch (IOException e) {
             return RESULT_ERROR_CREATE_FILE;
         }
@@ -352,7 +352,7 @@ public class DatabaseBackupXmlHelper {
         if (!mExternalDirectory.exists()) return RESULT_ERROR_DIR_NOT_EXISTS;
 
         try {
-            FileIOUtils.checkExists(mFullFileName);
+            UtilsFileIO.checkExists(mFullFileName);
         } catch (FileNotFoundException e) {
             return RESULT_ERROR_FILE_NOT_EXISTS;
         }

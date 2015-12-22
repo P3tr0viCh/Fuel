@@ -21,6 +21,8 @@ import java.util.List;
 
 class SyncAdapter extends AbstractThreadedSyncAdapter {
 
+    private static final String TAG = "SyncAdapter";
+
     public SyncAdapter(Context context) {
         super(context, true);
     }
@@ -28,7 +30,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
-        Functions.logD("SyncAdapter -- onPerformSync: start");
+        UtilsLog.d(TAG, "onPerformSync", "start");
 
         SyncPreferencesAdapter syncPreferencesAdapter = new SyncPreferencesAdapter(provider);
         SyncFiles syncFiles = new SyncFiles(getContext());
@@ -53,7 +55,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             if (TextUtils.isEmpty(yandexDiskToken)) {
                 syncResult.stats.numAuthExceptions++;
-                Functions.logD("SyncAdapter -- onPerformSync: error  == empty Yandex.Disk token");
+                UtilsLog.d(TAG, "onPerformSync", "error  == empty Yandex.Disk token");
                 return;
             }
 
@@ -65,7 +67,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             syncYandexDisk.loadRevision();
 
-            Functions.logD("SyncAdapter -- onPerformSync: syncYandexDisk.loadRevision() OK");
+            UtilsLog.d(TAG, "onPerformSync", "syncYandexDisk.loadRevision() OK");
 
             int serverRevision = syncLocal.getRevision();
 //            serverRevision == -1, если синхронизация не производилась
@@ -76,7 +78,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             boolean isChanged = syncPreferencesAdapter.isChanged();
 
-            Functions.logD("SyncAdapter -- onPerformSync: " +
+            UtilsLog.d(TAG, "onPerformSync",
                     "serverRevision == " + serverRevision + ", localRevision == " + localRevision +
                     ", preference changed == " + isChanged);
 
@@ -84,7 +86,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // Синхронизация уже выполнялась на другом устройстве.
                 // Текущие изменения теряются.
 
-                Functions.logD("SyncAdapter -- onPerformSync: localRevision < serverRevision");
+                UtilsLog.d(TAG, "onPerformSync", "localRevision < serverRevision");
 
                 load(syncLocal, syncYandexDisk, syncPreferencesAdapter);
 
@@ -93,7 +95,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // Файлы синхронизации были удалены
                 // (localRevision > -1 > serverRevision == -1).
 
-                Functions.logD("SyncAdapter -- onPerformSync: localRevision > serverRevision");
+                UtilsLog.d(TAG, "onPerformSync", "localRevision > serverRevision");
 
                 save(syncLocal, syncYandexDisk, syncPreferencesAdapter, localRevision);
             } else /* localRevision == serverRevision */ {
@@ -102,7 +104,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // 2. Настройки синхронизированы.
                 // Если настройки были изменены, сохранить их на сервер.
 
-                Functions.logD("SyncAdapter -- onPerformSync: localRevision == serverRevision");
+                UtilsLog.d(TAG, "onPerformSync", "localRevision == serverRevision");
 
                 if (isChanged) {
                     localRevision++;
@@ -128,7 +130,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             else if (e instanceof ServerException) syncResult.stats.numIoExceptions++;
             else syncResult.databaseError = true;
 
-            Functions.logD("SyncAdapter -- onPerformSync: error  == " + e.toString());
+            UtilsLog.d(TAG, "onPerformSync", "error  == " + e.toString());
         } finally {
             try {
                 syncPreferencesAdapter.putLastSync(syncResult.hasError() ? null : new Date());
@@ -136,7 +138,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 syncResult.databaseError = true;
             }
 
-            Functions.logD("SyncAdapter -- onPerformSync: stop" +
+            UtilsLog.d(TAG, "onPerformSync", "stop" +
                     (syncResult.hasError() ? ", errors == " + syncResult.toString() : ", all ok"));
         }
     }
@@ -150,25 +152,25 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         // 4) Передать файл с номером ревизии из папки кэша на сервер.
         // 5) Сохранить флаг изменения настроек и номер ревизии в настройках.
 
-        Functions.logD("SyncAdapter -- save: start");
+        UtilsLog.d(TAG, "save", "start");
 
         List<String> preferences = syncPreferencesAdapter.getPreferences();
-        Functions.logD("SyncAdapter -- save: syncPreferencesAdapter.getPreferences() OK");
+        UtilsLog.d(TAG, "save", "syncPreferencesAdapter.getPreferences() OK");
 
         syncLocal.savePreferences(preferences);
-        Functions.logD("SyncAdapter -- save: syncLocal.savePreferences() OK");
+        UtilsLog.d(TAG, "save", "syncLocal.savePreferences() OK");
 
         syncLocal.saveRevision(revision);
-        Functions.logD("SyncAdapter -- save: syncLocal.saveRevision() OK");
+        UtilsLog.d(TAG, "save", "syncLocal.saveRevision() OK");
 
         syncYandexDisk.makeDirs();
-        Functions.logD("SyncAdapter -- save: syncYandexDisk.makeDirs() OK");
+        UtilsLog.d(TAG, "save", "syncYandexDisk.makeDirs() OK");
 
         syncYandexDisk.savePreferences();
-        Functions.logD("SyncAdapter -- save: syncYandexDisk.savePreferences() OK");
+        UtilsLog.d(TAG, "save", "syncYandexDisk.savePreferences() OK");
 
         syncYandexDisk.saveRevision();
-        Functions.logD("SyncAdapter -- save: syncYandexDisk.saveRevision() OK");
+        UtilsLog.d(TAG, "save", "syncYandexDisk.saveRevision() OK");
     }
 
     private void load(SyncLocal syncLocal, SyncYandexDisk syncYandexDisk,
@@ -180,15 +182,15 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         // 4) Сохранить флаг изменения настроек и номер ревизии в настройках.
 
         syncYandexDisk.loadPreferences();
-        Functions.logD("SyncAdapter -- save: syncYandexDisk.loadPreferences() OK");
+        UtilsLog.d(TAG, "load", "syncYandexDisk.loadPreferences() OK");
 
         List<String> preferences = new ArrayList<>();
 
         syncLocal.loadPreferences(preferences);
 //        for (String s : preferences) Functions.logD("SyncAdapter -- load: " + s);
-        Functions.logD("SyncAdapter -- load: syncLocal.loadPreferences() OK");
+        UtilsLog.d(TAG, "load", "syncLocal.loadPreferences() OK");
 
         syncPreferencesAdapter.setPreferences(preferences);
-        Functions.logD("SyncAdapter -- load: syncPreferencesAdapter.setPreferences() OK");
+        UtilsLog.d(TAG, "load", "syncPreferencesAdapter.setPreferences() OK");
     }
 }

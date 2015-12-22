@@ -46,8 +46,10 @@ public class ActivityMain extends AppCompatActivity implements
         FragmentInterface.OnFragmentChangeListener,
         FragmentPreference.OnPreferenceScreenChangeListener,
         FragmentPreference.OnPreferenceSyncEnabledChangeListener,
-        FuelingPreferenceManager.OnPreferencesChangedListener,
+        PreferenceManagerFuel.OnPreferencesChangedListener,
         FragmentBackup.OnDataLoadedFromBackupListener {
+
+    private static final String TAG = "ActivityMain";
 
     private static final String ACTION_LOADING = "ru.p3tr0vich.fuel.ACTION_LOADING";
     private static final String EXTRA_LOADING = "ru.p3tr0vich.fuel.EXTRA_LOADING";
@@ -115,7 +117,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Functions.logD("**************** ActivityMain -- onCreate ****************");
+        UtilsLog.d(TAG, "**************** onCreate ****************");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -156,7 +158,7 @@ public class ActivityMain extends AppCompatActivity implements
             }
         }
 
-        FuelingPreferenceManager.registerOnPreferencesChangedListener(this);
+        PreferenceManagerFuel.registerOnPreferencesChangedListener(this);
     }
 
     private void initToolbar() {
@@ -257,7 +259,7 @@ public class ActivityMain extends AppCompatActivity implements
                 if (fragmentFueling != null)
                     fragmentFueling.setProgressBarVisible(intent.getBooleanExtra(EXTRA_LOADING, false));
                 else
-                    Functions.logD("ActivityMain -- mLoadingStatusReceiver.onReceive: fragmentFueling == null");
+                    UtilsLog.d(TAG, "mLoadingStatusReceiver.onReceive", "fragmentFueling == null");
             }
         };
         LocalBroadcastManager.getInstance(getApplicationContext())
@@ -393,7 +395,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        FuelingPreferenceManager.registerOnPreferencesChangedListener(null);
+        PreferenceManagerFuel.registerOnPreferencesChangedListener(null);
 
         ContentResolver.removeStatusChangeListener(mSyncMonitor);
 
@@ -443,10 +445,9 @@ public class ActivityMain extends AppCompatActivity implements
                     fragmentCalc.setDistance(ActivityYandexMap.getDistance(data));
                 break;
             case ActivityYandexMap.REQUEST_CODE_MAP_CENTER:
-                Functions.logD("ActivityMain -- onActivityResult: ActivityYandexMap.REQUEST_CODE_MAP_CENTER");
                 ActivityYandexMap.MapCenter mapCenter = ActivityYandexMap.getMapCenter(data);
 
-                FuelingPreferenceManager.putMapCenter(mapCenter.text,
+                PreferenceManagerFuel.putMapCenter(mapCenter.text,
                         mapCenter.latitude, mapCenter.longitude);
                 FragmentPreference fragmentPreference = getFragmentPreference();
                 if (fragmentPreference != null) fragmentPreference.updateMapCenter();
@@ -584,11 +585,11 @@ public class ActivityMain extends AppCompatActivity implements
 
     // TODO: start on preference change
     private void startSync(boolean showDialogs) {
-        Functions.logD("ActivityMain -- startSync");
+        UtilsLog.d(TAG, "startSync");
 
         if (true) return;
 
-        if (FuelingPreferenceManager.isSyncEnabled()) {
+        if (PreferenceManagerFuel.isSyncEnabled()) {
             if (!mSyncAccount.isSyncActive()) {
                 if (!mSyncAccount.isYandexDiskTokenEmpty()) {
                     if (Functions.isInternetConnected()) {
@@ -599,19 +600,19 @@ public class ActivityMain extends AppCompatActivity implements
 
                         ContentResolver.requestSync(mSyncAccount.getAccount(), mSyncAccount.getAuthority(), extras);
                     } else {
-                        Functions.logD("ActivityMain -- startSync: Internet disconnected");
+                        UtilsLog.d(TAG, "startSync", "Internet disconnected");
                         if (showDialogs) FragmentDialogMessage.show(ActivityMain.this,
                                 getString(R.string.title_message_error),
                                 getString(R.string.message_error_no_internet));
                     }
                 } else {
-                    Functions.logD("ActivityMain -- startSync: Yandex.Disk token empty");
+                    UtilsLog.d(TAG, "startSync", "Yandex.Disk token empty");
                     if (showDialogs) showDialogNeedAuth();
                 }
             } else
-                Functions.logD("ActivityMain -- startSync: sync active");
+                UtilsLog.d(TAG, "startSync", "sync active");
         } else {
-            Functions.logD("ActivityMain -- startSync: sync disabled");
+            UtilsLog.d(TAG, "startSync", "sync disabled");
             if (showDialogs) {
                 mClickedMenuId = R.id.action_settings;
                 mOpenPreferenceSync = true;
@@ -633,17 +634,17 @@ public class ActivityMain extends AppCompatActivity implements
             text = getString(R.string.sync_in_process);
             imgId = R.mipmap.ic_sync_grey600_24dp;
         } else {
-            if (FuelingPreferenceManager.isSyncEnabled()) {
+            if (PreferenceManagerFuel.isSyncEnabled()) {
                 if (mSyncAccount.isYandexDiskTokenEmpty()) {
                     text = getString(R.string.sync_no_token);
                     imgId = R.mipmap.ic_sync_off_grey600_24dp;
                 } else {
-                    String lastSync = FuelingPreferenceManager.getLastSync();
+                    String lastSync = PreferenceManagerFuel.getLastSync();
 
                     if (TextUtils.isEmpty(lastSync)) {
                         text = getString(R.string.sync_not_performed);
                         imgId = R.mipmap.ic_sync_grey600_24dp;
-                    } else if (lastSync.equals(FuelingPreferenceManager.SYNC_ERROR)) {
+                    } else if (lastSync.equals(PreferenceManagerFuel.SYNC_ERROR)) {
                         text = getString(R.string.sync_error);
                         imgId = R.mipmap.ic_sync_alert_grey600_24dp;
                     } else {
@@ -691,6 +692,8 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onPreferencesChanged() {
+        UtilsLog.d(TAG, "onPreferencesChanged");
+
         if (mTimerPreferenceChanged != null) mTimerPreferenceChanged.cancel();
 
         mTimerPreferenceChanged = TimerPreferenceChanged.start();

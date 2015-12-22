@@ -42,8 +42,8 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         return -1;
     }
 
-    @Override
     @NonNull
+    @Override
     public String getTitle() {
         return isInRoot ? getString(R.string.title_prefs) : (String) getPreferenceScreen().getTitle();
     }
@@ -73,14 +73,14 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Functions.logD("FragmentPreference -- onSharedPreferenceChanged: key == " + key);
+//        Functions.logD("FragmentPreference -- onSharedPreferenceChanged: key == " + key);
 
         updatePreferenceSummary(key);
 
         if (key.equals(getString(R.string.pref_sync_enabled))) {
             updatePreferenceSummary(R.string.pref_sync_key);
             mOnPreferenceSyncEnabledChangeListener.OnPreferenceSyncEnabledChanged(
-                    FuelingPreferenceManager.isSyncEnabled());
+                    PreferenceManagerFuel.isSyncEnabled());
         }
     }
 
@@ -222,7 +222,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
             summary = (String) editPref.getSummary();
 //            text = editPref.getText() not updated after sync;
-            text = FuelingPreferenceManager.getString(key, "");
+            text = PreferenceManagerFuel.getString(key, "");
             editPref.setText(text);
 
             if (TextUtils.isEmpty(text)) text = "0";
@@ -233,12 +233,12 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
             editPref.setSummary(summary);
         } else if (key.equals(getString(R.string.pref_map_center_text))) {
-            preference.setSummary(FuelingPreferenceManager.getMapCenterText());
+            preference.setSummary(PreferenceManagerFuel.getMapCenterText());
         } else if (key.equals(getString(R.string.pref_sync_key))) {
-            preference.setSummary(getString(FuelingPreferenceManager.isSyncEnabled() ?
+            preference.setSummary(getString(PreferenceManagerFuel.isSyncEnabled() ?
                     R.string.pref_sync_summary_on : R.string.pref_sync_summary_off));
         } else if (key.equals(getString(R.string.pref_sync_enabled))) {
-            preference.setTitle(getString(FuelingPreferenceManager.isSyncEnabled() ?
+            preference.setTitle(getString(PreferenceManagerFuel.isSyncEnabled() ?
                     R.string.pref_sync_summary_on : R.string.pref_sync_summary_off));
         }
     }

@@ -38,14 +38,14 @@ class SyncPreferencesAdapter {
             do {
                 key = cursor.getString(0);
 
-                switch (FuelingPreferenceManager.getPreferenceType(key)) {
-                    case FuelingPreferenceManager.PREFERENCE_TYPE_STRING:
+                switch (PreferenceManagerFuel.getPreferenceType(key)) {
+                    case PreferenceManagerFuel.PREFERENCE_TYPE_STRING:
                         result.put(key, cursor.getString(1));
                         break;
-                    case FuelingPreferenceManager.PREFERENCE_TYPE_INT:
+                    case PreferenceManagerFuel.PREFERENCE_TYPE_INT:
                         result.put(key, cursor.getInt(1));
                         break;
-                    case FuelingPreferenceManager.PREFERENCE_TYPE_LONG:
+                    case PreferenceManagerFuel.PREFERENCE_TYPE_LONG:
                         result.put(key, cursor.getLong(1));
                         break;
                 }
@@ -68,14 +68,14 @@ class SyncPreferencesAdapter {
         List<String> result = new ArrayList<>();
 
         for (String key : contentValues.keySet())
-            switch (FuelingPreferenceManager.getPreferenceType(key)) {
-                case FuelingPreferenceManager.PREFERENCE_TYPE_STRING:
+            switch (PreferenceManagerFuel.getPreferenceType(key)) {
+                case PreferenceManagerFuel.PREFERENCE_TYPE_STRING:
                     result.add(key + '=' + contentValues.getAsString(key));
                     break;
-                case FuelingPreferenceManager.PREFERENCE_TYPE_INT:
+                case PreferenceManagerFuel.PREFERENCE_TYPE_INT:
                     result.add(key + '=' + String.valueOf(contentValues.getAsInteger(key)));
                     break;
-                case FuelingPreferenceManager.PREFERENCE_TYPE_LONG:
+                case PreferenceManagerFuel.PREFERENCE_TYPE_LONG:
                     result.add(key + '=' + String.valueOf(contentValues.getAsLong(key)));
                     break;
             }
@@ -103,14 +103,14 @@ class SyncPreferencesAdapter {
 
             if (key.isEmpty()) continue;
 
-            switch (FuelingPreferenceManager.getPreferenceType(key)) {
-                case FuelingPreferenceManager.PREFERENCE_TYPE_STRING:
+            switch (PreferenceManagerFuel.getPreferenceType(key)) {
+                case PreferenceManagerFuel.PREFERENCE_TYPE_STRING:
                     contentValues.put(key, value);
                     break;
-                case FuelingPreferenceManager.PREFERENCE_TYPE_INT:
+                case PreferenceManagerFuel.PREFERENCE_TYPE_INT:
                     contentValues.put(key, Integer.decode(value));
                     break;
-                case FuelingPreferenceManager.PREFERENCE_TYPE_LONG:
+                case PreferenceManagerFuel.PREFERENCE_TYPE_LONG:
                     contentValues.put(key, Long.decode(value));
                     break;
             }
@@ -120,31 +120,31 @@ class SyncPreferencesAdapter {
     }
 
     public boolean isChanged() throws RemoteException, FormatException {
-        return query(FuelingPreferenceManager.PREF_CHANGED)
-                .getAsBoolean(FuelingPreferenceManager.PREF_CHANGED);
+        return query(PreferenceManagerFuel.PREF_CHANGED)
+                .getAsBoolean(PreferenceManagerFuel.PREF_CHANGED);
     }
 
     public void putChanged() throws RemoteException {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(FuelingPreferenceManager.PREF_CHANGED, false);
-        update(contentValues, FuelingPreferenceManager.PREF_CHANGED);
+        contentValues.put(PreferenceManagerFuel.PREF_CHANGED, false);
+        update(contentValues, PreferenceManagerFuel.PREF_CHANGED);
     }
 
     public int getRevision() throws RemoteException, FormatException {
-        return query(FuelingPreferenceManager.PREF_REVISION)
-                .getAsInteger(FuelingPreferenceManager.PREF_REVISION);
+        return query(PreferenceManagerFuel.PREF_REVISION)
+                .getAsInteger(PreferenceManagerFuel.PREF_REVISION);
     }
 
     public void putRevision(int revision) throws RemoteException {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(FuelingPreferenceManager.PREF_REVISION, revision);
-        update(contentValues, FuelingPreferenceManager.PREF_REVISION);
+        contentValues.put(PreferenceManagerFuel.PREF_REVISION, revision);
+        update(contentValues, PreferenceManagerFuel.PREF_REVISION);
     }
 
     public void putLastSync(@Nullable Date dateTime) throws RemoteException {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(FuelingPreferenceManager.PREF_LAST_SYNC,
+        contentValues.put(PreferenceManagerFuel.PREF_LAST_SYNC,
                 dateTime != null ? Functions.dateTimeToString(dateTime) : null);
-        update(contentValues, FuelingPreferenceManager.PREF_LAST_SYNC);
+        update(contentValues, PreferenceManagerFuel.PREF_LAST_SYNC);
     }
 }

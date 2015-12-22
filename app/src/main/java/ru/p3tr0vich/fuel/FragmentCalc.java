@@ -178,20 +178,20 @@ public class FragmentCalc extends FragmentFuel implements
     }
 
     private void loadPrefs() {
-        mEditDistance.setText(FuelingPreferenceManager.getCalcDistance());
-        mEditCost.setText(FuelingPreferenceManager.getCalcCost());
-        mEditVolume.setText(FuelingPreferenceManager.getCalcVolume());
+        mEditDistance.setText(PreferenceManagerFuel.getCalcDistance());
+        mEditCost.setText(PreferenceManagerFuel.getCalcCost());
+        mEditVolume.setText(PreferenceManagerFuel.getCalcVolume());
 
-        mEditPrice.setText(FuelingPreferenceManager.getCalcPrice());
+        mEditPrice.setText(PreferenceManagerFuel.getCalcPrice());
 
-        arrCons = FuelingPreferenceManager.getCalcCons();
+        arrCons = PreferenceManagerFuel.getCalcCons();
 
-        mSpinnerCons.setSelection(FuelingPreferenceManager.getCalcSelectedCons());
-        mSpinnerSeason.setSelection(FuelingPreferenceManager.getCalcSelectedSeason());
+        mSpinnerCons.setSelection(PreferenceManagerFuel.getCalcSelectedCons());
+        mSpinnerSeason.setSelection(PreferenceManagerFuel.getCalcSelectedSeason());
     }
 
     private void savePrefs() {
-        FuelingPreferenceManager.putCalc(
+        PreferenceManagerFuel.putCalc(
                 mEditDistance.getText().toString(),
                 mEditCost.getText().toString(),
                 mEditVolume.getText().toString(),

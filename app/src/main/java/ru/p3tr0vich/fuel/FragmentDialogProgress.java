@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 public class FragmentDialogProgress extends DialogFragment {
 
-    public static final String TAG = "DialogProgress";
+    public static final String TAG = "FragmentDialogProgress";
     public static final int REQUEST_CODE = 7548;
 
     private static final String MESSAGE = "message";
@@ -41,7 +41,7 @@ public class FragmentDialogProgress extends DialogFragment {
     }
 
     private void setTask(AsyncTaskOperationXml asyncTaskOperationXml) {
-        Functions.logD("FragmentDialogProgress -- setTask");
+        UtilsLog.d(TAG, "setTask");
 
         mAsyncTaskOperationXml = asyncTaskOperationXml;
         mAsyncTaskOperationXml.setFragmentDialogProgress(this);
@@ -53,7 +53,7 @@ public class FragmentDialogProgress extends DialogFragment {
         setCancelable(false);
         setRetainInstance(true);
 
-        Functions.logD("FragmentDialogProgress -- onCreate");
+        UtilsLog.d(TAG, "onCreate");
 
         if (mAsyncTaskOperationXml != null) mAsyncTaskOperationXml.execute();
     }
@@ -62,14 +62,14 @@ public class FragmentDialogProgress extends DialogFragment {
     public void onResume() {
         super.onResume();
 
-        Functions.logD("FragmentDialogProgress -- onResume: mOperationXml == null " + Boolean.toString(mAsyncTaskOperationXml == null));
+        UtilsLog.d(TAG, "onResume", "mOperationXml == null " + Boolean.toString(mAsyncTaskOperationXml == null));
 
         if (mAsyncTaskOperationXml == null) dismiss();
     }
 
     @Override
     public void dismiss() {
-        Functions.logD("FragmentDialogProgress -- dismiss");
+        UtilsLog.d(TAG, "dismiss");
         super.dismiss();
     }
 
@@ -81,10 +81,10 @@ public class FragmentDialogProgress extends DialogFragment {
     }
 
     void stopTask(@DatabaseBackupXmlHelper.BackupResult int result) {
-        Functions.logD("FragmentDialogProgress -- stopTask: getTargetFragment() != null " + Boolean.toString(getTargetFragment() != null));
+        UtilsLog.d(TAG, "stopTask", "getTargetFragment() != null " + Boolean.toString(getTargetFragment() != null));
 
         if (isResumed()) {
-            Functions.logD("FragmentDialogProgress -- stopTask: isResumed()");
+            UtilsLog.d(TAG, "stopTask", "isResumed()");
             dismiss();
         }
 
@@ -98,7 +98,7 @@ public class FragmentDialogProgress extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Functions.logD("FragmentDialogProgress -- onCreateDialog");
+        UtilsLog.d(TAG, "onCreateDialog");
 
         @SuppressLint("InflateParams")
         View rootView = getActivity().getLayoutInflater().inflate(R.layout.dialog_progress, null, false);

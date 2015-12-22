@@ -15,7 +15,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
 import java.util.Map;
 
-class FuelingPreferenceManager {
+class PreferenceManagerFuel {
+
+    private static final String TAG = "PreferenceManagerFuel";
 
     public static final String PREF_REVISION = "revision";
     public static final String PREF_CHANGED = "changed";
@@ -63,16 +65,17 @@ class FuelingPreferenceManager {
         sPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                Functions.logD("FuelingPreferenceManager -- onSharedPreferenceChanged: key == " + key);
+                UtilsLog.d(TAG, "onSharedPreferenceChanged", "key == " + key);
 
-                if (!key.equals(PREF_CHANGED) &&
-                        !key.equals(PREF_REVISION) &&
-                        !key.equals(PREF_LAST_SYNC) &&
-                        !key.equals(sContext.getString(R.string.pref_sync_enabled)))
-                    putChanged(true);
+                if (isSyncKey(key)) putChanged(true);
             }
         };
         sSharedPreferences.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
+    }
+
+    private static boolean isSyncKey(String key) {
+        return !key.equals(PREF_CHANGED) && !key.equals(PREF_REVISION) && !key.equals(PREF_LAST_SYNC) &&
+                !key.equals(sContext.getString(R.string.pref_sync_enabled));
     }
 
     public static void registerOnPreferencesChangedListener(OnPreferencesChangedListener onPreferencesChangedListener) {
@@ -89,9 +92,10 @@ class FuelingPreferenceManager {
                 .putBoolean(PREF_CHANGED, changed)
                 .apply();
 
-        Functions.logD("FuelingPreferenceManager -- putChanged: changed == " + changed);
+        UtilsLog.d(TAG, "putChanged", "changed == " + changed);
 
-        if (mOnPreferencesChangedListener != null) mOnPreferencesChangedListener.onPreferencesChanged();
+        if (mOnPreferencesChangedListener != null)
+            mOnPreferencesChangedListener.onPreferencesChanged();
     }
 
     public static boolean isSyncEnabled() {
@@ -108,11 +112,12 @@ class FuelingPreferenceManager {
                 .putInt(PREF_REVISION, revision)
                 .apply();
 
-        Functions.logD("FuelingPreferenceManager -- putRevision: revision == " + revision);
+        UtilsLog.d(TAG, "putRevision", "revision == " + revision);
     }
 
+    @NonNull
     public static String getLastSync() {
-        return sSharedPreferences.getString(PREF_LAST_SYNC, "");
+        return getString(PREF_LAST_SYNC);
     }
 
     private static void putLastSync(final String dateTime) {
@@ -123,13 +128,13 @@ class FuelingPreferenceManager {
     }
 
     public static Date getFilterDateFrom() {
-        String result = sSharedPreferences.getString(sContext.getString(R.string.pref_filter_date_from), "");
+        String result = getString(sContext.getString(R.string.pref_filter_date_from));
         if (result.equals("")) return new Date();
         return Functions.sqlDateToDate(result);
     }
 
     public static Date getFilterDateTo() {
-        String result = sSharedPreferences.getString(sContext.getString(R.string.pref_filter_date_to), "");
+        String result = getString(sContext.getString(R.string.pref_filter_date_to));
         if (result.equals("")) return new Date();
         return Functions.sqlDateToDate(result);
     }
@@ -143,15 +148,15 @@ class FuelingPreferenceManager {
     }
 
     public static float getDefaultCost() {
-        return Functions.textToFloat(sSharedPreferences.getString(sContext.getString(R.string.pref_def_cost), "0"));
+        return Functions.textToFloat(getString(sContext.getString(R.string.pref_def_cost)));
     }
 
     public static float getDefaultVolume() {
-        return Functions.textToFloat(sSharedPreferences.getString(sContext.getString(R.string.pref_def_volume), "0"));
+        return Functions.textToFloat(getString(sContext.getString(R.string.pref_def_volume)));
     }
 
     public static float getLastTotal() {
-        return Functions.textToFloat(sSharedPreferences.getString(sContext.getString(R.string.pref_last_total), "0"));
+        return Functions.textToFloat(getString(sContext.getString(R.string.pref_last_total)));
     }
 
     public static void putLastTotal(final float lastTotal) {
@@ -161,38 +166,36 @@ class FuelingPreferenceManager {
                 .apply();
     }
 
+    @NonNull
     public static String getCalcDistance() {
-        return sSharedPreferences.getString(PREF_DISTANCE, "");
+        return getString(PREF_DISTANCE);
     }
 
+    @NonNull
     public static String getCalcCost() {
-        return sSharedPreferences.getString(PREF_COST, "");
+        return getString(PREF_COST);
     }
 
+    @NonNull
     public static String getCalcVolume() {
-        return sSharedPreferences.getString(PREF_VOLUME, "");
+        return getString(PREF_VOLUME);
     }
 
+    @NonNull
     public static String getCalcPrice() {
-        return sSharedPreferences.getString(PREF_PRICE, "");
+        return getString(PREF_PRICE);
     }
 
     public static float[][] getCalcCons() {
 
         float[][] result = {{0, 0, 0}, {0, 0, 0}};
 
-        result[0][0] = Functions.textToFloat(sSharedPreferences.getString(
-                sContext.getString(R.string.pref_summer_city), "0"));
-        result[0][1] = Functions.textToFloat(sSharedPreferences.getString(
-                sContext.getString(R.string.pref_summer_highway), "0"));
-        result[0][2] = Functions.textToFloat(sSharedPreferences.getString(
-                sContext.getString(R.string.pref_summer_mixed), "0"));
-        result[1][0] = Functions.textToFloat(sSharedPreferences.getString(
-                sContext.getString(R.string.pref_winter_city), "0"));
-        result[1][1] = Functions.textToFloat(sSharedPreferences.getString(
-                sContext.getString(R.string.pref_winter_highway), "0"));
-        result[1][2] = Functions.textToFloat(sSharedPreferences.getString(
-                sContext.getString(R.string.pref_winter_mixed), "0"));
+        result[0][0] = Functions.textToFloat(getString(sContext.getString(R.string.pref_summer_city)));
+        result[0][1] = Functions.textToFloat(getString(sContext.getString(R.string.pref_summer_highway)));
+        result[0][2] = Functions.textToFloat(getString(sContext.getString(R.string.pref_summer_mixed)));
+        result[1][0] = Functions.textToFloat(getString(sContext.getString(R.string.pref_winter_city)));
+        result[1][1] = Functions.textToFloat(getString(sContext.getString(R.string.pref_winter_highway)));
+        result[1][2] = Functions.textToFloat(getString(sContext.getString(R.string.pref_winter_mixed)));
 
         return result;
     }
@@ -218,9 +221,9 @@ class FuelingPreferenceManager {
                 .apply();
     }
 
+    @NonNull
     public static String getMapCenterText() {
-        return sSharedPreferences.getString(
-                sContext.getString(R.string.pref_map_center_text),
+        return getString(sContext.getString(R.string.pref_map_center_text),
                 YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_TEXT);
     }
 
@@ -247,9 +250,14 @@ class FuelingPreferenceManager {
                 .apply();
     }
 
-    @SuppressWarnings("SameParameterValue")
+    @NonNull
     public static String getString(final String key, final String defValue) {
         return sSharedPreferences.getString(key, defValue);
+    }
+
+    @NonNull
+    public static String getString(final String key) {
+        return sSharedPreferences.getString(key, "");
     }
 
     @NonNull
@@ -273,10 +281,7 @@ class FuelingPreferenceManager {
             Object value;
 
             for (String key : map.keySet())
-                if (!key.equals(PREF_CHANGED) &&
-                        !key.equals(PREF_REVISION) &&
-                        !key.equals(PREF_LAST_SYNC) &&
-                        !key.equals(sContext.getString(R.string.pref_sync_enabled))) {
+                if (isSyncKey(key)) {
 
                     value = map.get(key);
 
@@ -284,6 +289,7 @@ class FuelingPreferenceManager {
                     else if (value instanceof Long) result.put(key, (Long) value);
                     else if (value instanceof String) result.put(key, (String) value);
                     else if (value instanceof Boolean) result.put(key, (Boolean) value);
+                    else throw new ClassCastException("Unhandled class " + value.getClass().getSimpleName());
                 }
         } else
             switch (preference) {
@@ -299,7 +305,7 @@ class FuelingPreferenceManager {
             }
 
 //        for (String key : result.keySet())
-//            Functions.logD("FuelingPreferenceManager -- getPreferences: key == " + key
+//            Functions.logD("PreferenceManagerFuel -- getPreferences: key == " + key
 //                    + ", value == " + result.getAsString(key));
 
         return result;
@@ -324,6 +330,7 @@ class FuelingPreferenceManager {
                 else if (value instanceof Long) editor.putLong(key, (Long) value);
                 else if (value instanceof String) editor.putString(key, (String) value);
                 else if (value instanceof Boolean) editor.putBoolean(key, (Boolean) value);
+                else throw new ClassCastException("Unhandled class " + value.getClass().getSimpleName());
             }
 
             editor.commit();

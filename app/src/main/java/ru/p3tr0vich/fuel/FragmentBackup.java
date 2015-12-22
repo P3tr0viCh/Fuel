@@ -37,7 +37,8 @@ public class FragmentBackup extends FragmentFuel {
         FragmentDialogQuestion fragmentDialogQuestion =
                 (FragmentDialogQuestion) getFragmentManager().findFragmentByTag(FragmentDialogQuestion.TAG);
 
-        Functions.logD("FragmentBackup -- onCreate: fragmentDialogProgress != null " + Boolean.toString(fragmentDialogProgress != null));
+        UtilsLog.d(TAG, "onCreate", "fragmentDialogProgress != null " +
+                Boolean.toString(fragmentDialogProgress != null));
 
         if (fragmentDialogProgress != null)
             fragmentDialogProgress.setTargetFragment(this, FragmentDialogProgress.REQUEST_CODE);
@@ -48,7 +49,7 @@ public class FragmentBackup extends FragmentFuel {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Functions.logD("FragmentBackup -- onCreateView");
+        UtilsLog.d(TAG, "onCreateView");
 
         View v = inflater.inflate(R.layout.fragment_backup, container, false);
 
@@ -75,7 +76,7 @@ public class FragmentBackup extends FragmentFuel {
     }
 
     private void startOperationXml(boolean doSave) {
-        Functions.logD("FragmentBackup -- startOperationXml");
+        UtilsLog.d(TAG, "startOperationXml");
 
         FragmentDialogProgress.show(this, mDatabaseBackupXmlHelper, doSave);
     }
@@ -126,7 +127,7 @@ public class FragmentBackup extends FragmentFuel {
                 return;
         }
 
-        Functions.logD("FragmentBackup -- stopOperationXml: " + resultMessage);
+        UtilsLog.d(TAG, "stopOperationXml: " + resultMessage);
 
         if (result == DatabaseBackupXmlHelper.RESULT_SAVE_OK)
             Toast.makeText(getActivity(), R.string.message_save_file_ok, Toast.LENGTH_SHORT).show();
@@ -148,7 +149,7 @@ public class FragmentBackup extends FragmentFuel {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Functions.logD("FragmentBackup -- onActivityResult");
+        UtilsLog.d(TAG, "onActivityResult");
 
         if (resultCode != Activity.RESULT_OK) return;
 
@@ -167,7 +168,7 @@ public class FragmentBackup extends FragmentFuel {
 
     @Override
     public void onAttach(Context context) {
-        Functions.logD("FragmentBackup -- onAttach");
+        UtilsLog.d(TAG, "onAttach");
         super.onAttach(context);
         try {
             mOnDataLoadedFromBackupListener = (OnDataLoadedFromBackupListener) context;

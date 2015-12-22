@@ -97,7 +97,7 @@ public class FragmentFueling extends FragmentFuel implements
     private final View.OnClickListener undoClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Functions.logD("FragmentFueling -- undoClickListener: " + deletedFuelingRecord.toString());
+            UtilsLog.d(TAG, "undoClickListener", deletedFuelingRecord.toString());
 
             addRecord(deletedFuelingRecord);
 
@@ -121,16 +121,16 @@ public class FragmentFueling extends FragmentFuel implements
         mFilter = new FuelingDBHelper.Filter();
 
         if (savedInstanceState == null) {
-            Functions.logD("FragmentFueling -- onCreate: savedInstanceState == null");
+            UtilsLog.d(TAG, "onCreate", "savedInstanceState == null");
 
             mFilter.filterMode = FuelingDBHelper.FILTER_MODE_CURRENT_YEAR;
 
-            mFilter.dateFrom = FuelingPreferenceManager.getFilterDateFrom();
-            mFilter.dateTo = FuelingPreferenceManager.getFilterDateTo();
+            mFilter.dateFrom = PreferenceManagerFuel.getFilterDateFrom();
+            mFilter.dateTo = PreferenceManagerFuel.getFilterDateTo();
 
             mDataChanged = false;
         } else {
-            Functions.logD("FragmentFueling -- onCreate: savedInstanceState != null");
+            UtilsLog.d(TAG, "onCreate", "savedInstanceState != null");
 
             switch (savedInstanceState.getInt(KEY_FILTER_MODE, FuelingDBHelper.FILTER_MODE_ALL)) {
                 case FuelingDBHelper.FILTER_MODE_CURRENT_YEAR:
@@ -155,7 +155,7 @@ public class FragmentFueling extends FragmentFuel implements
     @SuppressLint("InflateParams")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Functions.logD("FragmentFueling -- onCreateView");
+        UtilsLog.d(TAG, "onCreateView");
 
         final boolean isPhone = Functions.isPhone();
 
@@ -258,7 +258,7 @@ public class FragmentFueling extends FragmentFuel implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Functions.logD("FragmentFueling -- onActivityCreated: savedInstanceState " +
+        UtilsLog.d(TAG, "onActivityCreated", "savedInstanceState " +
                 (savedInstanceState == null ? "=" : "!") + "= null");
 
         doSetFilterMode(mFilter.filterMode);
@@ -288,7 +288,7 @@ public class FragmentFueling extends FragmentFuel implements
 
         calcTotalTaskCancel();
 
-        FuelingPreferenceManager.putFilterDate(mFilter.dateFrom, mFilter.dateTo);
+        PreferenceManagerFuel.putFilterDate(mFilter.dateFrom, mFilter.dateTo);
 
         super.onDestroy();
     }

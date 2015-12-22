@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 public class FragmentDialogMessage extends DialogFragment {
 
-    private static final String TAG = "DialogMessage";
+    private static final String TAG = "FragmentDialogMessage";
 
     private static final String TITLE = "title";
     private static final String MESSAGE = "message";

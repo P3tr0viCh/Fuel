@@ -56,9 +56,9 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 mDate = new Date();
 
                 mFuelingRecord = new FuelingRecord(-1, "",
-                        FuelingPreferenceManager.getDefaultCost(),
-                        FuelingPreferenceManager.getDefaultVolume(),
-                        FuelingPreferenceManager.getLastTotal(), true);
+                        PreferenceManagerFuel.getDefaultCost(),
+                        PreferenceManagerFuel.getDefaultVolume(),
+                        PreferenceManagerFuel.getLastTotal(), true);
                 break;
             case Const.RECORD_ACTION_UPDATE:
                 getActivity().setTitle(R.string.dialog_caption_update);
@@ -140,7 +140,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
                 Activity activity = getActivity();
 
-                FuelingPreferenceManager.putLastTotal(mFuelingRecord.getTotal());
+                PreferenceManagerFuel.putLastTotal(mFuelingRecord.getTotal());
 
                 activity.setResult(Activity.RESULT_OK,
                         mFuelingRecord.toIntent()

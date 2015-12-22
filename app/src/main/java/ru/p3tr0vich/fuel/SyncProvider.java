@@ -24,7 +24,7 @@ public class SyncProvider extends ContentProvider {
                         String[] selectionArgs, String sortOrder) {
         MatrixCursor matrixCursor = new MatrixCursor(new String[]{"key", "value"});
 
-        ContentValues preferences = FuelingPreferenceManager.getPreferences(selection);
+        ContentValues preferences = PreferenceManagerFuel.getPreferences(selection);
         for (String key : preferences.keySet())
             matrixCursor.addRow(new Object[]{key, preferences.get(key)});
 
@@ -51,7 +51,7 @@ public class SyncProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-        FuelingPreferenceManager.setPreferences(values, selection);
+        PreferenceManagerFuel.setPreferences(values, selection);
 
         return 0;
     }

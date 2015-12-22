@@ -32,6 +32,8 @@ import java.lang.annotation.RetentionPolicy;
 
 public class ActivityYandexMap extends AppCompatActivity {
 
+    private static final String TAG = "ActivityYandexMap";
+
     public static final int REQUEST_CODE_DISTANCE = 8829;
     public static final int REQUEST_CODE_MAP_CENTER = 8830;
 
@@ -114,7 +116,7 @@ public class ActivityYandexMap extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Functions.logD("ActivityYandexMap -- onCreate");
+        UtilsLog.d(TAG, "onCreate");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_yandex_map);
@@ -146,7 +148,7 @@ public class ActivityYandexMap extends AppCompatActivity {
             }
         });
 
-        Functions.logD("ActivityYandexMap -- initUI: mLoading == " + mLoading);
+        UtilsLog.d(TAG, "initUI", "mLoading == " + mLoading);
 
         switch (mType) {
             case MAP_TYPE_DISTANCE:
@@ -176,7 +178,7 @@ public class ActivityYandexMap extends AppCompatActivity {
             mWebView.setWebChromeClient(new WebChromeClient() {
                 @Override
                 public boolean onConsoleMessage(@NonNull ConsoleMessage cm) {
-                    Functions.logD(cm.message() + " [line " + cm.lineNumber() + "]");
+                    UtilsLog.d(TAG, "onConsoleMessage", cm.message() + " [line " + cm.lineNumber() + "]");
                     return true;
                 }
             });
@@ -231,7 +233,7 @@ public class ActivityYandexMap extends AppCompatActivity {
             mWebView = null;
         }
         super.onDestroy();
-        Functions.logD("ActivityYandexMap -- onDestroy");
+        UtilsLog.d(TAG, "onDestroy");
     }
 
     @Override
@@ -299,7 +301,7 @@ public class ActivityYandexMap extends AppCompatActivity {
         if (mDistance > 0)
             title += String.format(getString(R.string.title_yandex_map_add), mDistance);
 
-        Functions.logD("ActivityYandexMap -- setDistance: title == " + title);
+        UtilsLog.d(TAG, "setDistance", "title == " + title);
 
         //noinspection ConstantConditions
         getSupportActionBar().setTitle(title);
@@ -311,7 +313,7 @@ public class ActivityYandexMap extends AppCompatActivity {
 
     public void setMapCenter(final String text, final String title, final String subtitle,
                              final double latitude, final double longitude) {
-        Functions.logD("ActivityYandexMap -- setMapCenterText: text == " + text);
+        UtilsLog.d(TAG, "setMapCenterText", "text == " + text);
 
         if (!TextUtils.isEmpty(text))
             mMapCenter.text = minimizeGeoCode(text);
@@ -333,7 +335,7 @@ public class ActivityYandexMap extends AppCompatActivity {
     }
 
     public void endInitYandexMap() {
-        Functions.logD("ActivityYandexMap -- endInitYandexMap");
+        UtilsLog.d(TAG, "endInitYandexMap");
 
         mLoading = false;
 

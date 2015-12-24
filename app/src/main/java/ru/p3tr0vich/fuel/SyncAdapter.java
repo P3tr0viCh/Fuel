@@ -42,16 +42,16 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         SyncYandexDisk syncYandexDisk = new SyncYandexDisk(syncFiles, yandexDiskToken);
 
         try {
+            // TODO // FIXME: 23.12.2015
+
 //            for (int i = 0; i < 10; i++) {
 //
-//                try {
-//                    TimeUnit.SECONDS.sleep(1);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
+//                TimeUnit.SECONDS.sleep(1);
 //
-//                Functions.logD("SyncAdapter -- onPerformSync: " + String.valueOf(i));
+//                UtilsLog.d(TAG, "onPerformSync", String.valueOf(i));
 //            }
+//
+//            if (true) return;
 
             if (TextUtils.isEmpty(yandexDiskToken)) {
                 syncResult.stats.numAuthExceptions++;
@@ -80,7 +80,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             UtilsLog.d(TAG, "onPerformSync",
                     "serverRevision == " + serverRevision + ", localRevision == " + localRevision +
-                    ", preference changed == " + isChanged);
+                            ", preference changed == " + isChanged);
 
             if (localRevision < serverRevision) {
                 // Синхронизация уже выполнялась на другом устройстве.

@@ -11,6 +11,7 @@ import android.content.SyncStatusObserver;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -39,6 +40,9 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 public class ActivityMain extends AppCompatActivity implements
         SyncStatusObserver,
         FragmentFueling.OnFilterChangeListener,
@@ -55,6 +59,7 @@ public class ActivityMain extends AppCompatActivity implements
     private static final String EXTRA_LOADING = "ru.p3tr0vich.fuel.EXTRA_LOADING";
 
     private static final String ACTION_START_SYNC = "ru.p3tr0vich.fuel.ACTION_START_SYNC";
+    private static final String EXTRA_START_SYNC = "ru.p3tr0vich.fuel.EXTRA_START_SYNC";
 
     private static final String KEY_CURRENT_FRAGMENT_ID = "KEY_CURRENT_FRAGMENT_ID";
 
@@ -80,6 +85,19 @@ public class ActivityMain extends AppCompatActivity implements
     private int mCurrentFragmentId, mClickedMenuId;
     private boolean mOpenPreferenceSync = false;
 
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({START_SYNC_APP_STARTED, START_SYNC_BUTTON_CLICKED,
+            START_SYNC_TOKEN_CHANGED, START_SYNC_PREFERENCES_CHANGED,
+            START_SYNC_ACTIVITY_DESTROY})
+    public @interface StartSync {
+    }
+
+    public static final int START_SYNC_APP_STARTED = 0;
+    public static final int START_SYNC_BUTTON_CLICKED = 1;
+    public static final int START_SYNC_TOKEN_CHANGED = 2;
+    public static final int START_SYNC_PREFERENCES_CHANGED = 3;
+    public static final int START_SYNC_ACTIVITY_DESTROY = 4;
+
     @Nullable
     private Fragment findFragmentByTag(@Nullable String fragmentTag) {
         return fragmentTag != null ?
@@ -102,8 +120,8 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @NonNull
-    private static Intent getStartSyncBroadcast() {
-        return new Intent(ACTION_START_SYNC);
+    private static Intent getStartSyncBroadcast(@StartSync int startSync) {
+        return new Intent(ACTION_START_SYNC).putExtra(EXTRA_START_SYNC, startSync);
     }
 
     public static void sendLoadingBroadcast(boolean startLoading) {
@@ -111,8 +129,9 @@ public class ActivityMain extends AppCompatActivity implements
                 .sendBroadcast(getLoadingBroadcast(startLoading));
     }
 
-    public static void sendStartSyncBroadcast() {
-        LocalBroadcastManager.getInstance(ApplicationFuel.getContext()).sendBroadcast(getStartSyncBroadcast());
+    public static void sendStartSyncBroadcast(@StartSync int startSync) {
+        LocalBroadcastManager.getInstance(ApplicationFuel.getContext())
+                .sendBroadcast(getStartSyncBroadcast(startSync));
     }
 
     @Override
@@ -148,7 +167,7 @@ public class ActivityMain extends AppCompatActivity implements
                     .setTransition(FragmentTransaction.TRANSIT_NONE)
                     .commit();
 
-            startSync(false);
+            startSync(START_SYNC_APP_STARTED);
         } else {
             mCurrentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID);
             if (mCurrentFragmentId == R.id.action_settings) {
@@ -221,7 +240,7 @@ public class ActivityMain extends AppCompatActivity implements
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 mClickedMenuId = menuItem.getItemId();
                 mOpenPreferenceSync = false;
-                if (mCurrentFragmentId == R.id.action_settings && mCurrentFragmentId != mClickedMenuId)
+                if (mCurrentFragmentId == FragmentPreference.ID && mCurrentFragmentId != mClickedMenuId)
                     mDrawerToggle.setDrawerIndicatorEnabled(true);
 
                 mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -245,7 +264,7 @@ public class ActivityMain extends AppCompatActivity implements
         mBtnSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startSync(true);
+                startSync(START_SYNC_BUTTON_CLICKED);
             }
         });
     }
@@ -270,7 +289,9 @@ public class ActivityMain extends AppCompatActivity implements
         mStartSyncReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                startSync(false);
+                @StartSync int startSync = intent.getIntExtra(EXTRA_START_SYNC, START_SYNC_TOKEN_CHANGED);
+
+                startSync(startSync);
             }
         };
         LocalBroadcastManager.getInstance(getApplicationContext())
@@ -306,15 +327,19 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void selectItem(int menuId) {
+        // TODO: на экране настроек при открытии и закрытии бокового меню происходит возврат
+        // в корневое меню
         if (mCurrentFragmentId == menuId) {
-            FragmentPreference fragmentPreference = getFragmentPreference();
-            if (fragmentPreference != null) {
-                if (mOpenPreferenceSync)
-                    fragmentPreference.goToSyncScreen();
-                else
-                    fragmentPreference.goToRootScreen();
-                return;
+            if (mCurrentFragmentId == FragmentPreference.ID) {
+                FragmentPreference fragmentPreference = getFragmentPreference();
+                if (fragmentPreference != null) {
+                    if (mOpenPreferenceSync)
+                        fragmentPreference.goToSyncScreen();
+                    else
+                        fragmentPreference.goToRootScreen();
+                }
             }
+            return;
         }
 
         String fragmentTag = null;
@@ -401,6 +426,11 @@ public class ActivityMain extends AppCompatActivity implements
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mStartSyncReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mLoadingStatusReceiver);
+
+        if (mTimerPreferenceChanged != null) mTimerPreferenceChanged.cancel();
+
+        startSync(START_SYNC_ACTIVITY_DESTROY);
+
         super.onDestroy();
     }
 
@@ -499,7 +529,8 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onFragmentChange(FragmentInterface fragment) {
-        mCurrentFragmentId = mClickedMenuId = fragment.getFragmentId();
+        mCurrentFragmentId = fragment.getFragmentId();
+        mClickedMenuId = mCurrentFragmentId;
 
         setTitle(fragment.getTitle());
         setSubtitle(fragment.getSubtitle());
@@ -583,22 +614,53 @@ public class ActivityMain extends AppCompatActivity implements
         anim.start();
     }
 
-    // TODO: start on preference change
-    private void startSync(boolean showDialogs) {
-        UtilsLog.d(TAG, "startSync");
+    private void requestManualSync() {
+        Bundle extras = new Bundle();
+        extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
 
-        if (true) return;
+        ContentResolver.requestSync(mSyncAccount.getAccount(), mSyncAccount.getAuthority(), extras);
+    }
+
+    private void startSync(@StartSync int startSync) {
+        boolean showDialogs = false;
+        boolean startIfSyncActive = false;
+
+        switch (startSync) {
+            case START_SYNC_APP_STARTED:
+                UtilsLog.d(TAG, "startSync", "START_SYNC_APP_STARTED");
+                showDialogs = false;
+                startIfSyncActive = false;
+                break;
+            case START_SYNC_BUTTON_CLICKED:
+                UtilsLog.d(TAG, "startSync", "START_SYNC_BUTTON_CLICKED");
+                showDialogs = true;
+                startIfSyncActive = false;
+                break;
+            case START_SYNC_TOKEN_CHANGED:
+                UtilsLog.d(TAG, "startSync", "START_SYNC_TOKEN_CHANGED");
+                showDialogs = false;
+                startIfSyncActive = false;
+                break;
+            case START_SYNC_PREFERENCES_CHANGED:
+                UtilsLog.d(TAG, "startSync", "START_SYNC_PREFERENCES_CHANGED");
+                showDialogs = false;
+                startIfSyncActive = true;
+                break;
+            case START_SYNC_ACTIVITY_DESTROY:
+                UtilsLog.d(TAG, "startSync", "START_SYNC_ACTIVITY_DESTROY");
+                if (!PreferenceManagerFuel.isChanged()) return;
+
+                showDialogs = false;
+                startIfSyncActive = true;
+                break;
+        }
 
         if (PreferenceManagerFuel.isSyncEnabled()) {
-            if (!mSyncAccount.isSyncActive()) {
+            if (!mSyncAccount.isSyncActive() || startIfSyncActive) {
                 if (!mSyncAccount.isYandexDiskTokenEmpty()) {
                     if (Functions.isInternetConnected()) {
-
-                        Bundle extras = new Bundle();
-                        extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-                        extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-
-                        ContentResolver.requestSync(mSyncAccount.getAccount(), mSyncAccount.getAuthority(), extras);
+                        requestManualSync();
                     } else {
                         UtilsLog.d(TAG, "startSync", "Internet disconnected");
                         if (showDialogs) FragmentDialogMessage.show(ActivityMain.this,
@@ -614,7 +676,7 @@ public class ActivityMain extends AppCompatActivity implements
         } else {
             UtilsLog.d(TAG, "startSync", "sync disabled");
             if (showDialogs) {
-                mClickedMenuId = R.id.action_settings;
+                mClickedMenuId = FragmentPreference.ID;
                 mOpenPreferenceSync = true;
 
                 if (mDrawerLayout.isDrawerOpen(GravityCompat.START))

@@ -94,7 +94,7 @@ class PreferenceManagerFuel {
 
         UtilsLog.d(TAG, "putChanged", "changed == " + changed);
 
-        if (mOnPreferencesChangedListener != null)
+        if (mOnPreferencesChangedListener != null && changed)
             mOnPreferencesChangedListener.onPreferencesChanged();
     }
 
@@ -156,7 +156,13 @@ class PreferenceManagerFuel {
     }
 
     public static float getLastTotal() {
-        return Functions.textToFloat(getString(sContext.getString(R.string.pref_last_total)));
+        // TODO // FIXME: 23.12.2015 remove getLong
+        try {
+            return Functions.textToFloat(getString(sContext.getString(R.string.pref_last_total)));
+        } catch (Exception e) {
+            UtilsLog.d(TAG, "getLastTotal", "Exception");
+            return sSharedPreferences.getLong(sContext.getString(R.string.pref_last_total), 0);
+        }
     }
 
     public static void putLastTotal(final float lastTotal) {
@@ -289,7 +295,8 @@ class PreferenceManagerFuel {
                     else if (value instanceof Long) result.put(key, (Long) value);
                     else if (value instanceof String) result.put(key, (String) value);
                     else if (value instanceof Boolean) result.put(key, (Boolean) value);
-                    else throw new ClassCastException("Unhandled class " + value.getClass().getSimpleName());
+                    else
+                        throw new ClassCastException("Unhandled class " + value.getClass().getSimpleName());
                 }
         } else
             switch (preference) {
@@ -330,7 +337,8 @@ class PreferenceManagerFuel {
                 else if (value instanceof Long) editor.putLong(key, (Long) value);
                 else if (value instanceof String) editor.putString(key, (String) value);
                 else if (value instanceof Boolean) editor.putBoolean(key, (Boolean) value);
-                else throw new ClassCastException("Unhandled class " + value.getClass().getSimpleName());
+                else
+                    throw new ClassCastException("Unhandled class " + value.getClass().getSimpleName());
             }
 
             editor.commit();

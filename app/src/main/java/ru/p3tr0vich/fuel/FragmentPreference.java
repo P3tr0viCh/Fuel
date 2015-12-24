@@ -19,9 +19,10 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 public class FragmentPreference extends PreferenceFragmentCompat implements
-        SharedPreferences.OnSharedPreferenceChangeListener, FragmentInterface {
+        FragmentInterface, SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String TAG = "FragmentPreference";
+    public static final int ID = R.id.action_settings;
 
     public static final String KEY_PREFERENCE_SCREEN = "KEY_PREFERENCE_SCREEN";
 
@@ -34,7 +35,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
     @Override
     public int getFragmentId() {
-        return R.id.action_settings;
+        return ID;
     }
 
     @Override

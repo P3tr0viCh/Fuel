@@ -44,7 +44,6 @@
         android:text="@string/text_total"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
-
     <Space
         android:id="@+id/spMenu"
         android:layout_width="48dp"

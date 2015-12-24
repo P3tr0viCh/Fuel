@@ -66,6 +66,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 mFuelingRecord = new FuelingRecord(intent);
 
                 mDate = Functions.sqlDateToDate(mFuelingRecord.getSQLiteDate());
+                break;
             case Const.RECORD_ACTION_DELETE:
                 throw new UnsupportedOperationException();
         }

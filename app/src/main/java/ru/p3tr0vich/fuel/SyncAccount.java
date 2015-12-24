@@ -18,12 +18,40 @@ class SyncAccount {
     private final String mAccountName;
     private final String mAccountType;
 
+    private final Account mAccount;
+
     SyncAccount(Context context) {
         mAccountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
 
         mAuthority = context.getString(R.string.sync_authority);
         mAccountName = context.getString(R.string.sync_account_name);
         mAccountType = context.getString(R.string.sync_account_type);
+
+        mAccount = createAccount();
+    }
+
+    private Account createAccount() {
+        Account account;
+
+        Account accounts[] = mAccountManager.getAccountsByType(getAccountType());
+
+        if (accounts.length > 0) {
+            account = accounts[0];
+
+//            Functions.logD("SyncAccount -- getAccount: accounts[0] == " + accounts[0].toString());
+        } else {
+            account = new Account(getAccountName(), getAccountType());
+
+            if (mAccountManager.addAccountExplicitly(account, null, null)) {
+                setIsSyncable(account, PreferenceManagerFuel.isSyncEnabled());
+
+                UtilsLog.d(TAG, "createAccount", "addAccountExplicitly == true");
+            } else {
+                UtilsLog.d(TAG, "createAccount", "addAccountExplicitly == false");
+            }
+        }
+
+        return account;
     }
 
     public String getAuthority() {
@@ -39,27 +67,7 @@ class SyncAccount {
     }
 
     public Account getAccount() {
-        Account account;
-
-        Account accounts[] = mAccountManager.getAccountsByType(getAccountType());
-
-        if (accounts.length > 0) {
-            account = accounts[0];
-
-//            Functions.logD("SyncAccount -- getAccount: accounts[0] == " + accounts[0].toString());
-        } else {
-            account = new Account(getAccountName(), getAccountType());
-
-            if (mAccountManager.addAccountExplicitly(account, null, null)) {
-                setIsSyncable(account, PreferenceManagerFuel.isSyncEnabled());
-
-                UtilsLog.d(TAG, "getAccount", "addAccountExplicitly == true");
-            } else {
-                UtilsLog.d(TAG, "getAccount", "addAccountExplicitly == false");
-            }
-        }
-
-        return account;
+        return mAccount;
     }
 
     public boolean isSyncActive() {

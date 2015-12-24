@@ -13,13 +13,11 @@
     <LinearLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@color/window_background"
         android:clickable="false"
         android:descendantFocusability="blocksDescendants"
         android:orientation="horizontal"
         android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        tools:ignore="Overdraw">
+        android:paddingStart="16dp">
 
         <TextView
             android:id="@+id/tvDate"

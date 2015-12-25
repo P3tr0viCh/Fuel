@@ -99,7 +99,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         db.execSQL(DATABASE_CREATE);
     }
 
-    public void setFilter(@NonNull Filter filter) {
+    private void setFilter(@NonNull Filter filter) {
         mFilter.filterMode = filter.filterMode;
         mFilter.year = filter.year;
         mFilter.dateFrom = filter.dateFrom;

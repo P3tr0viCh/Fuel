@@ -82,7 +82,7 @@ public class ActivityMain extends AppCompatActivity implements
     private BroadcastReceiver mLoadingStatusReceiver;
     private BroadcastReceiver mStartSyncReceiver;
 
-    private int mCurrentFragmentId, mClickedMenuId;
+    private int mCurrentFragmentId, mClickedMenuId = -1;
     private boolean mOpenPreferenceSync = false;
 
     @Retention(RetentionPolicy.SOURCE)
@@ -92,11 +92,11 @@ public class ActivityMain extends AppCompatActivity implements
     public @interface StartSync {
     }
 
-    public static final int START_SYNC_APP_STARTED = 0;
-    public static final int START_SYNC_BUTTON_CLICKED = 1;
+    private static final int START_SYNC_APP_STARTED = 0;
+    private static final int START_SYNC_BUTTON_CLICKED = 1;
     public static final int START_SYNC_TOKEN_CHANGED = 2;
     public static final int START_SYNC_PREFERENCES_CHANGED = 3;
-    public static final int START_SYNC_ACTIVITY_DESTROY = 4;
+    private static final int START_SYNC_ACTIVITY_DESTROY = 4;
 
     @Nullable
     private Fragment findFragmentByTag(@Nullable String fragmentTag) {
@@ -240,6 +240,8 @@ public class ActivityMain extends AppCompatActivity implements
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 mClickedMenuId = menuItem.getItemId();
                 mOpenPreferenceSync = false;
+                // Если текущий фрагмент -- настройки, может отображаться стрелка влево.
+                // Если нажат другой пункт меню, показвается значок меню.
                 if (mCurrentFragmentId == FragmentPreference.ID && mCurrentFragmentId != mClickedMenuId)
                     mDrawerToggle.setDrawerIndicatorEnabled(true);
 
@@ -327,8 +329,10 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void selectItem(int menuId) {
-        // TODO: на экране настроек при открытии и закрытии бокового меню происходит возврат
-        // в корневое меню
+        if (menuId == -1) return;
+
+        mClickedMenuId = -1;
+
         if (mCurrentFragmentId == menuId) {
             if (mCurrentFragmentId == FragmentPreference.ID) {
                 FragmentPreference fragmentPreference = getFragmentPreference();
@@ -530,7 +534,6 @@ public class ActivityMain extends AppCompatActivity implements
     @Override
     public void onFragmentChange(FragmentInterface fragment) {
         mCurrentFragmentId = fragment.getFragmentId();
-        mClickedMenuId = mCurrentFragmentId;
 
         setTitle(fragment.getTitle());
         setSubtitle(fragment.getSubtitle());

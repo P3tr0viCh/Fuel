@@ -156,12 +156,12 @@ class PreferenceManagerFuel {
     }
 
     public static float getLastTotal() {
-        // TODO // FIXME: 23.12.2015 remove getLong
+        // TODO // FIXME: 23.12.2015 remove getFloat
         try {
             return Functions.textToFloat(getString(sContext.getString(R.string.pref_last_total)));
         } catch (Exception e) {
             UtilsLog.d(TAG, "getLastTotal", "Exception");
-            return sSharedPreferences.getLong(sContext.getString(R.string.pref_last_total), 0);
+            return sSharedPreferences.getFloat(sContext.getString(R.string.pref_last_total), 0);
         }
     }
 
@@ -262,7 +262,7 @@ class PreferenceManagerFuel {
     }
 
     @NonNull
-    public static String getString(final String key) {
+    private static String getString(final String key) {
         return sSharedPreferences.getString(key, "");
     }
 

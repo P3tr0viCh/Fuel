@@ -35,11 +35,9 @@ class SyncAccount {
 
         Account accounts[] = mAccountManager.getAccountsByType(getAccountType());
 
-        if (accounts.length > 0) {
+        if (accounts.length > 0)
             account = accounts[0];
-
-//            Functions.logD("SyncAccount -- getAccount: accounts[0] == " + accounts[0].toString());
-        } else {
+        else {
             account = new Account(getAccountName(), getAccountType());
 
             if (mAccountManager.addAccountExplicitly(account, null, null)) {

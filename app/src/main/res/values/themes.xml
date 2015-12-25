@@ -10,6 +10,7 @@
 
         <item name="android:textColorPrimary">@color/primary_text</item>
         <item name="android:textColorSecondary">@color/secondary_text</item>
+        <item name="android:textColorHighlight">?attr/colorAccent</item>
 
         <item name="popupMenuStyle">@style/AppTheme.PopupMenu</item>
 
@@ -22,9 +23,6 @@
 
         <!-- Generated with http://android-holo-colors.com -->
 
-        <item name="android:editTextBackground">@drawable/apptheme_edit_text_holo_light</item>
-
-        <item name="android:textColorHighlight">@color/accent</item>
         <item name="android:textSelectHandleLeft">@drawable/apptheme_text_select_handle_left</item>
         <item name="android:textSelectHandleRight">@drawable/apptheme_text_select_handle_right
         </item>

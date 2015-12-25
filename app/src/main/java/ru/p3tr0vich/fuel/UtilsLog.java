@@ -22,8 +22,4 @@ class UtilsLog {
     public static void d(@NonNull String aClass, @NonNull String msg) {
         d(aClass, msg, null);
     }
-
-    public static void d(@NonNull String msg) {
-        d(null, msg, null);
-    }
 }

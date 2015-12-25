@@ -42,8 +42,6 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         SyncYandexDisk syncYandexDisk = new SyncYandexDisk(syncFiles, yandexDiskToken);
 
         try {
-            // TODO // FIXME: 23.12.2015
-
 //            for (int i = 0; i < 10; i++) {
 //
 //                TimeUnit.SECONDS.sleep(1);

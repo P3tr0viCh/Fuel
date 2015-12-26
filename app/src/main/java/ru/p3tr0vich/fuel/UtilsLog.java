@@ -10,13 +10,11 @@ class UtilsLog {
     private static final String LOG_TAG = "XXX";
 
     public static void d(@Nullable String aClass, @NonNull String msg, @Nullable String extMsg) {
-        if (Functions.isDebuggable()) {
-            if (!TextUtils.isEmpty(aClass)) msg = aClass + " -- " + msg;
+        if (!TextUtils.isEmpty(aClass)) msg = aClass + " -- " + msg;
 
-            if (!TextUtils.isEmpty(extMsg)) msg = msg + ": " + extMsg;
+        if (!TextUtils.isEmpty(extMsg)) msg = msg + ": " + extMsg;
 
-            Log.d(LOG_TAG, msg);
-        }
+        Log.d(LOG_TAG, msg);
     }
 
     public static void d(@NonNull String aClass, @NonNull String msg) {

@@ -291,12 +291,14 @@ class PreferenceManagerFuel {
 
                     value = map.get(key);
 
-                    if (value instanceof Integer) result.put(key, (Integer) value);
+                    if (value instanceof String) result.put(key, (String) value);
                     else if (value instanceof Long) result.put(key, (Long) value);
-                    else if (value instanceof String) result.put(key, (String) value);
+                    else if (value instanceof Integer) result.put(key, (Integer) value);
                     else if (value instanceof Boolean) result.put(key, (Boolean) value);
+                    else if (value instanceof Float) result.put(key, (Float) value);
                     else
-                        throw new ClassCastException("Unhandled class " + value.getClass().getSimpleName());
+                        UtilsLog.d(TAG, "getPreferences",
+                                "unhandled class == " + value.getClass().getSimpleName());
                 }
         } else
             switch (preference) {
@@ -312,8 +314,7 @@ class PreferenceManagerFuel {
             }
 
 //        for (String key : result.keySet())
-//            Functions.logD("PreferenceManagerFuel -- getPreferences: key == " + key
-//                    + ", value == " + result.getAsString(key));
+//            UtilsLog.d(TAG, "getPreferences", "key == " + key + ", value == " + result.getAsString(key));
 
         return result;
     }
@@ -333,12 +334,14 @@ class PreferenceManagerFuel {
             for (String key : preferences.keySet()) {
                 value = preferences.get(key);
 
-                if (value instanceof Integer) editor.putInt(key, (Integer) value);
+                if (value instanceof String) editor.putString(key, (String) value);
                 else if (value instanceof Long) editor.putLong(key, (Long) value);
-                else if (value instanceof String) editor.putString(key, (String) value);
+                else if (value instanceof Integer) editor.putInt(key, (Integer) value);
                 else if (value instanceof Boolean) editor.putBoolean(key, (Boolean) value);
+                else if (value instanceof Float) editor.putFloat(key, (Float) value);
                 else
-                    throw new ClassCastException("Unhandled class " + value.getClass().getSimpleName());
+                    UtilsLog.d(TAG, "getPreferences",
+                            "unhandled class == " + value.getClass().getSimpleName());
             }
 
             editor.commit();

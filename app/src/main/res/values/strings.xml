@@ -106,6 +106,7 @@
     <string name="message_error_create_file">Не удалось создать файл \"%1$s\" в каталоге \"%2$s\"</string>
     <string name="message_error_save_file">Не удалось сохранить файл \"%1$s\" в каталоге \"%2$s\"</string>
     <string name="message_error_yandex_map_route">Не удалось построить маршрут</string>
+    <string name="message_error_yandex_disk_browser_open">Не удалось открыть Яндекс.Диск</string>
 
     <string name="message_error_no_internet">Отсутствует подключение к Интернет</string>
 
@@ -189,6 +190,11 @@
     <string name="pref_sync_enabled" translatable="false">sync enabled</string>
     <string name="pref_sync_enabled_on">Включена</string>
     <string name="pref_sync_enabled_off">Выключена</string>
+
+    <string name="pref_sync_yandex_disk_key" translatable="false">key_sync_yandex_disk</string>
+    <string name="pref_sync_yandex_disk_title">Синхронизация выполняется при помощи облачного
+        хранилища Яндекс.Диск</string>
+    <string name="pref_sync_yandex_disk_summary_on">Открыть Яндекс.Диск</string>
 
     <string name="sync_authority" translatable="false">ru.p3tr0vich.fuel.provider</string>
     <string name="sync_account_name" translatable="false">Sync</string>

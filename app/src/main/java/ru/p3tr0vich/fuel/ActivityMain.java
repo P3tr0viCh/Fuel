@@ -431,8 +431,6 @@ public class ActivityMain extends AppCompatActivity implements
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mStartSyncReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mLoadingStatusReceiver);
 
-        if (mTimerPreferenceChanged != null) mTimerPreferenceChanged.cancel();
-
         startSync(START_SYNC_ACTIVITY_DESTROY);
 
         super.onDestroy();
@@ -659,6 +657,8 @@ public class ActivityMain extends AppCompatActivity implements
                 break;
         }
 
+        stopTimerPreferenceChanged();
+
         if (PreferenceManagerFuel.isSyncEnabled()) {
             if (!mSyncAccount.isSyncActive() || startIfSyncActive) {
                 if (!mSyncAccount.isYandexDiskTokenEmpty()) {
@@ -755,12 +755,17 @@ public class ActivityMain extends AppCompatActivity implements
                 R.string.message_dialog_auth, R.string.dialog_btn_agree, R.string.dialog_btn_disagree);
     }
 
+    private void stopTimerPreferenceChanged() {
+        if (mTimerPreferenceChanged != null) mTimerPreferenceChanged.cancel();
+    }
+
     @Override
     public void onPreferencesChanged() {
         UtilsLog.d(TAG, "onPreferencesChanged");
 
-        if (mTimerPreferenceChanged != null) mTimerPreferenceChanged.cancel();
+        stopTimerPreferenceChanged();
 
-        mTimerPreferenceChanged = TimerPreferenceChanged.start();
+        if (PreferenceManagerFuel.isSyncEnabled())
+            mTimerPreferenceChanged = TimerPreferenceChanged.start();
     }
 }

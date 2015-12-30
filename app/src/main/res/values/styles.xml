@@ -124,4 +124,9 @@
     <style name="AppTheme.Preference.DialogPreference" parent="Preference.DialogPreference.Material">
         <item name="layout">@layout/apptheme_preference</item>
     </style>
+
+    <style name="AppTheme.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/primary</item>
+        <item name="height">@dimen/toolbar_height</item>
+    </style>
 </resources>

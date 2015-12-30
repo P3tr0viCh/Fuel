@@ -7,9 +7,11 @@
 
 Калькулятор расхода.
 Расчёт необходимого количества топлива и его стоимости в зависимости от предполагаемого расстояния, топливного расхода автомобиля и стоимости единицы топлива.
-Расстояние можно вычислять при помощи Яндекс.Карты.
+Расстояние можно вычислять при помощи Яндекс.Карт.
 
 График расходов за год по месяцам.
+
+Синхронизация настроек между устройствами при помощи Яндекс.Диска.
 
 ------------------------------------------------------------
 (Google translate)
@@ -25,3 +27,5 @@ Calculation of the required amount of fuel and its value depending on the intend
 The distance can be calculated using Yandex.Maps.
 
 Schedule of expenditure for the year by months.
+
+Synchronization settings between devices using Yandex.Disk.

@@ -1,7 +1,9 @@
 package ru.p3tr0vich.fuel;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 public class FragmentPreference extends PreferenceFragmentCompat implements
         FragmentInterface, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -30,8 +33,8 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     private OnPreferenceScreenChangeListener mOnPreferenceScreenChangeListener;
     private OnPreferenceSyncEnabledChangeListener mOnPreferenceSyncEnabledChangeListener;
 
-    private boolean isInRoot;
-    private PreferenceScreen rootPreferenceScreen;
+    private boolean mIsInRoot;
+    private PreferenceScreen mRootPreferenceScreen;
 
     @Override
     public int getFragmentId() {
@@ -46,7 +49,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     @NonNull
     @Override
     public String getTitle() {
-        return isInRoot ? getString(R.string.title_prefs) : (String) getPreferenceScreen().getTitle();
+        return mIsInRoot ? getString(R.string.title_prefs) : (String) getPreferenceScreen().getTitle();
     }
 
     @Override
@@ -69,7 +72,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     }
 
     public boolean isInRoot() {
-        return isInRoot;
+        return mIsInRoot;
     }
 
     @Override
@@ -88,10 +91,11 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.preferences);
-        rootPreferenceScreen = getPreferenceScreen();
+        mRootPreferenceScreen = getPreferenceScreen();
 
-        init(rootPreferenceScreen);
+        init(mRootPreferenceScreen);
 
+        // TODO: one listener -- this
         findPreference(getString(R.string.pref_map_center_text))
                 .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     @Override
@@ -102,24 +106,47 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
                     }
                 });
 
-        String preferenceKey = null;
+        findPreference(getString(R.string.pref_sync_yandex_disk_key))
+                .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        try {
+                            startActivity(
+                                    new Intent(Intent.ACTION_VIEW,
+                                            Uri.parse(SyncYandexDisk.WWW_URL)));
+                        } catch (Exception e) {
+                            UtilsLog.d(TAG, "onPreferenceClick pref_sync_yandex_disk_key",
+                                    "exception == " + e.toString());
+
+                            Toast.makeText(getActivity(),
+                                    R.string.message_error_yandex_disk_browser_open,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        return true;
+                    }
+                });
+
+        String keyPreferenceScreen = null;
 
         if (bundle == null) {
             Bundle arguments = getArguments();
             if (arguments != null)
-                preferenceKey = arguments.getString(KEY_PREFERENCE_SCREEN);
+                keyPreferenceScreen = arguments.getString(KEY_PREFERENCE_SCREEN);
         } else
-            preferenceKey = bundle.getString(KEY_PREFERENCE_SCREEN);
+            keyPreferenceScreen = bundle.getString(KEY_PREFERENCE_SCREEN);
 
-        isInRoot = preferenceKey == null;
-        if (!isInRoot) navigateToScreen((PreferenceScreen) findPreference(preferenceKey));
+        if (keyPreferenceScreen == null)
+            mIsInRoot = true;
+        else
+            navigateToScreen((PreferenceScreen) findPreference(keyPreferenceScreen));
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(KEY_PREFERENCE_SCREEN, isInRoot ? null : getPreferenceScreen().getKey());
+        outState.putString(KEY_PREFERENCE_SCREEN, mIsInRoot ? null : getPreferenceScreen().getKey());
     }
 
     @Override
@@ -148,15 +175,15 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     }
 
     private void navigateToScreen(@Nullable PreferenceScreen preferenceScreen) {
-        isInRoot = preferenceScreen == null;
+        mIsInRoot = preferenceScreen == null;
 
-        setPreferenceScreen(isInRoot ? rootPreferenceScreen : preferenceScreen);
+        setPreferenceScreen(mIsInRoot ? mRootPreferenceScreen : preferenceScreen);
 
-        mOnPreferenceScreenChangeListener.OnPreferenceScreenChanged(getTitle(), isInRoot);
+        mOnPreferenceScreenChangeListener.OnPreferenceScreenChanged(getTitle(), mIsInRoot);
     }
 
     public boolean goToRootScreen() {
-        if (isInRoot) return false;
+        if (mIsInRoot) return false;
 
         navigateToScreen(null);
 
@@ -185,12 +212,12 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     public void onStart() {
         super.onStart();
         mOnFragmentChangeListener.onFragmentChange(this);
-        rootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        mRootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onStop() {
-        rootPreferenceScreen.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        mRootPreferenceScreen.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         super.onStop();
     }
 
@@ -203,18 +230,10 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     }
 
     private void updatePreferenceSummary(Preference preference) {
-        if (preference == null) {
-//            Functions.logD("FragmentPreference -- updatePreferenceSummary: preference == null");
-            return;
-        }
+        if (preference == null) return;
 
         String key = preference.getKey();
-        if (key == null) {
-//            Functions.logD("FragmentPreference -- updatePreferenceSummary: key == null");
-            return;
-        }
-
-//        Functions.logD("FragmentPreference -- updatePreferenceSummary: preference == " + key);
+        if (key == null) return;
 
         if (preference instanceof EditTextPreference) {
             EditTextPreference editPref = (EditTextPreference) preference;

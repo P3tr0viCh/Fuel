@@ -21,6 +21,9 @@
         <item name="android:listChoiceBackgroundIndicator">?attr/listChoiceBackgroundIndicator
         </item>
 
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeStyle">@style/AppTheme.ActionMode</item>
+
         <!-- Generated with http://android-holo-colors.com -->
 
         <item name="android:textSelectHandleLeft">@drawable/apptheme_text_select_handle_left</item>

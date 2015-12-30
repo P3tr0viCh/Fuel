@@ -40,6 +40,8 @@ android {
         buildConfigField "String", "BUILD_DATE", "new String(\"" + getDate() + "\")"
 
         resConfigs "ru"
+
+        multiDexEnabled false
     }
 
     buildTypes {
@@ -76,6 +78,12 @@ android {
 
     dataBinding {
         enabled = true
+    }
+
+    dexOptions {
+        preDexLibraries true
+        javaMaxHeapSize "2g"
+        incremental true
     }
 }
 

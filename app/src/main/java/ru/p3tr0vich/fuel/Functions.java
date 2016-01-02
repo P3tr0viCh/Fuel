@@ -125,11 +125,12 @@ public class Functions {
     }
 
     public static void hideKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager = (InputMethodManager)
-                ApplicationFuel.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         View view = activity.getCurrentFocus();
-        if (view != null)
+        if (view != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager)
+                    ApplicationFuel.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     public static void setProgressWheelVisible(ProgressWheel progressWheel, boolean visible) {

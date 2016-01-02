@@ -22,7 +22,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class FragmentPreference extends PreferenceFragmentCompat implements
-        FragmentInterface, SharedPreferences.OnSharedPreferenceChangeListener {
+        FragmentInterface,
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        Preference.OnPreferenceClickListener {
 
     public static final String TAG = "FragmentPreference";
     public static final int ID = R.id.action_settings;
@@ -89,43 +91,40 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     }
 
     @Override
+    public boolean onPreferenceClick(Preference preference) {
+        String key = preference.getKey();
+
+        if (key.equals(getString(R.string.pref_map_center_text))) {
+            ActivityYandexMap.start(getActivity(), ActivityYandexMap.MAP_TYPE_CENTER);
+
+            return true;
+        } else if (key.equals(getString(R.string.pref_sync_yandex_disk_key))) {
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SyncYandexDisk.WWW_URL)));
+            } catch (Exception e) {
+                UtilsLog.d(TAG, "onPreferenceClick(pref_sync_yandex_disk_key)",
+                        "exception == " + e.toString());
+
+                Toast.makeText(getActivity(),
+                        R.string.message_error_yandex_disk_browser_open,
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            return true;
+        } else
+            return false;
+    }
+
+    @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.preferences);
         mRootPreferenceScreen = getPreferenceScreen();
 
         init(mRootPreferenceScreen);
 
-        // TODO: one listener -- this
-        findPreference(getString(R.string.pref_map_center_text))
-                .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        ActivityYandexMap.start(getActivity(), ActivityYandexMap.MAP_TYPE_CENTER);
+        findPreference(getString(R.string.pref_map_center_text)).setOnPreferenceClickListener(this);
 
-                        return true;
-                    }
-                });
-
-        findPreference(getString(R.string.pref_sync_yandex_disk_key))
-                .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        try {
-                            startActivity(
-                                    new Intent(Intent.ACTION_VIEW,
-                                            Uri.parse(SyncYandexDisk.WWW_URL)));
-                        } catch (Exception e) {
-                            UtilsLog.d(TAG, "onPreferenceClick pref_sync_yandex_disk_key",
-                                    "exception == " + e.toString());
-
-                            Toast.makeText(getActivity(),
-                                    R.string.message_error_yandex_disk_browser_open,
-                                    Toast.LENGTH_SHORT).show();
-                        }
-
-                        return true;
-                    }
-                });
+        findPreference(getString(R.string.pref_sync_yandex_disk_key)).setOnPreferenceClickListener(this);
 
         String keyPreferenceScreen = null;
 

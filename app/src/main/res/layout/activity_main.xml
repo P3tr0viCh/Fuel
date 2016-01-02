@@ -67,7 +67,6 @@
                 android:textColor="@color/primary_text"
                 android:textSize="14sp"
                 tools:text="Синхронизация" />
-
         </RelativeLayout>
     </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

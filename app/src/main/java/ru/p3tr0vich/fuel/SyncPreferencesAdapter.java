@@ -80,9 +80,6 @@ class SyncPreferencesAdapter {
                     break;
             }
 
-//        for (String preference : result)
-//            Functions.logD("SyncPreferencesAdapter -- getPreferences: preference == " + preference);
-
         return result;
     }
 
@@ -144,7 +141,7 @@ class SyncPreferencesAdapter {
     public void putLastSync(@Nullable Date dateTime) throws RemoteException {
         ContentValues contentValues = new ContentValues();
         contentValues.put(PreferenceManagerFuel.PREF_LAST_SYNC,
-                dateTime != null ? Functions.dateTimeToString(dateTime) : null);
+                dateTime != null ? UtilsFormat.dateTimeToString(dateTime) : null);
         update(contentValues, PreferenceManagerFuel.PREF_LAST_SYNC);
     }
 }

@@ -8,6 +8,8 @@
     <dimen name="drawer_max_width">280dp</dimen>
     <dimen name="drawer_sync_height">48dp</dimen>
     <dimen name="drawer_sync_height_minus">-48dp</dimen>
+    <dimen name="drawer_sync_padding">16dp</dimen>
+    <dimen name="drawer_sync_text_start_padding">72dp</dimen>
 
     <dimen name="toolbar_height">56dp</dimen>
     <dimen name="toolbar_shadow_height">4dp</dimen>

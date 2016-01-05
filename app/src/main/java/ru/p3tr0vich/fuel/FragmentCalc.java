@@ -120,7 +120,7 @@ public class FragmentCalc extends FragmentFuel implements
     }
 
     public void setDistance(int distance) {
-        Functions.floatToText(mEditDistance, distance, false);
+        UtilsFormat.floatToEditText(mEditDistance, distance, false);
     }
 
     private void checkTextOnEmpty(EditText editText) {
@@ -172,7 +172,7 @@ public class FragmentCalc extends FragmentFuel implements
             default:
                 return;
         }
-        Functions.showKeyboard(edit);
+        Utils.showKeyboard(edit);
     }
 
     private void loadPrefs() {
@@ -199,7 +199,7 @@ public class FragmentCalc extends FragmentFuel implements
     }
 
     private void selectConsFromSpinners() {
-        Functions.floatToText(mEditCons,
+        UtilsFormat.floatToEditText(mEditCons,
                 arrCons[mSpinnerSeason.getSelectedItemPosition()][mSpinnerCons.getSelectedItemPosition()],
                 false);
     }
@@ -259,12 +259,12 @@ public class FragmentCalc extends FragmentFuel implements
         try {
             float distancePerOneFuel, price, cons, distance, cost, volume;
 
-            price = Functions.editTextToFloat(mEditPrice);
-            cons = Functions.editTextToFloat(mEditCons);
+            price = UtilsFormat.editTextToFloat(mEditPrice);
+            cons = UtilsFormat.editTextToFloat(mEditCons);
 
-            distance = Functions.editTextToFloat(mEditDistance);
-            cost = Functions.editTextToFloat(mEditCost);
-            volume = Functions.editTextToFloat(mEditVolume);
+            distance = UtilsFormat.editTextToFloat(mEditDistance);
+            cost = UtilsFormat.editTextToFloat(mEditCost);
+            volume = UtilsFormat.editTextToFloat(mEditVolume);
 
             if (price == 0 || cons == 0) {
                 mCalculating = false;
@@ -277,20 +277,20 @@ public class FragmentCalc extends FragmentFuel implements
                 case CALC_ACTION_DISTANCE:
                     volume = distance / distancePerOneFuel;
                     cost = price * volume;
-                    Functions.floatToText(mEditVolume, volume, true);
-                    Functions.floatToText(mEditCost, cost, true);
+                    UtilsFormat.floatToEditText(mEditVolume, volume, true);
+                    UtilsFormat.floatToEditText(mEditCost, cost, true);
                     break;
                 case CALC_ACTION_COST:
                     volume = cost / price;
                     distance = distancePerOneFuel * volume;
-                    Functions.floatToText(mEditVolume, volume, true);
-                    Functions.floatToText(mEditDistance, distance, true);
+                    UtilsFormat.floatToEditText(mEditVolume, volume, true);
+                    UtilsFormat.floatToEditText(mEditDistance, distance, true);
                     break;
                 case CALC_ACTION_VOLUME:
                     cost = price * volume;
                     distance = distancePerOneFuel * volume;
-                    Functions.floatToText(mEditCost, cost, true);
-                    Functions.floatToText(mEditDistance, distance, true);
+                    UtilsFormat.floatToEditText(mEditCost, cost, true);
+                    UtilsFormat.floatToEditText(mEditDistance, distance, true);
             }
         } finally {
             mCalculating = false;

@@ -91,7 +91,7 @@ public class ActivityYandexMap extends AppCompatActivity {
     }
 
     public static void start(FragmentActivity parent, @MapType int mapType) {
-        if (Functions.isInternetConnected())
+        if (Utils.isInternetConnected())
             parent.startActivityForResult(new Intent(parent, ActivityYandexMap.class)
                             .putExtra(EXTRA_TYPE, mapType),
                     mapType == MAP_TYPE_DISTANCE ? REQUEST_CODE_DISTANCE : REQUEST_CODE_MAP_CENTER);
@@ -318,8 +318,9 @@ public class ActivityYandexMap extends AppCompatActivity {
         if (!TextUtils.isEmpty(text))
             mMapCenter.text = minimizeGeoCode(text);
         else
-            mMapCenter.text = Functions.floatToString((float) latitude) + ',' +
-                    Functions.floatToString((float) longitude);
+            mMapCenter.text =
+                    UtilsFormat.floatToString((float) latitude) + ',' +
+                    UtilsFormat.floatToString((float) longitude);
         if (title.equals(""))
             mMapCenter.title = mMapCenter.text;
         else

@@ -185,7 +185,6 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         List<String> preferences = new ArrayList<>();
 
         syncLocal.loadPreferences(preferences);
-//        for (String s : preferences) Functions.logD("SyncAdapter -- load: " + s);
         UtilsLog.d(TAG, "load", "syncLocal.loadPreferences() OK");
 
         syncPreferencesAdapter.setPreferences(preferences);

@@ -2,6 +2,7 @@ package ru.p3tr0vich.fuel;
 
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
+import android.support.annotation.IntDef;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,8 +28,17 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private boolean mShowYear;
 
+    @HeaderFooter
     private int mShowHeader;
+    @HeaderFooter
     private int mShowFooter;
+
+    @IntDef({HF_HIDE, HF_SHOW})
+    public @interface HeaderFooter {
+    }
+
+    public static final int HF_HIDE = 0;
+    public static final int HF_SHOW = 1;
 
     private final View.OnClickListener mOnClickListener;
 
@@ -55,19 +65,19 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public boolean isShowHeader() {
-        return mShowHeader == 1;
+        return mShowHeader == HF_SHOW;
     }
 
     private void setShowHeader(boolean showHeader) {
-        mShowHeader = showHeader ? 1 : 0;
+        mShowHeader = showHeader ? HF_SHOW : HF_HIDE;
     }
 
     private boolean isShowFooter() {
-        return mShowFooter == 1;
+        return mShowFooter == HF_SHOW;
     }
 
     private void setShowFooter(boolean showFooter) {
-        mShowFooter = showFooter ? 1 : 0;
+        mShowFooter = showFooter ? HF_SHOW : HF_HIDE;
     }
 
     public void swapCursor(Cursor data) {
@@ -75,13 +85,12 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         notifyDataSetChanged();
 
-        if (data == null || data.getCount() == 0) return;
-
         if (isShowHeader()) mFuelingRecords.add(null);
 
-        if (data.moveToFirst()) do
-            mFuelingRecords.add(new FuelingRecord(data, mShowYear));
-        while (data.moveToNext());
+        if (data != null && data.getCount() != 0 && data.moveToFirst())
+            do
+                mFuelingRecords.add(new FuelingRecord(data, mShowYear));
+            while (data.moveToNext());
 
         if (isShowFooter()) mFuelingRecords.add(null);
 
@@ -92,8 +101,10 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private void notifyFuelingRecordsChanged() {
         List<FuelingRecord> tempFuelingRecords = new ArrayList<>(mFuelingRecords);
-        if (isShowHeader()) tempFuelingRecords.remove(0);
-        if (isShowFooter()) tempFuelingRecords.remove(tempFuelingRecords.size() - 1);
+        if (tempFuelingRecords.size() != 0) {
+            if (isShowHeader()) tempFuelingRecords.remove(0);
+            if (isShowFooter()) tempFuelingRecords.remove(tempFuelingRecords.size() - 1);
+        }
 
         mOnFuelingRecordsChangeListener.OnFuelingRecordsChange(tempFuelingRecords);
     }
@@ -101,7 +112,7 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int addRecord(FuelingRecord fuelingRecord) {
         fuelingRecord.showYear = mShowYear;
 
-        int position = findPositionForDate(fuelingRecord.getTimeStamp());
+        int position = findPositionForDate(fuelingRecord.getDateTime());
 
         mFuelingRecords.add(position, fuelingRecord);
 
@@ -118,18 +129,18 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         int position = findPositionById(fuelingRecord.getId());
 
         if (position > -1) {
-            long oldTimeStamp = mFuelingRecords.get(position).getTimeStamp();
+            long oldDateTime = mFuelingRecords.get(position).getDateTime();
 
-            long newTimeStamp = fuelingRecord.getTimeStamp();
+            long newDateTime = fuelingRecord.getDateTime();
 
             mFuelingRecords.set(position, fuelingRecord);
 
             notifyItemChanged(position);
 
-            if (oldTimeStamp != newTimeStamp) {
+            if (oldDateTime != newDateTime) {
                 FuelingRecord temp = mFuelingRecords.remove(position);
 
-                int newPosition = findPositionForDate(newTimeStamp);
+                int newPosition = findPositionForDate(newDateTime);
 
                 mFuelingRecords.add(newPosition, temp);
 
@@ -161,8 +172,12 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return -1;
     }
 
+    private boolean isEmpty() {
+        return mFuelingRecords.size() - mShowHeader - mShowFooter == 0;
+    }
+
     private int findPositionForDate(long date) {
-        if (mFuelingRecords.isEmpty() || date >= mFuelingRecords.get(mShowHeader).getTimeStamp())
+        if (isEmpty() || date >= mFuelingRecords.get(mShowHeader).getDateTime())
             return mShowHeader;
 
         int hi = mShowHeader;
@@ -170,7 +185,7 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         while (hi <= lo) {
             int mid = (lo + hi) >>> 1;
-            long midVal = mFuelingRecords.get(mid).getTimeStamp();
+            long midVal = mFuelingRecords.get(mid).getDateTime();
 
             if (midVal < date) {
                 lo = mid - 1;

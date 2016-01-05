@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -32,31 +33,35 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     private static final String DATABASE_NAME = "fuel.db";
-    private static final String TABLE_NAME = "fuelling";
+    private static final String TABLE_NAME = "fueling";
 
     private static final String SELECT_ALL = "SELECT * FROM " + TABLE_NAME;
-    private static final String SELECT_YEARS = "SELECT strftime('%Y', datetime) AS year FROM " + TABLE_NAME;
+    private static final String SELECT_YEARS = "SELECT " +
+            "strftime('%Y', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime') AS year " +
+            "FROM " + TABLE_NAME;
     private static final String SELECT_YEARS_WHERE = " WHERE year<'%d' GROUP BY year ORDER BY year ASC";
 
-    private static final String SELECT_SUM_BY_MONTHS_IN_YEAR =
-            "SELECT SUM(cost), strftime('%m', datetime) AS month FROM " + TABLE_NAME;
+    private static final String SELECT_SUM_BY_MONTHS_IN_YEAR = "SELECT " +
+            "SUM(" + COLUMN_COST + "), " +
+            "strftime('%m', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime') AS month " +
+            "FROM " + TABLE_NAME;
 
     private static final String WHERE = " WHERE ";
-    private static final String IN_YEAR = " BETWEEN '%1$d-01-01' AND '%1$d-12-31'";
-    private static final String IN_DATES = " BETWEEN '%1$s' AND '%2$s'";
+    private static final String IN_DATES = " BETWEEN '%1$d' AND '%2$d'";
 
     private static final String GROUP_BY_MONTH = " GROUP BY month";
-    private static final String ORDER_BY_DATE = " ORDER BY " + COLUMN_DATETIME + " DESC, " + COLUMN_TOTAL + " DESC";
+    private static final String ORDER_BY_DATETIME = " ORDER BY " + COLUMN_DATETIME + " DESC";
 
-    private static final String DATABASE_CREATE =
-            "CREATE TABLE " + TABLE_NAME + "(" +
-                    _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    COLUMN_DATETIME + " TEXT, " +
-                    COLUMN_COST + " REAL, " +
-                    COLUMN_VOLUME + " REAL, " +
-                    COLUMN_TOTAL + " REAL" +
-                    ");";
-    private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+    private static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" +
+            _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            COLUMN_DATETIME + " REAL NOT NULL UNIQUE ON CONFLICT REPLACE, " +
+            COLUMN_COST + " REAL DEFAULT 0, " +
+            COLUMN_VOLUME + " REAL DEFAULT 0, " +
+            COLUMN_TOTAL + " REAL DEFAULT 0" +
+            ");";
+    private static final String DROP_TABLE = "DROP TABLE " + TABLE_NAME;
+
+    private static final String DATABASE_CREATE = CREATE_TABLE;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FILTER_MODE_CURRENT_YEAR, FILTER_MODE_YEAR, FILTER_MODE_DATES, FILTER_MODE_ALL})
@@ -131,7 +136,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private long doInsertRecord(@NonNull SQLiteDatabase db, @NonNull FuelingRecord fuelingRecord) {
         ContentValues cv = new ContentValues();
 
-        cv.put(COLUMN_DATETIME, fuelingRecord.getSQLiteDate());
+        cv.put(COLUMN_DATETIME, fuelingRecord.getDateTime());
         cv.put(COLUMN_COST, fuelingRecord.getCost());
         cv.put(COLUMN_VOLUME, fuelingRecord.getVolume());
         cv.put(COLUMN_TOTAL, fuelingRecord.getTotal());
@@ -153,7 +158,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
 
         db.execSQL(DROP_TABLE);
-        db.execSQL(DATABASE_CREATE);
+        db.execSQL(CREATE_TABLE);
 
         for (FuelingRecord fuelingRecord : fuelingRecordList)
             doInsertRecord(db, fuelingRecord);
@@ -166,7 +171,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
         ContentValues cv = new ContentValues();
 
-        cv.put(COLUMN_DATETIME, fuelingRecord.getSQLiteDate());
+        cv.put(COLUMN_DATETIME, fuelingRecord.getDateTime());
         cv.put(COLUMN_COST, fuelingRecord.getCost());
         cv.put(COLUMN_VOLUME, fuelingRecord.getVolume());
         cv.put(COLUMN_TOTAL, fuelingRecord.getTotal());
@@ -190,22 +195,34 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
     @NonNull
     private String filterModeToSql() {
-        switch (mFilter.filterMode) {
-            case FILTER_MODE_YEAR:
-            case FILTER_MODE_CURRENT_YEAR:
-                return WHERE + COLUMN_DATETIME + String.format(IN_YEAR,
-                        mFilter.filterMode == FILTER_MODE_YEAR ? mFilter.year : Functions.getCurrentYear());
-            case FILTER_MODE_DATES:
-                return WHERE + COLUMN_DATETIME + String.format(IN_DATES,
-                        Functions.dateToSQLite(mFilter.dateFrom), Functions.dateToSQLite(mFilter.dateTo));
-            case FILTER_MODE_ALL:
-            default:
-                return "";
+        if (mFilter.filterMode == FILTER_MODE_ALL)
+            return "";
+        else {
+            Calendar dateFrom = Calendar.getInstance();
+            Calendar dateTo = Calendar.getInstance();
+
+            if (mFilter.filterMode == FILTER_MODE_DATES) {
+                dateFrom.setTimeInMillis(mFilter.dateFrom.getTime());
+                dateTo.setTimeInMillis(mFilter.dateTo.getTime());
+            } else {
+                int year = mFilter.filterMode == FILTER_MODE_YEAR ?
+                        mFilter.year : UtilsDate.getCurrentYear();
+
+                dateFrom.set(year, Calendar.JANUARY, 1);
+
+                dateTo.set(year, Calendar.DECEMBER, 31);
+            }
+
+            UtilsDate.setStartOfDay(dateFrom);
+            UtilsDate.setEndOfDay(dateTo);
+
+            return WHERE + COLUMN_DATETIME +
+                    String.format(IN_DATES, dateFrom.getTimeInMillis(), dateTo.getTimeInMillis());
         }
     }
 
     public Cursor getAllCursor() {
-        String sql = SELECT_ALL + filterModeToSql() + ORDER_BY_DATE;
+        String sql = SELECT_ALL + filterModeToSql() + ORDER_BY_DATETIME;
 
         UtilsLog.d(TAG, "getAllCursor", "sql == " + sql);
 
@@ -213,7 +230,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getYears() {
-        String sql = SELECT_YEARS + String.format(SELECT_YEARS_WHERE, Functions.getCurrentYear());
+        String sql = SELECT_YEARS + String.format(SELECT_YEARS_WHERE, UtilsDate.getCurrentYear());
 
         UtilsLog.d(TAG, "getYears", "sql == " + sql);
 
@@ -234,7 +251,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getReadableDatabase();
 
-        Cursor cursor = db.rawQuery(SELECT_ALL + ORDER_BY_DATE, null);
+        Cursor cursor = db.rawQuery(SELECT_ALL + ORDER_BY_DATETIME, null);
 
         if (cursor.moveToFirst()) do
             fuelingRecords.add(new FuelingRecord(cursor));

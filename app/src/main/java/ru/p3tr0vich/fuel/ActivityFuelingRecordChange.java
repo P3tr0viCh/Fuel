@@ -25,7 +25,7 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
 
     @Const.RecordAction
     public static int getAction(Intent data) {
-        return Functions.intToRecordAction(data.getIntExtra(INTENT_EXTRA_ACTION, -1));
+        return Utils.intToRecordAction(data.getIntExtra(INTENT_EXTRA_ACTION, -1));
     }
 
     @SuppressLint("PrivateResource")

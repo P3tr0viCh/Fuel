@@ -10,8 +10,6 @@ import android.os.Build;
 import android.support.annotation.DimenRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -24,113 +22,22 @@ import android.widget.Spinner;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-
-public class Functions {
-
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
-
-    private static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd";
-
-    public static Date sqlDateToDate(String sqlDate) {
-        Date date = null;
-
-        DateFormat format = new SimpleDateFormat(SQLITE_DATE_FORMAT, Locale.getDefault());
-        try {
-            date = format.parse(sqlDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return date;
-    }
-
-    public static String dateToString(Date date, boolean withYear, boolean abbrevMonth) {
-        int flags = DateUtils.FORMAT_SHOW_DATE;
-        flags = withYear ? flags | DateUtils.FORMAT_SHOW_YEAR : flags | DateUtils.FORMAT_NO_YEAR;
-        if (abbrevMonth) flags = flags | DateUtils.FORMAT_ABBREV_MONTH;
-        return DateUtils.formatDateTime(ApplicationFuel.getContext(), date.getTime(), flags);
-    }
-
-    public static String dateToString(Date date, boolean withYear) {
-        return dateToString(date, withYear, false);
-    }
-
-    @SuppressWarnings("unused")
-    public static String sqlDateToString(String sqlDate, boolean withYear) {
-        // Used in fueling_listitem
-        return dateToString(sqlDateToDate(sqlDate), withYear);
-    }
-
-    public static String dateToSQLite(Date date) {
-        return (new SimpleDateFormat(SQLITE_DATE_FORMAT, Locale.getDefault())).format(date);
-    }
-
-    public static String dateTimeToString(Date date) {
-        return DateUtils.formatDateTime(ApplicationFuel.getContext(), date.getTime(),
-                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME);
-    }
-
-    public static String checkSQLiteDate(String sqlDate) throws ParseException {
-        DateFormat format = new SimpleDateFormat(SQLITE_DATE_FORMAT, Locale.getDefault());
-        format.parse(sqlDate);
-
-        return sqlDate;
-    }
-
-    public static float textToFloat(String text) {
-        if (TextUtils.isEmpty(text)) return 0;
-        try {
-            return Float.parseFloat(text);
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
-    public static float editTextToFloat(EditText edit) {
-        return textToFloat(edit.getText().toString());
-    }
-
-    public static String floatToString(float value, boolean showZero) {
-        // TODO: LOCALE?
-        String strValue = DECIMAL_FORMAT.format(value).replace(',', '.');
-        return showZero ? strValue : value == 0 ? "" : strValue;
-    }
-
-    public static String floatToString(float value) {
-        return floatToString(value, true);
-    }
-
-    public static void floatToText(EditText edit, float value, boolean showZero) {
-        edit.setText(floatToString(value, showZero));
-    }
-
-    public static int getCurrentYear() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        return calendar.get(Calendar.YEAR);
-    }
+public class Utils {
 
     public static void showKeyboard(EditText editText) {
         editText.requestFocus();
         editText.selectAll();
-        InputMethodManager inputMethodManager = (InputMethodManager)
-                ApplicationFuel.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+        ((InputMethodManager)
+                ApplicationFuel.getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+                .showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
     }
 
     public static void hideKeyboard(Activity activity) {
         View view = activity.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager inputMethodManager = (InputMethodManager)
-                    ApplicationFuel.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
+        if (view != null)
+            ((InputMethodManager)
+                    ApplicationFuel.getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+                    .hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     public static void setProgressWheelVisible(ProgressWheel progressWheel, boolean visible) {

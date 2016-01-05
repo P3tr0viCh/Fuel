@@ -52,9 +52,15 @@ class PreferenceManagerFuel {
     public static final int PREFERENCE_TYPE_LONG = 2;
 
     private static OnPreferencesChangedListener mOnPreferencesChangedListener = null;
+    private static OnPreferencesUpdatingListener mOnPreferencesUpdatingListener = null;
 
     interface OnPreferencesChangedListener {
         void onPreferencesChanged();
+    }
+
+    interface OnPreferencesUpdatingListener {
+        void onPreferencesUpdateStart();
+        void onPreferencesUpdateEnd();
     }
 
     public static void init(Context context) {
@@ -80,6 +86,10 @@ class PreferenceManagerFuel {
 
     public static void registerOnPreferencesChangedListener(OnPreferencesChangedListener onPreferencesChangedListener) {
         mOnPreferencesChangedListener = onPreferencesChangedListener;
+    }
+
+    public static void registerOnPreferencesUpdatingListener(OnPreferencesUpdatingListener onPreferencesUpdatingListener) {
+        mOnPreferencesUpdatingListener = onPreferencesUpdatingListener;
     }
 
     public static boolean isChanged() {
@@ -127,42 +137,40 @@ class PreferenceManagerFuel {
                 .apply();
     }
 
+    private static Date getFilterDate(String date) {
+        Date result = new Date();
+        if (!date.equals("")) result.setTime(Long.valueOf(date));
+        return result;
+    }
+
     public static Date getFilterDateFrom() {
-        String result = getString(sContext.getString(R.string.pref_filter_date_from));
-        if (result.equals("")) return new Date();
-        return Functions.sqlDateToDate(result);
+        return getFilterDate(getString(sContext.getString(R.string.pref_filter_date_from)));
     }
 
     public static Date getFilterDateTo() {
-        String result = getString(sContext.getString(R.string.pref_filter_date_to));
-        if (result.equals("")) return new Date();
-        return Functions.sqlDateToDate(result);
+        return getFilterDate(getString(sContext.getString(R.string.pref_filter_date_to)));
     }
 
     public static void putFilterDate(final Date dateFrom, final Date dateTo) {
         sSharedPreferences
                 .edit()
-                .putString(sContext.getString(R.string.pref_filter_date_from), Functions.dateToSQLite(dateFrom))
-                .putString(sContext.getString(R.string.pref_filter_date_to), Functions.dateToSQLite(dateTo))
+                .putString(sContext.getString(R.string.pref_filter_date_from),
+                        String.valueOf(dateFrom.getTime()))
+                .putString(sContext.getString(R.string.pref_filter_date_to),
+                        String.valueOf(dateTo.getTime()))
                 .apply();
     }
 
     public static float getDefaultCost() {
-        return Functions.textToFloat(getString(sContext.getString(R.string.pref_def_cost)));
+        return UtilsFormat.stringToFloat(getString(sContext.getString(R.string.pref_def_cost)));
     }
 
     public static float getDefaultVolume() {
-        return Functions.textToFloat(getString(sContext.getString(R.string.pref_def_volume)));
+        return UtilsFormat.stringToFloat(getString(sContext.getString(R.string.pref_def_volume)));
     }
 
     public static float getLastTotal() {
-        // TODO // FIXME: 23.12.2015 remove getFloat
-        try {
-            return Functions.textToFloat(getString(sContext.getString(R.string.pref_last_total)));
-        } catch (Exception e) {
-            UtilsLog.d(TAG, "getLastTotal", "Exception");
-            return sSharedPreferences.getFloat(sContext.getString(R.string.pref_last_total), 0);
-        }
+        return UtilsFormat.stringToFloat(getString(sContext.getString(R.string.pref_last_total)));
     }
 
     public static void putLastTotal(final float lastTotal) {
@@ -196,12 +204,12 @@ class PreferenceManagerFuel {
 
         float[][] result = {{0, 0, 0}, {0, 0, 0}};
 
-        result[0][0] = Functions.textToFloat(getString(sContext.getString(R.string.pref_summer_city)));
-        result[0][1] = Functions.textToFloat(getString(sContext.getString(R.string.pref_summer_highway)));
-        result[0][2] = Functions.textToFloat(getString(sContext.getString(R.string.pref_summer_mixed)));
-        result[1][0] = Functions.textToFloat(getString(sContext.getString(R.string.pref_winter_city)));
-        result[1][1] = Functions.textToFloat(getString(sContext.getString(R.string.pref_winter_highway)));
-        result[1][2] = Functions.textToFloat(getString(sContext.getString(R.string.pref_winter_mixed)));
+        result[0][0] = UtilsFormat.stringToFloat(getString(sContext.getString(R.string.pref_summer_city)));
+        result[0][1] = UtilsFormat.stringToFloat(getString(sContext.getString(R.string.pref_summer_highway)));
+        result[0][2] = UtilsFormat.stringToFloat(getString(sContext.getString(R.string.pref_summer_mixed)));
+        result[1][0] = UtilsFormat.stringToFloat(getString(sContext.getString(R.string.pref_winter_city)));
+        result[1][1] = UtilsFormat.stringToFloat(getString(sContext.getString(R.string.pref_winter_highway)));
+        result[1][2] = UtilsFormat.stringToFloat(getString(sContext.getString(R.string.pref_winter_mixed)));
 
         return result;
     }
@@ -327,6 +335,9 @@ class PreferenceManagerFuel {
         if (TextUtils.isEmpty(preference)) {
             sSharedPreferences.unregisterOnSharedPreferenceChangeListener(sPreferenceChangeListener);
 
+            if (mOnPreferencesUpdatingListener != null)
+                mOnPreferencesUpdatingListener.onPreferencesUpdateStart();
+
             SharedPreferences.Editor editor = sSharedPreferences.edit();
 
             Object value;
@@ -345,6 +356,9 @@ class PreferenceManagerFuel {
             }
 
             editor.commit();
+
+            if (mOnPreferencesUpdatingListener != null)
+                mOnPreferencesUpdatingListener.onPreferencesUpdateEnd();
 
             sSharedPreferences.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
         } else {

@@ -50,7 +50,7 @@
                 android:layout_height="24dp"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="0dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="@dimen/drawer_sync_padding"
                 android:scaleType="center"
                 android:src="@mipmap/ic_sync_off_grey600_24dp"
                 tools:ignore="contentDescription" />
@@ -62,11 +62,11 @@
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:gravity="center_vertical"
-                android:paddingEnd="16dp"
-                android:paddingStart="72dp"
+                android:paddingEnd="@dimen/drawer_sync_padding"
+                android:paddingStart="@dimen/drawer_sync_text_start_padding"
                 android:textColor="@color/primary_text"
                 android:textSize="14sp"
-                tools:text="Синхронизация" />
+                tools:text="@string/sync_disabled" />
         </RelativeLayout>
     </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 public class FragmentPreference extends PreferenceFragmentCompat implements
         FragmentInterface,
+        PreferenceManagerFuel.OnPreferencesUpdatingListener,
         SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener {
 
@@ -79,7 +80,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-//        Functions.logD("FragmentPreference -- onSharedPreferenceChanged: key == " + key);
+//        Utils.logD("FragmentPreference -- onSharedPreferenceChanged: key == " + key);
 
         updatePreferenceSummary(key);
 
@@ -212,12 +213,25 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         super.onStart();
         mOnFragmentChangeListener.onFragmentChange(this);
         mRootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        PreferenceManagerFuel.registerOnPreferencesUpdatingListener(this);
     }
 
     @Override
     public void onStop() {
+        PreferenceManagerFuel.registerOnPreferencesUpdatingListener(null);
         mRootPreferenceScreen.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         super.onStop();
+    }
+
+    @Override
+    public void onPreferencesUpdateStart() {
+        mRootPreferenceScreen.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onPreferencesUpdateEnd() {
+        init(mRootPreferenceScreen);
+        mRootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     private void updatePreferenceSummary(String key) {

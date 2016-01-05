@@ -189,7 +189,7 @@ public class FragmentChartCost extends FragmentFuel implements
     private String getMonth(Calendar calendar, int month) {
         calendar.set(Calendar.MONTH, month);
         int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR | DateUtils.FORMAT_NO_MONTH_DAY;
-        if (Functions.isPhoneInPortrait()) flags |= DateUtils.FORMAT_ABBREV_MONTH;
+        if (Utils.isPhoneInPortrait()) flags |= DateUtils.FORMAT_ABBREV_MONTH;
 
         return DateUtils.formatDateTime(getActivity(), calendar.getTimeInMillis(), flags);
     }
@@ -216,7 +216,7 @@ public class FragmentChartCost extends FragmentFuel implements
         if (savedInstanceState == null) {
             for (int i = 0; i < 12; i++) mSums[i] = 0;
 
-            mFilter.year = Functions.getCurrentYear();
+            mFilter.year = UtilsDate.getCurrentYear();
 
             getLoaderManager().initLoader(YearsCursorLoader.ID, null, this);
             getLoaderManager().initLoader(ChartCursorLoader.ID, null, this);
@@ -315,10 +315,10 @@ public class FragmentChartCost extends FragmentFuel implements
                         i++;
                     } while (data.moveToNext());
 
-                    mYears[count] = Functions.getCurrentYear();
+                    mYears[count] = UtilsDate.getCurrentYear();
                 } else {
                     mYears = new int[1];
-                    mYears[0] = Functions.getCurrentYear();
+                    mYears[0] = UtilsDate.getCurrentYear();
                 }
 
                 updateYears();
@@ -334,7 +334,7 @@ public class FragmentChartCost extends FragmentFuel implements
 
         @Override
         public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-            return Functions.floatToString(value, false);
+            return UtilsFormat.floatToString(value, false);
         }
     }
 

@@ -157,7 +157,7 @@ public class FragmentFueling extends FragmentFuel implements
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         UtilsLog.d(TAG, "onCreateView");
 
-        final boolean isPhone = Functions.isPhone();
+        final boolean isPhone = Utils.isPhone();
 
         View view = inflater.inflate(R.layout.fragment_fueling, container, false);
 
@@ -278,14 +278,10 @@ public class FragmentFueling extends FragmentFuel implements
         outState.putSerializable(KEY_FILTER_DATE_TO, mFilter.dateTo);
 
         outState.putBoolean(KEY_DATA_CHANGED, mDataChanged);
-
-//        Functions.logD("FragmentFueling -- onSaveInstanceState");
     }
 
     @Override
     public void onDestroy() {
-//        Functions.logD("FragmentFueling -- onDestroy");
-
         calcTotalTaskCancel();
 
         PreferenceManagerFuel.putFilterDate(mFilter.dateFrom, mFilter.dateTo);
@@ -304,7 +300,7 @@ public class FragmentFueling extends FragmentFuel implements
         // true - фильтр не изменился.
         // false - фильтр изменён и вызван рестарт лоадер (список полностью обновлён).
 
-//        Functions.logD("FragmentFueling -- setFilterMode: new FilterMode == " + filterMode +
+//        Utils.logD("FragmentFueling -- setFilterMode: new FilterMode == " + filterMode +
 //                ", current FilterMode == " + mFilter.filterMode);
 
         if (mFilter.filterMode != filterMode) {
@@ -353,9 +349,9 @@ public class FragmentFueling extends FragmentFuel implements
         mIdForScroll = fuelingRecord.getId();
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(Functions.sqlDateToDate(fuelingRecord.getSQLiteDate()));
+        calendar.setTimeInMillis(fuelingRecord.getDateTime());
 
-        return setFilterMode(calendar.get(Calendar.YEAR) == Functions.getCurrentYear() ?
+        return setFilterMode(calendar.get(Calendar.YEAR) == UtilsDate.getCurrentYear() ?
                 FuelingDBHelper.FILTER_MODE_CURRENT_YEAR : FuelingDBHelper.FILTER_MODE_ALL);
     }
 
@@ -442,7 +438,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-//        Functions.logD("FragmentFueling -- onLoadFinished");
+//        Utils.logD("FragmentFueling -- onLoadFinished");
 
         mFuelingAdapter.setShowYear(mFilter.filterMode != FuelingDBHelper.FILTER_MODE_CURRENT_YEAR);
 
@@ -474,7 +470,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void OnFuelingRecordsChange(List<FuelingRecord> fuelingRecords) {
-//        Functions.logD("FragmentFueling -- OnFuelingRecordsChange");
+//        Utils.logD("FragmentFueling -- OnFuelingRecordsChange");
 
         calcTotalTaskCancel();
 
@@ -550,7 +546,7 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     public void setProgressBarVisible(boolean visible) {
-        Functions.setProgressWheelVisible(mProgressWheelFueling, visible);
+        Utils.setProgressWheelVisible(mProgressWheelFueling, visible);
     }
 
     private FuelingDBHelper.Filter getFilter() {
@@ -559,7 +555,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void onAttach(Context context) {
-//        Functions.logD("FragmentFueling -- onAttach");
+//        Utils.logD("FragmentFueling -- onAttach");
         super.onAttach(context);
         try {
             mOnFilterChangeListener = (OnFilterChangeListener) context;
@@ -586,7 +582,7 @@ public class FragmentFueling extends FragmentFuel implements
                     .setDuration(Const.ANIMATION_DURATION_TOOLBAR_SHADOW)
                     .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         public void onAnimationUpdate(ValueAnimator animation) {
-                            Functions.setViewHeight(mToolbarShadow,
+                            Utils.setViewHeight(mToolbarShadow,
                                     (Integer) animation.getAnimatedValue());
                         }
                     });
@@ -596,7 +592,7 @@ public class FragmentFueling extends FragmentFuel implements
                     .setDuration(Const.ANIMATION_DURATION_TOOLBAR_SHADOW)
                     .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         public void onAnimationUpdate(ValueAnimator animation) {
-                            Functions.setViewHeight(mToolbarShadow, (Integer) animation.getAnimatedValue());
+                            Utils.setViewHeight(mToolbarShadow, (Integer) animation.getAnimatedValue());
                         }
                     });
 
@@ -606,7 +602,7 @@ public class FragmentFueling extends FragmentFuel implements
                     .setDuration(Const.ANIMATION_DURATION_TOOLBAR)
                     .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         public void onAnimationUpdate(ValueAnimator animation) {
-                            Functions.setViewTopMargin(mToolbarDates,
+                            Utils.setViewTopMargin(mToolbarDates,
                                     (Integer) animation.getAnimatedValue());
                         }
                     });
@@ -616,7 +612,7 @@ public class FragmentFueling extends FragmentFuel implements
                     valueAnimatorToolbar, valueAnimatorShadowHide);
             animatorSet.start();
         } else
-            Functions.setViewTopMargin(mToolbarDates, visible ? 0 : toolbarDatesTopHidden);
+            Utils.setViewTopMargin(mToolbarDates, visible ? 0 : toolbarDatesTopHidden);
     }
 
     private void setLayoutTotalVisible(final boolean visible) {
@@ -635,7 +631,7 @@ public class FragmentFueling extends FragmentFuel implements
                         int translationY = (Integer) animation.getAnimatedValue();
 
                         mLayoutTotal.setTranslationY(translationY);
-                        Functions.setViewTopMargin(mLayoutTotal, -translationY);
+                        Utils.setViewTopMargin(mLayoutTotal, -translationY);
                     }
                 });
         valueAnimator.start();
@@ -653,7 +649,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     private void updateFilterDateButtons(final boolean dateFrom, final Date date) {
         (dateFrom ? mBtnDateFrom : mBtnDateTo)
-                .setText(Functions.dateToString(date, true, Functions.isPhoneInPortrait()));
+                .setText(UtilsFormat.dateToString(date, true, Utils.isPhoneInPortrait()));
     }
 
     private void setPopupFilterDate(final boolean setDateFrom, final int menuId) {
@@ -720,6 +716,9 @@ public class FragmentFueling extends FragmentFuel implements
                         calendarTo.set(year, Calendar.DECEMBER, 31);
 
                 }
+
+                UtilsDate.setStartOfDay(calendarFrom);
+                UtilsDate.setEndOfDay(calendarTo);
 
                 Date dateFrom = calendarFrom.getTime();
                 Date dateTo = calendarTo.getTime();
@@ -817,7 +816,7 @@ public class FragmentFueling extends FragmentFuel implements
 
         @Override
         public Cursor loadInBackground() {
-//            Functions.logD("FragmentFueling -- loadInBackground");
+//            Utils.logD("FragmentFueling -- loadInBackground");
 
             ActivityMain.sendLoadingBroadcast(true);
 
@@ -911,17 +910,10 @@ public class FragmentFueling extends FragmentFuel implements
 
         @Override
         protected void onPostExecute(CalcTotalResult calcTotalResult) {
-            mFragmentFueling.mTextAverage.setText(Functions.floatToString(calcTotalResult.average));
-            mFragmentFueling.mTextCostSum.setText(Functions.floatToString(calcTotalResult.costSum));
+            mFragmentFueling.mTextAverage.setText(UtilsFormat.floatToString(calcTotalResult.average));
+            mFragmentFueling.mTextCostSum.setText(UtilsFormat.floatToString(calcTotalResult.costSum));
 
             mFragmentFueling = null;
-
-//            Functions.logD("FragmentFueling -- CalcTotalTask: onPostExecute");
-        }
-
-        @Override
-        protected void onCancelled() {
-//            Functions.logD("FragmentFueling -- CalcTotalTask: onCancelled");
         }
     }
 }

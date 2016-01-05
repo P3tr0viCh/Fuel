@@ -20,7 +20,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.text.ParseException;
 import java.util.List;
 
 public class DatabaseBackupXmlHelper {
@@ -167,7 +166,9 @@ public class DatabaseBackupXmlHelper {
                             {
                                 serializer.startTag("", DATA);
                                 serializer.attribute("", DATA_TYPE, DATA_TYPE_DATETIME);
-                                serializer.text(fuelingRecord.getSQLiteDate());
+                                serializer.text(
+                                        UtilsFormat.dateToSqlDateTime(
+                                                fuelingRecord.getDateTime()));
                                 serializer.endTag("", DATA);
                             }
                             serializer.endTag("", CELL);
@@ -176,7 +177,7 @@ public class DatabaseBackupXmlHelper {
                             {
                                 serializer.startTag("", DATA);
                                 serializer.attribute("", DATA_TYPE, DATA_TYPE_NUMBER);
-                                serializer.text(Functions.floatToString(fuelingRecord.getCost()));
+                                serializer.text(UtilsFormat.floatToString(fuelingRecord.getCost()));
                                 serializer.endTag("", DATA);
                             }
                             serializer.endTag("", CELL);
@@ -185,7 +186,7 @@ public class DatabaseBackupXmlHelper {
                             {
                                 serializer.startTag("", DATA);
                                 serializer.attribute("", DATA_TYPE, DATA_TYPE_NUMBER);
-                                serializer.text(Functions.floatToString(fuelingRecord.getVolume()));
+                                serializer.text(UtilsFormat.floatToString(fuelingRecord.getVolume()));
                                 serializer.endTag("", DATA);
                             }
                             serializer.endTag("", CELL);
@@ -194,7 +195,7 @@ public class DatabaseBackupXmlHelper {
                             {
                                 serializer.startTag("", DATA);
                                 serializer.attribute("", DATA_TYPE, DATA_TYPE_NUMBER);
-                                serializer.text(Functions.floatToString(fuelingRecord.getTotal()));
+                                serializer.text(UtilsFormat.floatToString(fuelingRecord.getTotal()));
                                 serializer.endTag("", DATA);
                             }
                             serializer.endTag("", CELL);
@@ -258,22 +259,21 @@ public class DatabaseBackupXmlHelper {
                             if (fuelingRecord == null) fuelingRecord = new FuelingRecord();
                             switch (column) {
                                 case 0:
-                                    fuelingRecord.setSQLiteDate(Functions.checkSQLiteDate(xmlText));
+                                    fuelingRecord.setDateTime(
+                                            UtilsFormat.sqlDateTimeToDate(xmlText).getTime());
                                     break;
                                 case 1:
-                                    fuelingRecord.setCost(Float.parseFloat(xmlText));
+                                    fuelingRecord.setCost(UtilsFormat.stringToFloat(xmlText));
                                     break;
                                 case 2:
-                                    fuelingRecord.setVolume(Float.parseFloat(xmlText));
+                                    fuelingRecord.setVolume(UtilsFormat.stringToFloat(xmlText));
                                     break;
                                 case 3:
-                                    fuelingRecord.setTotal(Float.parseFloat(xmlText));
+                                    fuelingRecord.setTotal(UtilsFormat.stringToFloat(xmlText));
                                     break;
                             }
-                        } catch (ParseException e) {
-                            throw new XmlPullParserException("Functions.checkSQLiteDate(text)");
                         } catch (NumberFormatException e) {
-                            throw new XmlPullParserException("Float.parseFloat(text)");
+                            throw new XmlPullParserException(e.toString());
                         }
                     }
                     break;

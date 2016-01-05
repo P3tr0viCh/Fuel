@@ -191,7 +191,7 @@ public class ActivityMain extends AppCompatActivity implements
         //noinspection ConstantConditions
         mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
 
-        Functions.addSpinnerInToolbar(getSupportActionBar(), mToolbarMain, mToolbarSpinner,
+        Utils.addSpinnerInToolbar(getSupportActionBar(), mToolbarMain, mToolbarSpinner,
                 ArrayAdapter.createFromResource(this, R.array.filter_dates, R.layout.toolbar_spinner_item),
                 new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -215,7 +215,7 @@ public class ActivityMain extends AppCompatActivity implements
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                Functions.hideKeyboard(ActivityMain.this);
+                Utils.hideKeyboard(ActivityMain.this);
             }
 
             @Override
@@ -662,7 +662,7 @@ public class ActivityMain extends AppCompatActivity implements
         if (PreferenceManagerFuel.isSyncEnabled()) {
             if (!mSyncAccount.isSyncActive() || startIfSyncActive) {
                 if (!mSyncAccount.isYandexDiskTokenEmpty()) {
-                    if (Functions.isInternetConnected()) {
+                    if (Utils.isInternetConnected()) {
                         requestManualSync();
                     } else {
                         UtilsLog.d(TAG, "startSync", "Internet disconnected");

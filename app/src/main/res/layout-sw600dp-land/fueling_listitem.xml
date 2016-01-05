@@ -3,7 +3,7 @@
 
     <data>
 
-        <import type="ru.p3tr0vich.fuel.Functions" />
+        <import type="ru.p3tr0vich.fuel.UtilsFormat" />
 
         <variable
             name="fuelingRecord"
@@ -26,7 +26,7 @@
             android:layout_weight="4"
             android:clickable="false"
             android:gravity="center_vertical"
-            android:text="@{Functions.sqlDateToString(fuelingRecord.getSQLiteDate, fuelingRecord.showYear)}"
+            android:text="@{UtilsFormat.dateToString(fuelingRecord.getDateTime, fuelingRecord.showYear)}"
             android:textAppearance="@style/AppTheme.TextAppearance.Lists"
             tools:text="@string/list_item_date" />
 
@@ -36,7 +36,7 @@
             android:layout_height="match_parent"
             android:layout_weight="5"
             android:gravity="center_vertical"
-            android:text="@{Functions.floatToString(fuelingRecord.getCost)}"
+            android:text="@{UtilsFormat.floatToString(fuelingRecord.getCost)}"
             android:textAppearance="@style/AppTheme.TextAppearance.Lists"
             tools:text="@string/list_item_cost" />
 
@@ -46,7 +46,7 @@
             android:layout_height="match_parent"
             android:layout_weight="5"
             android:gravity="center_vertical"
-            android:text="@{Functions.floatToString(fuelingRecord.getVolume)}"
+            android:text="@{UtilsFormat.floatToString(fuelingRecord.getVolume)}"
             android:textAppearance="@style/AppTheme.TextAppearance.Lists"
             tools:text="@string/list_item_volume" />
 
@@ -56,7 +56,7 @@
             android:layout_height="match_parent"
             android:layout_weight="5"
             android:gravity="center_vertical"
-            android:text="@{Functions.floatToString(fuelingRecord.getTotal)}"
+            android:text="@{UtilsFormat.floatToString(fuelingRecord.getTotal)}"
             android:textAppearance="@style/AppTheme.TextAppearance.Lists"
             tools:text="@string/list_item_total" />
 

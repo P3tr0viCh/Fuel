@@ -24,7 +24,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
     private @Const.RecordAction int mRecordAction;
 
-    private Date mDate;
+    private long mDateTime;
 
     private FuelingRecord mFuelingRecord;
 
@@ -53,30 +53,30 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
             case Const.RECORD_ACTION_ADD:
                 getActivity().setTitle(R.string.dialog_caption_add);
 
-                mDate = new Date();
-
-                mFuelingRecord = new FuelingRecord(-1, "",
+                mFuelingRecord = new FuelingRecord(-1, new Date().getTime(),
                         PreferenceManagerFuel.getDefaultCost(),
                         PreferenceManagerFuel.getDefaultVolume(),
                         PreferenceManagerFuel.getLastTotal(), true);
+
                 break;
             case Const.RECORD_ACTION_UPDATE:
                 getActivity().setTitle(R.string.dialog_caption_update);
 
                 mFuelingRecord = new FuelingRecord(intent);
 
-                mDate = Functions.sqlDateToDate(mFuelingRecord.getSQLiteDate());
                 break;
             case Const.RECORD_ACTION_DELETE:
                 throw new UnsupportedOperationException();
         }
 
-        Functions.floatToText(mEditCost, mFuelingRecord.getCost(), false);
-        Functions.floatToText(mEditVolume, mFuelingRecord.getVolume(), false);
-        Functions.floatToText(mEditTotal, mFuelingRecord.getTotal(), false);
+        UtilsFormat.floatToEditText(mEditCost, mFuelingRecord.getCost(), false);
+        UtilsFormat.floatToEditText(mEditVolume, mFuelingRecord.getVolume(), false);
+        UtilsFormat.floatToEditText(mEditTotal, mFuelingRecord.getTotal(), false);
 
-        if (savedInstanceState != null)
-            mDate = (Date) savedInstanceState.getSerializable(INTENT_EXTRA);
+        if (savedInstanceState == null)
+            mDateTime = mFuelingRecord.getDateTime();
+        else
+            mDateTime = savedInstanceState.getLong(INTENT_EXTRA);
 
         updateDate();
 
@@ -84,14 +84,13 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
             @Override
             public void onClick(View v) {
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTime(mDate);
+                calendar.setTimeInMillis(mDateTime);
+
                 DatePickerDialog.newInstance(
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.set(year, monthOfYear, dayOfMonth);
-                                setDate(calendar.getTime());
+                                setDate(year, monthOfYear, dayOfMonth);
                             }
                         },
                         calendar.get(Calendar.YEAR),
@@ -112,16 +111,22 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable(INTENT_EXTRA, mDate);
+        outState.putLong(INTENT_EXTRA, mDateTime);
     }
 
-    private void setDate(Date date) {
-        mDate = date;
+    private void setDate(int year, int monthOfYear, int dayOfMonth) {
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTimeInMillis(mDateTime);
+        calendar.set(year, monthOfYear, dayOfMonth);
+
+        mDateTime = calendar.getTimeInMillis();
+
         updateDate();
     }
 
     private void updateDate() {
-        mButtonDate.setText(Functions.dateToString(mDate, true));
+        mButtonDate.setText(UtilsFormat.dateToString(mDateTime, true));
     }
 
     @Override
@@ -134,10 +139,10 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                mFuelingRecord.setSQLiteDate(Functions.dateToSQLite(mDate));
-                mFuelingRecord.setCost(Functions.editTextToFloat(mEditCost));
-                mFuelingRecord.setVolume(Functions.editTextToFloat(mEditVolume));
-                mFuelingRecord.setTotal(Functions.editTextToFloat(mEditTotal));
+                mFuelingRecord.setDateTime(mDateTime);
+                mFuelingRecord.setCost(UtilsFormat.editTextToFloat(mEditCost));
+                mFuelingRecord.setVolume(UtilsFormat.editTextToFloat(mEditVolume));
+                mFuelingRecord.setTotal(UtilsFormat.editTextToFloat(mEditTotal));
 
                 Activity activity = getActivity();
 
@@ -168,6 +173,6 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
             default:
                 return;
         }
-        Functions.showKeyboard(edit);
+        Utils.showKeyboard(edit);
     }
 }

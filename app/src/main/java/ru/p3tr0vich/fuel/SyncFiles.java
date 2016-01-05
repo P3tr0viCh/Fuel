@@ -29,7 +29,7 @@ class SyncFiles {
         mLocalFilePreferencesRevision = new File(mLocalDirPreferences, FILE_PREFERENCES_REVISION);
 
         mServerDirPreferences = new File(DIR_PREFERENCES +
-                (Functions.isDebuggable() ? DIR_DEBUG : ""));
+                (Utils.isDebuggable() ? DIR_DEBUG : ""));
         mServerFilePreferences = new File(mServerDirPreferences, FILE_PREFERENCES);
         mServerFilePreferencesRevision = new File(mServerDirPreferences, FILE_PREFERENCES_REVISION);
     }

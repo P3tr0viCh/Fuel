@@ -6,24 +6,22 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 public class FuelingRecord implements Parcelable {
 
-    private static final String NAME = "FUELING_RECORD_NAME";
+    private static final String NAME = "FUELING_RECORD";
 
     private long mId;
-    private String mSQLiteDate;    // Дата заправки
-    private long mTimeStamp;        // Дата заправки в миллисекундах
-    private float mCost;            // Стоимость
-    private float mVolume;          // Объём заправки
-    private float mTotal;           // Общий пробег
+    private long mDateTime;     // Дата заправки в миллисекундах
+    private float mCost;        // Стоимость
+    private float mVolume;      // Объём заправки
+    private float mTotal;       // Общий пробег
 
     public boolean showYear;
 
-    FuelingRecord(long id, String sqlLiteDate, float cost, float volume, float total, boolean showYear) {
+    FuelingRecord(long id, long dateTime, float cost, float volume, float total, boolean showYear) {
         setId(id);
-        setSQLiteDate(sqlLiteDate);
+        setDateTime(dateTime);
         setCost(cost);
         setVolume(volume);
         setTotal(total);
@@ -36,7 +34,7 @@ public class FuelingRecord implements Parcelable {
 
     FuelingRecord(Cursor cursor, boolean showYear) {
         this(cursor.getInt(FuelingDBHelper.COLUMN_ID_INDEX),
-                cursor.getString(FuelingDBHelper.COLUMN_DATETIME_INDEX),
+                cursor.getLong(FuelingDBHelper.COLUMN_DATETIME_INDEX),
                 cursor.getFloat(FuelingDBHelper.COLUMN_COST_INDEX),
                 cursor.getFloat(FuelingDBHelper.COLUMN_VOLUME_INDEX),
                 cursor.getFloat(FuelingDBHelper.COLUMN_TOTAL_INDEX),
@@ -44,15 +42,15 @@ public class FuelingRecord implements Parcelable {
     }
 
     private FuelingRecord(Parcel in) {
-        this(in.readLong(), in.readString(), in.readFloat(), in.readFloat(), in.readFloat(), in.readInt() == 1);
+        this(in.readLong(), in.readLong(), in.readFloat(), in.readFloat(), in.readFloat(), in.readInt() == 1);
     }
 
     FuelingRecord() {
-        this(0, "", 0, 0, 0, true);
+        this(0, Long.MIN_VALUE, 0, 0, 0, true);
     }
 
     FuelingRecord(FuelingRecord fuelingRecord) {
-        this(fuelingRecord.mId, fuelingRecord.mSQLiteDate, fuelingRecord.mCost,
+        this(fuelingRecord.mId, fuelingRecord.mDateTime, fuelingRecord.mCost,
                 fuelingRecord.mVolume, fuelingRecord.mTotal, fuelingRecord.showYear);
     }
 
@@ -93,20 +91,12 @@ public class FuelingRecord implements Parcelable {
         mId = id;
     }
 
-    public String getSQLiteDate() {
-        return mSQLiteDate;
+    public long getDateTime() {
+        return mDateTime;
     }
 
-    public long getTimeStamp() {
-        return mTimeStamp;
-    }
-
-    public void setSQLiteDate(String date) {
-        mSQLiteDate = date;
-        if (TextUtils.isEmpty(date))
-            mTimeStamp = Long.MIN_VALUE;
-        else
-            mTimeStamp = Functions.sqlDateToDate(date).getTime();
+    public void setDateTime(long dateTime) {
+        mDateTime = dateTime;
     }
 
     public float getCost() {
@@ -141,7 +131,7 @@ public class FuelingRecord implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(mId);
-        dest.writeString(mSQLiteDate);
+        dest.writeLong(mDateTime);
         dest.writeFloat(mCost);
         dest.writeFloat(mVolume);
         dest.writeFloat(mTotal);
@@ -163,6 +153,6 @@ public class FuelingRecord implements Parcelable {
 
     @Override
     public String toString() {
-        return mId + ", " + mSQLiteDate + ", " + mCost + ", " + mVolume + ", " + mTotal;
+        return mId + ", " + mDateTime + ", " + mCost + ", " + mVolume + ", " + mTotal;
     }
 }

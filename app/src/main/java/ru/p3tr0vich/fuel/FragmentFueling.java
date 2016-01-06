@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
@@ -69,6 +70,7 @@ public class FragmentFueling extends FragmentFuel implements
     private RecyclerView mRecyclerViewFueling;
 
     private ProgressWheel mProgressWheelFueling;
+    private TextView mTextNoRecords;
 
     private FloatingActionButton mFloatingActionButton;
 
@@ -199,6 +201,7 @@ public class FragmentFueling extends FragmentFuel implements
             });
 
         mProgressWheelFueling = (ProgressWheel) view.findViewById(R.id.progressWheelFueling);
+        mTextNoRecords = (TextView) view.findViewById(R.id.tvNoRecords);
 
         mTextAverage = (TextView) view.findViewById(R.id.tvAverage);
         mTextCostSum = (TextView) view.findViewById(R.id.tvCostSum);
@@ -438,7 +441,15 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-//        Utils.logD("FragmentFueling -- onLoadFinished");
+        if (data.getCount() == 0)
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Utils.setViewVisibleAnimate(mTextNoRecords, true);
+                }
+            }, Const.DELAYED_TIME_SHOW_NO_RECORDS);
+        else
+            mTextNoRecords.setVisibility(View.GONE);
 
         mFuelingAdapter.setShowYear(mFilter.filterMode != FuelingDBHelper.FILTER_MODE_CURRENT_YEAR);
 
@@ -448,7 +459,7 @@ public class FragmentFueling extends FragmentFuel implements
 
         scrollToId();
 
-        mFloatingActionButton.animate().scaleX(1.0f).scaleY(1.0f); // TODO: remove from
+        mFloatingActionButton.animate().scaleX(1.0f).scaleY(1.0f);
     }
 
     @Override
@@ -470,8 +481,6 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void OnFuelingRecordsChange(List<FuelingRecord> fuelingRecords) {
-//        Utils.logD("FragmentFueling -- OnFuelingRecordsChange");
-
         calcTotalTaskCancel();
 
         mCalcTotalTask = new CalcTotalTask(this, fuelingRecords);
@@ -545,8 +554,8 @@ public class FragmentFueling extends FragmentFuel implements
         }
     }
 
-    public void setProgressBarVisible(boolean visible) {
-        Utils.setProgressWheelVisible(mProgressWheelFueling, visible);
+    public void setLoading(boolean loading) {
+        Utils.setViewVisibleAnimate(mProgressWheelFueling, loading);
     }
 
     private FuelingDBHelper.Filter getFilter() {
@@ -555,7 +564,6 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void onAttach(Context context) {
-//        Utils.logD("FragmentFueling -- onAttach");
         super.onAttach(context);
         try {
             mOnFilterChangeListener = (OnFilterChangeListener) context;

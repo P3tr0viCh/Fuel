@@ -278,7 +278,7 @@ public class ActivityMain extends AppCompatActivity implements
                 FragmentFueling fragmentFueling = getFragmentFueling();
 
                 if (fragmentFueling != null)
-                    fragmentFueling.setProgressBarVisible(intent.getBooleanExtra(EXTRA_LOADING, false));
+                    fragmentFueling.setLoading(intent.getBooleanExtra(EXTRA_LOADING, false));
                 else
                     UtilsLog.d(TAG, "mLoadingStatusReceiver.onReceive", "fragmentFueling == null");
             }

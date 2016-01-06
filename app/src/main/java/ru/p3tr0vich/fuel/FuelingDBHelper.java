@@ -23,55 +23,80 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_COST = "cost";
     private static final String COLUMN_VOLUME = "volume";
     private static final String COLUMN_TOTAL = "total";
+    private static final String COLUMN_NEW = "new";
+    private static final String COLUMN_DELETED = "deleted";
+
+    private static final String COLUMN_YEAR = "year";
+    private static final String COLUMN_MONTH = "month";
 
     public static final int COLUMN_ID_INDEX = 0;
     public static final int COLUMN_DATETIME_INDEX = 1;
     public static final int COLUMN_COST_INDEX = 2;
     public static final int COLUMN_VOLUME_INDEX = 3;
     public static final int COLUMN_TOTAL_INDEX = 4;
+//    public static final int COLUMN_NEW_INDEX = 5;
+//    public static final int COLUMN_DELETED_INDEX = 6;
 
     private static final int DATABASE_VERSION = 1;
 
     private static final String DATABASE_NAME = "fuel.db";
     private static final String TABLE_NAME = "fueling";
 
-    private static final String SELECT_ALL = "SELECT * FROM " + TABLE_NAME;
-    private static final String SELECT_YEARS = "SELECT " +
-            "strftime('%Y', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime') AS year " +
-            "FROM " + TABLE_NAME;
-    private static final String SELECT_YEARS_WHERE = " WHERE year<'%d' GROUP BY year ORDER BY year ASC";
+    private static final int ZERO = 0;
+    private static final int TRUE = 1;
+    private static final int FALSE = 0;
 
-    private static final String SELECT_SUM_BY_MONTHS_IN_YEAR = "SELECT " +
-            "SUM(" + COLUMN_COST + "), " +
-            "strftime('%m', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime') AS month " +
-            "FROM " + TABLE_NAME;
+    private static final String EQUAL = "=";
+
+    private static final String RECORD_NOT_MARKED_AS_DELETED = COLUMN_DELETED + EQUAL + FALSE;
+
+    private static final String SELECT_ALL = "SELECT " +
+            _ID + ", " +
+            COLUMN_DATETIME + ", " +
+            COLUMN_COST + ", " +
+            COLUMN_VOLUME + ", " +
+            COLUMN_TOTAL +
+            " FROM " + TABLE_NAME;
+    private static final String SELECT_YEARS = "SELECT" +
+            " strftime('%Y', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime') AS " + COLUMN_YEAR +
+            " FROM " + TABLE_NAME;
+    private static final String SELECT_YEARS_WHERE = " WHERE " + COLUMN_YEAR + "<'%d'" +
+            " AND " + RECORD_NOT_MARKED_AS_DELETED +
+            " GROUP BY " + COLUMN_YEAR + " ORDER BY " + COLUMN_YEAR + " ASC";
+
+    private static final String SELECT_SUM_BY_MONTHS_IN_YEAR = "SELECT" +
+            " SUM(" + COLUMN_COST + ")," +
+            " strftime('%m', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime') AS " + COLUMN_MONTH +
+            " FROM " + TABLE_NAME;
 
     private static final String WHERE = " WHERE ";
-    private static final String IN_DATES = " BETWEEN '%1$d' AND '%2$d'";
+    private static final String IN_DATES = " BETWEEN %1$d AND %2$d";
 
-    private static final String GROUP_BY_MONTH = " GROUP BY month";
+    private static final String GROUP_BY_MONTH = " GROUP BY " + COLUMN_MONTH;
     private static final String ORDER_BY_DATETIME = " ORDER BY " + COLUMN_DATETIME + " DESC";
 
     private static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" +
             _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            COLUMN_DATETIME + " REAL NOT NULL UNIQUE ON CONFLICT REPLACE, " +
-            COLUMN_COST + " REAL DEFAULT 0, " +
-            COLUMN_VOLUME + " REAL DEFAULT 0, " +
-            COLUMN_TOTAL + " REAL DEFAULT 0" +
+            COLUMN_DATETIME + " INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE, " +
+            COLUMN_COST + " REAL DEFAULT " + ZERO + ", " +
+            COLUMN_VOLUME + " REAL DEFAULT " + ZERO + ", " +
+            COLUMN_TOTAL + " REAL DEFAULT " + ZERO + ", " +
+            COLUMN_NEW + " INTEGER DEFAULT " + TRUE + ", " +
+            COLUMN_DELETED + " INTEGER DEFAULT " + FALSE +
             ");";
     private static final String DROP_TABLE = "DROP TABLE " + TABLE_NAME;
 
     private static final String DATABASE_CREATE = CREATE_TABLE;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FILTER_MODE_CURRENT_YEAR, FILTER_MODE_YEAR, FILTER_MODE_DATES, FILTER_MODE_ALL})
+    @IntDef({FILTER_MODE_ALL, FILTER_MODE_CURRENT_YEAR, FILTER_MODE_YEAR, FILTER_MODE_DATES})
     public @interface FilterMode {
     }
 
-    public static final int FILTER_MODE_CURRENT_YEAR = 0;
-    public static final int FILTER_MODE_YEAR = 1;
-    public static final int FILTER_MODE_DATES = 2;
-    public static final int FILTER_MODE_ALL = 3;
+    public static final int FILTER_MODE_ALL = 0;
+    public static final int FILTER_MODE_CURRENT_YEAR = 1;
+    public static final int FILTER_MODE_YEAR = 2;
+    public static final int FILTER_MODE_DATES = 3;
 
     static class Filter {
         public Date dateFrom;
@@ -95,13 +120,16 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(DATABASE_CREATE);
+        String sql = DATABASE_CREATE;
+
+        UtilsLog.d(TAG, "onCreate", "sql == " + sql);
+
+        db.execSQL(sql);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(DROP_TABLE);
-        db.execSQL(DATABASE_CREATE);
+        UtilsLog.d(TAG, "onUpgrade");
     }
 
     private void setFilter(@NonNull Filter filter) {
@@ -134,14 +162,14 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     private long doInsertRecord(@NonNull SQLiteDatabase db, @NonNull FuelingRecord fuelingRecord) {
-        ContentValues cv = new ContentValues();
+        ContentValues values = new ContentValues();
 
-        cv.put(COLUMN_DATETIME, fuelingRecord.getDateTime());
-        cv.put(COLUMN_COST, fuelingRecord.getCost());
-        cv.put(COLUMN_VOLUME, fuelingRecord.getVolume());
-        cv.put(COLUMN_TOTAL, fuelingRecord.getTotal());
+        values.put(COLUMN_DATETIME, fuelingRecord.getDateTime());
+        values.put(COLUMN_COST, fuelingRecord.getCost());
+        values.put(COLUMN_VOLUME, fuelingRecord.getVolume());
+        values.put(COLUMN_TOTAL, fuelingRecord.getTotal());
 
-        return db.insert(TABLE_NAME, null, cv); // TODO: add throw
+        return db.insert(TABLE_NAME, null, values); // TODO: add throw
     }
 
     public long insertRecord(@NonNull FuelingRecord fuelingRecord) {
@@ -154,7 +182,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public void insertRecords(@NonNull List<FuelingRecord> fuelingRecordList) {
+    public void swapRecords(@NonNull List<FuelingRecord> fuelingRecordList) {
         SQLiteDatabase db = getWritableDatabase();
 
         db.execSQL(DROP_TABLE);
@@ -175,6 +203,8 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_COST, fuelingRecord.getCost());
         cv.put(COLUMN_VOLUME, fuelingRecord.getVolume());
         cv.put(COLUMN_TOTAL, fuelingRecord.getTotal());
+        cv.put(COLUMN_NEW, TRUE);
+        cv.put(COLUMN_DELETED, FALSE);
 
         int id = db.update(TABLE_NAME, cv, _ID + "=?", new String[]{String.valueOf(fuelingRecord.getId())});
 
@@ -195,9 +225,9 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
     @NonNull
     private String filterModeToSql() {
-        if (mFilter.filterMode == FILTER_MODE_ALL)
-            return "";
-        else {
+        String result = "";
+
+        if (mFilter.filterMode != FILTER_MODE_ALL) {
             Calendar dateFrom = Calendar.getInstance();
             Calendar dateTo = Calendar.getInstance();
 
@@ -216,9 +246,13 @@ class FuelingDBHelper extends SQLiteOpenHelper {
             UtilsDate.setStartOfDay(dateFrom);
             UtilsDate.setEndOfDay(dateTo);
 
-            return WHERE + COLUMN_DATETIME +
+            result = COLUMN_DATETIME +
                     String.format(IN_DATES, dateFrom.getTimeInMillis(), dateTo.getTimeInMillis());
         }
+
+        if (!result.equals("")) result += " AND ";
+
+        return WHERE + result + RECORD_NOT_MARKED_AS_DELETED;
     }
 
     public Cursor getAllCursor() {
@@ -247,11 +281,15 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
     @NonNull
     public List<FuelingRecord> getAllRecords() {
+        String sql = SELECT_ALL + WHERE + RECORD_NOT_MARKED_AS_DELETED + ORDER_BY_DATETIME;
+
+        UtilsLog.d(TAG, "getAllRecords", "sql == " + sql);
+
         List<FuelingRecord> fuelingRecords = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
 
-        Cursor cursor = db.rawQuery(SELECT_ALL + ORDER_BY_DATETIME, null);
+        Cursor cursor = db.rawQuery(sql, null);
 
         if (cursor.moveToFirst()) do
             fuelingRecords.add(new FuelingRecord(cursor));

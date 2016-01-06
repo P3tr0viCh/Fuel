@@ -42,6 +42,10 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="AppTheme.TextAppearance.Medium.Secondary">
+        <item name="android:textColor">@color/secondary_text</item>
+    </style>
+
     <style name="AppTheme.TextAppearance.Small" parent="@style/TextAppearance.AppCompat.Small">
         <item name="android:textSize">12sp</item>
     </style>

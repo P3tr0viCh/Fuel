@@ -43,7 +43,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
             result = mDatabaseBackupXmlHelper.load(fuelingRecordList);
 
             if (result == DatabaseBackupXmlHelper.RESULT_LOAD_OK)
-                dbHelper.insertRecords(fuelingRecordList);
+                dbHelper.swapRecords(fuelingRecordList);
         }
 
         return result;

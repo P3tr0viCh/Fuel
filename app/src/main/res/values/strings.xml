@@ -63,7 +63,7 @@
 
     <string name="text_empty_distance">Укажите начальную и конечную точку маршрута</string>
 
-    <string name="chart_no_data">Нет записей</string>
+    <string name="text_no_data">Нет записей</string>
 
     <string name="text_error_webview">Ошибка: %s</string>
 

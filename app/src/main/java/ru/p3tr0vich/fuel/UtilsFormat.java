@@ -62,8 +62,8 @@ public class UtilsFormat {
 
     @SuppressWarnings("unused") // Used in fueling_listitem
     public static String dateToString(long date, boolean withYear) {
-        return dateToSqlDateTime(date);
-//        return dateToString(date, withYear, false);
+//        return dateToSqlDateTime(date);
+        return dateToString(date, withYear, false);
     }
 
     public static String dateTimeToString(long date) {

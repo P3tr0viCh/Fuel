@@ -20,8 +20,6 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
-import com.pnikosis.materialishprogress.ProgressWheel;
-
 public class Utils {
 
     public static void showKeyboard(EditText editText) {
@@ -40,15 +38,15 @@ public class Utils {
                     .hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    public static void setProgressWheelVisible(ProgressWheel progressWheel, boolean visible) {
-        if (visible) {
-            progressWheel.startAnimation(AnimationUtils.loadAnimation(
+    public static void setViewVisibleAnimate(View view, boolean visible) {
+        if (visible) { // TODO
+            view.startAnimation(AnimationUtils.loadAnimation(
                     ApplicationFuel.getContext(), android.R.anim.fade_in));
-            progressWheel.setVisibility(View.VISIBLE);
+            view.setVisibility(View.VISIBLE);
         } else {
-            progressWheel.startAnimation(AnimationUtils.loadAnimation(
+            view.startAnimation(AnimationUtils.loadAnimation(
                     ApplicationFuel.getContext(), android.R.anim.fade_out));
-            progressWheel.setVisibility(View.GONE);
+            view.setVisibility(View.GONE);
         }
     }
 

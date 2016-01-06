@@ -90,7 +90,7 @@ public class FragmentChartCost extends FragmentFuel implements
         mChart = (BarChart) view.findViewById(R.id.chart);
 
         mChart.setDescription("");
-        mChart.setNoDataText(getString(R.string.chart_no_data));
+        mChart.setNoDataText(getString(R.string.text_no_data));
 
         mChart.setDrawBarShadow(false);
         mChart.setTouchEnabled(false);

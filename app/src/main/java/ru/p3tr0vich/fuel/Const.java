@@ -13,9 +13,9 @@ class Const {
     public static final int ANIMATION_DURATION_LAYOUT_TOTAL_SHOW = 300;
     public static final int ANIMATION_DURATION_LAYOUT_TOTAL_HIDE = 400;
     public static final int ANIMATION_DURATION_SYNC = 1000;
-    public static final int ANIMATION_CHART = 600; // TODO
+    public static final int ANIMATION_CHART = 400;
 
-    public static final int DELAYED_TIME_SHOW_NO_RECORDS = 3000;
+    public static final int DELAYED_TIME_SHOW_NO_RECORDS = 400;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({RECORD_ACTION_ADD, RECORD_ACTION_UPDATE, RECORD_ACTION_DELETE})

@@ -3,6 +3,7 @@ package ru.p3tr0vich.fuel;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -37,8 +39,9 @@ public class FragmentChartCost extends FragmentFuel implements
 
     private FuelingDBHelper.Filter mFilter;
 
-    private BarChart mChart;
     private TabLayout mTabLayout;
+    private BarChart mChart;
+    private TextView mTextNoRecords;
 
     private final String[] mMonths = new String[12];
     private int[] mYears;
@@ -87,10 +90,12 @@ public class FragmentChartCost extends FragmentFuel implements
 
         mTabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
 
+        mTextNoRecords = (TextView) view.findViewById(R.id.tvNoRecords);
+
         mChart = (BarChart) view.findViewById(R.id.chart);
 
         mChart.setDescription("");
-        mChart.setNoDataText(getString(R.string.text_no_data));
+        mChart.setNoDataText("");
 
         mChart.setDrawBarShadow(false);
         mChart.setTouchEnabled(false);
@@ -340,6 +345,8 @@ public class FragmentChartCost extends FragmentFuel implements
 
     private void updateChart() {
         if (mIsData) {
+            mTextNoRecords.setVisibility(View.GONE);
+
             ArrayList<BarEntry> yValues = new ArrayList<>();
 
             for (int i = 0; i < 12; i++) yValues.add(new BarEntry(mSums[i], i));
@@ -358,7 +365,15 @@ public class FragmentChartCost extends FragmentFuel implements
             mChart.setData(data);
 
             mChart.animateXY(Const.ANIMATION_CHART, Const.ANIMATION_CHART);
-        } else
+        } else {
             mChart.clear();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Utils.setViewVisibleAnimate(mTextNoRecords, true);
+                }
+            }, Const.DELAYED_TIME_SHOW_NO_RECORDS);
+        }
     }
 }

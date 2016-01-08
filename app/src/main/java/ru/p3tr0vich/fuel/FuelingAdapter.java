@@ -3,6 +3,7 @@ package ru.p3tr0vich.fuel;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,8 +38,8 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public @interface HeaderFooter {
     }
 
-    public static final int HF_HIDE = 0;
-    public static final int HF_SHOW = 1;
+    private static final int HF_HIDE = 0;
+    private static final int HF_SHOW = 1;
 
     private final View.OnClickListener mOnClickListener;
 
@@ -61,7 +62,7 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public interface OnFuelingRecordsChangeListener {
-        void OnFuelingRecordsChange(List<FuelingRecord> fuelingRecords);
+        void OnFuelingRecordsChange(@NonNull List<FuelingRecord> fuelingRecords);
     }
 
     public boolean isShowHeader() {

@@ -441,16 +441,6 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data.getCount() == 0)
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Utils.setViewVisibleAnimate(mTextNoRecords, true);
-                }
-            }, Const.DELAYED_TIME_SHOW_NO_RECORDS);
-        else
-            mTextNoRecords.setVisibility(View.GONE);
-
         mFuelingAdapter.setShowYear(mFilter.filterMode != FuelingDBHelper.FILTER_MODE_CURRENT_YEAR);
 
         mDataChanged = false;
@@ -480,12 +470,22 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     @Override
-    public void OnFuelingRecordsChange(List<FuelingRecord> fuelingRecords) {
+    public void OnFuelingRecordsChange(@NonNull List<FuelingRecord> fuelingRecords) {
         calcTotalTaskCancel();
 
         mCalcTotalTask = new CalcTotalTask(this, fuelingRecords);
 
         mCalcTotalTask.execute();
+
+        if (fuelingRecords.isEmpty())
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Utils.setViewVisibleAnimate(mTextNoRecords, true);
+                }
+            }, Const.DELAYED_TIME_SHOW_NO_RECORDS);
+        else
+            mTextNoRecords.setVisibility(View.GONE);
     }
 
     private void doPopup(final View v) {
@@ -646,8 +646,8 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     private void setTotalAndFabVisible(boolean visible) {
-        // TODO: есть баг при количестве записей позволяющем сделать прокрутку вверх при
-        // показанном лайоте, что приводит к его скрытию, после чего прокрутка вниз невозможна,
+        // TODO: есть баг при количестве записей позволяющем сделать прокрутку вверх
+        // при показанном лайоте, что приводит к его скрытию, после чего прокрутка вниз невозможна,
         // так как записи начинают влезать по высоте.
         // Три записи в альбомном режиме с показанным тулбаром выбора периода
 
@@ -657,7 +657,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     private void updateFilterDateButtons(final boolean dateFrom, final Date date) {
         (dateFrom ? mBtnDateFrom : mBtnDateTo)
-                .setText(UtilsFormat.dateToString(date, true, Utils.isPhoneInPortrait()));
+                .setText(UtilsFormat.dateToString(date, Utils.isPhoneInPortrait()));
     }
 
     private void setPopupFilterDate(final boolean setDateFrom, final int menuId) {

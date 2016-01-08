@@ -20,7 +20,7 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
-public class Utils {
+class Utils {
 
     public static void showKeyboard(EditText editText) {
         editText.requestFocus();
@@ -39,7 +39,9 @@ public class Utils {
     }
 
     public static void setViewVisibleAnimate(View view, boolean visible) {
-        if (visible) { // TODO
+        if (view.getVisibility() == View.VISIBLE && visible) return;
+
+        if (visible) {
             view.startAnimation(AnimationUtils.loadAnimation(
                     ApplicationFuel.getContext(), android.R.anim.fade_in));
             view.setVisibility(View.VISIBLE);

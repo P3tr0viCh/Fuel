@@ -20,7 +20,7 @@ public class UtilsFormat {
     private static final String SQL_DATE_TIME_FORMAT =
             SQL_DATE_FORMAT + ' ' + SQL_TIME_FORMAT;
 
-    public static Date sqlDateToDate(String sqlDate) {
+    private static Date sqlDateToDate(String sqlDate) {
         Date date = null;
 
         DateFormat format = new SimpleDateFormat(SQL_DATE_FORMAT, Locale.getDefault());
@@ -48,7 +48,7 @@ public class UtilsFormat {
         return (new SimpleDateFormat(SQL_DATE_TIME_FORMAT, Locale.getDefault())).format(date);
     }
 
-    public static String dateToString(long date, boolean withYear, boolean abbrevMonth) {
+    private static String dateToString(long date, boolean withYear, boolean abbrevMonth) {
         int flags = DateUtils.FORMAT_SHOW_DATE;
         flags = withYear ? flags | DateUtils.FORMAT_SHOW_YEAR : flags | DateUtils.FORMAT_NO_YEAR;
         if (abbrevMonth) flags = flags | DateUtils.FORMAT_ABBREV_MONTH;
@@ -56,8 +56,8 @@ public class UtilsFormat {
         return DateUtils.formatDateTime(ApplicationFuel.getContext(), date, flags);
     }
 
-    public static String dateToString(Date date, boolean withYear, boolean abbrevMonth) {
-        return dateToString(date.getTime(), withYear, abbrevMonth);
+    public static String dateToString(Date date, boolean abbrevMonth) {
+        return dateToString(date.getTime(), true, abbrevMonth);
     }
 
     @SuppressWarnings("unused") // Used in fueling_listitem
@@ -66,7 +66,7 @@ public class UtilsFormat {
         return dateToString(date, withYear, false);
     }
 
-    public static String dateTimeToString(long date) {
+    private static String dateTimeToString(long date) {
         return DateUtils.formatDateTime(ApplicationFuel.getContext(), date,
                 DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME);
     }

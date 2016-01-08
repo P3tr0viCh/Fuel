@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import java.util.Calendar;
 
-public class UtilsDate {
+class UtilsDate {
 
     public static int getCurrentYear() {
         return Calendar.getInstance().get(Calendar.YEAR);

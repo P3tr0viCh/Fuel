@@ -285,6 +285,8 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void onDestroy() {
+        mHandlerShowNoRecords.removeCallbacks(mRunnableShowNoRecords);
+
         calcTotalTaskCancel();
 
         PreferenceManagerFuel.putFilterDate(mFilter.dateFrom, mFilter.dateTo);
@@ -471,6 +473,8 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void OnFuelingRecordsChange(@NonNull List<FuelingRecord> fuelingRecords) {
+        mHandlerShowNoRecords.removeCallbacks(mRunnableShowNoRecords);
+
         calcTotalTaskCancel();
 
         mCalcTotalTask = new CalcTotalTask(this, fuelingRecords);
@@ -478,15 +482,20 @@ public class FragmentFueling extends FragmentFuel implements
         mCalcTotalTask.execute();
 
         if (fuelingRecords.isEmpty())
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Utils.setViewVisibleAnimate(mTextNoRecords, true);
-                }
-            }, Const.DELAYED_TIME_SHOW_NO_RECORDS);
+            mHandlerShowNoRecords.postDelayed(mRunnableShowNoRecords,
+                    Const.DELAYED_TIME_SHOW_NO_RECORDS);
         else
             mTextNoRecords.setVisibility(View.GONE);
     }
+
+    private Handler mHandlerShowNoRecords = new Handler();
+
+    private Runnable mRunnableShowNoRecords = new Runnable() {
+        @Override
+        public void run() {
+            Utils.setViewVisibleAnimate(mTextNoRecords, true);
+        }
+    };
 
     private void doPopup(final View v) {
         PopupMenu popupMenu = new PopupMenu(getActivity(), v);
@@ -514,8 +523,6 @@ public class FragmentFueling extends FragmentFuel implements
                                 mOnRecordChangeListener.onRecordChange(Const.RECORD_ACTION_UPDATE, fuelingRecord);
                                 return true;
                             case R.id.action_fueling_delete:
-//                                mOnRecordChangeListener.onRecordChange(Const.RecordAction.DELETE, fuelingRecord);
-
                                 deletedFuelingRecord = fuelingRecord;
 
                                 if (deleteRecord(fuelingRecord)) {
@@ -824,8 +831,6 @@ public class FragmentFueling extends FragmentFuel implements
 
         @Override
         public Cursor loadInBackground() {
-//            Utils.logD("FragmentFueling -- loadInBackground");
-
             ActivityMain.sendLoadingBroadcast(true);
 
             try {

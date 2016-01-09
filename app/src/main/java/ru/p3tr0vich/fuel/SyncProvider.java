@@ -10,8 +10,15 @@ import android.support.annotation.Nullable;
 
 public class SyncProvider extends ContentProvider {
 
+    private static final String URI_AUTHORITY = "ru.p3tr0vich.fuel.provider";
+
+    private static final String URI_PATH_DATABASE = "database";
+    private static final String URI_PATH_PREFERENCES = "preferences";
+
+    public static final Uri URI_DATABASE =
+            Uri.parse("content://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE);
     public static final Uri URI_PREFERENCES =
-            Uri.parse("content://ru.p3tr0vich.fuel.provider/preferences");
+            Uri.parse("content://" + URI_AUTHORITY + "/" + URI_PATH_PREFERENCES);
 
     @Override
     public boolean onCreate() {
@@ -22,13 +29,21 @@ public class SyncProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-        MatrixCursor matrixCursor = new MatrixCursor(new String[]{"key", "value"});
+        if (!uri.getAuthority().equals(URI_AUTHORITY)) return null;
 
-        ContentValues preferences = PreferenceManagerFuel.getPreferences(selection);
-        for (String key : preferences.keySet())
-            matrixCursor.addRow(new Object[]{key, preferences.get(key)});
+        String path = uri.getPath();
 
-        return matrixCursor;
+        if (path.contains(URI_PATH_PREFERENCES)) {
+            MatrixCursor matrixCursor = new MatrixCursor(new String[]{"key", "value"});
+
+            ContentValues preferences = PreferenceManagerFuel.getPreferences(selection);
+            for (String key : preferences.keySet())
+                matrixCursor.addRow(new Object[]{key, preferences.get(key)});
+
+            return matrixCursor;
+        }
+
+        return null;
     }
 
     @Nullable
@@ -45,14 +60,22 @@ public class SyncProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        return -1;
     }
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-        PreferenceManagerFuel.setPreferences(values, selection);
+        if (!uri.getAuthority().equals(URI_AUTHORITY)) return -1;
 
-        return 0;
+        String path = uri.getPath();
+
+        if (path.contains(URI_PATH_PREFERENCES)) {
+            PreferenceManagerFuel.setPreferences(values, selection);
+
+            return 0;
+        }
+
+        return -1;
     }
 }

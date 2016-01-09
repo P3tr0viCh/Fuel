@@ -243,6 +243,12 @@ public class FragmentChartCost extends FragmentFuel implements
         outState.putBoolean(KEY_IS_DATA, mIsData);
     }
 
+    @Override
+    public void onDestroy() {
+        mHandlerShowNoRecords.removeCallbacks(mRunnableShowNoRecords);
+        super.onDestroy();
+    }
+
     static class ChartCursorLoader extends CursorLoader {
 
         private static final int ID = 0;
@@ -344,6 +350,8 @@ public class FragmentChartCost extends FragmentFuel implements
     }
 
     private void updateChart() {
+        mHandlerShowNoRecords.removeCallbacks(mRunnableShowNoRecords);
+
         if (mIsData) {
             mTextNoRecords.setVisibility(View.GONE);
 
@@ -368,12 +376,17 @@ public class FragmentChartCost extends FragmentFuel implements
         } else {
             mChart.clear();
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Utils.setViewVisibleAnimate(mTextNoRecords, true);
-                }
-            }, Const.DELAYED_TIME_SHOW_NO_RECORDS);
+            mHandlerShowNoRecords.postDelayed(mRunnableShowNoRecords,
+                    Const.DELAYED_TIME_SHOW_NO_RECORDS);
         }
     }
+
+    private Handler mHandlerShowNoRecords = new Handler();
+
+    private Runnable mRunnableShowNoRecords = new Runnable() {
+        @Override
+        public void run() {
+            Utils.setViewVisibleAnimate(mTextNoRecords, true);
+        }
+    };
 }

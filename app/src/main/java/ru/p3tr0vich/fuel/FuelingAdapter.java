@@ -55,6 +55,8 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         setShowFooter(showFooter);
 
         mFuelingRecords = new ArrayList<>();
+        if (isShowHeader()) mFuelingRecords.add(null);
+        if (isShowFooter()) mFuelingRecords.add(null);
 
         mOnClickListener = onClickListener;
 

@@ -615,10 +615,13 @@ public class ActivityMain extends AppCompatActivity implements
         anim.start();
     }
 
-    private void requestManualSync() {
+    private void requestManualSync(boolean syncDatabase, boolean syncPreferences) {
         Bundle extras = new Bundle();
         extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+
+        extras.putBoolean(SyncAdapter.SYNC_DATABASE, syncDatabase);
+        extras.putBoolean(SyncAdapter.SYNC_PREFERENCES, syncPreferences);
 
         ContentResolver.requestSync(mSyncAccount.getAccount(), mSyncAccount.getAuthority(), extras);
     }
@@ -626,27 +629,37 @@ public class ActivityMain extends AppCompatActivity implements
     private void startSync(@StartSync int startSync) {
         boolean showDialogs = false;
         boolean startIfSyncActive = false;
+        boolean syncDatabase = false;
+        boolean syncPreferences = false;
 
         switch (startSync) {
             case START_SYNC_APP_STARTED:
                 UtilsLog.d(TAG, "startSync", "START_SYNC_APP_STARTED");
                 showDialogs = false;
                 startIfSyncActive = false;
+                syncDatabase = true;
+                syncPreferences = true;
                 break;
             case START_SYNC_BUTTON_CLICKED:
                 UtilsLog.d(TAG, "startSync", "START_SYNC_BUTTON_CLICKED");
                 showDialogs = true;
                 startIfSyncActive = false;
+                syncDatabase = true;
+                syncPreferences = true;
                 break;
             case START_SYNC_TOKEN_CHANGED:
                 UtilsLog.d(TAG, "startSync", "START_SYNC_TOKEN_CHANGED");
                 showDialogs = false;
                 startIfSyncActive = false;
+                syncDatabase = true;
+                syncPreferences = true;
                 break;
             case START_SYNC_PREFERENCES_CHANGED:
                 UtilsLog.d(TAG, "startSync", "START_SYNC_PREFERENCES_CHANGED");
                 showDialogs = false;
                 startIfSyncActive = true;
+                syncDatabase = false;
+                syncPreferences = true;
                 break;
             case START_SYNC_ACTIVITY_DESTROY:
                 UtilsLog.d(TAG, "startSync", "START_SYNC_ACTIVITY_DESTROY");
@@ -654,6 +667,8 @@ public class ActivityMain extends AppCompatActivity implements
 
                 showDialogs = false;
                 startIfSyncActive = true;
+                syncDatabase = true;
+                syncPreferences = true;
                 break;
         }
 
@@ -663,7 +678,9 @@ public class ActivityMain extends AppCompatActivity implements
             if (!mSyncAccount.isSyncActive() || startIfSyncActive) {
                 if (!mSyncAccount.isYandexDiskTokenEmpty()) {
                     if (Utils.isInternetConnected()) {
-                        requestManualSync();
+                        /* */
+                        requestManualSync(syncDatabase, syncPreferences);
+                        /* */
                     } else {
                         UtilsLog.d(TAG, "startSync", "Internet disconnected");
                         if (showDialogs) FragmentDialogMessage.show(ActivityMain.this,

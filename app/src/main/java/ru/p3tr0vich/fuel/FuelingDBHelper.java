@@ -28,6 +28,8 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
     private static final String COLUMN_YEAR = "year";
     private static final String COLUMN_MONTH = "month";
+    private static final String COLUMN_REVISION = "revision";
+    private static final String COLUMN_IS_CHANGED = "is_changed";
 
     public static final int COLUMN_ID_INDEX = 0;
     public static final int COLUMN_DATETIME_INDEX = 1;
@@ -42,6 +44,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String TABLE_FUELING = "fueling";
     private static final String TABLE_SYNC_CHANGED = "sync_changed";
     private static final String TABLE_SYNC_DELETED = "sync_deleted";
+    private static final String TABLE_SYNC_REVISION = "sync_revision";
 
     private static final String TRIGGER_SYNC_INSERT = "sync_insert";
     private static final String TRIGGER_SYNC_UPDATE = "sync_update";
@@ -58,6 +61,13 @@ class FuelingDBHelper extends SQLiteOpenHelper {
             " SUM(" + COLUMN_COST + ")," +
             " strftime('%m', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime') AS " + COLUMN_MONTH +
             " FROM " + TABLE_FUELING;
+
+    private static final String SELECT_REVISION = "SELECT " + COLUMN_REVISION +
+            " FROM " + TABLE_SYNC_REVISION;
+
+    private static final String SELECT_IS_CHANGED = "SELECT" +
+            " COUNT(" + TABLE_SYNC_CHANGED + ".*) + COUNT(" + TABLE_SYNC_DELETED + ".*) AS " + COLUMN_IS_CHANGED +
+            " FROM " + TABLE_SYNC_CHANGED + ", " + TABLE_SYNC_DELETED;
 
     private static final String WHERE = " WHERE ";
     private static final String IN_DATES = " BETWEEN %1$d AND %2$d";
@@ -79,6 +89,9 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_SYNC_DELETED = "CREATE TABLE " + TABLE_SYNC_DELETED + "(" +
             _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_DATETIME + " INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE" +
+            ");";
+    private static final String CREATE_TABLE_SYNC_REVISION = "CREATE TABLE " + TABLE_SYNC_REVISION + "(" +
+            COLUMN_REVISION + " INTEGER PRIMARY KEY ON CONFLICT REPLACE" +
             ");";
 
     // Вставка новой записи
@@ -138,9 +151,11 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
     private static final String CLEAR_TABLE = "DELETE FROM ";
     private static final String CLEAR_TABLE_FUELING = CLEAR_TABLE + TABLE_FUELING;
+    private static final String CLEAR_TABLE_SYNC_REVISION = CLEAR_TABLE + TABLE_SYNC_REVISION;
 
     private static final String CREATE_DATABASE =
             CREATE_TABLE_FUELING + CREATE_TABLE_SYNC_CHANGED + CREATE_TABLE_SYNC_DELETED +
+                    CREATE_TABLE_SYNC_REVISION +
                     CREATE_TRIGGER_SYNC_INSERT + CREATE_TRIGGER_SYNC_UPDATE + CREATE_TRIGGER_SYNC_DELETE;
 
     @Retention(RetentionPolicy.SOURCE)
@@ -178,9 +193,14 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         db.execSQL(sql);
     }
 
-    private Cursor rawQuery(@NonNull SQLiteDatabase db, @NonNull String sql, @NonNull String function) {
+    private Cursor rawQuery(@Nullable SQLiteDatabase db, @NonNull String sql, @NonNull String function) {
         UtilsLog.d(TAG, function, "sql == " + sql);
+        if (db == null) db = getReadableDatabase();
         return db.rawQuery(sql, null);
+    }
+
+    private Cursor rawQuery(@NonNull String sql, @NonNull String function) {
+        return rawQuery(null, sql, function);
     }
 
     @Override
@@ -329,30 +349,47 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getAllCursor() {
-        return rawQuery(getReadableDatabase(),
-                SELECT_ALL + filterModeToSql() + ORDER_BY_DATETIME,
+        return rawQuery(SELECT_ALL + filterModeToSql() + ORDER_BY_DATETIME,
                 "getAllCursor");
     }
 
     public Cursor getYears() {
-        return rawQuery(getReadableDatabase(),
-                SELECT_YEARS + String.format(SELECT_YEARS_WHERE, UtilsDate.getCurrentYear()),
+        return rawQuery(SELECT_YEARS + String.format(SELECT_YEARS_WHERE, UtilsDate.getCurrentYear()),
                 "getYears");
     }
 
     public Cursor getSumByMonthsForYear() {
-        return rawQuery(getReadableDatabase(),
-                SELECT_SUM_BY_MONTHS_IN_YEAR + filterModeToSql() + GROUP_BY_MONTH,
+        return rawQuery(SELECT_SUM_BY_MONTHS_IN_YEAR + filterModeToSql() + GROUP_BY_MONTH,
                 "getSumByMonthsForYear");
     }
 
+    public Cursor getRevision() {
+        return rawQuery(SELECT_REVISION, "getRevision");
+    }
+
+    public Cursor isChanged() {
+        return rawQuery(SELECT_IS_CHANGED, "isChanged");
+    }
+
+    public Cursor getChangedRecords() {
+        return null;
+    }
+
+    public Cursor getDeletedRecords() {
+        return null;
+    }
+
+    public Cursor getAllRecords() {
+        return rawQuery(SELECT_ALL + ORDER_BY_DATETIME, "getAllRecords");
+    }
+
     @NonNull
-    public List<FuelingRecord> getAllRecords() {
+    public List<FuelingRecord> getAllRecordsList() {
         List<FuelingRecord> fuelingRecords = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
         try {
-            Cursor cursor = rawQuery(db, SELECT_ALL + ORDER_BY_DATETIME, "getAllRecords");
+            Cursor cursor = rawQuery(db, SELECT_ALL + ORDER_BY_DATETIME, "getAllRecordsList");
             if (cursor != null)
                 try {
                     if (cursor.moveToFirst()) do

@@ -34,7 +34,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
         FuelingDBHelper dbHelper = new FuelingDBHelper();
 
         if (mDoSave) {
-            fuelingRecordList = dbHelper.getAllRecords();
+            fuelingRecordList = dbHelper.getAllRecordsList();
 
             result = mDatabaseBackupXmlHelper.save(fuelingRecordList);
         } else {

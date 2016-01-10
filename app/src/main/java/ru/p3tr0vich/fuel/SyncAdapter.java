@@ -35,7 +35,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                               ContentProviderClient provider, SyncResult syncResult) {
         UtilsLog.d(TAG, "onPerformSync", "start");
 
+        SyncDatabaseAdapter syncDatabaseAdapter = new SyncDatabaseAdapter(provider);
         SyncPreferencesAdapter syncPreferencesAdapter = new SyncPreferencesAdapter(provider);
+
         SyncFiles syncFiles = new SyncFiles(getContext());
         SyncLocal syncLocal = new SyncLocal(syncFiles);
         SyncAccount syncAccount = new SyncAccount(getContext());
@@ -64,7 +66,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             syncLocal.deleteFiles();
 
             if (extras.getBoolean(SYNC_DATABASE, true))
-                syncDatabase();
+                syncDatabase(syncDatabaseAdapter, syncLocal, syncYandexDisk);
 
             if (extras.getBoolean(SYNC_PREFERENCES, true))
                 syncPreferences(syncPreferencesAdapter, syncLocal, syncYandexDisk);
@@ -106,16 +108,16 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         // Копируем файл с номером ревизии с сервера в папку кэша.
         // Если файла нет, игнорируем.
 
-        syncYandexDisk.loadRevision();
+        syncYandexDisk.loadPreferencesRevision();
 
-        UtilsLog.d(TAG, "syncPreferences", "syncYandexDisk.loadRevision() OK");
+        UtilsLog.d(TAG, "syncPreferences", "syncYandexDisk.loadPreferencesRevision() OK");
 
-        int serverRevision = syncLocal.getRevision();
-//            serverRevision == -1, если синхронизация не производилась
-//            или файлы синхронизации отсутствуют на сервере
+        int serverRevision = syncLocal.getPreferencesRevision();
+        // serverRevision == -1, если синхронизация не производилась
+        // или файлы синхронизации отсутствуют на сервере
 
         int localRevision = syncPreferencesAdapter.getRevision();
-//            localRevision == -1, если программа запускается первый раз
+        // localRevision == -1, если программа запускается первый раз
 
         boolean isChanged = syncPreferencesAdapter.isChanged();
 
@@ -129,9 +131,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             UtilsLog.d(TAG, "syncPreferences", "localRevision < serverRevision");
 
-            syncPreferencesLoad(syncLocal, syncYandexDisk, syncPreferencesAdapter);
-
-            localRevision = serverRevision;
+            syncPreferencesLoad(syncLocal, syncYandexDisk, syncPreferencesAdapter, serverRevision);
         } else if (localRevision > serverRevision) {
             // Файлы синхронизации были удалены
             // (localRevision > -1 > serverRevision == -1).
@@ -150,12 +150,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             if (isChanged) {
                 localRevision++;
                 syncPreferencesSave(syncLocal, syncYandexDisk, syncPreferencesAdapter, localRevision);
-            } else
-                return;
+            }
         }
-
-        syncPreferencesAdapter.putChanged();
-        syncPreferencesAdapter.putRevision(localRevision);
     }
 
     private void syncPreferencesSave(SyncLocal syncLocal, SyncYandexDisk syncYandexDisk,
@@ -175,8 +171,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         syncLocal.savePreferences(preferences);
         UtilsLog.d(TAG, "syncPreferencesSave", "syncLocal.savePreferences() OK");
 
-        syncLocal.saveRevision(revision);
-        UtilsLog.d(TAG, "syncPreferencesSave", "syncLocal.saveRevision() OK");
+        syncLocal.savePreferencesRevision(revision);
+        UtilsLog.d(TAG, "syncPreferencesSave", "syncLocal.savePreferencesRevision() OK");
 
         syncYandexDisk.makeDirs();
         UtilsLog.d(TAG, "syncPreferencesSave", "syncYandexDisk.makeDirs() OK");
@@ -184,12 +180,15 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         syncYandexDisk.savePreferences();
         UtilsLog.d(TAG, "syncPreferencesSave", "syncYandexDisk.savePreferences() OK");
 
-        syncYandexDisk.saveRevision();
-        UtilsLog.d(TAG, "syncPreferencesSave", "syncYandexDisk.saveRevision() OK");
+        syncYandexDisk.savePreferencesRevision();
+        UtilsLog.d(TAG, "syncPreferencesSave", "syncYandexDisk.savePreferencesRevision() OK");
+
+        syncPreferencesAdapter.putChanged();
+        syncPreferencesAdapter.putRevision(revision);
     }
 
     private void syncPreferencesLoad(SyncLocal syncLocal, SyncYandexDisk syncYandexDisk,
-                                     SyncPreferencesAdapter syncPreferencesAdapter)
+                                     SyncPreferencesAdapter syncPreferencesAdapter, int revision)
             throws IOException, RemoteException, ServerException {
         // 1) Получить файл настроек с сервера и сохранить в папку кэша.
         // 2) Прочитать настройки из файла в папке кэша.
@@ -206,9 +205,106 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         syncPreferencesAdapter.setPreferences(preferences);
         UtilsLog.d(TAG, "syncPreferencesLoad", "syncPreferencesAdapter.setPreferences() OK");
+
+        syncPreferencesAdapter.putChanged();
+        syncPreferencesAdapter.putRevision(revision);
     }
 
-    private void syncDatabase() {
+    private void syncDatabase(SyncDatabaseAdapter syncDatabaseAdapter,
+                              SyncLocal syncLocal,
+                              SyncYandexDisk syncYandexDisk) throws
+            IOException, ServerException, RemoteException, FormatException {
         UtilsLog.d(TAG, "syncDatabase", "start");
+
+        // Копируем файл с номером ревизии с сервера в папку кэша.
+        // Если файла нет, игнорируем.
+
+        syncYandexDisk.loadDatabaseRevision();
+
+        UtilsLog.d(TAG, "syncDatabase", "syncYandexDisk.loadDatabaseRevision() OK");
+
+        int serverRevision = syncLocal.getDatabaseRevision();
+        // serverRevision == -1, если синхронизация не производилась
+        // или файлы синхронизации отсутствуют на сервере
+
+        int localRevision = syncDatabaseAdapter.getRevision();
+        // localRevision == -1, если программа запускается первый раз
+
+        boolean isChanged = syncDatabaseAdapter.isChanged();
+
+        UtilsLog.d(TAG, "syncDatabase",
+                "serverRevision == " + serverRevision + ", localRevision == " + localRevision +
+                        ", database changed == " + isChanged);
+
+        if (localRevision < serverRevision) {
+            // Синхронизация уже выполнялась на другом устройстве.
+            // Загрузить записи с сервера.
+            // Если есть изменённые или удалённые записи, сохранить их на сервер.
+
+            UtilsLog.d(TAG, "syncDatabase", "localRevision < serverRevision");
+
+//            syncPreferencesLoad(syncLocal, syncYandexDisk, syncPreferencesAdapter, serverRevision);
+        } else if (localRevision > serverRevision) {
+            // Файлы синхронизации были удалены
+            // (localRevision > -1 > serverRevision == -1).
+            // Сохранить все записи на сервер.
+
+            UtilsLog.d(TAG, "syncDatabase", "localRevision > serverRevision");
+
+//            syncPreferencesSave(syncLocal, syncYandexDisk, syncPreferencesAdapter, localRevision);
+        } else /* localRevision == serverRevision */ {
+            // 1. Сихронизация выполняется в первый раз
+            // (localRevision == -1, serverRevision == -1).
+            // 2. БД синхронизирована.
+            // Если есть изменённые или удалённые записи, сохранить их на сервер.
+
+            UtilsLog.d(TAG, "syncDatabase", "localRevision == serverRevision");
+
+//            if (isChanged) {
+//                localRevision++;
+//                syncPreferencesSave(syncLocal, syncYandexDisk, syncPreferencesAdapter, localRevision);
+//            }
+        }
+
+        syncDatabaseSave(syncLocal, syncYandexDisk, syncDatabaseAdapter, localRevision, false);
+    }
+
+    private void syncDatabaseSave(SyncLocal syncLocal, SyncYandexDisk syncYandexDisk,
+                                  SyncDatabaseAdapter syncDatabaseAdapter,
+                                  int revision, boolean fullSave)
+            throws IOException, RemoteException, FormatException, ServerException {
+        // 1) Сохранить БД в файл в папке кэша.
+        // 1.1) Выбрать изменённые и удалённые записи или, если fullSave, выбрать все записи.
+        // 2) Сохранить номер ревизии в файл в папке кэша.
+        // 3) Передать файл БД из папки кэша на сервер.
+        // 4) Передать файл с номером ревизии из папки кэша на сервер.
+        // 5) Очистить таблицы изменённых и удалённых записей.
+        // 6) Сохранить номер ревизии в БД.
+
+        UtilsLog.d(TAG, "syncDatabaseSave", "start");
+
+        List<String> syncRecords = syncDatabaseAdapter.getSyncRecords(fullSave);
+        UtilsLog.d(TAG, "syncDatabaseSave", "syncDatabaseAdapter.getSyncRecords(fullSave == " + fullSave + ") OK");
+
+        if (!syncRecords.isEmpty()) {
+            syncLocal.saveDatabase(syncRecords);
+            UtilsLog.d(TAG, "syncDatabaseSave", "syncLocal.saveDatabase() OK");
+
+            syncLocal.saveDatabaseRevision(revision);
+            UtilsLog.d(TAG, "syncDatabaseSave", "syncLocal.saveDatabaseRevision() OK");
+
+            syncYandexDisk.makeDirs();
+            UtilsLog.d(TAG, "syncDatabaseSave", "syncYandexDisk.makeDirs() OK");
+
+//        syncYandexDisk.savePreferences();
+//        UtilsLog.d(TAG, "syncPreferencesSave", "syncYandexDisk.savePreferences() OK");
+//
+//        syncYandexDisk.savePreferencesRevision();
+//        UtilsLog.d(TAG, "syncPreferencesSave", "syncYandexDisk.savePreferencesRevision() OK");
+
+            syncDatabaseAdapter.putChanged();
+            syncDatabaseAdapter.putRevision(revision);
+        } else
+            UtilsLog.d(TAG, "syncDatabaseSave", "syncRecords.isEmpty() == true");
     }
 }

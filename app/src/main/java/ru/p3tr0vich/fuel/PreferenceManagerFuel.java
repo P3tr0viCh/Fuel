@@ -276,17 +276,6 @@ class PreferenceManagerFuel {
 
     @NonNull
     public static ContentValues getPreferences(@Nullable String preference) {
-
-//        sSharedPreferences.edit()
-//                .remove("Yandex_Maps")
-//                .remove("chb2")
-//                .remove("wifi enabled")
-//                .remove("last time")
-//                .remove("sync")
-//                .remove("prefer wifi")
-//                .remove("last sync time")
-//                .apply();
-
         ContentValues result = new ContentValues();
 
         if (TextUtils.isEmpty(preference)) {

@@ -9,6 +9,7 @@ import com.yandex.disk.rest.exceptions.ServerIOException;
 import com.yandex.disk.rest.exceptions.http.HttpCodeException;
 import com.yandex.disk.rest.json.Link;
 
+import java.io.File;
 import java.io.IOException;
 
 class SyncYandexDisk {
@@ -34,12 +35,46 @@ class SyncYandexDisk {
         mRestClient = new RestClient(new Credentials("", token));
     }
 
-    public void makeDirs() throws IOException, ServerIOException {
+    private void makeDir(@NonNull File dir) throws IOException, ServerIOException {
         try {
-            mRestClient.makeFolder(APP_DIR + mSyncFiles.getServerDirPreferences().getName());
+            mRestClient.makeFolder(APP_DIR + dir.getName());
         } catch (HttpCodeException e) {
             if (e.getCode() != HTTP_CODE_DIR_EXISTS) throw e;
         }
+    }
+
+    public void makeDirs() throws IOException, ServerIOException {
+        makeDir(mSyncFiles.getServerDirDatabase());
+        makeDir(mSyncFiles.getServerDirPreferences());
+    }
+
+    private void saveRevision(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
+        Link link = mRestClient.getUploadLink(APP_DIR + serverFile.getPath(), true);
+
+        mRestClient.uploadFile(link, false, localFile, null);
+    }
+
+    public void savePreferencesRevision() throws IOException, ServerException {
+        saveRevision(mSyncFiles.getServerFilePreferencesRevision(),
+                mSyncFiles.getLocalFilePreferencesRevision());
+    }
+
+    private void loadRevision(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
+        try {
+            mRestClient.downloadFile(APP_DIR + serverFile.getPath(), localFile, null);
+        } catch (HttpCodeException e) {
+            if (e.getCode() != HTTP_CODE_RESOURCE_NOT_FOUND) throw e;
+        }
+    }
+
+    public void loadPreferencesRevision() throws IOException, ServerException {
+        loadRevision(mSyncFiles.getServerFilePreferencesRevision(),
+                mSyncFiles.getLocalFilePreferencesRevision());
+    }
+
+    public void loadDatabaseRevision() throws IOException, ServerException {
+        loadRevision(mSyncFiles.getServerFileDatabaseRevision(),
+                mSyncFiles.getLocalFileDatabaseRevision());
     }
 
     public void savePreferences() throws IOException, ServerException {
@@ -49,24 +84,8 @@ class SyncYandexDisk {
         mRestClient.uploadFile(link, false, mSyncFiles.getLocalFilePreferences(), null);
     }
 
-    public void saveRevision() throws IOException, ServerException {
-        Link link = mRestClient.getUploadLink(APP_DIR +
-                mSyncFiles.getServerFilePreferencesRevision().getPath(), true);
-
-        mRestClient.uploadFile(link, false, mSyncFiles.getLocalFilePreferencesRevision(), null);
-    }
-
     public void loadPreferences() throws IOException, ServerException {
         mRestClient.downloadFile(APP_DIR + mSyncFiles.getServerFilePreferences().getPath(),
                 mSyncFiles.getLocalFilePreferences(), null);
-    }
-
-    public void loadRevision() throws IOException, ServerException {
-        try {
-            mRestClient.downloadFile(APP_DIR + mSyncFiles.getServerFilePreferencesRevision().getPath(),
-                    mSyncFiles.getLocalFilePreferencesRevision(), null);
-        } catch (HttpCodeException e) {
-            if (e.getCode() != HTTP_CODE_RESOURCE_NOT_FOUND) throw e;
-        }
     }
 }

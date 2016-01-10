@@ -1,6 +1,7 @@
 package ru.p3tr0vich.fuel;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -16,9 +17,16 @@ public class SyncProvider extends ContentProvider {
     private static final String URI_PATH_PREFERENCES = "preferences";
 
     public static final Uri URI_DATABASE =
-            Uri.parse("content://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE);
+            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE);
     public static final Uri URI_PREFERENCES =
-            Uri.parse("content://" + URI_AUTHORITY + "/" + URI_PATH_PREFERENCES);
+            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_PREFERENCES);
+
+    public static final String DATABASE_GET_REVISION = "DATABASE_GET_REVISION";
+    public static final String DATABASE_IS_CHANGED = "DATABASE_IS_CHANGED";
+    public static final String DATABASE_PUT_CHANGED = "DATABASE_PUT_CHANGED";
+    public static final String DATABASE_GET_ALL_RECORDS = "DATABASE_GET_ALL_RECORDS";
+    public static final String DATABASE_GET_CHANGED_RECORDS = "DATABASE_GET_CHANGED_RECORDS";
+    public static final String DATABASE_GET_DELETED_RECORDS = "DATABASE_GET_DELETED_RECORDS";
 
     @Override
     public boolean onCreate() {
@@ -32,6 +40,27 @@ public class SyncProvider extends ContentProvider {
         if (!uri.getAuthority().equals(URI_AUTHORITY)) return null;
 
         String path = uri.getPath();
+
+        if (path.contains(URI_PATH_DATABASE)) {
+            FuelingDBHelper dbHelper = new FuelingDBHelper();
+
+            if (DATABASE_GET_REVISION.equals(selection))
+                return dbHelper.getRevision();
+
+            if (DATABASE_IS_CHANGED.equals(selection))
+                return dbHelper.isChanged();
+
+            if (DATABASE_GET_ALL_RECORDS.equals(selection))
+                return dbHelper.getAllRecords();
+
+            if (DATABASE_GET_CHANGED_RECORDS.equals(selection))
+                return dbHelper.getChangedRecords();
+
+            if (DATABASE_GET_DELETED_RECORDS.equals(selection))
+                return dbHelper.getDeletedRecords();
+
+            return null;
+        }
 
         if (path.contains(URI_PATH_PREFERENCES)) {
             MatrixCursor matrixCursor = new MatrixCursor(new String[]{"key", "value"});

@@ -8,9 +8,14 @@ import java.io.File;
 class SyncFiles {
 
     private static final String DIR_SYNC = "sync";
+
     private static final String DIR_PREFERENCES = "preferences";
-    private static final String FILE_PREFERENCES_REVISION = "REVISION";
     private static final String FILE_PREFERENCES = "PREFERENCES";
+    private static final String FILE_PREFERENCES_REVISION = "REVISION";
+
+    private static final String DIR_DATABASE = "database";
+    private static final String FILE_DATABASE = "DATABASE";
+    private static final String FILE_DATABASE_REVISION = "REVISION";
 
     private static final String DIR_DEBUG = "_debug";
 
@@ -22,16 +27,33 @@ class SyncFiles {
     private final File mServerFilePreferences;
     private final File mServerFilePreferencesRevision;
 
+    private final File mLocalDirDatabase;
+    private final File mLocalFileDatabase;
+    private final File mLocalFileDatabaseRevision;
+
+    private final File mServerDirDatabase;
+    private final File mServerFileDatabaseRevision;
+
     SyncFiles(@NonNull Context context) {
-        mLocalDirPreferences = new File(context.getCacheDir() + File.separator + DIR_SYNC +
-                File.separator + DIR_PREFERENCES);
+        boolean isDebuggable = Utils.isDebuggable();
+
+        File syncDir = new File(context.getCacheDir(), DIR_SYNC);
+
+        mLocalDirPreferences = new File(syncDir, DIR_PREFERENCES);
+        mLocalDirDatabase = new File(syncDir, DIR_PREFERENCES);
+
         mLocalFilePreferences = new File(mLocalDirPreferences, FILE_PREFERENCES);
         mLocalFilePreferencesRevision = new File(mLocalDirPreferences, FILE_PREFERENCES_REVISION);
 
-        mServerDirPreferences = new File(DIR_PREFERENCES +
-                (Utils.isDebuggable() ? DIR_DEBUG : ""));
+        mLocalFileDatabase = new File(mLocalDirDatabase, FILE_DATABASE);
+        mLocalFileDatabaseRevision = new File(mLocalDirDatabase, FILE_DATABASE_REVISION);
+
+        mServerDirPreferences = new File(DIR_PREFERENCES + (isDebuggable ? DIR_DEBUG : ""));
         mServerFilePreferences = new File(mServerDirPreferences, FILE_PREFERENCES);
         mServerFilePreferencesRevision = new File(mServerDirPreferences, FILE_PREFERENCES_REVISION);
+
+        mServerDirDatabase = new File(DIR_DATABASE + (isDebuggable ? DIR_DEBUG : ""));
+        mServerFileDatabaseRevision = new File(mServerDirDatabase, FILE_DATABASE_REVISION);
     }
 
     public File getLocalDirPreferences() {
@@ -56,5 +78,25 @@ class SyncFiles {
 
     public File getServerFilePreferencesRevision() {
         return mServerFilePreferencesRevision;
+    }
+
+    public File getLocalDirDatabase() {
+        return mLocalDirDatabase;
+    }
+
+    public File getLocalFileDatabase() {
+        return mLocalFileDatabase;
+    }
+
+    public File getLocalFileDatabaseRevision() {
+        return mLocalFileDatabaseRevision;
+    }
+
+    public File getServerDirDatabase() {
+        return mServerDirDatabase;
+    }
+
+    public File getServerFileDatabaseRevision() {
+        return mServerFileDatabaseRevision;
     }
 }

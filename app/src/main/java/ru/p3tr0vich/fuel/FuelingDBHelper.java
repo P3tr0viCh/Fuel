@@ -31,11 +31,13 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_REVISION = "revision";
     private static final String COLUMN_IS_CHANGED = "is_changed";
 
-    public static final int COLUMN_ID_INDEX = 0;
-    public static final int COLUMN_DATETIME_INDEX = 1;
-    public static final int COLUMN_COST_INDEX = 2;
-    public static final int COLUMN_VOLUME_INDEX = 3;
-    public static final int COLUMN_TOTAL_INDEX = 4;
+    public static final int TABLE_FUELING_COLUMN_ID_INDEX = 0;
+    public static final int TABLE_FUELING_COLUMN_DATETIME_INDEX = 1;
+    public static final int TABLE_FUELING_COLUMN_COST_INDEX = 2;
+    public static final int TABLE_FUELING_COLUMN_VOLUME_INDEX = 3;
+    public static final int TABLE_FUELING_COLUMN_TOTAL_INDEX = 4;
+
+    public static final int TABLE_SYNC_DELETED_COLUMN_DATETIME_INDEX = 0;
 
     private static final int DATABASE_VERSION = 1;
 
@@ -50,30 +52,49 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String TRIGGER_SYNC_UPDATE = "sync_update";
     private static final String TRIGGER_SYNC_DELETE = "sync_delete";
 
-    private static final String SELECT_ALL = "SELECT * FROM " + TABLE_FUELING;
-    private static final String SELECT_YEARS = "SELECT" +
-            " strftime('%Y', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime') AS " + COLUMN_YEAR +
-            " FROM " + TABLE_FUELING;
-    private static final String SELECT_YEARS_WHERE = " WHERE " + COLUMN_YEAR + "<'%d'" +
-            " GROUP BY " + COLUMN_YEAR + " ORDER BY " + COLUMN_YEAR + " ASC";
-
-    private static final String SELECT_SUM_BY_MONTHS_IN_YEAR = "SELECT" +
-            " SUM(" + COLUMN_COST + ")," +
-            " strftime('%m', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime') AS " + COLUMN_MONTH +
-            " FROM " + TABLE_FUELING;
-
-    private static final String SELECT_REVISION = "SELECT " + COLUMN_REVISION +
-            " FROM " + TABLE_SYNC_REVISION;
-
-    private static final String SELECT_IS_CHANGED = "SELECT" +
-            " COUNT(" + TABLE_SYNC_CHANGED + ".*) + COUNT(" + TABLE_SYNC_DELETED + ".*) AS " + COLUMN_IS_CHANGED +
-            " FROM " + TABLE_SYNC_CHANGED + ", " + TABLE_SYNC_DELETED;
-
+    private static final String SELECT = "SELECT ";
+    private static final String FROM = " FROM ";
     private static final String WHERE = " WHERE ";
+    private static final String GROUP_BY = " GROUP BY ";
+    private static final String ORDER_BY = " ORDER BY ";
+    private static final String AS = " AS ";
+
+    private static final String ALL = "*";
+
+    private static final String SELECT_ALL = SELECT + ALL + FROM + TABLE_FUELING;
+    private static final String SELECT_ALL_WHERE_ID = WHERE + _ID + "=%d";
+
+    private static final String SELECT_YEARS = SELECT +
+            "strftime('%Y', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + COLUMN_YEAR +
+            FROM + TABLE_FUELING;
+    private static final String SELECT_YEARS_WHERE = WHERE + COLUMN_YEAR + "<'%d'" +
+            GROUP_BY + COLUMN_YEAR + ORDER_BY + COLUMN_YEAR + " ASC";
+
+    private static final String SELECT_SUM_BY_MONTHS_IN_YEAR = SELECT +
+            "SUM(" + COLUMN_COST + "), " +
+            "strftime('%m', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + COLUMN_MONTH +
+            FROM + TABLE_FUELING;
+
+    private static final String SELECT_REVISION =
+            SELECT + COLUMN_REVISION + FROM + TABLE_SYNC_REVISION;
+
+    private static final String SELECT_IS_CHANGED = SELECT +
+            "(SELECT COUNT(*)" + FROM + TABLE_SYNC_CHANGED + ") + " +
+            "(SELECT COUNT(*)" + FROM + TABLE_SYNC_DELETED + ")" +
+            AS + COLUMN_IS_CHANGED;
+
+    private static final String SELECT_SYNC_CHANGED = SELECT + TABLE_FUELING + "." + ALL +
+            FROM + TABLE_FUELING + ", " + TABLE_SYNC_CHANGED +
+            WHERE +
+            TABLE_FUELING + "." + COLUMN_DATETIME + "=" + TABLE_SYNC_CHANGED + "." + COLUMN_DATETIME;
+
+    private static final String SELECT_SYNC_DELETED =
+            SELECT + COLUMN_DATETIME + FROM + TABLE_SYNC_DELETED;
+
     private static final String IN_DATES = " BETWEEN %1$d AND %2$d";
 
-    private static final String GROUP_BY_MONTH = " GROUP BY " + COLUMN_MONTH;
-    private static final String ORDER_BY_DATETIME = " ORDER BY " + COLUMN_DATETIME + " DESC";
+    private static final String GROUP_BY_MONTH = GROUP_BY + COLUMN_MONTH;
+    private static final String ORDER_BY_DATETIME = ORDER_BY + COLUMN_DATETIME + " DESC";
 
     private static final String CREATE_TABLE_FUELING = "CREATE TABLE " + TABLE_FUELING + "(" +
             _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -91,7 +112,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
             COLUMN_DATETIME + " INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE" +
             ");";
     private static final String CREATE_TABLE_SYNC_REVISION = "CREATE TABLE " + TABLE_SYNC_REVISION + "(" +
-            COLUMN_REVISION + " INTEGER PRIMARY KEY ON CONFLICT REPLACE" +
+            COLUMN_REVISION + " INTEGER PRIMARY KEY" +
             ");";
 
     // Вставка новой записи
@@ -113,9 +134,12 @@ class FuelingDBHelper extends SQLiteOpenHelper {
             " AFTER UPDATE ON " + TABLE_FUELING + " FOR EACH ROW" +
             " BEGIN" +
 
+            // TODO: CASE, IF in Sqlite?
+
             // Если изменилось поле даты
-            " IF (NEW." + COLUMN_DATETIME + "!=OLD." + COLUMN_DATETIME + ")" +
-            " THEN" +
+            " CASE " +
+            " WHEN NEW." + COLUMN_DATETIME + "<>OLD." + COLUMN_DATETIME +
+            " THEN " +
             // Удаляем из таблицы новых или изменённых записей старую дату
             " DELETE FROM " + TABLE_SYNC_CHANGED +
             " WHERE " + COLUMN_DATETIME + "=OLD." + COLUMN_DATETIME + ";" +
@@ -123,7 +147,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
             " INSERT OR REPLACE INTO " + TABLE_SYNC_DELETED +
             "(" + COLUMN_DATETIME + ")" +
             " VALUES (OLD." + COLUMN_DATETIME + ");" +
-            " END IF;" +
+            " END;" +
 
             // Вставляем в таблицу новых или изменённых записей
             " INSERT OR REPLACE INTO " + TABLE_SYNC_CHANGED +
@@ -150,13 +174,11 @@ class FuelingDBHelper extends SQLiteOpenHelper {
             " END;";
 
     private static final String CLEAR_TABLE = "DELETE FROM ";
-    private static final String CLEAR_TABLE_FUELING = CLEAR_TABLE + TABLE_FUELING;
-    private static final String CLEAR_TABLE_SYNC_REVISION = CLEAR_TABLE + TABLE_SYNC_REVISION;
 
-    private static final String CREATE_DATABASE =
-            CREATE_TABLE_FUELING + CREATE_TABLE_SYNC_CHANGED + CREATE_TABLE_SYNC_DELETED +
-                    CREATE_TABLE_SYNC_REVISION +
-                    CREATE_TRIGGER_SYNC_INSERT + CREATE_TRIGGER_SYNC_UPDATE + CREATE_TRIGGER_SYNC_DELETE;
+    private static final String CLEAR_TABLE_FUELING = CLEAR_TABLE + TABLE_FUELING;
+    private static final String CLEAR_TABLE_SYNC_CHANGED = CLEAR_TABLE + TABLE_SYNC_CHANGED;
+    private static final String CLEAR_TABLE_SYNC_DELETED = CLEAR_TABLE + TABLE_SYNC_DELETED;
+    private static final String CLEAR_TABLE_SYNC_REVISION = CLEAR_TABLE + TABLE_SYNC_REVISION;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FILTER_MODE_ALL, FILTER_MODE_CURRENT_YEAR, FILTER_MODE_YEAR, FILTER_MODE_DATES})
@@ -207,7 +229,16 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.beginTransaction();
         try {
-            execSQL(db, CREATE_DATABASE, "onCreate");
+            execSQL(db, CREATE_TABLE_FUELING, "onCreate");
+
+            execSQL(db, CREATE_TABLE_SYNC_CHANGED, "onCreate");
+            execSQL(db, CREATE_TABLE_SYNC_DELETED, "onCreate");
+            execSQL(db, CREATE_TABLE_SYNC_REVISION, "onCreate");
+
+            execSQL(db, CREATE_TRIGGER_SYNC_INSERT, "onCreate");
+            execSQL(db, CREATE_TRIGGER_SYNC_UPDATE, "onCreate");
+            execSQL(db, CREATE_TRIGGER_SYNC_DELETE, "onCreate");
+
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -233,10 +264,13 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
 
         try {
-            Cursor cursor = db.query(TABLE_FUELING,
-                    new String[]{_ID, COLUMN_DATETIME, COLUMN_COST, COLUMN_VOLUME, COLUMN_TOTAL},
-                    _ID + "=?",
-                    new String[]{String.valueOf(id)}, null, null, null);
+//            Cursor cursor = db.query(TABLE_FUELING,
+//                    new String[]{_ID, COLUMN_DATETIME, COLUMN_COST, COLUMN_VOLUME, COLUMN_TOTAL},
+//                    _ID + "=?",
+//                    new String[]{String.valueOf(id)}, null, null, null);
+
+            Cursor cursor = rawQuery(SELECT_ALL +
+                    String.format(SELECT_ALL_WHERE_ID, id), "getFuelingRecord");
 
             if (cursor != null)
                 try {
@@ -372,11 +406,11 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getChangedRecords() {
-        return null;
+        return rawQuery(SELECT_SYNC_CHANGED, "getChangedRecords");
     }
 
     public Cursor getDeletedRecords() {
-        return null;
+        return rawQuery(SELECT_SYNC_DELETED, "getDeletedRecords");
     }
 
     public Cursor getAllRecords() {

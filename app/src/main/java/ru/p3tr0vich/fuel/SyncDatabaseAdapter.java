@@ -64,10 +64,10 @@ public class SyncDatabaseAdapter {
                 result.add("+");
 
                 do {
-                    result.add(Long.toString(cursor.getLong(FuelingDBHelper.COLUMN_DATETIME_INDEX)) + '\t' +
-                            Float.toString(cursor.getFloat(FuelingDBHelper.COLUMN_COST_INDEX)) + '\t' +
-                            Float.toString(cursor.getFloat(FuelingDBHelper.COLUMN_VOLUME_INDEX)) + '\t' +
-                            Float.toString(cursor.getFloat(FuelingDBHelper.COLUMN_TOTAL_INDEX)));
+                    result.add(Long.toString(cursor.getLong(FuelingDBHelper.TABLE_FUELING_COLUMN_DATETIME_INDEX)) + '\t' +
+                            Float.toString(cursor.getFloat(FuelingDBHelper.TABLE_FUELING_COLUMN_COST_INDEX)) + '\t' +
+                            Float.toString(cursor.getFloat(FuelingDBHelper.TABLE_FUELING_COLUMN_VOLUME_INDEX)) + '\t' +
+                            Float.toString(cursor.getFloat(FuelingDBHelper.TABLE_FUELING_COLUMN_TOTAL_INDEX)));
                 } while (cursor.moveToNext());
             }
             cursor.close();
@@ -81,7 +81,9 @@ public class SyncDatabaseAdapter {
                     result.add("-");
 
                     do {
-                        result.add(Long.toString(cursor.getLong(FuelingDBHelper.COLUMN_DATETIME_INDEX)));
+                        result.add(
+                                Long.toString(
+                                        cursor.getLong(FuelingDBHelper.TABLE_SYNC_DELETED_COLUMN_DATETIME_INDEX)));
                     } while (cursor.moveToNext());
                 }
                 cursor.close();

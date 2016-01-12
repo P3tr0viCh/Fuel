@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-class SyncPreferencesAdapter {
+class SyncAdapterPreferences {
 
     private final ContentProviderClient mProvider;
 
-    SyncPreferencesAdapter(ContentProviderClient provider) {
+    SyncAdapterPreferences(ContentProviderClient provider) {
         mProvider = provider;
     }
 
@@ -26,9 +26,9 @@ class SyncPreferencesAdapter {
         final Cursor cursor = mProvider.query(SyncProvider.URI_PREFERENCES, null, preference, null, null);
 
         if (cursor == null)
-            throw new FormatException("SyncPreferencesAdapter -- query: cursor == null");
+            throw new FormatException("SyncAdapterPreferences -- query: cursor == null");
         else if (cursor.getCount() == 0)
-            throw new FormatException("SyncPreferencesAdapter -- query: cursor.getCount() == 0");
+            throw new FormatException("SyncAdapterPreferences -- query: cursor.getCount() == 0");
 
         ContentValues result = new ContentValues();
 
@@ -127,15 +127,30 @@ class SyncPreferencesAdapter {
         update(contentValues, PreferenceManagerFuel.PREF_CHANGED);
     }
 
-    public int getRevision() throws RemoteException, FormatException {
-        return query(PreferenceManagerFuel.PREF_REVISION)
-                .getAsInteger(PreferenceManagerFuel.PREF_REVISION);
+    private int getRevision(String keyRevision) throws RemoteException, FormatException {
+        return query(keyRevision).getAsInteger(keyRevision);
     }
 
-    public void putRevision(int revision) throws RemoteException {
+    public int getDatabaseRevision() throws RemoteException, FormatException {
+        return getRevision(PreferenceManagerFuel.PREF_DATABASE_REVISION);
+    }
+
+    public int getPreferencesRevision() throws RemoteException, FormatException {
+        return getRevision(PreferenceManagerFuel.PREF_PREFERENCES_REVISION);
+    }
+
+    private void putRevision(String keyRevision, int revision) throws RemoteException {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(PreferenceManagerFuel.PREF_REVISION, revision);
-        update(contentValues, PreferenceManagerFuel.PREF_REVISION);
+        contentValues.put(keyRevision, revision);
+        update(contentValues, keyRevision);
+    }
+
+    public void putDatabaseRevision(int revision) throws RemoteException {
+        putRevision(PreferenceManagerFuel.PREF_DATABASE_REVISION, revision);
+    }
+
+    public void putPreferencesRevision(int revision) throws RemoteException {
+        putRevision(PreferenceManagerFuel.PREF_PREFERENCES_REVISION, revision);
     }
 
     public void putLastSync(@Nullable Date dateTime) throws RemoteException {

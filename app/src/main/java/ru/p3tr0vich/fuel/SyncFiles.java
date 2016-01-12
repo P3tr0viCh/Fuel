@@ -39,21 +39,21 @@ class SyncFiles {
 
         File syncDir = new File(context.getCacheDir(), DIR_SYNC);
 
+        mLocalDirDatabase = new File(syncDir, DIR_DATABASE);
         mLocalDirPreferences = new File(syncDir, DIR_PREFERENCES);
-        mLocalDirDatabase = new File(syncDir, DIR_PREFERENCES);
-
-        mLocalFilePreferences = new File(mLocalDirPreferences, FILE_PREFERENCES);
-        mLocalFilePreferencesRevision = new File(mLocalDirPreferences, FILE_PREFERENCES_REVISION);
 
         mLocalFileDatabase = new File(mLocalDirDatabase, FILE_DATABASE);
         mLocalFileDatabaseRevision = new File(mLocalDirDatabase, FILE_DATABASE_REVISION);
 
+        mServerDirDatabase = new File(DIR_DATABASE + (isDebuggable ? DIR_DEBUG : ""));
+        mServerFileDatabaseRevision = new File(mServerDirDatabase, FILE_DATABASE_REVISION);
+
+        mLocalFilePreferences = new File(mLocalDirPreferences, FILE_PREFERENCES);
+        mLocalFilePreferencesRevision = new File(mLocalDirPreferences, FILE_PREFERENCES_REVISION);
+
         mServerDirPreferences = new File(DIR_PREFERENCES + (isDebuggable ? DIR_DEBUG : ""));
         mServerFilePreferences = new File(mServerDirPreferences, FILE_PREFERENCES);
         mServerFilePreferencesRevision = new File(mServerDirPreferences, FILE_PREFERENCES_REVISION);
-
-        mServerDirDatabase = new File(DIR_DATABASE + (isDebuggable ? DIR_DEBUG : ""));
-        mServerFileDatabaseRevision = new File(mServerDirDatabase, FILE_DATABASE_REVISION);
     }
 
     public File getLocalDirPreferences() {
@@ -94,6 +94,10 @@ class SyncFiles {
 
     public File getServerDirDatabase() {
         return mServerDirDatabase;
+    }
+
+    public File getServerFileDatabase(int revision) {
+        return new File(mServerDirDatabase, String.valueOf(revision));
     }
 
     public File getServerFileDatabaseRevision() {

@@ -25,160 +25,86 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_COST = "cost";
     private static final String COLUMN_VOLUME = "volume";
     private static final String COLUMN_TOTAL = "total";
+    private static final String COLUMN_SYNC_ID = "sync_id";
+    private static final String COLUMN_CHANGED = "changed";
+    private static final String COLUMN_DELETED = "deleted";
 
     private static final String COLUMN_YEAR = "year";
     private static final String COLUMN_MONTH = "month";
-    private static final String COLUMN_REVISION = "revision";
-    private static final String COLUMN_IS_CHANGED = "is_changed";
-
-    public static final int TABLE_FUELING_COLUMN_ID_INDEX = 0;
-    public static final int TABLE_FUELING_COLUMN_DATETIME_INDEX = 1;
-    public static final int TABLE_FUELING_COLUMN_COST_INDEX = 2;
-    public static final int TABLE_FUELING_COLUMN_VOLUME_INDEX = 3;
-    public static final int TABLE_FUELING_COLUMN_TOTAL_INDEX = 4;
-
-    public static final int TABLE_SYNC_DELETED_COLUMN_DATETIME_INDEX = 0;
 
     private static final int DATABASE_VERSION = 1;
 
     private static final String FUEL_DB = "fuel.db";
 
     private static final String TABLE_FUELING = "fueling";
-    private static final String TABLE_SYNC_CHANGED = "sync_changed";
-    private static final String TABLE_SYNC_DELETED = "sync_deleted";
-    private static final String TABLE_SYNC_REVISION = "sync_revision";
-
-    private static final String TRIGGER_SYNC_INSERT = "sync_insert";
-    private static final String TRIGGER_SYNC_UPDATE = "sync_update";
-    private static final String TRIGGER_SYNC_DELETE = "sync_delete";
 
     private static final String SELECT = "SELECT ";
     private static final String FROM = " FROM ";
     private static final String WHERE = " WHERE ";
     private static final String GROUP_BY = " GROUP BY ";
     private static final String ORDER_BY = " ORDER BY ";
+    private static final String AND = " AND ";
     private static final String AS = " AS ";
 
-    private static final String ALL = "*";
+    private static final String TABLE_FUELING_COLUMNS =
+            _ID + ", " + COLUMN_DATETIME + ", " +
+                    COLUMN_COST + ", " + COLUMN_VOLUME + ", " + COLUMN_TOTAL;
+    private static final String TABLE_FUELING_COLUMNS_WITH_SYNC =
+            TABLE_FUELING_COLUMNS + ", " +
+                    COLUMN_SYNC_ID + ", " + COLUMN_DELETED;
 
-    private static final String SELECT_ALL = SELECT + ALL + FROM + TABLE_FUELING;
-    private static final String SELECT_ALL_WHERE_ID = WHERE + _ID + "=%d";
+    public static final int TABLE_FUELING_COLUMN_ID_INDEX = 0;
+    public static final int TABLE_FUELING_COLUMN_DATETIME_INDEX = 1;
+    public static final int TABLE_FUELING_COLUMN_COST_INDEX = 2;
+    public static final int TABLE_FUELING_COLUMN_VOLUME_INDEX = 3;
+    public static final int TABLE_FUELING_COLUMN_TOTAL_INDEX = 4;
+    public static final int TABLE_FUELING_COLUMN_SYNC_ID_INDEX = 5;
+    public static final int TABLE_FUELING_COLUMN_DELETED_INDEX = 6;
+
+    private static final String EQUAL = "=";
+    private static final String TRUE = "1";
+    private static final String FALSE = "0";
+
+    private static final String SELECT_ALL = SELECT + TABLE_FUELING_COLUMNS + FROM + TABLE_FUELING;
 
     private static final String SELECT_YEARS = SELECT +
             "strftime('%Y', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + COLUMN_YEAR +
             FROM + TABLE_FUELING;
-    private static final String SELECT_YEARS_WHERE = WHERE + COLUMN_YEAR + "<'%d'" +
-            GROUP_BY + COLUMN_YEAR + ORDER_BY + COLUMN_YEAR + " ASC";
 
-    private static final String SELECT_SUM_BY_MONTHS_IN_YEAR = SELECT +
+    private static final String WHERE_ID = _ID + EQUAL + "%d";
+    private static final String WHERE_RECORD_NOT_DELETED = COLUMN_DELETED + EQUAL + FALSE;
+    private static final String WHERE_YEAR = COLUMN_YEAR + "<'%d'";
+
+    private static final String SELECT_SUM_BY_MONTHS = SELECT +
             "SUM(" + COLUMN_COST + "), " +
             "strftime('%m', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + COLUMN_MONTH +
             FROM + TABLE_FUELING;
 
-    private static final String SELECT_REVISION =
-            SELECT + COLUMN_REVISION + FROM + TABLE_SYNC_REVISION;
-
-    private static final String SELECT_IS_CHANGED = SELECT +
-            "(SELECT COUNT(*)" + FROM + TABLE_SYNC_CHANGED + ") + " +
-            "(SELECT COUNT(*)" + FROM + TABLE_SYNC_DELETED + ")" +
-            AS + COLUMN_IS_CHANGED;
-
-    private static final String SELECT_SYNC_CHANGED = SELECT + TABLE_FUELING + "." + ALL +
-            FROM + TABLE_FUELING + ", " + TABLE_SYNC_CHANGED +
-            WHERE +
-            TABLE_FUELING + "." + COLUMN_DATETIME + "=" + TABLE_SYNC_CHANGED + "." + COLUMN_DATETIME;
-
-    private static final String SELECT_SYNC_DELETED =
-            SELECT + COLUMN_DATETIME + FROM + TABLE_SYNC_DELETED;
+    private static final String SELECT_SYNC_CHANGED = SELECT + TABLE_FUELING_COLUMNS_WITH_SYNC +
+            FROM + TABLE_FUELING +
+            WHERE + COLUMN_CHANGED + EQUAL + TRUE;
 
     private static final String IN_DATES = " BETWEEN %1$d AND %2$d";
 
     private static final String GROUP_BY_MONTH = GROUP_BY + COLUMN_MONTH;
+    private static final String GROUP_BY_YEAR = GROUP_BY + COLUMN_YEAR;
     private static final String ORDER_BY_DATETIME = ORDER_BY + COLUMN_DATETIME + " DESC";
+    private static final String ORDER_BY_YEAR = ORDER_BY + COLUMN_YEAR + " ASC";
 
     private static final String CREATE_TABLE_FUELING = "CREATE TABLE " + TABLE_FUELING + "(" +
             _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_DATETIME + " INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE, " +
             COLUMN_COST + " REAL DEFAULT 0, " +
             COLUMN_VOLUME + " REAL DEFAULT 0, " +
-            COLUMN_TOTAL + " REAL DEFAULT 0" +
+            COLUMN_TOTAL + " REAL DEFAULT 0, " +
+            COLUMN_SYNC_ID + " INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE, " +
+            COLUMN_CHANGED + " INTEGER DEFAULT " + TRUE + ", " +
+            COLUMN_DELETED + " INTEGER DEFAULT " + FALSE +
             ");";
-    private static final String CREATE_TABLE_SYNC_CHANGED = "CREATE TABLE " + TABLE_SYNC_CHANGED + "(" +
-            _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            COLUMN_DATETIME + " INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE" +
-            ");";
-    private static final String CREATE_TABLE_SYNC_DELETED = "CREATE TABLE " + TABLE_SYNC_DELETED + "(" +
-            _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            COLUMN_DATETIME + " INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE" +
-            ");";
-    private static final String CREATE_TABLE_SYNC_REVISION = "CREATE TABLE " + TABLE_SYNC_REVISION + "(" +
-            COLUMN_REVISION + " INTEGER PRIMARY KEY" +
-            ");";
-
-    // Вставка новой записи
-    private static final String CREATE_TRIGGER_SYNC_INSERT = "CREATE TRIGGER " + TRIGGER_SYNC_INSERT +
-            " AFTER INSERT ON " + TABLE_FUELING + " FOR EACH ROW" +
-            " BEGIN" +
-
-            // Вставляем в таблицу новых или изменённых записей
-            " INSERT OR REPLACE INTO " + TABLE_SYNC_CHANGED +
-            "(" + COLUMN_DATETIME + ")" +
-            " VALUES (NEW." + COLUMN_DATETIME + ");" +
-
-            // Удаляем из таблицы удалённых записей
-            " DELETE FROM " + TABLE_SYNC_DELETED +
-            " WHERE " + COLUMN_DATETIME + "=NEW." + COLUMN_DATETIME + ";" +
-            " END;";
-    // Изменение существующей записи. Может измениться поле даты
-    private static final String CREATE_TRIGGER_SYNC_UPDATE = "CREATE TRIGGER " + TRIGGER_SYNC_UPDATE +
-            " AFTER UPDATE ON " + TABLE_FUELING + " FOR EACH ROW" +
-            " BEGIN" +
-
-            // TODO: CASE, IF in Sqlite?
-
-            // Если изменилось поле даты
-            " CASE " +
-            " WHEN NEW." + COLUMN_DATETIME + "<>OLD." + COLUMN_DATETIME +
-            " THEN " +
-            // Удаляем из таблицы новых или изменённых записей старую дату
-            " DELETE FROM " + TABLE_SYNC_CHANGED +
-            " WHERE " + COLUMN_DATETIME + "=OLD." + COLUMN_DATETIME + ";" +
-            // Вставляем в таблицу удалённых записей старую дату
-            " INSERT OR REPLACE INTO " + TABLE_SYNC_DELETED +
-            "(" + COLUMN_DATETIME + ")" +
-            " VALUES (OLD." + COLUMN_DATETIME + ");" +
-            " END;" +
-
-            // Вставляем в таблицу новых или изменённых записей
-            " INSERT OR REPLACE INTO " + TABLE_SYNC_CHANGED +
-            "(" + COLUMN_DATETIME + ")" +
-            " VALUES (NEW." + COLUMN_DATETIME + ");" +
-
-            // Удаляем из таблицы удалённых записей
-            " DELETE FROM " + TABLE_SYNC_DELETED +
-            " WHERE " + COLUMN_DATETIME + "=NEW." + COLUMN_DATETIME + ";" +
-            " END;";
-    // Удаление записи
-    private static final String CREATE_TRIGGER_SYNC_DELETE = "CREATE TRIGGER " + TRIGGER_SYNC_DELETE +
-            " AFTER DELETE ON " + TABLE_FUELING + " FOR EACH ROW" +
-            " BEGIN" +
-
-            // Вставляем в таблицу удалённых записей
-            " INSERT OR REPLACE INTO " + TABLE_SYNC_DELETED +
-            "(" + COLUMN_DATETIME + ")" +
-            " VALUES (OLD." + COLUMN_DATETIME + ");" +
-
-            // Удаляем из таблицы новых или изменённых записей
-            " DELETE FROM " + TABLE_SYNC_CHANGED +
-            " WHERE " + COLUMN_DATETIME + "=OLD." + COLUMN_DATETIME + ";" +
-            " END;";
 
     private static final String CLEAR_TABLE = "DELETE FROM ";
 
     private static final String CLEAR_TABLE_FUELING = CLEAR_TABLE + TABLE_FUELING;
-    private static final String CLEAR_TABLE_SYNC_CHANGED = CLEAR_TABLE + TABLE_SYNC_CHANGED;
-    private static final String CLEAR_TABLE_SYNC_DELETED = CLEAR_TABLE + TABLE_SYNC_DELETED;
-    private static final String CLEAR_TABLE_SYNC_REVISION = CLEAR_TABLE + TABLE_SYNC_REVISION;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FILTER_MODE_ALL, FILTER_MODE_CURRENT_YEAR, FILTER_MODE_YEAR, FILTER_MODE_DATES})
@@ -210,6 +136,10 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         setFilter(filter);
     }
 
+    public static boolean getBoolean(@NonNull Cursor cursor, int columnIndex) {
+        return cursor.getString(columnIndex).equals(TRUE);
+    }
+
     private void execSQL(@NonNull SQLiteDatabase db, @NonNull String sql, @NonNull String function) {
         UtilsLog.d(TAG, function, "sql == " + sql);
         db.execSQL(sql);
@@ -227,22 +157,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.beginTransaction();
-        try {
-            execSQL(db, CREATE_TABLE_FUELING, "onCreate");
-
-            execSQL(db, CREATE_TABLE_SYNC_CHANGED, "onCreate");
-            execSQL(db, CREATE_TABLE_SYNC_DELETED, "onCreate");
-            execSQL(db, CREATE_TABLE_SYNC_REVISION, "onCreate");
-
-            execSQL(db, CREATE_TRIGGER_SYNC_INSERT, "onCreate");
-            execSQL(db, CREATE_TRIGGER_SYNC_UPDATE, "onCreate");
-            execSQL(db, CREATE_TRIGGER_SYNC_DELETE, "onCreate");
-
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
+        execSQL(db, CREATE_TABLE_FUELING, "onCreate");
     }
 
     @Override
@@ -270,7 +185,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 //                    new String[]{String.valueOf(id)}, null, null, null);
 
             Cursor cursor = rawQuery(SELECT_ALL +
-                    String.format(SELECT_ALL_WHERE_ID, id), "getFuelingRecord");
+                    WHERE + String.format(WHERE_ID, id), "getFuelingRecord");
 
             if (cursor != null)
                 try {
@@ -289,10 +204,15 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private long doInsertRecord(@NonNull SQLiteDatabase db, @NonNull FuelingRecord fuelingRecord) {
         ContentValues values = new ContentValues();
 
-        values.put(COLUMN_DATETIME, fuelingRecord.getDateTime());
+        final long dataTime = fuelingRecord.getDateTime();
+
+        values.put(COLUMN_DATETIME, dataTime);
         values.put(COLUMN_COST, fuelingRecord.getCost());
         values.put(COLUMN_VOLUME, fuelingRecord.getVolume());
         values.put(COLUMN_TOTAL, fuelingRecord.getTotal());
+        values.put(COLUMN_SYNC_ID, dataTime);
+        values.put(COLUMN_CHANGED, TRUE);
+        values.put(COLUMN_DELETED, FALSE);
 
         return db.insert(TABLE_FUELING, null, values); // TODO: add throw
     }
@@ -336,6 +256,8 @@ class FuelingDBHelper extends SQLiteOpenHelper {
             values.put(COLUMN_COST, fuelingRecord.getCost());
             values.put(COLUMN_VOLUME, fuelingRecord.getVolume());
             values.put(COLUMN_TOTAL, fuelingRecord.getTotal());
+            values.put(COLUMN_CHANGED, TRUE);
+            values.put(COLUMN_DELETED, FALSE);
 
             return db.update(TABLE_FUELING,
                     values, _ID + "=?", new String[]{String.valueOf(fuelingRecord.getId())});
@@ -346,12 +268,25 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
     public int deleteRecord(@NonNull FuelingRecord fuelingRecord) {
         SQLiteDatabase db = getWritableDatabase();
+
         try {
-            return db.delete(TABLE_FUELING,
-                    _ID + "=?", new String[]{String.valueOf(fuelingRecord.getId())});
+            ContentValues values = new ContentValues();
+
+            values.put(COLUMN_CHANGED, TRUE);
+            values.put(COLUMN_DELETED, TRUE);
+
+            return db.update(TABLE_FUELING,
+                    values, _ID + "=?", new String[]{String.valueOf(fuelingRecord.getId())});
         } finally {
             db.close();
         }
+//        SQLiteDatabase db = getWritableDatabase();
+//        try {
+//            return db.delete(TABLE_FUELING,
+//                    _ID + "=?", new String[]{String.valueOf(fuelingRecord.getId())});
+//        } finally {
+//            db.close();
+//        }
     }
 
     @NonNull
@@ -388,29 +323,20 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getYears() {
-        return rawQuery(SELECT_YEARS + String.format(SELECT_YEARS_WHERE, UtilsDate.getCurrentYear()),
+        return rawQuery(SELECT_YEARS +
+                        WHERE + String.format(WHERE_YEAR, UtilsDate.getCurrentYear()) +
+                        AND + WHERE_RECORD_NOT_DELETED +
+                        GROUP_BY_YEAR + ORDER_BY_YEAR,
                 "getYears");
     }
 
     public Cursor getSumByMonthsForYear() {
-        return rawQuery(SELECT_SUM_BY_MONTHS_IN_YEAR + filterModeToSql() + GROUP_BY_MONTH,
+        return rawQuery(SELECT_SUM_BY_MONTHS + filterModeToSql() + GROUP_BY_MONTH,
                 "getSumByMonthsForYear");
-    }
-
-    public Cursor getRevision() {
-        return rawQuery(SELECT_REVISION, "getRevision");
-    }
-
-    public Cursor isChanged() {
-        return rawQuery(SELECT_IS_CHANGED, "isChanged");
     }
 
     public Cursor getChangedRecords() {
         return rawQuery(SELECT_SYNC_CHANGED, "getChangedRecords");
-    }
-
-    public Cursor getDeletedRecords() {
-        return rawQuery(SELECT_SYNC_DELETED, "getDeletedRecords");
     }
 
     public Cursor getAllRecords() {

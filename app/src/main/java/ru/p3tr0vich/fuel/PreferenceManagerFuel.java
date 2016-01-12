@@ -19,7 +19,9 @@ class PreferenceManagerFuel {
 
     private static final String TAG = "PreferenceManagerFuel";
 
-    public static final String PREF_REVISION = "revision";
+    public static final String PREF_DATABASE_REVISION = "database revision";
+    public static final String PREF_PREFERENCES_REVISION = "preferences revision";
+
     public static final String PREF_CHANGED = "changed";
     public static final String PREF_LAST_SYNC = "last sync";
 
@@ -80,7 +82,10 @@ class PreferenceManagerFuel {
     }
 
     private static boolean isSyncKey(String key) {
-        return !key.equals(PREF_CHANGED) && !key.equals(PREF_REVISION) && !key.equals(PREF_LAST_SYNC) &&
+        return !key.equals(PREF_CHANGED) &&
+                !key.equals(PREF_DATABASE_REVISION) &&
+                !key.equals(PREF_PREFERENCES_REVISION) &&
+                !key.equals(PREF_LAST_SYNC) &&
                 !key.equals(sContext.getString(R.string.pref_sync_enabled));
     }
 
@@ -112,17 +117,17 @@ class PreferenceManagerFuel {
         return sSharedPreferences.getBoolean(sContext.getString(R.string.pref_sync_enabled), false);
     }
 
-    private static int getRevision() {
-        return sSharedPreferences.getInt(PREF_REVISION, -1);
+    private static int getRevision(String keyRevision) {
+        return sSharedPreferences.getInt(keyRevision, -1);
     }
 
-    private static void putRevision(final int revision) {
+    private static void putRevision(final String keyRevision, final int revision) {
         sSharedPreferences
                 .edit()
-                .putInt(PREF_REVISION, revision)
+                .putInt(keyRevision, revision)
                 .apply();
 
-        UtilsLog.d(TAG, "putRevision", "revision == " + revision);
+        UtilsLog.d(TAG, "putRevision", keyRevision + " == " + revision);
     }
 
     @NonNull
@@ -302,8 +307,9 @@ class PreferenceManagerFuel {
                 case PREF_CHANGED:
                     result.put(preference, isChanged());
                     break;
-                case PREF_REVISION:
-                    result.put(preference, getRevision());
+                case PREF_DATABASE_REVISION:
+                case PREF_PREFERENCES_REVISION:
+                    result.put(preference, getRevision(preference));
                     break;
                 case PREF_LAST_SYNC:
                     result.put(preference, getLastSync());
@@ -355,8 +361,9 @@ class PreferenceManagerFuel {
                 case PREF_CHANGED:
                     putChanged(preferences.getAsBoolean(preference));
                     break;
-                case PREF_REVISION:
-                    putRevision(preferences.getAsInteger(preference));
+                case PREF_DATABASE_REVISION:
+                case PREF_PREFERENCES_REVISION:
+                    putRevision(preference, preferences.getAsInteger(preference));
                     break;
                 case PREF_LAST_SYNC:
                     putLastSync(preferences.getAsString(preference));

@@ -663,13 +663,10 @@ public class ActivityMain extends AppCompatActivity implements
                 break;
             case START_SYNC_ACTIVITY_DESTROY:
                 UtilsLog.d(TAG, "startSync", "START_SYNC_ACTIVITY_DESTROY");
-                if (!PreferenceManagerFuel.isChanged()) return;
-
                 showDialogs = false;
                 startIfSyncActive = true;
                 syncDatabase = true;
-                syncPreferences = true;
-                break;
+                syncPreferences = PreferenceManagerFuel.isChanged();
         }
 
         stopTimerPreferenceChanged();

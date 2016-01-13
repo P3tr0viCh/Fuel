@@ -24,6 +24,8 @@ public class SyncProvider extends ContentProvider {
     public static final String DATABASE_GET_ALL_RECORDS = "DATABASE_GET_ALL_RECORDS";
     public static final String DATABASE_GET_CHANGED_RECORDS = "DATABASE_GET_CHANGED_RECORDS";
 
+    public static final String DATABASE_CLEAR_SYNC_RECORDS = "DATABASE_CLEAR_SYNC_RECORDS";
+
     @Override
     public boolean onCreate() {
         return true;
@@ -33,18 +35,20 @@ public class SyncProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-        if (!uri.getAuthority().equals(URI_AUTHORITY)) return null;
+        if (!URI_AUTHORITY.equals(uri.getAuthority())) return null;
 
         String path = uri.getPath();
+
+        if (path == null) return null;
 
         if (path.contains(URI_PATH_DATABASE)) {
             FuelingDBHelper dbHelper = new FuelingDBHelper();
 
             if (DATABASE_GET_ALL_RECORDS.equals(selection))
-                return dbHelper.getAllRecords();
+                return dbHelper.getSyncAllRecords();
 
             if (DATABASE_GET_CHANGED_RECORDS.equals(selection))
-                return dbHelper.getChangedRecords();
+                return dbHelper.getSyncChangedRecords();
 
             return null;
         }
@@ -82,9 +86,22 @@ public class SyncProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-        if (!uri.getAuthority().equals(URI_AUTHORITY)) return -1;
+        if (!URI_AUTHORITY.equals(uri.getAuthority())) return -1;
 
         String path = uri.getPath();
+
+        if (path == null) return -1;
+
+        if (path.contains(URI_PATH_DATABASE)) {
+            FuelingDBHelper dbHelper = new FuelingDBHelper();
+
+            if (DATABASE_CLEAR_SYNC_RECORDS.equals(selection)) {
+                dbHelper.clearSyncRecords();
+                return 0;
+            }
+
+            return -1;
+        }
 
         if (path.contains(URI_PATH_PREFERENCES)) {
             PreferenceManagerFuel.setPreferences(values, selection);

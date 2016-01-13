@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-class SyncAdapterPreferences {
+class SyncProviderPreferences {
 
     private final ContentProviderClient mProvider;
 
-    SyncAdapterPreferences(ContentProviderClient provider) {
+    SyncProviderPreferences(ContentProviderClient provider) {
         mProvider = provider;
     }
 
@@ -26,9 +26,9 @@ class SyncAdapterPreferences {
         final Cursor cursor = mProvider.query(SyncProvider.URI_PREFERENCES, null, preference, null, null);
 
         if (cursor == null)
-            throw new FormatException("SyncAdapterPreferences -- query: cursor == null");
+            throw new FormatException("SyncProviderPreferences -- query: cursor == null");
         else if (cursor.getCount() == 0)
-            throw new FormatException("SyncAdapterPreferences -- query: cursor.getCount() == 0");
+            throw new FormatException("SyncProviderPreferences -- query: cursor.getCount() == 0");
 
         ContentValues result = new ContentValues();
 

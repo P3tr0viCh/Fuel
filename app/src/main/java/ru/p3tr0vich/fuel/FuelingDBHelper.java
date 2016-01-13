@@ -39,6 +39,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String TABLE_FUELING = "fueling";
 
     private static final String SELECT = "SELECT ";
+    private static final String DELETE = "DELETE";
     private static final String FROM = " FROM ";
     private static final String WHERE = " WHERE ";
     private static final String GROUP_BY = " GROUP BY ";
@@ -80,11 +81,13 @@ class FuelingDBHelper extends SQLiteOpenHelper {
             "strftime('%m', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + COLUMN_MONTH +
             FROM + TABLE_FUELING;
 
+    private static final String SELECT_SYNC_ALL = SELECT + TABLE_FUELING_COLUMNS_WITH_SYNC +
+            FROM + TABLE_FUELING;
     private static final String SELECT_SYNC_CHANGED = SELECT + TABLE_FUELING_COLUMNS_WITH_SYNC +
             FROM + TABLE_FUELING +
             WHERE + COLUMN_CHANGED + EQUAL + TRUE;
 
-    private static final String IN_DATES = " BETWEEN %1$d AND %2$d";
+    private static final String BETWEEN_DATES = " BETWEEN %1$d AND %2$d";
 
     private static final String GROUP_BY_MONTH = GROUP_BY + COLUMN_MONTH;
     private static final String GROUP_BY_YEAR = GROUP_BY + COLUMN_YEAR;
@@ -102,9 +105,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
             COLUMN_DELETED + " INTEGER DEFAULT " + FALSE +
             ");";
 
-    private static final String CLEAR_TABLE = "DELETE FROM ";
-
-    private static final String CLEAR_TABLE_FUELING = CLEAR_TABLE + TABLE_FUELING;
+    private static final String CLEAR_TABLE_FUELING = DELETE + FROM + TABLE_FUELING;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FILTER_MODE_ALL, FILTER_MODE_CURRENT_YEAR, FILTER_MODE_YEAR, FILTER_MODE_DATES})
@@ -179,11 +180,6 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
 
         try {
-//            Cursor cursor = db.query(TABLE_FUELING,
-//                    new String[]{_ID, COLUMN_DATETIME, COLUMN_COST, COLUMN_VOLUME, COLUMN_TOTAL},
-//                    _ID + "=?",
-//                    new String[]{String.valueOf(id)}, null, null, null);
-
             Cursor cursor = rawQuery(SELECT_ALL +
                     WHERE + String.format(WHERE_ID, id), "getFuelingRecord");
 
@@ -280,19 +276,12 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         } finally {
             db.close();
         }
-//        SQLiteDatabase db = getWritableDatabase();
-//        try {
-//            return db.delete(TABLE_FUELING,
-//                    _ID + "=?", new String[]{String.valueOf(fuelingRecord.getId())});
-//        } finally {
-//            db.close();
-//        }
     }
 
     @NonNull
     private String filterModeToSql() {
         if (mFilter.filterMode == FILTER_MODE_ALL)
-            return "";
+            return WHERE + WHERE_RECORD_NOT_DELETED;
         else {
             Calendar dateFrom = Calendar.getInstance();
             Calendar dateTo = Calendar.getInstance();
@@ -313,7 +302,8 @@ class FuelingDBHelper extends SQLiteOpenHelper {
             UtilsDate.setEndOfDay(dateTo);
 
             return WHERE + COLUMN_DATETIME +
-                    String.format(IN_DATES, dateFrom.getTimeInMillis(), dateTo.getTimeInMillis());
+                    String.format(BETWEEN_DATES, dateFrom.getTimeInMillis(), dateTo.getTimeInMillis()) +
+                    AND + WHERE_RECORD_NOT_DELETED;
         }
     }
 
@@ -335,12 +325,33 @@ class FuelingDBHelper extends SQLiteOpenHelper {
                 "getSumByMonthsForYear");
     }
 
-    public Cursor getChangedRecords() {
-        return rawQuery(SELECT_SYNC_CHANGED, "getChangedRecords");
+    public Cursor getSyncChangedRecords() {
+        return rawQuery(SELECT_SYNC_CHANGED, "getSyncChangedRecords");
     }
 
-    public Cursor getAllRecords() {
-        return rawQuery(SELECT_ALL + ORDER_BY_DATETIME, "getAllRecords");
+    public Cursor getSyncAllRecords() {
+        return rawQuery(SELECT_SYNC_ALL, "getSyncAllRecords");
+    }
+
+    public void clearSyncRecords() {
+        SQLiteDatabase db = getWritableDatabase();
+        try {
+            db.beginTransaction();
+            try {
+                db.delete(TABLE_FUELING, COLUMN_DELETED + EQUAL + TRUE, null);
+
+                ContentValues values = new ContentValues();
+                values.put(COLUMN_CHANGED, FALSE);
+
+                db.update(TABLE_FUELING, values, COLUMN_CHANGED + EQUAL + TRUE, null);
+
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
+        } finally {
+            db.close();
+        }
     }
 
     @NonNull
@@ -349,7 +360,9 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getReadableDatabase();
         try {
-            Cursor cursor = rawQuery(db, SELECT_ALL + ORDER_BY_DATETIME, "getAllRecordsList");
+            Cursor cursor = rawQuery(db,
+                    SELECT_ALL + WHERE + WHERE_RECORD_NOT_DELETED + ORDER_BY_DATETIME,
+                    "getAllRecordsList");
             if (cursor != null)
                 try {
                     if (cursor.moveToFirst()) do

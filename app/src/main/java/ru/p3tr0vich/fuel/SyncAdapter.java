@@ -3,6 +3,7 @@ package ru.p3tr0vich.fuel;
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncResult;
 import android.nfc.FormatException;
@@ -102,6 +103,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             UtilsLog.d(TAG, "onPerformSync", "stop" +
                     (syncResult.hasError() ? ", errors == " + syncResult.toString() : ", all ok"));
+
+            if (extras.getBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, false)) syncResult.clear();
         }
     }
 
@@ -255,8 +258,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             UtilsLog.d(TAG, "syncDatabase", "localRevision > serverRevision");
 
-            syncDatabaseSave(syncLocal, syncYandexDisk, syncProviderDatabase, syncProviderPreferences,
-                    localRevision, true);
+//            syncDatabaseSave(syncLocal, syncYandexDisk, syncProviderDatabase, syncProviderPreferences,
+//                    localRevision, true);
         } else /* localRevision == serverRevision */ {
             // 1. Сихронизация выполняется в первый раз
             // (localRevision == -1, serverRevision == -1).
@@ -268,11 +271,12 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             if (localRevision == -1) localRevision = 0;
 
-            syncDatabaseSave(syncLocal, syncYandexDisk, syncProviderDatabase, syncProviderPreferences,
-                    localRevision, serverRevision == -1);
+//            syncDatabaseSave(syncLocal, syncYandexDisk, syncProviderDatabase, syncProviderPreferences,
+//                    localRevision, serverRevision == -1);
         }
 
-//        syncDatabaseLoad(syncLocal, syncYandexDisk, syncProviderPreferences, localRevision);
+//        syncDatabaseSave(syncLocal, syncYandexDisk, syncProviderDatabase, syncProviderPreferences, 1, false);
+        syncDatabaseLoad(syncLocal, syncYandexDisk, syncProviderDatabase, syncProviderPreferences, -1, 1);
     }
 
     private void syncDatabaseSave(SyncLocal syncLocal, SyncYandexDisk syncYandexDisk,
@@ -322,24 +326,35 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void syncDatabaseLoad(SyncLocal syncLocal, SyncYandexDisk syncYandexDisk,
-                                  SyncProviderPreferences syncProviderPreferences, int revision)
-            throws IOException, ServerException, RemoteException {
+                                  SyncProviderDatabase syncProviderDatabase,
+                                  SyncProviderPreferences syncProviderPreferences,
+                                  int localRevision, int serverRevision)
+            throws IOException, ServerException, RemoteException, FormatException {
         // 1) Получить файлы БД с сервера, объединить их в один и сохранить в папку кэша.
         // 2) Прочитать записи из файла в папке кэша.
         // 3) Сохранить полученные значения в БД.
         // 4) Сохранить флаг изменения настроек.
         // 5) Сохранить номер ревизии БД в настройках.
 
-//        syncYandexDisk.loadPreferences();
-        UtilsLog.d(TAG, "syncDatabaseLoad", "syncYandexDisk.loadPreferences() OK");
+        List<String> syncRecords = new ArrayList<>();
 
-        List<String> preferences = new ArrayList<>();
+        for (int revision = localRevision + 1; revision <= serverRevision; revision++) {
 
-//        syncLocal.loadPreferences(preferences);
-        UtilsLog.d(TAG, "syncDatabaseLoad", "syncLocal.loadPreferences() OK");
+            syncYandexDisk.loadDatabase(revision);
+            UtilsLog.d(TAG, "syncDatabaseLoad", "syncYandexDisk.loadDatabase(revision == " + revision + ") OK");
 
-//        syncProviderPreferences.setPreferences(preferences);
-        UtilsLog.d(TAG, "syncDatabaseLoad", "syncProviderPreferences.setPreferences() OK");
+            syncLocal.loadDatabase(syncRecords);
+            UtilsLog.d(TAG, "syncDatabaseLoad", "syncLocal.loadDatabase() OK");
+
+            // Если не удалять, будет HttpCodeException{code=416, response=null}
+            // в syncYandexDisk.loadDatabase(revision)
+            syncLocal.deleteLocalFileDatabase();
+        }
+
+//        for (String record : syncRecords) UtilsLog.d(TAG, record);
+
+        syncProviderDatabase.updateDatabase(syncRecords);
+        UtilsLog.d(TAG, "syncDatabaseLoad", "syncProviderDatabase.updateDatabase() OK");
 
 //        syncProviderPreferences.putChanged();
 //        syncProviderPreferences.putPreferencesRevision(revision);

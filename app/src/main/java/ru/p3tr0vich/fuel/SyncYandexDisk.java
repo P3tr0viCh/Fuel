@@ -96,8 +96,15 @@ class SyncYandexDisk {
         save(mSyncFiles.getServerFilePreferences(), mSyncFiles.getLocalFilePreferences());
     }
 
+    public void load(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
+        mRestClient.downloadFile(APP_DIR + serverFile.getPath(), localFile, null);
+    }
+
+    public void loadDatabase(int revision) throws IOException, ServerException {
+        load(mSyncFiles.getServerFileDatabase(revision), mSyncFiles.getLocalFileDatabase());
+    }
+
     public void loadPreferences() throws IOException, ServerException {
-        mRestClient.downloadFile(APP_DIR + mSyncFiles.getServerFilePreferences().getPath(),
-                mSyncFiles.getLocalFilePreferences(), null);
+        load(mSyncFiles.getServerFilePreferences(), mSyncFiles.getLocalFilePreferences());
     }
 }

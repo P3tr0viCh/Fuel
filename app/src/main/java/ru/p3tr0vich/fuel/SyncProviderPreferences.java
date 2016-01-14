@@ -14,6 +14,8 @@ import java.util.List;
 
 class SyncProviderPreferences {
 
+    private static final String TAG = "SyncProviderPreferences";
+
     private final ContentProviderClient mProvider;
 
     SyncProviderPreferences(ContentProviderClient provider) {
@@ -26,9 +28,9 @@ class SyncProviderPreferences {
         final Cursor cursor = mProvider.query(SyncProvider.URI_PREFERENCES, null, preference, null, null);
 
         if (cursor == null)
-            throw new FormatException("SyncProviderPreferences -- query: cursor == null");
+            throw new FormatException(TAG + " -- query: cursor == null");
         else if (cursor.getCount() == 0)
-            throw new FormatException("SyncProviderPreferences -- query: cursor.getCount() == 0");
+            throw new FormatException(TAG + " -- query: cursor.getCount() == 0");
 
         ContentValues result = new ContentValues();
 

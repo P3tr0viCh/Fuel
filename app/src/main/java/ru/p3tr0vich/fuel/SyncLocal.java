@@ -91,4 +91,8 @@ class SyncLocal {
         UtilsFileIO.deleteFile(mSyncFiles.getLocalFileDatabase());
         UtilsFileIO.deleteFile(mSyncFiles.getLocalFileDatabaseRevision());
     }
+
+    public void deleteLocalFileDatabase() throws IOException {
+        UtilsFileIO.deleteFile(mSyncFiles.getLocalFileDatabase());
+    }
 }

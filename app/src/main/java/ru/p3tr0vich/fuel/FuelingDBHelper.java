@@ -21,11 +21,11 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     private static final String TAG = "FuelingDBHelper";
 
     private static final String _ID = "_id";
-    private static final String COLUMN_DATETIME = "datetime";
-    private static final String COLUMN_COST = "cost";
-    private static final String COLUMN_VOLUME = "volume";
-    private static final String COLUMN_TOTAL = "total";
-    private static final String COLUMN_SYNC_ID = "sync_id";
+    public static final String COLUMN_DATETIME = "datetime";
+    public static final String COLUMN_COST = "cost";
+    public static final String COLUMN_VOLUME = "volume";
+    public static final String COLUMN_TOTAL = "total";
+    public static final String COLUMN_SYNC_ID = "sync_id";
     private static final String COLUMN_CHANGED = "changed";
     private static final String COLUMN_DELETED = "deleted";
 
@@ -63,8 +63,8 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     public static final int TABLE_FUELING_COLUMN_DELETED_INDEX = 6;
 
     private static final String EQUAL = "=";
-    private static final String TRUE = "1";
-    private static final String FALSE = "0";
+    private static final int TRUE = 1;
+    private static final int FALSE = 0;
 
     private static final String SELECT_ALL = SELECT + TABLE_FUELING_COLUMNS + FROM + TABLE_FUELING;
 
@@ -138,7 +138,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
     }
 
     public static boolean getBoolean(@NonNull Cursor cursor, int columnIndex) {
-        return cursor.getString(columnIndex).equals(TRUE);
+        return cursor.getInt(columnIndex) == TRUE;
     }
 
     private void execSQL(@NonNull SQLiteDatabase db, @NonNull String sql, @NonNull String function) {
@@ -229,6 +229,8 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         try {
             execSQL(db, CLEAR_TABLE_FUELING, "swapRecords");
 
+            UtilsLog.d(TAG, "swapRecords", "records count == " + fuelingRecordList.size());
+
             db.beginTransaction();
             try {
                 for (FuelingRecord fuelingRecord : fuelingRecordList)
@@ -278,6 +280,29 @@ class FuelingDBHelper extends SQLiteOpenHelper {
         }
     }
 
+    public long insertBySyncId(@NonNull ContentValues values) {
+        values.put(COLUMN_CHANGED, FALSE);
+        values.put(COLUMN_DELETED, FALSE);
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        try {
+            return db.insert(TABLE_FUELING, null, values);
+        } finally {
+            db.close();
+        }
+    }
+
+    public int deleteBySyncId(int syncId) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        try {
+            return db.delete(TABLE_FUELING, COLUMN_SYNC_ID + EQUAL + syncId, null);
+        } finally {
+            db.close();
+        }
+    }
+
     @NonNull
     private String filterModeToSql() {
         if (mFilter.filterMode == FILTER_MODE_ALL)
@@ -294,7 +319,6 @@ class FuelingDBHelper extends SQLiteOpenHelper {
                         mFilter.year : UtilsDate.getCurrentYear();
 
                 dateFrom.set(year, Calendar.JANUARY, 1);
-
                 dateTo.set(year, Calendar.DECEMBER, 31);
             }
 

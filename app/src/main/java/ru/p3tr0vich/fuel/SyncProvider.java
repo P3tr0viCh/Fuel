@@ -16,8 +16,13 @@ public class SyncProvider extends ContentProvider {
     private static final String URI_PATH_DATABASE = "database";
     private static final String URI_PATH_PREFERENCES = "preferences";
 
+    private static final String URI_PATH_INSERT = "insert";
+
     public static final Uri URI_DATABASE =
             Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE);
+    public static final Uri URI_DATABASE_INSERT =
+            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE +
+                    "/" + URI_PATH_INSERT);
     public static final Uri URI_PREFERENCES =
             Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_PREFERENCES);
 
@@ -25,6 +30,8 @@ public class SyncProvider extends ContentProvider {
     public static final String DATABASE_GET_CHANGED_RECORDS = "DATABASE_GET_CHANGED_RECORDS";
 
     public static final String DATABASE_CLEAR_SYNC_RECORDS = "DATABASE_CLEAR_SYNC_RECORDS";
+
+    public static final String DATABASE_DELETE_RECORD = "DATABASE_DELETE_RECORD";
 
     @Override
     public boolean onCreate() {
@@ -75,11 +82,41 @@ public class SyncProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
+        if (!URI_AUTHORITY.equals(uri.getAuthority())) return null;
+
+        String path = uri.getPath();
+
+        if (path == null) return null;
+
+        if (path.contains(URI_PATH_DATABASE)) {
+            FuelingDBHelper dbHelper = new FuelingDBHelper();
+
+            if (path.contains(URI_PATH_INSERT)) {
+                dbHelper.insertBySyncId(values);
+
+                return null;
+            }
+        }
         return null;
     }
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+        if (!URI_AUTHORITY.equals(uri.getAuthority())) return -1;
+
+        String path = uri.getPath();
+
+        if (path == null) return -1;
+
+        if (path.contains(URI_PATH_DATABASE)) {
+            FuelingDBHelper dbHelper = new FuelingDBHelper();
+
+            if (DATABASE_DELETE_RECORD.equals(selection)) {
+                dbHelper.deleteBySyncId(Integer.valueOf(selectionArgs[0]));
+                return 0;
+            }
+        }
+
         return -1;
     }
 

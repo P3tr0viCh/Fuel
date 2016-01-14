@@ -617,6 +617,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     private void requestManualSync(boolean syncDatabase, boolean syncPreferences) {
         Bundle extras = new Bundle();
+
         extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
 

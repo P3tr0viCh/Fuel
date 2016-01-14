@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,7 +84,10 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mShowFooter = showFooter ? HF_SHOW : HF_HIDE;
     }
 
-    public void swapCursor(Cursor data) {
+    public void swapCursor(@Nullable Cursor data) {
+        UtilsLog.d("FuelingAdapter", "swapCursor",
+                data == null ? "data == null" : "data count == " + data.getCount());
+
         mFuelingRecords.clear();
 
         notifyDataSetChanged();

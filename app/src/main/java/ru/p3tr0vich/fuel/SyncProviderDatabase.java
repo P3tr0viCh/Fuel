@@ -90,15 +90,13 @@ class SyncProviderDatabase {
     public void updateDatabase(@NonNull List<String> syncRecords) {
         ContentValues values = new ContentValues();
 
-        final String separator = String.valueOf(SEPARATOR);
-
         String[] strings;
 
         for (String syncRecord : syncRecords) {
             if (TextUtils.isEmpty(syncRecord)) continue;
 
             try {
-                strings = TextUtils.split(syncRecord, separator);
+                strings = TextUtils.split(syncRecord, SEPARATOR);
 
                 values.clear();
 

@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.preference.PreferenceManager;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -62,6 +64,7 @@ class PreferenceManagerFuel {
 
     interface OnPreferencesUpdatingListener {
         void onPreferencesUpdateStart();
+
         void onPreferencesUpdateEnd();
     }
 
@@ -280,7 +283,7 @@ class PreferenceManagerFuel {
     }
 
     @NonNull
-    public static ContentValues getPreferences(@Nullable String preference) {
+    private static ContentValues getPreferences(@Nullable String preference) {
         ContentValues result = new ContentValues();
 
         if (TextUtils.isEmpty(preference)) {
@@ -322,40 +325,70 @@ class PreferenceManagerFuel {
         return result;
     }
 
+    @NonNull
+    private static Cursor getPreferencesCursor(@Nullable String preference) {
+        MatrixCursor matrixCursor = new MatrixCursor(new String[]{"key", "value"});
+
+        ContentValues preferences = PreferenceManagerFuel.getPreferences(preference);
+        for (String key : preferences.keySet())
+            matrixCursor.addRow(new Object[]{key, preferences.get(key)});
+
+        return matrixCursor;
+    }
+
+    @NonNull
+    public static Cursor getAllPreferences() {
+        return getPreferencesCursor(null);
+    }
+
+    @NonNull
+    public static Cursor getSinglePreference(@Nullable String preference) {
+        return getPreferencesCursor(preference);
+    }
+
     @SuppressLint("CommitPrefEdits")
-    public static void setPreferences(@Nullable ContentValues preferences,
-                                      @Nullable String preference) {
-        if (preferences == null || preferences.size() == 0) return;
+    public static int setPreferences(@Nullable ContentValues preferences,
+                                     @Nullable String preference) {
+        if (preferences == null || preferences.size() == 0) return -1;
+
+        UtilsLog.d(TAG, "setPreferences", "preference == " + preference +
+                ", mOnPreferencesUpdatingListener == " + mOnPreferencesUpdatingListener);
 
         if (TextUtils.isEmpty(preference)) {
             sSharedPreferences.unregisterOnSharedPreferenceChangeListener(sPreferenceChangeListener);
+            try {
 
-            if (mOnPreferencesUpdatingListener != null)
-                mOnPreferencesUpdatingListener.onPreferencesUpdateStart();
+                if (mOnPreferencesUpdatingListener != null)
+                    mOnPreferencesUpdatingListener.onPreferencesUpdateStart();
+                try {
+                    SharedPreferences.Editor editor = sSharedPreferences.edit();
 
-            SharedPreferences.Editor editor = sSharedPreferences.edit();
+                    Object value;
 
-            Object value;
+                    for (String key : preferences.keySet()) {
+                        value = preferences.get(key);
 
-            for (String key : preferences.keySet()) {
-                value = preferences.get(key);
+                        if (value instanceof String) editor.putString(key, (String) value);
+                        else if (value instanceof Long) editor.putLong(key, (Long) value);
+                        else if (value instanceof Integer) editor.putInt(key, (Integer) value);
+                        else if (value instanceof Boolean) editor.putBoolean(key, (Boolean) value);
+                        else if (value instanceof Float) editor.putFloat(key, (Float) value);
+                        else
+                            UtilsLog.d(TAG, "getPreferences",
+                                    "unhandled class == " + value.getClass().getSimpleName());
+                    }
 
-                if (value instanceof String) editor.putString(key, (String) value);
-                else if (value instanceof Long) editor.putLong(key, (Long) value);
-                else if (value instanceof Integer) editor.putInt(key, (Integer) value);
-                else if (value instanceof Boolean) editor.putBoolean(key, (Boolean) value);
-                else if (value instanceof Float) editor.putFloat(key, (Float) value);
-                else
-                    UtilsLog.d(TAG, "getPreferences",
-                            "unhandled class == " + value.getClass().getSimpleName());
+                    editor.commit();
+
+                } finally {
+                    if (mOnPreferencesUpdatingListener != null)
+                        mOnPreferencesUpdatingListener.onPreferencesUpdateEnd();
+                }
+            } finally {
+                sSharedPreferences.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
             }
 
-            editor.commit();
-
-            if (mOnPreferencesUpdatingListener != null)
-                mOnPreferencesUpdatingListener.onPreferencesUpdateEnd();
-
-            sSharedPreferences.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
+            return preferences.size();
         } else {
             switch (preference) {
                 case PREF_CHANGED:
@@ -369,6 +402,8 @@ class PreferenceManagerFuel {
                     putLastSync(preferences.getAsString(preference));
                     break;
             }
+
+            return 1;
         }
     }
 

@@ -230,6 +230,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
     @Override
     public void onPreferencesUpdateEnd() {
+        UtilsLog.d(TAG, "onPreferencesUpdateEnd");
         init(mRootPreferenceScreen);
         mRootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }

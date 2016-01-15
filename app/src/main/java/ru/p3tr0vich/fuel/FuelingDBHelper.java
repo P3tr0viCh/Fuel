@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.BaseColumns;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,13 +15,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-@SuppressWarnings("TryFinallyCanBeTryWithResources")
-class FuelingDBHelper extends SQLiteOpenHelper {
+@SuppressWarnings("TryFinallyCanBeTryWithResources") // Try-with-resources requires API level 19 (current min is 17)
+class FuelingDBHelper extends SQLiteOpenHelper implements BaseColumns {
 
     private static final String TAG = "FuelingDBHelper";
 
-    private static final String _ID = "_id";
     public static final String COLUMN_DATETIME = "datetime";
     public static final String COLUMN_COST = "cost";
     public static final String COLUMN_VOLUME = "volume";
@@ -181,7 +182,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
         try {
             Cursor cursor = rawQuery(SELECT_ALL +
-                    WHERE + String.format(WHERE_ID, id), "getFuelingRecord");
+                    WHERE + String.format(Locale.US, WHERE_ID, id), "getFuelingRecord");
 
             if (cursor != null)
                 try {
@@ -326,7 +327,8 @@ class FuelingDBHelper extends SQLiteOpenHelper {
             UtilsDate.setEndOfDay(dateTo);
 
             return WHERE + COLUMN_DATETIME +
-                    String.format(BETWEEN_DATES, dateFrom.getTimeInMillis(), dateTo.getTimeInMillis()) +
+                    String.format(Locale.US, BETWEEN_DATES,
+                            dateFrom.getTimeInMillis(), dateTo.getTimeInMillis()) +
                     AND + WHERE_RECORD_NOT_DELETED;
         }
     }
@@ -338,7 +340,7 @@ class FuelingDBHelper extends SQLiteOpenHelper {
 
     public Cursor getYears() {
         return rawQuery(SELECT_YEARS +
-                        WHERE + String.format(WHERE_YEAR, UtilsDate.getCurrentYear()) +
+                        WHERE + String.format(Locale.US, WHERE_YEAR, UtilsDate.getCurrentYear()) +
                         AND + WHERE_RECORD_NOT_DELETED +
                         GROUP_BY_YEAR + ORDER_BY_YEAR,
                 "getYears");

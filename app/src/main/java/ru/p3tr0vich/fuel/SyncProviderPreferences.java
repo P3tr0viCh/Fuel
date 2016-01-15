@@ -3,10 +3,12 @@ package ru.p3tr0vich.fuel;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.nfc.FormatException;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,6 +17,8 @@ import java.util.List;
 class SyncProviderPreferences {
 
     private static final String TAG = "SyncProviderPreferences";
+
+    private static final String SEPARATOR = "=";
 
     private final ContentProviderClient mProvider;
 
@@ -25,7 +29,11 @@ class SyncProviderPreferences {
     @NonNull
     private ContentValues query(@Nullable String preference) throws RemoteException, FormatException {
 
-        final Cursor cursor = mProvider.query(SyncProvider.URI_PREFERENCES, null, preference, null, null);
+        final Cursor cursor = mProvider.query(
+                TextUtils.isEmpty(preference) ?
+                        SyncProvider.URI_PREFERENCES :
+                        Uri.withAppendedPath(SyncProvider.URI_PREFERENCES, preference),
+                null, null, null, null);
 
         if (cursor == null)
             throw new FormatException(TAG + " -- query: cursor == null");
@@ -59,7 +67,10 @@ class SyncProviderPreferences {
 
     private void update(@NonNull ContentValues contentValues,
                         @Nullable String preference) throws RemoteException {
-        mProvider.update(SyncProvider.URI_PREFERENCES, contentValues, preference, null);
+        mProvider.update(TextUtils.isEmpty(preference) ?
+                        SyncProvider.URI_PREFERENCES :
+                        Uri.withAppendedPath(SyncProvider.URI_PREFERENCES, preference),
+                contentValues, null, null);
     }
 
     @NonNull
@@ -72,13 +83,13 @@ class SyncProviderPreferences {
         for (String key : contentValues.keySet())
             switch (PreferenceManagerFuel.getPreferenceType(key)) {
                 case PreferenceManagerFuel.PREFERENCE_TYPE_STRING:
-                    result.add(key + '=' + contentValues.getAsString(key));
+                    result.add(key + SEPARATOR + contentValues.getAsString(key));
                     break;
                 case PreferenceManagerFuel.PREFERENCE_TYPE_INT:
-                    result.add(key + '=' + String.valueOf(contentValues.getAsInteger(key)));
+                    result.add(key + SEPARATOR + String.valueOf(contentValues.getAsInteger(key)));
                     break;
                 case PreferenceManagerFuel.PREFERENCE_TYPE_LONG:
-                    result.add(key + '=' + String.valueOf(contentValues.getAsLong(key)));
+                    result.add(key + SEPARATOR + String.valueOf(contentValues.getAsLong(key)));
                     break;
             }
 
@@ -92,15 +103,15 @@ class SyncProviderPreferences {
         String key, value;
 
         for (String preference : preferences) {
-            index = preference.indexOf('=');
+            index = preference.indexOf(SEPARATOR);
 
             if (index == -1) continue;
 
             key = preference.substring(0, index);
 
-            value = preference.substring(index + 1);
-
             if (key.isEmpty()) continue;
+
+            value = preference.substring(index + 1);
 
             switch (PreferenceManagerFuel.getPreferenceType(key)) {
                 case PreferenceManagerFuel.PREFERENCE_TYPE_STRING:

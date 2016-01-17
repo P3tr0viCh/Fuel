@@ -1,5 +1,6 @@
 package ru.p3tr0vich.fuel;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import java.util.ArrayList;
@@ -14,8 +15,11 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
 
     private final boolean mDoSave;
 
-    AsyncTaskOperationXml(DatabaseBackupXmlHelper databaseBackupXmlHelper, boolean doSave) {
+    private final Context mContext;
+
+    AsyncTaskOperationXml(Context context, DatabaseBackupXmlHelper databaseBackupXmlHelper, boolean doSave) {
         mDoSave = doSave;
+        mContext = context.getApplicationContext();
         mDatabaseBackupXmlHelper = new DatabaseBackupXmlHelper(databaseBackupXmlHelper);
     }
 
@@ -31,7 +35,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
         @DatabaseBackupXmlHelper.BackupResult
         int result;
 
-        FuelingDBHelper dbHelper = new FuelingDBHelper();
+        DatabaseHelper dbHelper = new DatabaseHelper(mContext);
 
         if (mDoSave) {
             fuelingRecordList = dbHelper.getAllRecordsList();

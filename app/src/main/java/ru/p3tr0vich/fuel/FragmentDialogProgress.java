@@ -25,7 +25,8 @@ public class FragmentDialogProgress extends DialogFragment {
     public static void show(Fragment parent, DatabaseBackupXmlHelper databaseBackupXmlHelper, boolean doSave) {
         FragmentDialogProgress fragmentDialogProgress = new FragmentDialogProgress();
 
-        fragmentDialogProgress.setTask(new AsyncTaskOperationXml(databaseBackupXmlHelper, doSave));
+        fragmentDialogProgress.setTask(
+                new AsyncTaskOperationXml(parent.getContext(), databaseBackupXmlHelper, doSave));
         fragmentDialogProgress.setTargetFragment(parent, REQUEST_CODE);
 
         Bundle args = new Bundle();

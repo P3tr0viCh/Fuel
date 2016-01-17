@@ -82,7 +82,7 @@ class SyncYandexDisk {
                 mSyncFiles.getLocalFileDatabaseRevision());
     }
 
-    public void save(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
+    private void save(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
         Link link = mRestClient.getUploadLink(APP_DIR + serverFile.getPath(), true);
 
         mRestClient.uploadFile(link, false, localFile, null);
@@ -96,7 +96,7 @@ class SyncYandexDisk {
         save(mSyncFiles.getServerFilePreferences(), mSyncFiles.getLocalFilePreferences());
     }
 
-    public void load(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
+    private void load(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
         mRestClient.downloadFile(APP_DIR + serverFile.getPath(), localFile, null);
     }
 

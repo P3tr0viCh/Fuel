@@ -59,8 +59,8 @@ public class FragmentFueling extends FragmentFuel implements
     private boolean mToolbarDatesVisible;
     private boolean mLayoutTotalVisible;
 
-    private FuelingDBHelper db;
-    private FuelingDBHelper.Filter mFilter;
+    private DatabaseHelper mDatabaseHelper;
+    private DatabaseHelper.Filter mFilter;
 
     private FuelingAdapter mFuelingAdapter;
 
@@ -119,13 +119,13 @@ public class FragmentFueling extends FragmentFuel implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        db = new FuelingDBHelper();
-        mFilter = new FuelingDBHelper.Filter();
+        mDatabaseHelper = new DatabaseHelper(getContext());
+        mFilter = new DatabaseHelper.Filter();
 
         if (savedInstanceState == null) {
             UtilsLog.d(TAG, "onCreate", "savedInstanceState == null");
 
-            mFilter.filterMode = FuelingDBHelper.FILTER_MODE_CURRENT_YEAR;
+            mFilter.filterMode = DatabaseHelper.FILTER_MODE_CURRENT_YEAR;
 
             mFilter.dateFrom = PreferenceManagerFuel.getFilterDateFrom();
             mFilter.dateTo = PreferenceManagerFuel.getFilterDateTo();
@@ -134,18 +134,18 @@ public class FragmentFueling extends FragmentFuel implements
         } else {
             UtilsLog.d(TAG, "onCreate", "savedInstanceState != null");
 
-            switch (savedInstanceState.getInt(KEY_FILTER_MODE, FuelingDBHelper.FILTER_MODE_ALL)) {
-                case FuelingDBHelper.FILTER_MODE_CURRENT_YEAR:
-                    mFilter.filterMode = FuelingDBHelper.FILTER_MODE_CURRENT_YEAR;
+            switch (savedInstanceState.getInt(KEY_FILTER_MODE, DatabaseHelper.FILTER_MODE_ALL)) {
+                case DatabaseHelper.FILTER_MODE_CURRENT_YEAR:
+                    mFilter.filterMode = DatabaseHelper.FILTER_MODE_CURRENT_YEAR;
                     break;
-                case FuelingDBHelper.FILTER_MODE_YEAR:
-                    mFilter.filterMode = FuelingDBHelper.FILTER_MODE_YEAR;
+                case DatabaseHelper.FILTER_MODE_YEAR:
+                    mFilter.filterMode = DatabaseHelper.FILTER_MODE_YEAR;
                     break;
-                case FuelingDBHelper.FILTER_MODE_DATES:
-                    mFilter.filterMode = FuelingDBHelper.FILTER_MODE_DATES;
+                case DatabaseHelper.FILTER_MODE_DATES:
+                    mFilter.filterMode = DatabaseHelper.FILTER_MODE_DATES;
                     break;
                 default:
-                    mFilter.filterMode = FuelingDBHelper.FILTER_MODE_CURRENT_YEAR;
+                    mFilter.filterMode = DatabaseHelper.FILTER_MODE_CURRENT_YEAR;
             }
             mFilter.dateFrom = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_FROM);
             mFilter.dateTo = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_TO);
@@ -247,7 +247,7 @@ public class FragmentFueling extends FragmentFuel implements
         });
 
         mToolbarDatesVisible = true;
-        setToolbarDatesVisible(mFilter.filterMode == FuelingDBHelper.FILTER_MODE_DATES, false);
+        setToolbarDatesVisible(mFilter.filterMode == DatabaseHelper.FILTER_MODE_DATES, false);
 
         mLayoutTotalVisible = true;
 
@@ -294,13 +294,13 @@ public class FragmentFueling extends FragmentFuel implements
         super.onDestroy();
     }
 
-    private void doSetFilterMode(@FuelingDBHelper.FilterMode int filterMode) {
+    private void doSetFilterMode(@DatabaseHelper.FilterMode int filterMode) {
         mFilter.filterMode = filterMode;
 
         mOnFilterChangeListener.onFilterChange(filterMode);
     }
 
-    public boolean setFilterMode(@FuelingDBHelper.FilterMode int filterMode) {
+    public boolean setFilterMode(@DatabaseHelper.FilterMode int filterMode) {
         // Результат:
         // true - фильтр не изменился.
         // false - фильтр изменён и вызван рестарт лоадер (список полностью обновлён).
@@ -310,7 +310,7 @@ public class FragmentFueling extends FragmentFuel implements
 
         if (mFilter.filterMode != filterMode) {
 
-            setToolbarDatesVisible(filterMode == FuelingDBHelper.FILTER_MODE_DATES, true);
+            setToolbarDatesVisible(filterMode == DatabaseHelper.FILTER_MODE_DATES, true);
 
             doSetFilterMode(filterMode);
 
@@ -346,7 +346,7 @@ public class FragmentFueling extends FragmentFuel implements
         // В mIdForScroll сохраняется Id добавленной или изменёной записи.
         // Если был вызван рестарт лоадер, список будет прокручен к записи с этим Id.
 
-        if (mFilter.filterMode == FuelingDBHelper.FILTER_MODE_ALL) {
+        if (mFilter.filterMode == DatabaseHelper.FILTER_MODE_ALL) {
             mIdForScroll = -1;
             return true;
         }
@@ -357,7 +357,7 @@ public class FragmentFueling extends FragmentFuel implements
         calendar.setTimeInMillis(fuelingRecord.getDateTime());
 
         return setFilterMode(calendar.get(Calendar.YEAR) == UtilsDate.getCurrentYear() ?
-                FuelingDBHelper.FILTER_MODE_CURRENT_YEAR : FuelingDBHelper.FILTER_MODE_ALL);
+                DatabaseHelper.FILTER_MODE_CURRENT_YEAR : DatabaseHelper.FILTER_MODE_ALL);
     }
 
     public void forceLoad() {
@@ -365,7 +365,7 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     public void addRecord(FuelingRecord fuelingRecord) {
-        long id = db.insertRecord(fuelingRecord);
+        long id = mDatabaseHelper.insertRecord(fuelingRecord);
 
         if (id > -1) {
             fuelingRecord.setId(id);
@@ -378,7 +378,7 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     public void updateRecord(FuelingRecord fuelingRecord) {
-        if (db.updateRecord(fuelingRecord) > -1)
+        if (mDatabaseHelper.updateRecord(fuelingRecord) > -1)
             if (needUpdateCurrentList(fuelingRecord)) {
                 mDataChanged = true;
                 scrollToPosition(mFuelingAdapter.updateRecord(fuelingRecord));
@@ -387,7 +387,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     @SuppressWarnings("WeakerAccess")
     public boolean deleteRecord(FuelingRecord fuelingRecord) {
-        boolean deleted = db.deleteRecord(fuelingRecord) > 0;
+        boolean deleted = mDatabaseHelper.deleteRecord(fuelingRecord) > 0;
         if (deleted) {
             mDataChanged = true;
             mFuelingAdapter.deleteRecord(fuelingRecord);
@@ -443,7 +443,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mFuelingAdapter.setShowYear(mFilter.filterMode != FuelingDBHelper.FILTER_MODE_CURRENT_YEAR);
+        mFuelingAdapter.setShowYear(mFilter.filterMode != DatabaseHelper.FILTER_MODE_CURRENT_YEAR);
 
         mDataChanged = false;
 
@@ -488,9 +488,9 @@ public class FragmentFueling extends FragmentFuel implements
             mTextNoRecords.setVisibility(View.GONE);
     }
 
-    private Handler mHandlerShowNoRecords = new Handler();
+    private final Handler mHandlerShowNoRecords = new Handler();
 
-    private Runnable mRunnableShowNoRecords = new Runnable() {
+    private final Runnable mRunnableShowNoRecords = new Runnable() {
         @Override
         public void run() {
             Utils.setViewVisibleAnimate(mTextNoRecords, true);
@@ -517,7 +517,7 @@ public class FragmentFueling extends FragmentFuel implements
                 new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        FuelingRecord fuelingRecord = db.getFuelingRecord(id);
+                        FuelingRecord fuelingRecord = mDatabaseHelper.getFuelingRecord(id);
                         switch (item.getItemId()) {
                             case R.id.action_fueling_update:
                                 mOnRecordChangeListener.onRecordChange(Const.RECORD_ACTION_UPDATE, fuelingRecord);
@@ -565,7 +565,7 @@ public class FragmentFueling extends FragmentFuel implements
         Utils.setViewVisibleAnimate(mProgressWheelFueling, loading);
     }
 
-    private FuelingDBHelper.Filter getFilter() {
+    private DatabaseHelper.Filter getFilter() {
         return mFilter;
     }
 
@@ -668,7 +668,7 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     private void setPopupFilterDate(final boolean setDateFrom, final int menuId) {
-        FuelingDBHelper.Filter filter = getFilter();
+        DatabaseHelper.Filter filter = getFilter();
 
         switch (menuId) {
             case R.id.action_dates_start_of_year:
@@ -789,7 +789,7 @@ public class FragmentFueling extends FragmentFuel implements
     private void showDateDialog(final boolean dateFrom) {
         mDateFromClicked = dateFrom;
 
-        FuelingDBHelper.Filter filter = getFilter();
+        DatabaseHelper.Filter filter = getFilter();
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(mDateFromClicked ? filter.dateFrom : filter.dateTo);
@@ -813,7 +813,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     public interface OnFilterChangeListener {
         // to Toolbar Spinner
-        void onFilterChange(@FuelingDBHelper.FilterMode int filterMode);
+        void onFilterChange(@DatabaseHelper.FilterMode int filterMode);
     }
 
     public interface OnRecordChangeListener {
@@ -822,9 +822,9 @@ public class FragmentFueling extends FragmentFuel implements
 
     static class FuelingCursorLoader extends CursorLoader {
 
-        private final FuelingDBHelper.Filter mFilter;
+        private final DatabaseHelper.Filter mFilter;
 
-        public FuelingCursorLoader(Context context, FuelingDBHelper.Filter filter) {
+        public FuelingCursorLoader(Context context, DatabaseHelper.Filter filter) {
             super(context);
             mFilter = filter;
         }
@@ -834,7 +834,7 @@ public class FragmentFueling extends FragmentFuel implements
             ActivityMain.sendLoadingBroadcast(true);
 
             try {
-                return new FuelingDBHelper(mFilter).getAllCursor();
+                return new DatabaseHelper(getContext(), mFilter).getAllCursor();
             } finally {
                 ActivityMain.sendLoadingBroadcast(false);
             }

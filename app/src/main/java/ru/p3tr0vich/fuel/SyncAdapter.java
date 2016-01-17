@@ -283,7 +283,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                                   SyncProviderDatabase syncProviderDatabase,
                                   SyncProviderPreferences syncProviderPreferences,
                                   int revision, boolean fullSave)
-            throws IOException, RemoteException, FormatException, ServerException {
+            throws IOException, RemoteException, ServerException {
         // 1) Сохранить БД в файл в папке кэша.
         // 1.1) Выбрать изменённые и удалённые записи или, если fullSave, выбрать все записи.
         // 2) Сохранить номер ревизии в файл в папке кэша.
@@ -330,7 +330,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                                   SyncProviderPreferences syncProviderPreferences,
                                   int localRevision, int serverRevision)
             throws IOException, ServerException, RemoteException, FormatException {
-        // 1) Получить файлы БД с сервера, объединить их в один и сохранить в папку кэша.
+        // 1) Получить файл БД с сервера и сохранить в папку кэша.
         // 2) Прочитать записи из файла в папке кэша.
         // 3) Сохранить полученные значения в БД.
         // 4) Сохранить флаг изменения настроек.

@@ -36,7 +36,7 @@ class SyncLocal {
         return getRevision(mSyncFiles.getLocalFileDatabaseRevision());
     }
 
-    public void load(@NonNull File file, @NonNull List<String> strings) throws IOException {
+    private void load(@NonNull File file, @NonNull List<String> strings) throws IOException {
         UtilsFileIO.checkExists(file);
         UtilsFileIO.read(file, strings);
     }

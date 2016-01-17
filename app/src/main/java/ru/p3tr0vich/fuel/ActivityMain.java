@@ -9,8 +9,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SyncStatusObserver;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -50,7 +52,6 @@ public class ActivityMain extends AppCompatActivity implements
         FragmentInterface.OnFragmentChangeListener,
         FragmentPreference.OnPreferenceScreenChangeListener,
         FragmentPreference.OnPreferenceSyncEnabledChangeListener,
-        PreferenceManagerFuel.OnPreferencesChangedListener,
         FragmentBackup.OnDataLoadedFromBackupListener {
 
     private static final String TAG = "ActivityMain";
@@ -81,6 +82,8 @@ public class ActivityMain extends AppCompatActivity implements
 
     private BroadcastReceiver mLoadingStatusReceiver;
     private BroadcastReceiver mStartSyncReceiver;
+
+    private PreferencesObserver mPreferencesObserver;
 
     private int mCurrentFragmentId, mClickedMenuId = -1;
     private boolean mOpenPreferenceSync = false;
@@ -157,6 +160,8 @@ public class ActivityMain extends AppCompatActivity implements
         initLoadingStatusReceiver();
         initStartSyncReceiver();
 
+        initPreferencesObserver();
+
         mSyncMonitor = ContentResolver.addStatusChangeListener(
                 ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
 
@@ -176,8 +181,6 @@ public class ActivityMain extends AppCompatActivity implements
                     mDrawerToggle.setDrawerIndicatorEnabled(fragmentPreference.isInRoot());
             }
         }
-
-        PreferenceManagerFuel.registerOnPreferencesChangedListener(this);
     }
 
     private void initToolbar() {
@@ -298,6 +301,34 @@ public class ActivityMain extends AppCompatActivity implements
         };
         LocalBroadcastManager.getInstance(getApplicationContext())
                 .registerReceiver(mStartSyncReceiver, new IntentFilter(ACTION_START_SYNC));
+    }
+
+    private class PreferencesObserver extends ContentObserver {
+        public PreferencesObserver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            onChange(selfChange, null);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri changeUri) {
+            UtilsLog.d(TAG, "PreferencesObserver", "onChange: selfChange == " + selfChange +
+                    ", changeUri == " + changeUri);
+
+            stopTimerPreferenceChanged();
+
+            if (PreferenceManagerFuel.isSyncEnabled())
+                mTimerPreferenceChanged = TimerPreferenceChanged.start();
+        }
+    }
+
+    private void initPreferencesObserver() {
+        mPreferencesObserver = new PreferencesObserver(new Handler());
+        getContentResolver().registerContentObserver(SyncProvider.URI_PREFERENCES,
+                false, mPreferencesObserver);
     }
 
     @Override
@@ -424,9 +455,9 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        PreferenceManagerFuel.registerOnPreferencesChangedListener(null);
-
         ContentResolver.removeStatusChangeListener(mSyncMonitor);
+
+        getContentResolver().unregisterContentObserver(mPreferencesObserver);
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mStartSyncReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mLoadingStatusReceiver);
@@ -489,26 +520,26 @@ public class ActivityMain extends AppCompatActivity implements
         }
     }
 
-    @FuelingDBHelper.FilterMode
+    @DatabaseHelper.FilterMode
     private static int positionToFilterMode(int position) {
         switch (position) {
             case 0:
-                return FuelingDBHelper.FILTER_MODE_CURRENT_YEAR;
+                return DatabaseHelper.FILTER_MODE_CURRENT_YEAR;
             case 1:
-                return FuelingDBHelper.FILTER_MODE_DATES;
+                return DatabaseHelper.FILTER_MODE_DATES;
             default:
-                return FuelingDBHelper.FILTER_MODE_ALL;
+                return DatabaseHelper.FILTER_MODE_ALL;
         }
     }
 
-    private static int filterModeToPosition(@FuelingDBHelper.FilterMode int filterMode) {
+    private static int filterModeToPosition(@DatabaseHelper.FilterMode int filterMode) {
         switch (filterMode) {
-            case FuelingDBHelper.FILTER_MODE_CURRENT_YEAR:
+            case DatabaseHelper.FILTER_MODE_CURRENT_YEAR:
                 return 0;
-            case FuelingDBHelper.FILTER_MODE_YEAR:
-            case FuelingDBHelper.FILTER_MODE_DATES:
+            case DatabaseHelper.FILTER_MODE_YEAR:
+            case DatabaseHelper.FILTER_MODE_DATES:
                 return 1;
-            case FuelingDBHelper.FILTER_MODE_ALL:
+            case DatabaseHelper.FILTER_MODE_ALL:
                 return 2;
             default:
                 return 0;
@@ -516,7 +547,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
-    public void onFilterChange(@FuelingDBHelper.FilterMode int filterMode) {
+    public void onFilterChange(@DatabaseHelper.FilterMode int filterMode) {
         int position = filterModeToPosition(filterMode);
 
         if (position != mToolbarSpinner.getSelectedItemPosition())
@@ -772,15 +803,5 @@ public class ActivityMain extends AppCompatActivity implements
 
     private void stopTimerPreferenceChanged() {
         if (mTimerPreferenceChanged != null) mTimerPreferenceChanged.cancel();
-    }
-
-    @Override
-    public void onPreferencesChanged() {
-        UtilsLog.d(TAG, "onPreferencesChanged");
-
-        stopTimerPreferenceChanged();
-
-        if (PreferenceManagerFuel.isSyncEnabled())
-            mTimerPreferenceChanged = TimerPreferenceChanged.start();
     }
 }

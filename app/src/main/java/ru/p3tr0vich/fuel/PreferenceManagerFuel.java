@@ -55,12 +55,7 @@ class PreferenceManagerFuel {
     public static final int PREFERENCE_TYPE_INT = 1;
     public static final int PREFERENCE_TYPE_LONG = 2;
 
-    private static OnPreferencesChangedListener mOnPreferencesChangedListener = null;
     private static OnPreferencesUpdatingListener mOnPreferencesUpdatingListener = null;
-
-    interface OnPreferencesChangedListener {
-        void onPreferencesChanged();
-    }
 
     interface OnPreferencesUpdatingListener {
         void onPreferencesUpdateStart();
@@ -92,10 +87,6 @@ class PreferenceManagerFuel {
                 !key.equals(sContext.getString(R.string.pref_sync_enabled));
     }
 
-    public static void registerOnPreferencesChangedListener(OnPreferencesChangedListener onPreferencesChangedListener) {
-        mOnPreferencesChangedListener = onPreferencesChangedListener;
-    }
-
     public static void registerOnPreferencesUpdatingListener(OnPreferencesUpdatingListener onPreferencesUpdatingListener) {
         mOnPreferencesUpdatingListener = onPreferencesUpdatingListener;
     }
@@ -112,8 +103,8 @@ class PreferenceManagerFuel {
 
         UtilsLog.d(TAG, "putChanged", "changed == " + changed);
 
-        if (mOnPreferencesChangedListener != null && changed)
-            mOnPreferencesChangedListener.onPreferencesChanged();
+        if (changed)
+            sContext.getContentResolver().notifyChange(SyncProvider.URI_PREFERENCES, null, false);
     }
 
     public static boolean isSyncEnabled() {
@@ -337,12 +328,12 @@ class PreferenceManagerFuel {
     }
 
     @NonNull
-    public static Cursor getAllPreferences() {
+    public static Cursor getPreferences() {
         return getPreferencesCursor(null);
     }
 
     @NonNull
-    public static Cursor getSinglePreference(@Nullable String preference) {
+    public static Cursor getPreference(@Nullable String preference) {
         return getPreferencesCursor(preference);
     }
 

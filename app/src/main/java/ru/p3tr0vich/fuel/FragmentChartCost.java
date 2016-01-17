@@ -37,7 +37,7 @@ public class FragmentChartCost extends FragmentFuel implements
     private static final String KEY_SUMS = "KEY_SUMS";
     private static final String KEY_IS_DATA = "KEY_IS_DATA";
 
-    private FuelingDBHelper.Filter mFilter;
+    private DatabaseHelper.Filter mFilter;
 
     private TabLayout mTabLayout;
     private BarChart mChart;
@@ -215,8 +215,8 @@ public class FragmentChartCost extends FragmentFuel implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mFilter = new FuelingDBHelper.Filter();
-        mFilter.filterMode = FuelingDBHelper.FILTER_MODE_YEAR;
+        mFilter = new DatabaseHelper.Filter();
+        mFilter.filterMode = DatabaseHelper.FILTER_MODE_YEAR;
 
         if (savedInstanceState == null) {
             for (int i = 0; i < 12; i++) mSums[i] = 0;
@@ -253,16 +253,16 @@ public class FragmentChartCost extends FragmentFuel implements
 
         private static final int ID = 0;
 
-        private final FuelingDBHelper.Filter mFilter;
+        private final DatabaseHelper.Filter mFilter;
 
-        public ChartCursorLoader(Context context, FuelingDBHelper.Filter filter) {
+        public ChartCursorLoader(Context context, DatabaseHelper.Filter filter) {
             super(context);
             mFilter = filter;
         }
 
         @Override
         public Cursor loadInBackground() {
-            return new FuelingDBHelper(mFilter).getSumByMonthsForYear();
+            return new DatabaseHelper(getContext(), mFilter).getSumByMonthsForYear();
         }
     }
 
@@ -276,7 +276,7 @@ public class FragmentChartCost extends FragmentFuel implements
 
         @Override
         public Cursor loadInBackground() {
-            return new FuelingDBHelper().getYears();
+            return new DatabaseHelper(getContext()).getYears();
         }
     }
 
@@ -381,9 +381,9 @@ public class FragmentChartCost extends FragmentFuel implements
         }
     }
 
-    private Handler mHandlerShowNoRecords = new Handler();
+    private final Handler mHandlerShowNoRecords = new Handler();
 
-    private Runnable mRunnableShowNoRecords = new Runnable() {
+    private final Runnable mRunnableShowNoRecords = new Runnable() {
         @Override
         public void run() {
             Utils.setViewVisibleAnimate(mTextNoRecords, true);

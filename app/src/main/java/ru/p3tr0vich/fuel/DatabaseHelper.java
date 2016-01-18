@@ -48,10 +48,18 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     private static final String[] COLUMNS = new String[]{
             _ID, COLUMN_DATETIME, COLUMN_COST, COLUMN_VOLUME, COLUMN_TOTAL
     };
+    public static final int COLUMN_ID_INDEX = 0;
+    public static final int COLUMN_DATETIME_INDEX = 1;
+    public static final int COLUMN_COST_INDEX = 2;
+    public static final int COLUMN_VOLUME_INDEX = 3;
+    public static final int COLUMN_TOTAL_INDEX = 4;
+
     private static final String[] COLUMNS_WITH_DELETED = new String[]{
             _ID, COLUMN_DATETIME, COLUMN_COST, COLUMN_VOLUME, COLUMN_TOTAL,
             COLUMN_DELETED
     };
+    public static final int COLUMN_DELETED_INDEX = 5;
+
     private static final String[] COLUMNS_YEARS = new String[]{
             "strftime('%Y', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + COLUMN_YEAR};
     private static final String[] COLUMNS_SUM_BY_MONTHS = new String[]{
@@ -63,9 +71,8 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     public static final int FALSE = 0;
 
     private static final String WHERE_RECORD_NOT_DELETED = COLUMN_DELETED + EQUAL + FALSE;
-    private static final String WHERE_YEAR = COLUMN_YEAR + "<'%d'";
-
-    private static final String BETWEEN_DATES = " BETWEEN %1$d AND %2$d";
+    private static final String WHERE_LESS = "<'%d'";
+    private static final String WHERE_BETWEEN = " BETWEEN %1$d AND %2$d";
 
     private static final String CREATE_TABLE_FUELING = "CREATE TABLE " + TABLE_FUELING + "(" +
             _ID + " INTEGER PRIMARY KEY ON CONFLICT REPLACE, " +
@@ -92,47 +99,24 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         public Date dateTo;
         public int year;
         @FilterMode
-        public int filterMode = FILTER_MODE_ALL;
-    }
+        public int filterMode;
 
-    private final Filter mFilter;
+        Filter() {
+            filterMode = FILTER_MODE_ALL;
+        }
+
+        Filter(int year) {
+            this.year = year;
+            filterMode = FILTER_MODE_YEAR;
+        }
+    }
 
     public DatabaseHelper(Context context) {
         super(context, FUEL_DB, null, DATABASE_VERSION);
-        mFilter = new Filter();
-    }
-
-    public DatabaseHelper(Context context, @NonNull Filter filter) {
-        this(context);
-        setFilter(filter);
     }
 
     public static boolean getBoolean(@NonNull Cursor cursor, int columnIndex) {
         return cursor.getInt(columnIndex) == TRUE;
-    }
-
-    public static int getColumnIdIndex(@NonNull Cursor cursor) {
-        return cursor.getColumnIndex(DatabaseHelper._ID);
-    }
-
-    public static int getColumnDateTimeIndex(@NonNull Cursor cursor) {
-        return cursor.getColumnIndex(DatabaseHelper.COLUMN_DATETIME);
-    }
-
-    public static int getColumnCostIndex(@NonNull Cursor cursor) {
-        return cursor.getColumnIndex(DatabaseHelper.COLUMN_COST);
-    }
-
-    public static int getColumnVolumeIndex(@NonNull Cursor cursor) {
-        return cursor.getColumnIndex(DatabaseHelper.COLUMN_VOLUME);
-    }
-
-    public static int getColumnTotalIndex(@NonNull Cursor cursor) {
-        return cursor.getColumnIndex(DatabaseHelper.COLUMN_TOTAL);
-    }
-
-    public static int getColumnDeletedIndex(@NonNull Cursor cursor) {
-        return cursor.getColumnIndex(DatabaseHelper.COLUMN_DELETED);
     }
 
     @Override
@@ -144,13 +128,6 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         UtilsLog.d(TAG, "onUpgrade");
-    }
-
-    private void setFilter(@NonNull Filter filter) {
-        mFilter.filterMode = filter.filterMode;
-        mFilter.year = filter.year;
-        mFilter.dateFrom = filter.dateFrom;
-        mFilter.dateTo = filter.dateTo;
     }
 
     @Nullable
@@ -175,7 +152,7 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     private long doInsertRecord(@NonNull SQLiteDatabase db, @NonNull FuelingRecord fuelingRecord) {
         ContentValues values = new ContentValues();
 
-        values.put(_ID, System.currentTimeMillis());
+        values.put(_ID, fuelingRecord.getDateTime());
         values.put(COLUMN_DATETIME, fuelingRecord.getDateTime());
         values.put(COLUMN_COST, fuelingRecord.getCost());
         values.put(COLUMN_VOLUME, fuelingRecord.getVolume());
@@ -241,19 +218,19 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     }
 
     @NonNull
-    private String filterModeToSql() {
-        if (mFilter.filterMode == FILTER_MODE_ALL)
+    private String filterModeToSql(Filter filter) {
+        if (filter.filterMode == FILTER_MODE_ALL)
             return WHERE_RECORD_NOT_DELETED;
         else {
             Calendar dateFrom = Calendar.getInstance();
             Calendar dateTo = Calendar.getInstance();
 
-            if (mFilter.filterMode == FILTER_MODE_DATES) {
-                dateFrom.setTimeInMillis(mFilter.dateFrom.getTime());
-                dateTo.setTimeInMillis(mFilter.dateTo.getTime());
+            if (filter.filterMode == FILTER_MODE_DATES) {
+                dateFrom.setTimeInMillis(filter.dateFrom.getTime());
+                dateTo.setTimeInMillis(filter.dateTo.getTime());
             } else {
-                int year = mFilter.filterMode == FILTER_MODE_YEAR ?
-                        mFilter.year : UtilsDate.getCurrentYear();
+                int year = filter.filterMode == FILTER_MODE_YEAR ?
+                        filter.year : UtilsDate.getCurrentYear();
 
                 dateFrom.set(year, Calendar.JANUARY, 1);
                 dateTo.set(year, Calendar.DECEMBER, 31);
@@ -263,28 +240,28 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
             UtilsDate.setEndOfDay(dateTo);
 
             return COLUMN_DATETIME +
-                    String.format(Locale.US, BETWEEN_DATES,
+                    String.format(Locale.US, WHERE_BETWEEN,
                             dateFrom.getTimeInMillis(), dateTo.getTimeInMillis()) +
                     AND + WHERE_RECORD_NOT_DELETED;
         }
     }
 
-    public Cursor getAllCursor() {
+    public Cursor getAllCursor(Filter filter) {
         UtilsLog.d(TAG, "getAllCursor");
-        return query(COLUMNS, filterModeToSql(), null, COLUMN_DATETIME + DESC);
+        return query(COLUMNS, filterModeToSql(filter), null, COLUMN_DATETIME + DESC);
     }
 
     public Cursor getYears() {
         UtilsLog.d(TAG, "getYears");
-        return query(COLUMNS_YEARS,
-                String.format(Locale.US, WHERE_YEAR, UtilsDate.getCurrentYear()) + AND +
+        return query(COLUMNS_YEARS, COLUMN_YEAR +
+                        String.format(Locale.US, WHERE_LESS, UtilsDate.getCurrentYear()) + AND +
                         WHERE_RECORD_NOT_DELETED,
                 COLUMN_YEAR, COLUMN_YEAR);
     }
 
-    public Cursor getSumByMonthsForYear() {
-        UtilsLog.d(TAG, "getSumByMonthsForYear");
-        return query(COLUMNS_SUM_BY_MONTHS, filterModeToSql(), COLUMN_MONTH, COLUMN_MONTH);
+    public Cursor getSumByMonthsForYear(int year) {
+        UtilsLog.d(TAG, "getSumByMonthsForYear", "year == " + year);
+        return query(COLUMNS_SUM_BY_MONTHS, filterModeToSql(new Filter(year)), COLUMN_MONTH, COLUMN_MONTH);
     }
 
     public Cursor getSyncChangedRecords() {
@@ -293,7 +270,7 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     }
 
     public Cursor getSyncAllRecords() {
-        UtilsLog.d(TAG, "getSyncChangedRecords");
+        UtilsLog.d(TAG, "getSyncAllRecords");
         return query(COLUMNS_WITH_DELETED, null, null, null);
     }
 

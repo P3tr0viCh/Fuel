@@ -33,12 +33,11 @@ public class FuelingRecord implements Parcelable {
     }
 
     FuelingRecord(Cursor cursor, boolean showYear) {
-        // TODO
-        this(cursor.getLong(DatabaseHelper.getColumnIdIndex(cursor)),
-                cursor.getLong(DatabaseHelper.getColumnDateTimeIndex(cursor)),
-                cursor.getFloat(DatabaseHelper.getColumnCostIndex(cursor)),
-                cursor.getFloat(DatabaseHelper.getColumnVolumeIndex(cursor)),
-                cursor.getFloat(DatabaseHelper.getColumnTotalIndex(cursor)),
+        this(cursor.getLong(DatabaseHelper.COLUMN_ID_INDEX),
+                cursor.getLong(DatabaseHelper.COLUMN_DATETIME_INDEX),
+                cursor.getFloat(DatabaseHelper.COLUMN_COST_INDEX),
+                cursor.getFloat(DatabaseHelper.COLUMN_VOLUME_INDEX),
+                cursor.getFloat(DatabaseHelper.COLUMN_TOTAL_INDEX),
                 showYear);
     }
 

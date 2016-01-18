@@ -37,7 +37,7 @@ public class FragmentChartCost extends FragmentFuel implements
     private static final String KEY_SUMS = "KEY_SUMS";
     private static final String KEY_IS_DATA = "KEY_IS_DATA";
 
-    private DatabaseHelper.Filter mFilter;
+    private int mYear;
 
     private TabLayout mTabLayout;
     private BarChart mChart;
@@ -185,7 +185,7 @@ public class FragmentChartCost extends FragmentFuel implements
         for (int year : mYears)
             mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(year)));
 
-        int position = getPositionForYear(mFilter.year);
+        int position = getPositionForYear(mYear);
         if (position != -1) selectTab(mTabLayout.getTabAt(position));
 
         mUpdateYearInProcess = false;
@@ -205,9 +205,9 @@ public class FragmentChartCost extends FragmentFuel implements
     }
 
     private void setYear(int year) {
-        if (year == mFilter.year) return;
+        if (year == mYear) return;
 
-        mFilter.year = year;
+        mYear = year;
         getLoaderManager().restartLoader(ChartCursorLoader.ID, null, this);
     }
 
@@ -215,18 +215,15 @@ public class FragmentChartCost extends FragmentFuel implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mFilter = new DatabaseHelper.Filter();
-        mFilter.filterMode = DatabaseHelper.FILTER_MODE_YEAR;
-
         if (savedInstanceState == null) {
             for (int i = 0; i < 12; i++) mSums[i] = 0;
 
-            mFilter.year = UtilsDate.getCurrentYear();
+            mYear = UtilsDate.getCurrentYear();
 
             getLoaderManager().initLoader(YearsCursorLoader.ID, null, this);
             getLoaderManager().initLoader(ChartCursorLoader.ID, null, this);
         } else {
-            mFilter.year = savedInstanceState.getInt(KEY_FILTER_YEAR);
+            mYear = savedInstanceState.getInt(KEY_FILTER_YEAR);
             mYears = savedInstanceState.getIntArray(KEY_YEARS);
             mSums = savedInstanceState.getFloatArray(KEY_SUMS);
             mIsData = savedInstanceState.getBoolean(KEY_IS_DATA);
@@ -237,7 +234,7 @@ public class FragmentChartCost extends FragmentFuel implements
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt(KEY_FILTER_YEAR, mFilter.year);
+        outState.putInt(KEY_FILTER_YEAR, mYear);
         outState.putIntArray(KEY_YEARS, mYears);
         outState.putFloatArray(KEY_SUMS, mSums);
         outState.putBoolean(KEY_IS_DATA, mIsData);
@@ -253,16 +250,16 @@ public class FragmentChartCost extends FragmentFuel implements
 
         private static final int ID = 0;
 
-        private final DatabaseHelper.Filter mFilter;
+        private final int mYear;
 
-        public ChartCursorLoader(Context context, DatabaseHelper.Filter filter) {
+        public ChartCursorLoader(Context context, int year) {
             super(context);
-            mFilter = filter;
+            mYear = year;
         }
 
         @Override
         public Cursor loadInBackground() {
-            return new DatabaseHelper(getContext(), mFilter).getSumByMonthsForYear();
+            return new DatabaseHelper(getContext()).getSumByMonthsForYear(mYear);
         }
     }
 
@@ -284,7 +281,7 @@ public class FragmentChartCost extends FragmentFuel implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case ChartCursorLoader.ID:
-                return new ChartCursorLoader(ApplicationFuel.getContext(), mFilter);
+                return new ChartCursorLoader(ApplicationFuel.getContext(), mYear);
             case YearsCursorLoader.ID:
                 return new YearsCursorLoader(ApplicationFuel.getContext());
             default:

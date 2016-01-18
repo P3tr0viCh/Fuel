@@ -658,7 +658,7 @@ public class FragmentFueling extends FragmentFuel implements
         // так как записи начинают влезать по высоте.
         // Три записи в альбомном режиме с показанным тулбаром выбора периода
 
-        mFloatingActionButton.toggle(visible, true);
+        mFloatingActionButton.toggle(visible, true); // TODO: скрывать кнопку при открытии меню
         setLayoutTotalVisible(visible);
     }
 
@@ -834,7 +834,7 @@ public class FragmentFueling extends FragmentFuel implements
             ActivityMain.sendLoadingBroadcast(true);
 
             try {
-                return new DatabaseHelper(getContext(), mFilter).getAllCursor();
+                return new DatabaseHelper(getContext()).getAllCursor(mFilter);
             } finally {
                 ActivityMain.sendLoadingBroadcast(false);
             }

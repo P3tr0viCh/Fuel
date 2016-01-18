@@ -15,12 +15,20 @@ class SyncLocal {
         mSyncFiles = syncFiles;
     }
 
-    private int getRevision(@NonNull File fileRevision) {
-        try {
-            UtilsFileIO.checkExists(fileRevision);
+    private void load(@NonNull File file, @NonNull List<String> strings) throws IOException {
+        UtilsFileIO.checkExists(file);
+        UtilsFileIO.read(file, strings);
+    }
 
-            List<String> strings = new ArrayList<>();
-            UtilsFileIO.read(fileRevision, strings);
+    private void save(@NonNull File file, @NonNull List<String> strings) throws IOException {
+        UtilsFileIO.createFile(file);
+        UtilsFileIO.write(file, strings);
+    }
+
+    private int getRevision(@NonNull File fileRevision) {
+        List<String> strings = new ArrayList<>();
+        try {
+            load(fileRevision, strings);
 
             return Integer.decode(strings.get(0));
         } catch (Exception e) {
@@ -36,22 +44,12 @@ class SyncLocal {
         return getRevision(mSyncFiles.getLocalFileDatabaseRevision());
     }
 
-    private void load(@NonNull File file, @NonNull List<String> strings) throws IOException {
-        UtilsFileIO.checkExists(file);
-        UtilsFileIO.read(file, strings);
-    }
-
     public void loadPreferences(@NonNull List<String> preferences) throws IOException {
         load(mSyncFiles.getLocalFilePreferences(), preferences);
     }
 
     public void loadDatabase(@NonNull List<String> syncRecords) throws IOException {
         load(mSyncFiles.getLocalFileDatabase(), syncRecords);
-    }
-
-    private void save(@NonNull File file, @NonNull List<String> strings) throws IOException {
-        UtilsFileIO.createFile(file);
-        UtilsFileIO.write(file, strings);
     }
 
     public void savePreferences(@NonNull List<String> preferences) throws IOException {
@@ -62,13 +60,15 @@ class SyncLocal {
         save(mSyncFiles.getLocalFileDatabase(), syncRecords);
     }
 
-    private void saveRevision(@NonNull File fileRevision, int revision) throws IOException {
-        UtilsFileIO.createFile(fileRevision);
+    public void saveDatabaseFullSync() throws IOException {
+        UtilsFileIO.createFile(mSyncFiles.getLocalFileDatabaseFullSync());
+    }
 
+    private void saveRevision(@NonNull File fileRevision, int revision) throws IOException {
         List<String> strings = new ArrayList<>();
         strings.add(String.valueOf(revision));
 
-        UtilsFileIO.write(fileRevision, strings);
+        save(fileRevision, strings);
     }
 
     public void savePreferencesRevision(int revision) throws IOException {
@@ -89,6 +89,7 @@ class SyncLocal {
         UtilsFileIO.deleteFile(mSyncFiles.getLocalFilePreferencesRevision());
 
         UtilsFileIO.deleteFile(mSyncFiles.getLocalFileDatabase());
+        UtilsFileIO.deleteFile(mSyncFiles.getLocalFileDatabaseFullSync());
         UtilsFileIO.deleteFile(mSyncFiles.getLocalFileDatabaseRevision());
     }
 

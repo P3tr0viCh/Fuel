@@ -12,6 +12,8 @@ import android.support.annotation.Nullable;
 
 public class SyncProvider extends ContentProvider {
 
+    private static final String TAG = "SyncProvider";
+
     private static final String URI_AUTHORITY = "ru.p3tr0vich.fuel.provider";
 
     private static final String URI_PATH_DATABASE = "database";
@@ -22,14 +24,13 @@ public class SyncProvider extends ContentProvider {
     public static final Uri URI_DATABASE =
             Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE);
     public static final Uri URI_DATABASE_SYNC =
-            Uri.withAppendedPath(URI_DATABASE, URI_PATH_DATABASE);
+            Uri.withAppendedPath(URI_DATABASE, URI_PATH_DATABASE_SYNC);
     public static final Uri URI_PREFERENCES =
             Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_PREFERENCES);
 
     private static final int DATABASE = 10;
     private static final int DATABASE_ITEM = 11;
     private static final int DATABASE_SYNC = 12;
-    private static final int DATABASE_SYNC_ITEM = 13;
 
     private static final int PREFERENCES = 20;
     private static final int PREFERENCES_ITEM = 21;
@@ -37,15 +38,17 @@ public class SyncProvider extends ContentProvider {
     private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE, DATABASE);
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE + "/#", DATABASE_ITEM);
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE + "/" + URI_PATH_DATABASE_SYNC,
-                DATABASE_SYNC);
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE + "/" + URI_PATH_DATABASE_SYNC + "/#",
-                DATABASE_SYNC_ITEM);
+        sURIMatcher.addURI(URI_AUTHORITY,
+                URI_DATABASE.getPath(), DATABASE);
+        sURIMatcher.addURI(URI_AUTHORITY,
+                Uri.withAppendedPath(URI_DATABASE, "#").getPath(), DATABASE_ITEM);
+        sURIMatcher.addURI(URI_AUTHORITY,
+                URI_DATABASE_SYNC.getPath(), DATABASE_SYNC);
 
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_PREFERENCES, PREFERENCES);
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_PREFERENCES + "/*", PREFERENCES_ITEM);
+        sURIMatcher.addURI(URI_AUTHORITY,
+                URI_PREFERENCES.getPath(), PREFERENCES);
+        sURIMatcher.addURI(URI_AUTHORITY,
+                Uri.withAppendedPath(URI_PREFERENCES, "*").getPath(), PREFERENCES_ITEM);
     }
 
     private static final String CURSOR_DIR_BASE_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE +
@@ -78,7 +81,6 @@ public class SyncProvider extends ContentProvider {
             case DATABASE_SYNC:
                 return CURSOR_DIR_BASE_TYPE_DATABASE;
             case DATABASE_ITEM:
-            case DATABASE_SYNC_ITEM:
                 return CURSOR_ITEM_BASE_TYPE_DATABASE;
 
             case PREFERENCES:
@@ -86,6 +88,7 @@ public class SyncProvider extends ContentProvider {
             case PREFERENCES_ITEM:
                 return CURSOR_ITEM_BASE_TYPE_PREFERENCES;
             default:
+                UtilsLog.d(TAG, "getType", "sURIMatcher.match() == default, uri == " + uri);
                 return null;
         }
     }
@@ -94,6 +97,7 @@ public class SyncProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
+//        UtilsLog.d(TAG, "query, uri == " + uri);
         switch (sURIMatcher.match(uri)) {
             case DATABASE:
                 return mDatabaseHelper.getSyncAllRecords();
@@ -104,6 +108,7 @@ public class SyncProvider extends ContentProvider {
             case PREFERENCES_ITEM:
                 return PreferenceManagerFuel.getPreference(uri.getLastPathSegment());
             default:
+                UtilsLog.d(TAG, "getType", "sURIMatcher.match() == default, uri == " + uri);
                 return null;
         }
     }
@@ -116,12 +121,14 @@ public class SyncProvider extends ContentProvider {
                 long id = mDatabaseHelper.insert(values);
                 return ContentUris.withAppendedId(URI_DATABASE, id);
             default:
+                UtilsLog.d(TAG, "insert", "sURIMatcher.match() == default, uri == " + uri);
                 return null;
         }
     }
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+//        UtilsLog.d(TAG, "delete, uri == " + uri);
         switch (sURIMatcher.match(uri)) {
             case DATABASE:
                 return mDatabaseHelper.delete(selection);
@@ -131,16 +138,15 @@ public class SyncProvider extends ContentProvider {
             case DATABASE_SYNC:
                 return mDatabaseHelper.delete(
                         DatabaseHelper.COLUMN_DELETED + DatabaseHelper.EQUAL + DatabaseHelper.TRUE);
-            case DATABASE_SYNC_ITEM:
-                return mDatabaseHelper.delete(
-                        DatabaseHelper._ID + DatabaseHelper.EQUAL + ContentUris.parseId(uri));
             default:
+                UtilsLog.d(TAG, "delete", "sURIMatcher.match() == default, uri == " + uri);
                 return -1;
         }
     }
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+//        UtilsLog.d(TAG, "update, uri == " + uri);
         switch (sURIMatcher.match(uri)) {
             case DATABASE_SYNC:
                 if (values == null) values = new ContentValues();
@@ -155,6 +161,7 @@ public class SyncProvider extends ContentProvider {
             case PREFERENCES_ITEM:
                 return PreferenceManagerFuel.setPreferences(values, uri.getLastPathSegment());
             default:
+                UtilsLog.d(TAG, "update", "sURIMatcher.match() == default, uri == " + uri);
                 return -1;
         }
     }

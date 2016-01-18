@@ -63,7 +63,8 @@ public class FragmentDialogProgress extends DialogFragment {
     public void onResume() {
         super.onResume();
 
-        UtilsLog.d(TAG, "onResume", "mOperationXml == null " + Boolean.toString(mAsyncTaskOperationXml == null));
+        UtilsLog.d(TAG, "onResume",
+                "mAsyncTaskOperationXml " + (mAsyncTaskOperationXml == null ? "=" : "!") + "= null");
 
         if (mAsyncTaskOperationXml == null) dismiss();
     }
@@ -82,7 +83,8 @@ public class FragmentDialogProgress extends DialogFragment {
     }
 
     void stopTask(@DatabaseBackupXmlHelper.BackupResult int result) {
-        UtilsLog.d(TAG, "stopTask", "getTargetFragment() != null " + Boolean.toString(getTargetFragment() != null));
+        UtilsLog.d(TAG, "stopTask",
+                "getTargetFragment() " + (getTargetFragment() == null ? "=" : "!") + "= null");
 
         if (isResumed()) {
             UtilsLog.d(TAG, "stopTask", "isResumed()");

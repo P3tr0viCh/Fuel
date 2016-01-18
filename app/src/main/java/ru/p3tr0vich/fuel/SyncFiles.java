@@ -15,6 +15,7 @@ class SyncFiles {
 
     private static final String DIR_DATABASE = "database";
     private static final String FILE_DATABASE = "DATABASE";
+    private static final String FILE_DATABASE_FULL_SYNC = "FULL_SYNC";
     private static final String FILE_DATABASE_REVISION = "REVISION";
 
     private static final String DIR_DEBUG = "_debug";
@@ -29,9 +30,11 @@ class SyncFiles {
 
     private final File mLocalDirDatabase;
     private final File mLocalFileDatabase;
+    private final File mLocalFileDatabaseFullSync;
     private final File mLocalFileDatabaseRevision;
 
     private final File mServerDirDatabase;
+    private final File mServerFileDatabaseFullSync;
     private final File mServerFileDatabaseRevision;
 
     SyncFiles(@NonNull Context context) {
@@ -43,9 +46,11 @@ class SyncFiles {
         mLocalDirPreferences = new File(syncDir, DIR_PREFERENCES);
 
         mLocalFileDatabase = new File(mLocalDirDatabase, FILE_DATABASE);
+        mLocalFileDatabaseFullSync = new File(mLocalDirDatabase, FILE_DATABASE_FULL_SYNC);
         mLocalFileDatabaseRevision = new File(mLocalDirDatabase, FILE_DATABASE_REVISION);
 
         mServerDirDatabase = new File(DIR_DATABASE + (isDebuggable ? DIR_DEBUG : ""));
+        mServerFileDatabaseFullSync = new File(mServerDirDatabase, FILE_DATABASE_FULL_SYNC);
         mServerFileDatabaseRevision = new File(mServerDirDatabase, FILE_DATABASE_REVISION);
 
         mLocalFilePreferences = new File(mLocalDirPreferences, FILE_PREFERENCES);
@@ -88,6 +93,10 @@ class SyncFiles {
         return mLocalFileDatabase;
     }
 
+    public File getLocalFileDatabaseFullSync() {
+        return mLocalFileDatabaseFullSync;
+    }
+
     public File getLocalFileDatabaseRevision() {
         return mLocalFileDatabaseRevision;
     }
@@ -98,6 +107,10 @@ class SyncFiles {
 
     public File getServerFileDatabase(int revision) {
         return new File(mServerDirDatabase, String.valueOf(revision));
+    }
+
+    public File getServerFileDatabaseFullSync() {
+        return mServerFileDatabaseFullSync;
     }
 
     public File getServerFileDatabaseRevision() {

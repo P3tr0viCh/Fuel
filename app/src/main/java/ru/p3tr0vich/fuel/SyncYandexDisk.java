@@ -35,6 +35,16 @@ class SyncYandexDisk {
         mRestClient = new RestClient(new Credentials("", token));
     }
 
+    private void save(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
+        Link link = mRestClient.getUploadLink(APP_DIR + serverFile.getPath(), true);
+
+        mRestClient.uploadFile(link, false, localFile, null);
+    }
+
+    private void load(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
+        mRestClient.downloadFile(APP_DIR + serverFile.getPath(), localFile, null);
+    }
+
     private void makeDir(@NonNull File dir) throws IOException, ServerIOException {
         try {
             mRestClient.makeFolder(APP_DIR + dir.getName());
@@ -48,25 +58,33 @@ class SyncYandexDisk {
         makeDir(mSyncFiles.getServerDirPreferences());
     }
 
-    private void saveRevision(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
-        Link link = mRestClient.getUploadLink(APP_DIR + serverFile.getPath(), true);
-
-        mRestClient.uploadFile(link, false, localFile, null);
+    public void deleteDirDatabase() throws IOException, ServerException {
+        try {
+            Link link = mRestClient.delete(APP_DIR + mSyncFiles.getServerDirDatabase().getName(), true);
+            mRestClient.waitProgress(link, new Runnable() {
+                @Override
+                public void run() {
+                    UtilsLog.d("SyncYandexDisk", "wait until deleting dir database...");
+                }
+            });
+        } catch (HttpCodeException e) {
+            if (e.getCode() != HTTP_CODE_RESOURCE_NOT_FOUND) throw e;
+        }
     }
 
     public void savePreferencesRevision() throws IOException, ServerException {
-        saveRevision(mSyncFiles.getServerFilePreferencesRevision(),
+        save(mSyncFiles.getServerFilePreferencesRevision(),
                 mSyncFiles.getLocalFilePreferencesRevision());
     }
 
     public void saveDatabaseRevision() throws IOException, ServerException {
-        saveRevision(mSyncFiles.getServerFileDatabaseRevision(),
+        save(mSyncFiles.getServerFileDatabaseRevision(),
                 mSyncFiles.getLocalFileDatabaseRevision());
     }
 
     private void loadRevision(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
         try {
-            mRestClient.downloadFile(APP_DIR + serverFile.getPath(), localFile, null);
+            load(serverFile, localFile);
         } catch (HttpCodeException e) {
             if (e.getCode() != HTTP_CODE_RESOURCE_NOT_FOUND) throw e;
         }
@@ -82,22 +100,16 @@ class SyncYandexDisk {
                 mSyncFiles.getLocalFileDatabaseRevision());
     }
 
-    private void save(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
-        Link link = mRestClient.getUploadLink(APP_DIR + serverFile.getPath(), true);
-
-        mRestClient.uploadFile(link, false, localFile, null);
-    }
-
     public void saveDatabase(int revision) throws IOException, ServerException {
         save(mSyncFiles.getServerFileDatabase(revision), mSyncFiles.getLocalFileDatabase());
     }
 
-    public void savePreferences() throws IOException, ServerException {
-        save(mSyncFiles.getServerFilePreferences(), mSyncFiles.getLocalFilePreferences());
+    public void saveDatabaseFullSync() throws IOException, ServerException {
+        save(mSyncFiles.getServerFileDatabaseFullSync(), mSyncFiles.getLocalFileDatabaseFullSync());
     }
 
-    private void load(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
-        mRestClient.downloadFile(APP_DIR + serverFile.getPath(), localFile, null);
+    public void savePreferences() throws IOException, ServerException {
+        save(mSyncFiles.getServerFilePreferences(), mSyncFiles.getLocalFilePreferences());
     }
 
     public void loadDatabase(int revision) throws IOException, ServerException {

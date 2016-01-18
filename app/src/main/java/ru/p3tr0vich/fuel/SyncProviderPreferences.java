@@ -28,7 +28,6 @@ class SyncProviderPreferences {
 
     @NonNull
     private ContentValues query(@Nullable String preference) throws RemoteException, FormatException {
-
         final Cursor cursor = mProvider.query(
                 TextUtils.isEmpty(preference) ?
                         SyncProvider.URI_PREFERENCES :
@@ -134,7 +133,7 @@ class SyncProviderPreferences {
                 .getAsBoolean(PreferenceManagerFuel.PREF_CHANGED);
     }
 
-    public void putChanged() throws RemoteException {
+    public void putChangedFalse() throws RemoteException {
         ContentValues contentValues = new ContentValues();
         contentValues.put(PreferenceManagerFuel.PREF_CHANGED, false);
         update(contentValues, PreferenceManagerFuel.PREF_CHANGED);
@@ -171,5 +170,16 @@ class SyncProviderPreferences {
         contentValues.put(PreferenceManagerFuel.PREF_LAST_SYNC,
                 dateTime != null ? UtilsFormat.dateTimeToString(dateTime) : null);
         update(contentValues, PreferenceManagerFuel.PREF_LAST_SYNC);
+    }
+
+    public boolean isFullSync() throws RemoteException, FormatException {
+        return query(PreferenceManagerFuel.PREF_FULL_SYNC)
+                .getAsBoolean(PreferenceManagerFuel.PREF_FULL_SYNC);
+    }
+
+    public void putFullSyncFalse() throws RemoteException {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PreferenceManagerFuel.PREF_FULL_SYNC, false);
+        update(contentValues, PreferenceManagerFuel.PREF_FULL_SYNC);
     }
 }

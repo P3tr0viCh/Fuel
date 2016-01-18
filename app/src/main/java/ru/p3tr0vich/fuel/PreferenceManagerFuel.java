@@ -26,6 +26,7 @@ class PreferenceManagerFuel {
 
     public static final String PREF_CHANGED = "changed";
     public static final String PREF_LAST_SYNC = "last sync";
+    public static final String PREF_FULL_SYNC = "full sync";
 
     public static final String SYNC_ERROR = "error";
 
@@ -84,6 +85,7 @@ class PreferenceManagerFuel {
                 !key.equals(PREF_DATABASE_REVISION) &&
                 !key.equals(PREF_PREFERENCES_REVISION) &&
                 !key.equals(PREF_LAST_SYNC) &&
+                !key.equals(PREF_FULL_SYNC) &&
                 !key.equals(sContext.getString(R.string.pref_sync_enabled));
     }
 
@@ -124,6 +126,17 @@ class PreferenceManagerFuel {
         UtilsLog.d(TAG, "putRevision", keyRevision + " == " + revision);
     }
 
+    public static boolean isFullSync() {
+        return sSharedPreferences.getBoolean(PREF_FULL_SYNC, false);
+    }
+
+    public static void putFullSync(final boolean fullSync) {
+        sSharedPreferences
+                .edit()
+                .putBoolean(PREF_FULL_SYNC, fullSync)
+                .apply();
+    }
+
     @NonNull
     public static String getLastSync() {
         return getString(PREF_LAST_SYNC);
@@ -151,6 +164,7 @@ class PreferenceManagerFuel {
     }
 
     public static void putFilterDate(final Date dateFrom, final Date dateTo) {
+        // TODO: save as long
         sSharedPreferences
                 .edit()
                 .putString(sContext.getString(R.string.pref_filter_date_from),
@@ -301,6 +315,9 @@ class PreferenceManagerFuel {
                 case PREF_CHANGED:
                     result.put(preference, isChanged());
                     break;
+                case PREF_FULL_SYNC:
+                    result.put(preference, isFullSync());
+                    break;
                 case PREF_DATABASE_REVISION:
                 case PREF_PREFERENCES_REVISION:
                     result.put(preference, getRevision(preference));
@@ -308,6 +325,8 @@ class PreferenceManagerFuel {
                 case PREF_LAST_SYNC:
                     result.put(preference, getLastSync());
                     break;
+                default:
+                    UtilsLog.d(TAG, "getPreferences", "unhandled preference == " + preference);
             }
 
 //        for (String key : result.keySet())
@@ -365,7 +384,7 @@ class PreferenceManagerFuel {
                         else if (value instanceof Boolean) editor.putBoolean(key, (Boolean) value);
                         else if (value instanceof Float) editor.putFloat(key, (Float) value);
                         else
-                            UtilsLog.d(TAG, "getPreferences",
+                            UtilsLog.d(TAG, "setPreferences",
                                     "unhandled class == " + value.getClass().getSimpleName());
                     }
 
@@ -389,9 +408,14 @@ class PreferenceManagerFuel {
                 case PREF_PREFERENCES_REVISION:
                     putRevision(preference, preferences.getAsInteger(preference));
                     break;
+                case PREF_FULL_SYNC:
+                    putFullSync(preferences.getAsBoolean(preference));
+                    break;
                 case PREF_LAST_SYNC:
                     putLastSync(preferences.getAsString(preference));
                     break;
+                default:
+                    UtilsLog.d(TAG, "setPreferences", "unhandled preference == " + preference);
             }
 
             return 1;

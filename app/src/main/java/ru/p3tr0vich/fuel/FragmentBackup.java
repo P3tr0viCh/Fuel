@@ -51,28 +51,28 @@ public class FragmentBackup extends FragmentFuel {
                              Bundle savedInstanceState) {
         UtilsLog.d(TAG, "onCreateView");
 
-        View v = inflater.inflate(R.layout.fragment_backup, container, false);
+        View view = inflater.inflate(R.layout.fragment_backup, container, false);
 
         mDatabaseBackupXmlHelper = new DatabaseBackupXmlHelper();
 
-        ((TextView) v.findViewById(R.id.textDirectory)).setText(mDatabaseBackupXmlHelper.getExternalDirectory().toString());
-        ((TextView) v.findViewById(R.id.textFile)).setText(mDatabaseBackupXmlHelper.getFileName().toString());
+        ((TextView) view.findViewById(R.id.textDirectory)).setText(mDatabaseBackupXmlHelper.getExternalDirectory().toString());
+        ((TextView) view.findViewById(R.id.textFile)).setText(mDatabaseBackupXmlHelper.getFileName().toString());
 
-        v.findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveToXml();
             }
         });
 
-        v.findViewById(R.id.btnLoad).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btnLoad).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadFromXml();
             }
         });
 
-        return v;
+        return view;
     }
 
     private void startOperationXml(boolean doSave) {
@@ -133,6 +133,9 @@ public class FragmentBackup extends FragmentFuel {
             Toast.makeText(getActivity(), R.string.message_save_file_ok, Toast.LENGTH_SHORT).show();
         else if (result == DatabaseBackupXmlHelper.RESULT_LOAD_OK) {
             Toast.makeText(getActivity(), R.string.message_load_file_ok, Toast.LENGTH_SHORT).show();
+
+            PreferenceManagerFuel.putFullSync(true);
+
             mOnDataLoadedFromBackupListener.onDataLoadedFromBackup();
         } else
             FragmentDialogMessage.show(getActivity(), getString(R.string.title_message_error), resultMessage);
@@ -144,7 +147,9 @@ public class FragmentBackup extends FragmentFuel {
 
     private void loadFromXml() { // TODO: Сохранять старые в old?
         FragmentDialogQuestion.show(this, R.string.dialog_caption_load_from_xml,
-                R.string.message_dialog_load_from_xml, R.string.dialog_btn_load, R.string.dialog_btn_disagree);
+                PreferenceManagerFuel.isSyncEnabled() ?
+                        R.string.message_dialog_load_from_xml_sync :
+                        R.string.message_dialog_load_from_xml, R.string.dialog_btn_load, R.string.dialog_btn_disagree);
     }
 
     @Override

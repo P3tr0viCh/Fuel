@@ -55,8 +55,8 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
 
     @Override
     protected void onPostExecute(Integer result) {
-        UtilsLog.d(TAG, "onPostExecute", "mFragmentDialogProgress != null " +
-                Boolean.toString(mFragmentDialogProgress != null));
+        UtilsLog.d(TAG, "onPostExecute",
+                "mFragmentDialogProgress " + (mFragmentDialogProgress == null ? "=" : "!") + "= null");
 
         if (mFragmentDialogProgress != null) mFragmentDialogProgress.stopTask(result);
     }

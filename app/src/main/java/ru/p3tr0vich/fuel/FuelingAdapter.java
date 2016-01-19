@@ -162,8 +162,15 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return position;
     }
 
-    public void deleteRecord(FuelingRecord fuelingRecord) {
-        int position = findPositionById(fuelingRecord.getId());
+    public int findPositionById(long id) {
+        for (int i = mShowHeader; i < mFuelingRecords.size() - mShowFooter; i++)
+            if (mFuelingRecords.get(i).getId() == id) return i;
+
+        return -1;
+    }
+
+    public void deleteRecord(long id) {
+        int position = findPositionById(id);
         if (position > -1) {
             mFuelingRecords.remove(position);
             notifyItemRemoved(position);
@@ -172,11 +179,8 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public int findPositionById(long id) {
-        for (int i = mShowHeader; i < mFuelingRecords.size() - mShowFooter; i++)
-            if (mFuelingRecords.get(i).getId() == id) return i;
-
-        return -1;
+    public void deleteRecord(FuelingRecord fuelingRecord) {
+        deleteRecord(fuelingRecord.getId());
     }
 
     private boolean isEmpty() {

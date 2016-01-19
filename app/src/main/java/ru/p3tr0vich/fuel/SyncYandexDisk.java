@@ -58,18 +58,23 @@ class SyncYandexDisk {
         makeDir(mSyncFiles.getServerDirPreferences());
     }
 
-    public void deleteDirDatabase() throws IOException, ServerException {
+    private void delete(@NonNull File object) throws IOException, ServerException {
         try {
-            Link link = mRestClient.delete(APP_DIR + mSyncFiles.getServerDirDatabase().getName(), true);
-            mRestClient.waitProgress(link, new Runnable() {
-                @Override
-                public void run() {
-                    UtilsLog.d("SyncYandexDisk", "wait until deleting dir database...");
-                }
-            });
+            Link link = mRestClient.delete(APP_DIR + object.getPath(), true);
+            if ("GET".equals(link.getMethod()))
+                mRestClient.waitProgress(link, new Runnable() {
+                    @Override
+                    public void run() {
+                        UtilsLog.d("SyncYandexDisk", "wait until deleting object...");
+                    }
+                });
         } catch (HttpCodeException e) {
             if (e.getCode() != HTTP_CODE_RESOURCE_NOT_FOUND) throw e;
         }
+    }
+
+    public void deleteDirDatabase() throws IOException, ServerException {
+        delete(mSyncFiles.getServerDirDatabase());
     }
 
     public void savePreferencesRevision() throws IOException, ServerException {
@@ -104,16 +109,29 @@ class SyncYandexDisk {
         save(mSyncFiles.getServerFileDatabase(revision), mSyncFiles.getLocalFileDatabase());
     }
 
-    public void saveDatabaseFullSync() throws IOException, ServerException {
-        save(mSyncFiles.getServerFileDatabaseFullSync(), mSyncFiles.getLocalFileDatabaseFullSync());
+    public void loadDatabase(int revision) throws IOException, ServerException {
+        load(mSyncFiles.getServerFileDatabase(revision), mSyncFiles.getLocalFileDatabase());
+    }
+
+    public void putDatabaseFullSync(boolean fullSync) throws IOException, ServerException {
+        if (fullSync)
+            save(mSyncFiles.getServerFileDatabaseFullSync(), mSyncFiles.getLocalFileDatabaseFullSync());
+        else
+            delete(mSyncFiles.getServerFileDatabaseFullSync());
+    }
+
+    public boolean isDatabaseFullSync() throws IOException, ServerException {
+        try {
+            load(mSyncFiles.getServerFileDatabaseFullSync(), mSyncFiles.getLocalFileDatabaseFullSync());
+            return true;
+        } catch (HttpCodeException e) {
+            if (e.getCode() != HTTP_CODE_RESOURCE_NOT_FOUND) throw e;
+            return false;
+        }
     }
 
     public void savePreferences() throws IOException, ServerException {
         save(mSyncFiles.getServerFilePreferences(), mSyncFiles.getLocalFilePreferences());
-    }
-
-    public void loadDatabase(int revision) throws IOException, ServerException {
-        load(mSyncFiles.getServerFileDatabase(revision), mSyncFiles.getLocalFileDatabase());
     }
 
     public void loadPreferences() throws IOException, ServerException {

@@ -518,6 +518,13 @@ public class FragmentFueling extends FragmentFuel implements
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         FuelingRecord fuelingRecord = mDatabaseHelper.getFuelingRecord(id);
+
+                        if (fuelingRecord == null) {
+                            UtilsLog.d(TAG, "onMenuItemClick",
+                                    "mDatabaseHelper.getFuelingRecord(id) == null");
+                            mFuelingAdapter.deleteRecord(id);
+                        }
+
                         switch (item.getItemId()) {
                             case R.id.action_fueling_update:
                                 mOnRecordChangeListener.onRecordChange(Const.RECORD_ACTION_UPDATE, fuelingRecord);

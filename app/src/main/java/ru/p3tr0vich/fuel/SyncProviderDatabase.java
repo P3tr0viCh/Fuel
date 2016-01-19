@@ -1,8 +1,10 @@
 package ru.p3tr0vich.fuel;
 
 import android.content.ContentProviderClient;
+import android.content.ContentProviderOperation;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.nfc.FormatException;
 import android.os.RemoteException;
@@ -65,9 +67,13 @@ class SyncProviderDatabase {
     }
 
     public void updateDatabase(@NonNull List<String> syncRecords) throws FormatException, RemoteException {
+        String[] stringValues;
+
         ContentValues values = new ContentValues();
 
-        String[] stringValues;
+        ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+
+        // TODO: удалить повторяющиеся значения из syncRecords
 
         for (String syncRecord : syncRecords) {
             if (TextUtils.isEmpty(syncRecord)) continue;
@@ -102,13 +108,16 @@ class SyncProviderDatabase {
                     }
                     values.put(DatabaseHelper.COLUMN_CHANGED, DatabaseHelper.FALSE);
                     values.put(DatabaseHelper.COLUMN_DELETED, DatabaseHelper.FALSE);
-
-                    mProvider.insert(SyncProvider.URI_DATABASE, values);
+                    operations.add(ContentProviderOperation
+                            .newInsert(SyncProvider.URI_DATABASE)
+                            .withValues(values)
+                            .build());
 
                     break;
                 case DELETE:
-                    mProvider.delete(ContentUris.withAppendedId(SyncProvider.URI_DATABASE, id),
-                            null, null);
+                    operations.add(ContentProviderOperation
+                            .newDelete(ContentUris.withAppendedId(SyncProvider.URI_DATABASE, id))
+                            .build());
 
                     break;
                 default:
@@ -117,5 +126,15 @@ class SyncProviderDatabase {
                             ", record == " + Arrays.toString(stringValues));
             }
         }
+
+        try {
+            mProvider.applyBatch(operations);
+        } catch (OperationApplicationException e) {
+            throw new FormatException(TAG + " -- updateDatabase: applyBatch exception == " + e.toString());
+        }
+    }
+
+    public void clearDatabase() throws RemoteException {
+        mProvider.delete(SyncProvider.URI_DATABASE, null, null);
     }
 }

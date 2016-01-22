@@ -27,15 +27,11 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String SYNC_DATABASE = "SYNC_DATABASE";
     public static final String SYNC_PREFERENCES = "SYNC_PREFERENCES";
 
-    SyncProviderDatabase mSyncProviderDatabase;
-    SyncProviderPreferences mSyncProviderPreferences;
+    private SyncProviderDatabase mSyncProviderDatabase;
+    private SyncProviderPreferences mSyncProviderPreferences;
 
-    SyncAccount mSyncAccount;
-
-    SyncFiles mSyncFiles;
-
-    SyncLocal mSyncLocal;
-    SyncYandexDisk mSyncYandexDisk;
+    private SyncLocal mSyncLocal;
+    private SyncYandexDisk mSyncYandexDisk;
 
     public SyncAdapter(Context context) {
         super(context, true);
@@ -48,59 +44,56 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         UtilsLog.d(TAG, TAG2, "start");
 
-        mSyncProviderDatabase = new SyncProviderDatabase(provider);
-        mSyncProviderPreferences = new SyncProviderPreferences(provider);
+        try { // finally
 
-        mSyncFiles = new SyncFiles(getContext());
-        mSyncAccount = new SyncAccount(getContext());
+            mSyncProviderDatabase = new SyncProviderDatabase(provider);
+            mSyncProviderPreferences = new SyncProviderPreferences(provider);
 
-        mSyncLocal = new SyncLocal(mSyncFiles);
+            SyncAccount mSyncAccount = new SyncAccount(getContext());
 
-        String yandexDiskToken = mSyncAccount.getYandexDiskToken();
+            String yandexDiskToken = mSyncAccount.getYandexDiskToken();
 
-        if (TextUtils.isEmpty(yandexDiskToken)) {
-            syncResult.stats.numAuthExceptions++;
-            UtilsLog.d(TAG, TAG2, "error  == empty Yandex.Disk token");
-            return;
-        }
+            if (TextUtils.isEmpty(yandexDiskToken)) {
+                syncResult.stats.numAuthExceptions++;
 
-        mSyncYandexDisk = new SyncYandexDisk(mSyncFiles, yandexDiskToken);
+                UtilsLog.d(TAG, TAG2, "error  == empty Yandex.Disk token");
 
-        try {
-//            for (int i = 0; i < 10; i++) {
-//
-//                TimeUnit.SECONDS.sleep(1);
-//
-//                UtilsLog.d(TAG, "onPerformSync", String.valueOf(i));
-//            }
-//
-//            if (true) return;
+                return;
+            }
 
-            mSyncLocal.makeDirs();
-            mSyncLocal.deleteFiles();
+            SyncFiles mSyncFiles = new SyncFiles(getContext());
 
-            if (extras.getBoolean(SYNC_DATABASE, true))
-                syncDatabase();
+            mSyncLocal = new SyncLocal(mSyncFiles);
 
-            if (extras.getBoolean(SYNC_PREFERENCES, true))
-                syncPreferences();
+            mSyncYandexDisk = new SyncYandexDisk(mSyncFiles, yandexDiskToken);
 
-            mSyncLocal.deleteFiles();
-        } catch (Exception e) {
-            if (e instanceof RemoteException) syncResult.databaseError = true;
-            else if (e instanceof IOException) syncResult.stats.numIoExceptions++;
-            else if (e instanceof FormatException) syncResult.stats.numParseExceptions++;
-            else if (e instanceof HttpCodeException) {
-                if (((HttpCodeException) e).getCode() == SyncYandexDisk.HTTP_CODE_UNAUTHORIZED) {
-                    syncResult.stats.numAuthExceptions++;
-                    mSyncAccount.setYandexDiskToken(null);
-                } else
-                    syncResult.stats.numIoExceptions++;
-            } else if (e instanceof ServerIOException) syncResult.stats.numIoExceptions++;
-            else if (e instanceof ServerException) syncResult.stats.numIoExceptions++;
-            else syncResult.databaseError = true;
+            try { // catch
+                mSyncLocal.makeDirs();
+                mSyncLocal.deleteFiles();
 
-            UtilsLog.d(TAG, TAG2, "error  == " + e.toString());
+                if (extras.getBoolean(SYNC_DATABASE, true))
+                    syncDatabase();
+
+                if (extras.getBoolean(SYNC_PREFERENCES, true))
+                    syncPreferences();
+
+                mSyncLocal.deleteFiles();
+            } catch (Exception e) {
+                if (e instanceof RemoteException) syncResult.databaseError = true;
+                else if (e instanceof IOException) syncResult.stats.numIoExceptions++;
+                else if (e instanceof FormatException) syncResult.stats.numParseExceptions++;
+                else if (e instanceof HttpCodeException) {
+                    if (((HttpCodeException) e).getCode() == SyncYandexDisk.HTTP_CODE_UNAUTHORIZED) {
+                        syncResult.stats.numAuthExceptions++;
+                        mSyncAccount.setYandexDiskToken(null);
+                    } else
+                        syncResult.stats.numIoExceptions++;
+                } else if (e instanceof ServerIOException) syncResult.stats.numIoExceptions++;
+                else if (e instanceof ServerException) syncResult.stats.numIoExceptions++;
+                else syncResult.databaseError = true;
+
+                UtilsLog.d(TAG, TAG2, "error  == " + e.toString());
+            }
         } finally {
             try {
                 mSyncProviderPreferences.putLastSync(syncResult.hasError() ? null : new Date());
@@ -115,8 +108,6 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             mSyncYandexDisk = null;
             mSyncLocal = null;
-            mSyncAccount = null;
-            mSyncFiles = null;
             mSyncProviderPreferences = null;
             mSyncProviderDatabase = null;
         }
@@ -256,11 +247,11 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             // Данные на этом устройстве были загружены из резервной копии.
             // Сохранить полную копию БД на сервер.
 
-            boolean isFullSync = mSyncProviderPreferences.isFullSync();
+            boolean isFullSyncToServer = mSyncProviderPreferences.isDatabaseFullSync();
 
-            UtilsLog.d(TAG, TAG2, "isFullSync == " + isFullSync);
+            UtilsLog.d(TAG, TAG2, "isFullSyncToServer == " + isFullSyncToServer);
 
-            if (isFullSync) {
+            if (isFullSyncToServer) {
                 syncDatabaseFullSave();
 
                 return;
@@ -284,12 +275,12 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             // Данные на другом устройстве были загружены из резервной копии.
             // Загрузить полную копию БД с сервера, удалив имеющиеся на этом устройстве значения.
 
-            boolean isDatabaseFullSync = mSyncYandexDisk.isDatabaseFullSync();
+            boolean isFullSyncFromServer = mSyncYandexDisk.isDatabaseFullSync();
             UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.isDatabaseFullSync() OK");
 
-            UtilsLog.d(TAG, TAG2, "isDatabaseFullSync == " + isDatabaseFullSync);
+            UtilsLog.d(TAG, TAG2, "isFullSyncFromServer == " + isFullSyncFromServer);
 
-            if (isDatabaseFullSync) {
+            if (isFullSyncFromServer) {
                 syncDatabaseFullLoad(serverRevision);
 
                 return;
@@ -362,7 +353,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         syncDatabaseSave(0, true);
 
-        mSyncProviderPreferences.putFullSyncFalse();
+        mSyncProviderPreferences.putDatabaseFullSyncFalse();
         mSyncProviderPreferences.putDatabaseRevision(0);
 
         UtilsLog.d(TAG, TAG2, "finish");

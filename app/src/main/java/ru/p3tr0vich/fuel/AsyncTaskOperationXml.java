@@ -35,10 +35,8 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
         @DatabaseBackupXmlHelper.BackupResult
         int result;
 
-        DatabaseHelper dbHelper = new DatabaseHelper(mContext);
-
         if (mDoSave) {
-            fuelingRecordList = dbHelper.getAllRecordsList();
+            fuelingRecordList = ContentProviderFuel.getAllRecordsList(mContext);
 
             result = mDatabaseBackupXmlHelper.save(fuelingRecordList);
         } else {
@@ -47,7 +45,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
             result = mDatabaseBackupXmlHelper.load(fuelingRecordList);
 
             if (result == DatabaseBackupXmlHelper.RESULT_LOAD_OK)
-                dbHelper.swapRecords(fuelingRecordList);
+                ContentProviderFuel.swapRecords(mContext, fuelingRecordList);
         }
 
         return result;

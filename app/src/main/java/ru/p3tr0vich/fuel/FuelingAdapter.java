@@ -116,7 +116,7 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mOnFuelingRecordsChangeListener.OnFuelingRecordsChange(tempFuelingRecords);
     }
 
-    public int addRecord(FuelingRecord fuelingRecord) {
+    public int insertRecord(FuelingRecord fuelingRecord) {
         fuelingRecord.showYear = mShowYear;
 
         int position = findPositionForDate(fuelingRecord.getDateTime());
@@ -177,10 +177,6 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             notifyFuelingRecordsChanged();
         }
-    }
-
-    public void deleteRecord(FuelingRecord fuelingRecord) {
-        deleteRecord(fuelingRecord.getId());
     }
 
     private boolean isEmpty() {

@@ -12,11 +12,8 @@ import android.support.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 @SuppressWarnings("TryFinallyCanBeTryWithResources")
@@ -25,10 +22,10 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
 
     private static final String TAG = "DatabaseHelper";
 
-    public static final String COLUMN_DATETIME = "datetime";
-    public static final String COLUMN_COST = "cost";
-    public static final String COLUMN_VOLUME = "volume";
-    public static final String COLUMN_TOTAL = "total";
+    private static final String COLUMN_DATETIME = "datetime";
+    private static final String COLUMN_COST = "cost";
+    private static final String COLUMN_VOLUME = "volume";
+    private static final String COLUMN_TOTAL = "total";
     public static final String COLUMN_CHANGED = "changed";
     public static final String COLUMN_DELETED = "deleted";
 
@@ -62,15 +59,19 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
 
     private static final String[] COLUMNS_YEARS = new String[]{
             "strftime('%Y', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + COLUMN_YEAR};
+    public static final int COLUMN_YEAR_INDEX = 0;
+
     private static final String[] COLUMNS_SUM_BY_MONTHS = new String[]{
             "SUM(" + COLUMN_COST + ")",
             "strftime('%m', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + COLUMN_MONTH};
+    public static final int COLUMN_COST_SUM_INDEX = 0;
+    public static final int COLUMN_MONTH_INDEX = 1;
 
     public static final String EQUAL = "=";
     public static final int TRUE = 1;
     public static final int FALSE = 0;
 
-    private static final String WHERE_RECORD_NOT_DELETED = COLUMN_DELETED + EQUAL + FALSE;
+    public static final String WHERE_RECORD_NOT_DELETED = COLUMN_DELETED + EQUAL + FALSE;
     private static final String WHERE_LESS = "<'%d'";
     private static final String WHERE_BETWEEN = " BETWEEN %1$d AND %2$d";
 
@@ -95,8 +96,8 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     public static final int FILTER_MODE_DATES = 3;
 
     static class Filter {
-        public Date dateFrom;
-        public Date dateTo;
+        public long dateFrom;
+        public long dateTo;
         public int year;
         @FilterMode
         public int filterMode;
@@ -115,6 +116,7 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         super(context, FUEL_DB, null, DATABASE_VERSION);
     }
 
+    @SuppressWarnings("SameParameterValue")
     public static boolean getBoolean(@NonNull Cursor cursor, int columnIndex) {
         return cursor.getInt(columnIndex) == TRUE;
     }
@@ -130,13 +132,42 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         UtilsLog.d(TAG, "onUpgrade");
     }
 
+    @NonNull
+    public static ContentValues getValues(@Nullable Long id,
+                                          long dateTime,
+                                          float cost,
+                                          float volume,
+                                          float total,
+                                          boolean changed,
+                                          boolean deleted) {
+        ContentValues values = new ContentValues();
+
+        if (id != null)
+            values.put(_ID, id);
+
+        values.put(COLUMN_DATETIME, dateTime);
+        values.put(COLUMN_COST, cost);
+        values.put(COLUMN_VOLUME, volume);
+        values.put(COLUMN_TOTAL, total);
+        values.put(COLUMN_CHANGED, changed ? TRUE : FALSE);
+        values.put(COLUMN_DELETED, deleted ? TRUE : FALSE);
+
+        return values;
+    }
+
+    @NonNull
+    public static ContentValues getValuesMarkAsDeleted() {
+        ContentValues values = new ContentValues();
+
+        values.put(COLUMN_CHANGED, TRUE);
+        values.put(COLUMN_DELETED, TRUE);
+
+        return values;
+    }
+
     @Nullable
-    public FuelingRecord getFuelingRecord(long id) {
-        UtilsLog.d(TAG, "getFuelingRecord");
-
+    public static FuelingRecord cursorToFuelingRecord(@Nullable Cursor cursor) {
         FuelingRecord fuelingRecord = null;
-
-        Cursor cursor = query(COLUMNS, _ID + EQUAL + String.valueOf(id), null, null);
 
         if (cursor != null)
             try {
@@ -149,76 +180,8 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         return fuelingRecord;
     }
 
-    private long doInsertRecord(@NonNull SQLiteDatabase db, @NonNull FuelingRecord fuelingRecord) {
-        ContentValues values = new ContentValues();
-
-        values.put(_ID, fuelingRecord.getDateTime());
-        values.put(COLUMN_DATETIME, fuelingRecord.getDateTime());
-        values.put(COLUMN_COST, fuelingRecord.getCost());
-        values.put(COLUMN_VOLUME, fuelingRecord.getVolume());
-        values.put(COLUMN_TOTAL, fuelingRecord.getTotal());
-        values.put(COLUMN_CHANGED, TRUE);
-        values.put(COLUMN_DELETED, FALSE);
-
-        return insert(db, values); // TODO: add throw
-    }
-
-    public long insertRecord(@NonNull FuelingRecord fuelingRecord) {
-        SQLiteDatabase db = getWritableDatabase();
-
-        try {
-            return doInsertRecord(db, fuelingRecord);
-        } finally {
-            db.close();
-        }
-    }
-
-    public void swapRecords(@NonNull List<FuelingRecord> fuelingRecordList) {
-        UtilsLog.d(TAG, "swapRecords", "records count == " + fuelingRecordList.size());
-
-        SQLiteDatabase db = getWritableDatabase();
-
-        try {
-            db.beginTransaction();
-
-            delete(db, null); // delete all records
-
-            try {
-                for (FuelingRecord fuelingRecord : fuelingRecordList)
-                    doInsertRecord(db, fuelingRecord);
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
-            }
-        } finally {
-            db.close();
-        }
-    }
-
-    public int updateRecord(@NonNull FuelingRecord fuelingRecord) {
-        ContentValues values = new ContentValues();
-
-        values.put(COLUMN_DATETIME, fuelingRecord.getDateTime());
-        values.put(COLUMN_COST, fuelingRecord.getCost());
-        values.put(COLUMN_VOLUME, fuelingRecord.getVolume());
-        values.put(COLUMN_TOTAL, fuelingRecord.getTotal());
-        values.put(COLUMN_CHANGED, TRUE);
-        values.put(COLUMN_DELETED, FALSE);
-
-        return update(values, _ID + EQUAL + fuelingRecord.getId());
-    }
-
-    public int deleteRecord(@NonNull FuelingRecord fuelingRecord) {
-        ContentValues values = new ContentValues();
-
-        values.put(COLUMN_CHANGED, TRUE);
-        values.put(COLUMN_DELETED, TRUE);
-
-        return update(values, _ID + EQUAL + fuelingRecord.getId());
-    }
-
     @NonNull
-    private String filterModeToSql(Filter filter) {
+    public static String filterModeToSql(@NonNull Filter filter) {
         if (filter.filterMode == FILTER_MODE_ALL)
             return WHERE_RECORD_NOT_DELETED;
         else {
@@ -226,8 +189,8 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
             Calendar dateTo = Calendar.getInstance();
 
             if (filter.filterMode == FILTER_MODE_DATES) {
-                dateFrom.setTimeInMillis(filter.dateFrom.getTime());
-                dateTo.setTimeInMillis(filter.dateTo.getTime());
+                dateFrom.setTimeInMillis(filter.dateFrom);
+                dateTo.setTimeInMillis(filter.dateTo);
             } else {
                 int year = filter.filterMode == FILTER_MODE_YEAR ?
                         filter.year : UtilsDate.getCurrentYear();
@@ -246,9 +209,12 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         }
     }
 
-    public Cursor getAllCursor(Filter filter) {
-        UtilsLog.d(TAG, "getAllCursor");
-        return query(COLUMNS, filterModeToSql(filter), null, COLUMN_DATETIME + DESC);
+    public Cursor getAll(String selection) {
+        return query(COLUMNS, selection, null, COLUMN_DATETIME + DESC);
+    }
+
+    public Cursor getRecord(long id) {
+        return query(COLUMNS, _ID + EQUAL + id, null, null);
     }
 
     public Cursor getYears() {
@@ -264,34 +230,24 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         return query(COLUMNS_SUM_BY_MONTHS, filterModeToSql(new Filter(year)), COLUMN_MONTH, COLUMN_MONTH);
     }
 
-    public Cursor getSyncChangedRecords() {
-        UtilsLog.d(TAG, "getSyncChangedRecords");
-        return query(COLUMNS_WITH_DELETED, COLUMN_CHANGED + EQUAL + TRUE, null, null);
+    public Cursor getSyncRecords(boolean getChanged) {
+        UtilsLog.d(TAG, "getSyncRecords", "getChanged == " + getChanged);
+        return query(COLUMNS_WITH_DELETED,
+                getChanged ? COLUMN_CHANGED + EQUAL + TRUE : null, null, null);
     }
 
-    public Cursor getSyncAllRecords() {
-        UtilsLog.d(TAG, "getSyncAllRecords");
-        return query(COLUMNS_WITH_DELETED, null, null, null);
+    public int deleteMarkedAsDeleted() {
+        return delete(COLUMN_DELETED + EQUAL + TRUE);
     }
 
-    @NonNull
-    public List<FuelingRecord> getAllRecordsList() {
-        List<FuelingRecord> fuelingRecords = new ArrayList<>();
+    public int updateChanged() {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_CHANGED, FALSE);
 
-        Cursor cursor = query(COLUMNS, WHERE_RECORD_NOT_DELETED, null, COLUMN_DATETIME);
-        if (cursor != null)
-            try {
-                if (cursor.moveToFirst()) do
-                    fuelingRecords.add(new FuelingRecord(cursor));
-                while (cursor.moveToNext());
-            } finally {
-                cursor.close();
-            }
-
-        return fuelingRecords;
+        return update(values, COLUMN_CHANGED + EQUAL + TRUE);
     }
 
-    private Cursor query(String[] columns, String selection, String groupBy, String orderBy) {
+    public Cursor query(String[] columns, String selection, String groupBy, String orderBy) {
         UtilsLog.d(TAG, "query", "columns == " + Arrays.toString(columns) +
                 ", selection == " + selection + ", groupBy == " + groupBy + ", orderBy == " + orderBy);
 
@@ -299,7 +255,7 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
                 null, groupBy, null, orderBy);
     }
 
-    private long insert(@NonNull SQLiteDatabase db, @NonNull ContentValues values) {
+    public long insert(@NonNull SQLiteDatabase db, @NonNull ContentValues values) {
         return db.insert(TABLE_FUELING, null, values);
     }
 
@@ -311,11 +267,19 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         return getWritableDatabase().update(TABLE_FUELING, values, whereClause, null);
     }
 
+    public int update(@NonNull ContentValues values, long id) {
+        return getWritableDatabase().update(TABLE_FUELING, values, _ID + EQUAL + id, null);
+    }
+
     private int delete(@NonNull SQLiteDatabase db, @Nullable String whereClause) {
         return db.delete(TABLE_FUELING, whereClause, null);
     }
 
     public int delete(@Nullable String whereClause) {
         return delete(getWritableDatabase(), whereClause);
+    }
+
+    public int delete(long id) {
+        return delete(_ID + EQUAL + id);
     }
 }

@@ -48,7 +48,7 @@ public class UtilsFormat {
         return (new SimpleDateFormat(SQL_DATE_TIME_FORMAT, Locale.getDefault())).format(date);
     }
 
-    private static String dateToString(long date, boolean withYear, boolean abbrevMonth) {
+    public static String dateToString(long date, boolean withYear, boolean abbrevMonth) {
         int flags = DateUtils.FORMAT_SHOW_DATE;
         flags = withYear ? flags | DateUtils.FORMAT_SHOW_YEAR : flags | DateUtils.FORMAT_NO_YEAR;
         if (abbrevMonth) flags = flags | DateUtils.FORMAT_ABBREV_MONTH;
@@ -56,11 +56,6 @@ public class UtilsFormat {
         return DateUtils.formatDateTime(ApplicationFuel.getContext(), date, flags);
     }
 
-    public static String dateToString(Date date, boolean abbrevMonth) {
-        return dateToString(date.getTime(), true, abbrevMonth);
-    }
-
-    @SuppressWarnings("unused") // Used in fueling_listitem
     public static String dateToString(long date, boolean withYear) {
 //        return dateToSqlDateTime(date);
         return dateToString(date, withYear, false);

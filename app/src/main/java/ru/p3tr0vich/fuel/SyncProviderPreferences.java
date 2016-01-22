@@ -30,8 +30,8 @@ class SyncProviderPreferences {
     private ContentValues query(@Nullable String preference) throws RemoteException, FormatException {
         final Cursor cursor = mProvider.query(
                 TextUtils.isEmpty(preference) ?
-                        SyncProvider.URI_PREFERENCES :
-                        Uri.withAppendedPath(SyncProvider.URI_PREFERENCES, preference),
+                        ContentProviderFuel.URI_PREFERENCES :
+                        Uri.withAppendedPath(ContentProviderFuel.URI_PREFERENCES, preference),
                 null, null, null, null);
 
         if (cursor == null)
@@ -67,8 +67,8 @@ class SyncProviderPreferences {
     private void update(@NonNull ContentValues contentValues,
                         @Nullable String preference) throws RemoteException {
         mProvider.update(TextUtils.isEmpty(preference) ?
-                        SyncProvider.URI_PREFERENCES :
-                        Uri.withAppendedPath(SyncProvider.URI_PREFERENCES, preference),
+                        ContentProviderFuel.URI_PREFERENCES :
+                        Uri.withAppendedPath(ContentProviderFuel.URI_PREFERENCES, preference),
                 contentValues, null, null);
     }
 
@@ -172,14 +172,14 @@ class SyncProviderPreferences {
         update(contentValues, PreferenceManagerFuel.PREF_LAST_SYNC);
     }
 
-    public boolean isFullSync() throws RemoteException, FormatException {
-        return query(PreferenceManagerFuel.PREF_FULL_SYNC)
-                .getAsBoolean(PreferenceManagerFuel.PREF_FULL_SYNC);
+    public boolean isDatabaseFullSync() throws RemoteException, FormatException {
+        return query(PreferenceManagerFuel.PREF_DATABASE_FULL_SYNC)
+                .getAsBoolean(PreferenceManagerFuel.PREF_DATABASE_FULL_SYNC);
     }
 
-    public void putFullSyncFalse() throws RemoteException {
+    public void putDatabaseFullSyncFalse() throws RemoteException {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(PreferenceManagerFuel.PREF_FULL_SYNC, false);
-        update(contentValues, PreferenceManagerFuel.PREF_FULL_SYNC);
+        contentValues.put(PreferenceManagerFuel.PREF_DATABASE_FULL_SYNC, false);
+        update(contentValues, PreferenceManagerFuel.PREF_DATABASE_FULL_SYNC);
     }
 }

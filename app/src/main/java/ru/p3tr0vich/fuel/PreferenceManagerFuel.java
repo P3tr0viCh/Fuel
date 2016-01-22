@@ -14,21 +14,23 @@ import android.text.TextUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Date;
 import java.util.Map;
 
 class PreferenceManagerFuel {
 
     private static final String TAG = "PreferenceManagerFuel";
 
+    public static final String SYNC_ERROR = "error";
+
     public static final String PREF_DATABASE_REVISION = "database revision";
     public static final String PREF_PREFERENCES_REVISION = "preferences revision";
 
     public static final String PREF_CHANGED = "changed";
     public static final String PREF_LAST_SYNC = "last sync";
-    public static final String PREF_FULL_SYNC = "full sync";
+    public static final String PREF_DATABASE_FULL_SYNC = "database full sync";
 
-    public static final String SYNC_ERROR = "error";
+    private static final String PREF_FILTER_DATE_FROM = "filter date from";
+    private static final String PREF_FILTER_DATE_TO = "filter date to";
 
     private static final String PREF_DISTANCE = "distance";
     private static final String PREF_COST = "cost";
@@ -85,7 +87,7 @@ class PreferenceManagerFuel {
                 !key.equals(PREF_DATABASE_REVISION) &&
                 !key.equals(PREF_PREFERENCES_REVISION) &&
                 !key.equals(PREF_LAST_SYNC) &&
-                !key.equals(PREF_FULL_SYNC) &&
+                !key.equals(PREF_DATABASE_FULL_SYNC) &&
                 !key.equals(sContext.getString(R.string.pref_sync_enabled));
     }
 
@@ -106,7 +108,7 @@ class PreferenceManagerFuel {
         UtilsLog.d(TAG, "putChanged", "changed == " + changed);
 
         if (changed)
-            sContext.getContentResolver().notifyChange(SyncProvider.URI_PREFERENCES, null, false);
+            sContext.getContentResolver().notifyChange(ContentProviderFuel.URI_PREFERENCES, null, false);
     }
 
     public static boolean isSyncEnabled() {
@@ -126,14 +128,14 @@ class PreferenceManagerFuel {
         UtilsLog.d(TAG, "putRevision", keyRevision + " == " + revision);
     }
 
-    public static boolean isFullSync() {
-        return sSharedPreferences.getBoolean(PREF_FULL_SYNC, false);
+    private static boolean isFullSync() {
+        return sSharedPreferences.getBoolean(PREF_DATABASE_FULL_SYNC, false);
     }
 
     public static void putFullSync(final boolean fullSync) {
         sSharedPreferences
                 .edit()
-                .putBoolean(PREF_FULL_SYNC, fullSync)
+                .putBoolean(PREF_DATABASE_FULL_SYNC, fullSync)
                 .apply();
     }
 
@@ -149,28 +151,19 @@ class PreferenceManagerFuel {
                 .apply();
     }
 
-    private static Date getFilterDate(String date) {
-        Date result = new Date();
-        if (!date.equals("")) result.setTime(Long.valueOf(date));
-        return result;
+    public static long getFilterDateFrom() {
+        return sSharedPreferences.getLong(PREF_FILTER_DATE_FROM, System.currentTimeMillis());
     }
 
-    public static Date getFilterDateFrom() {
-        return getFilterDate(getString(sContext.getString(R.string.pref_filter_date_from)));
+    public static long getFilterDateTo() {
+        return sSharedPreferences.getLong(PREF_FILTER_DATE_TO, System.currentTimeMillis());
     }
 
-    public static Date getFilterDateTo() {
-        return getFilterDate(getString(sContext.getString(R.string.pref_filter_date_to)));
-    }
-
-    public static void putFilterDate(final Date dateFrom, final Date dateTo) {
-        // TODO: save as long
+    public static void putFilterDate(final long dateFrom, final long dateTo) {
         sSharedPreferences
                 .edit()
-                .putString(sContext.getString(R.string.pref_filter_date_from),
-                        String.valueOf(dateFrom.getTime()))
-                .putString(sContext.getString(R.string.pref_filter_date_to),
-                        String.valueOf(dateTo.getTime()))
+                .putLong(PREF_FILTER_DATE_FROM, dateFrom)
+                .putLong(PREF_FILTER_DATE_TO, dateTo)
                 .apply();
     }
 
@@ -315,7 +308,7 @@ class PreferenceManagerFuel {
                 case PREF_CHANGED:
                     result.put(preference, isChanged());
                     break;
-                case PREF_FULL_SYNC:
+                case PREF_DATABASE_FULL_SYNC:
                     result.put(preference, isFullSync());
                     break;
                 case PREF_DATABASE_REVISION:
@@ -408,7 +401,7 @@ class PreferenceManagerFuel {
                 case PREF_PREFERENCES_REVISION:
                     putRevision(preference, preferences.getAsInteger(preference));
                     break;
-                case PREF_FULL_SYNC:
+                case PREF_DATABASE_FULL_SYNC:
                     putFullSync(preferences.getAsBoolean(preference));
                     break;
                 case PREF_LAST_SYNC:
@@ -428,6 +421,8 @@ class PreferenceManagerFuel {
             case PREF_CONS:
             case PREF_SEASON:
                 return PREFERENCE_TYPE_INT;
+            case PREF_FILTER_DATE_FROM:
+            case PREF_FILTER_DATE_TO:
             case PREF_MAP_CENTER_LATITUDE:
             case PREF_MAP_CENTER_LONGITUDE:
                 return PREFERENCE_TYPE_LONG;

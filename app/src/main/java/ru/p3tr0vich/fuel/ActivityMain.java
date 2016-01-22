@@ -84,6 +84,7 @@ public class ActivityMain extends AppCompatActivity implements
     private BroadcastReceiver mStartSyncReceiver;
 
     private PreferencesObserver mPreferencesObserver;
+    private DatabaseObserver mDatabaseObserver;
 
     private int mCurrentFragmentId, mClickedMenuId = -1;
     private boolean mOpenPreferenceSync = false;
@@ -161,6 +162,7 @@ public class ActivityMain extends AppCompatActivity implements
         initStartSyncReceiver();
 
         initPreferencesObserver();
+        initDatabaseObserver();
 
         mSyncMonitor = ContentResolver.addStatusChangeListener(
                 ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
@@ -327,8 +329,31 @@ public class ActivityMain extends AppCompatActivity implements
 
     private void initPreferencesObserver() {
         mPreferencesObserver = new PreferencesObserver(new Handler());
-        getContentResolver().registerContentObserver(SyncProvider.URI_PREFERENCES,
+        getContentResolver().registerContentObserver(ContentProviderFuel.URI_PREFERENCES,
                 false, mPreferencesObserver);
+    }
+
+    private class DatabaseObserver extends ContentObserver {
+        public DatabaseObserver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            onChange(selfChange, null);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri changeUri) {
+            UtilsLog.d(TAG, "DatabaseObserver", "onChange: selfChange == " + selfChange +
+                    ", changeUri == " + changeUri);
+        }
+    }
+
+    private void initDatabaseObserver() {
+        mDatabaseObserver = new DatabaseObserver(new Handler());
+        getContentResolver().registerContentObserver(ContentProviderFuel.URI_DATABASE,
+                true, mDatabaseObserver);
     }
 
     @Override
@@ -457,6 +482,7 @@ public class ActivityMain extends AppCompatActivity implements
     protected void onDestroy() {
         ContentResolver.removeStatusChangeListener(mSyncMonitor);
 
+        getContentResolver().unregisterContentObserver(mDatabaseObserver);
         getContentResolver().unregisterContentObserver(mPreferencesObserver);
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mStartSyncReceiver);
@@ -493,7 +519,7 @@ public class ActivityMain extends AppCompatActivity implements
 
                 switch (ActivityFuelingRecordChange.getAction(data)) {
                     case Const.RECORD_ACTION_ADD:
-                        fragmentFueling.addRecord(fuelingRecord);
+                        fragmentFueling.insertRecord(fuelingRecord);
                         break;
                     case Const.RECORD_ACTION_UPDATE:
                         fragmentFueling.updateRecord(fuelingRecord);
@@ -698,7 +724,7 @@ public class ActivityMain extends AppCompatActivity implements
                 showDialogs = false;
                 startIfSyncActive = true;
                 syncDatabase = true;
-                syncPreferences = PreferenceManagerFuel.isChanged();
+                syncPreferences = true;
         }
 
         stopTimerPreferenceChanged();

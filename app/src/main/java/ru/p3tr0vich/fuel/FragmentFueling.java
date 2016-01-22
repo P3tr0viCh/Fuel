@@ -33,7 +33,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.lang.reflect.Field;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class FragmentFueling extends FragmentFuel implements
@@ -59,7 +58,6 @@ public class FragmentFueling extends FragmentFuel implements
     private boolean mToolbarDatesVisible;
     private boolean mLayoutTotalVisible;
 
-    private DatabaseHelper mDatabaseHelper;
     private DatabaseHelper.Filter mFilter;
 
     private FuelingAdapter mFuelingAdapter;
@@ -101,7 +99,7 @@ public class FragmentFueling extends FragmentFuel implements
         public void onClick(View v) {
             UtilsLog.d(TAG, "undoClickListener", deletedFuelingRecord.toString());
 
-            addRecord(deletedFuelingRecord);
+            insertRecord(deletedFuelingRecord);
 
             deletedFuelingRecord = null;
         }
@@ -119,7 +117,6 @@ public class FragmentFueling extends FragmentFuel implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDatabaseHelper = new DatabaseHelper(getContext());
         mFilter = new DatabaseHelper.Filter();
 
         if (savedInstanceState == null) {
@@ -147,8 +144,8 @@ public class FragmentFueling extends FragmentFuel implements
                 default:
                     mFilter.filterMode = DatabaseHelper.FILTER_MODE_CURRENT_YEAR;
             }
-            mFilter.dateFrom = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_FROM);
-            mFilter.dateTo = (Date) savedInstanceState.getSerializable(KEY_FILTER_DATE_TO);
+            mFilter.dateFrom = savedInstanceState.getLong(KEY_FILTER_DATE_FROM);
+            mFilter.dateTo = savedInstanceState.getLong(KEY_FILTER_DATE_TO);
 
             mDataChanged = savedInstanceState.getBoolean(KEY_DATA_CHANGED);
         }
@@ -364,33 +361,33 @@ public class FragmentFueling extends FragmentFuel implements
         getLoaderManager().getLoader(LOADER_LIST_ID).forceLoad();
     }
 
-    public void addRecord(FuelingRecord fuelingRecord) {
-        long id = mDatabaseHelper.insertRecord(fuelingRecord);
+    public void insertRecord(FuelingRecord fuelingRecord) {
+        long id = ContentProviderFuel.insertRecord(getContext(), fuelingRecord);
 
         if (id > -1) {
             fuelingRecord.setId(id);
 
             if (needUpdateCurrentList(fuelingRecord)) {
                 mDataChanged = true;
-                scrollToPosition(mFuelingAdapter.addRecord(fuelingRecord));
+                scrollToPosition(mFuelingAdapter.insertRecord(fuelingRecord));
             }
         }
     }
 
     public void updateRecord(FuelingRecord fuelingRecord) {
-        if (mDatabaseHelper.updateRecord(fuelingRecord) > -1)
+        if (ContentProviderFuel.updateRecord(getContext(), fuelingRecord) > -1)
             if (needUpdateCurrentList(fuelingRecord)) {
                 mDataChanged = true;
                 scrollToPosition(mFuelingAdapter.updateRecord(fuelingRecord));
             }
     }
 
-    @SuppressWarnings("WeakerAccess")
-    public boolean deleteRecord(FuelingRecord fuelingRecord) {
-        boolean deleted = mDatabaseHelper.deleteRecord(fuelingRecord) > 0;
+    public boolean markRecordAsDeleted(FuelingRecord fuelingRecord) {
+        final long id = fuelingRecord.getId();
+        boolean deleted = ContentProviderFuel.markRecordAsDeleted(getContext(), id) > 0;
         if (deleted) {
             mDataChanged = true;
-            mFuelingAdapter.deleteRecord(fuelingRecord);
+            mFuelingAdapter.deleteRecord(id);
         }
         return deleted;
     }
@@ -419,13 +416,13 @@ public class FragmentFueling extends FragmentFuel implements
                 .scrollToPositionWithOffset(position, 0);
     }
 
-    private void setFilterDate(final Date dateFrom, final Date dateTo) {
+    private void setFilterDate(final long dateFrom, final long dateTo) {
         mFilter.dateFrom = dateFrom;
         mFilter.dateTo = dateTo;
         getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
     }
 
-    private void setFilterDate(final boolean setDateFrom, final Date date) {
+    private void setFilterDate(final boolean setDateFrom, final long date) {
         if (setDateFrom) mFilter.dateFrom = date;
         else mFilter.dateTo = date;
         getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
@@ -435,7 +432,7 @@ public class FragmentFueling extends FragmentFuel implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_LIST_ID:
-                return new FuelingCursorLoader(ApplicationFuel.getContext(), mFilter);
+                return new FuelingCursorLoader(getContext(), mFilter);
             default:
                 return null;
         }
@@ -517,12 +514,14 @@ public class FragmentFueling extends FragmentFuel implements
                 new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        FuelingRecord fuelingRecord = mDatabaseHelper.getFuelingRecord(id);
+                        FuelingRecord fuelingRecord =
+                                ContentProviderFuel.getFuelingRecord(getContext(), id);
 
                         if (fuelingRecord == null) {
                             UtilsLog.d(TAG, "onMenuItemClick",
-                                    "mDatabaseHelper.getFuelingRecord(id) == null");
+                                    "ContentProviderFuel.getFuelingRecord() == null");
                             mFuelingAdapter.deleteRecord(id);
+                            return true;
                         }
 
                         switch (item.getItemId()) {
@@ -532,7 +531,7 @@ public class FragmentFueling extends FragmentFuel implements
                             case R.id.action_fueling_delete:
                                 deletedFuelingRecord = fuelingRecord;
 
-                                if (deleteRecord(fuelingRecord)) {
+                                if (markRecordAsDeleted(fuelingRecord)) {
                                     mSnackbar = Snackbar
                                             .make(mLayoutMain, R.string.message_record_deleted,
                                                     Snackbar.LENGTH_LONG)
@@ -570,10 +569,6 @@ public class FragmentFueling extends FragmentFuel implements
 
     public void setLoading(boolean loading) {
         Utils.setViewVisibleAnimate(mProgressWheelFueling, loading);
-    }
-
-    private DatabaseHelper.Filter getFilter() {
-        return mFilter;
     }
 
     @Override
@@ -669,19 +664,17 @@ public class FragmentFueling extends FragmentFuel implements
         setLayoutTotalVisible(visible);
     }
 
-    private void updateFilterDateButtons(final boolean dateFrom, final Date date) {
+    private void updateFilterDateButtons(final boolean dateFrom, final long date) {
         (dateFrom ? mBtnDateFrom : mBtnDateTo)
-                .setText(UtilsFormat.dateToString(date, Utils.isPhoneInPortrait()));
+                .setText(UtilsFormat.dateToString(date, true, Utils.isPhoneInPortrait()));
     }
 
     private void setPopupFilterDate(final boolean setDateFrom, final int menuId) {
-        DatabaseHelper.Filter filter = getFilter();
-
         switch (menuId) {
             case R.id.action_dates_start_of_year:
             case R.id.action_dates_end_of_year:
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTime(setDateFrom ? filter.dateFrom : filter.dateTo);
+                calendar.setTimeInMillis(setDateFrom ? mFilter.dateFrom : mFilter.dateTo);
 
                 switch (menuId) {
                     case R.id.action_dates_start_of_year:
@@ -694,7 +687,7 @@ public class FragmentFueling extends FragmentFuel implements
                         break;
                 }
 
-                Date date = calendar.getTime();
+                long date = calendar.getTimeInMillis();
 
                 updateFilterDateButtons(setDateFrom, date);
                 setFilterDate(setDateFrom, date);
@@ -711,22 +704,24 @@ public class FragmentFueling extends FragmentFuel implements
                 switch (menuId) {
                     case R.id.action_dates_winter:
                     case R.id.action_dates_summer:
-                        calendarFrom.setTime(setDateFrom ? filter.dateFrom : filter.dateTo);
+                        calendarFrom.setTimeInMillis(setDateFrom ? mFilter.dateFrom : mFilter.dateTo);
 
                         year = calendarFrom.get(Calendar.YEAR);
                         break;
                     case R.id.action_dates_curr_year:
                     case R.id.action_dates_prev_year:
-                        year = Calendar.getInstance().get(Calendar.YEAR);
+                        year = UtilsDate.getCurrentYear();
                         if (menuId == R.id.action_dates_prev_year) year--;
                 }
 
                 switch (menuId) {
                     case R.id.action_dates_winter:
+                        // TODO: добавить выбор -- зима начала года и зима конца года
                         calendarFrom.set(year - 1, Calendar.DECEMBER, 1);
                         calendarTo.set(Calendar.YEAR, year);
                         calendarTo.set(Calendar.MONTH, Calendar.FEBRUARY);
-                        calendarTo.set(Calendar.DAY_OF_MONTH, calendarTo.getActualMaximum(Calendar.DAY_OF_MONTH));
+                        calendarTo.set(Calendar.DAY_OF_MONTH,
+                                calendarTo.getActualMaximum(Calendar.DAY_OF_MONTH));
                         break;
                     case R.id.action_dates_summer:
                         calendarFrom.set(year, Calendar.JUNE, 1);
@@ -736,17 +731,17 @@ public class FragmentFueling extends FragmentFuel implements
                     case R.id.action_dates_prev_year:
                         calendarFrom.set(year, Calendar.JANUARY, 1);
                         calendarTo.set(year, Calendar.DECEMBER, 31);
-
                 }
 
                 UtilsDate.setStartOfDay(calendarFrom);
                 UtilsDate.setEndOfDay(calendarTo);
 
-                Date dateFrom = calendarFrom.getTime();
-                Date dateTo = calendarTo.getTime();
+                long dateFrom = calendarFrom.getTimeInMillis();
+                long dateTo = calendarTo.getTimeInMillis();
 
                 updateFilterDateButtons(true, dateFrom);
                 updateFilterDateButtons(false, dateTo);
+
                 setFilterDate(dateFrom, dateTo);
         }
     }
@@ -796,19 +791,20 @@ public class FragmentFueling extends FragmentFuel implements
     private void showDateDialog(final boolean dateFrom) {
         mDateFromClicked = dateFrom;
 
-        DatabaseHelper.Filter filter = getFilter();
-
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(mDateFromClicked ? filter.dateFrom : filter.dateTo);
+        calendar.setTimeInMillis(mDateFromClicked ? mFilter.dateFrom : mFilter.dateTo);
+
         DatePickerDialog.newInstance(
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(year, monthOfYear, dayOfMonth);
-                        Date date = calendar.getTime();
+
+                        long date = calendar.getTimeInMillis();
 
                         updateFilterDateButtons(mDateFromClicked, date);
+
                         setFilterDate(mDateFromClicked, date);
                     }
                 },
@@ -838,10 +834,15 @@ public class FragmentFueling extends FragmentFuel implements
 
         @Override
         public Cursor loadInBackground() {
+            UtilsLog.d(TAG, "FuelingCursorLoader", "loadInBackground");
+
             ActivityMain.sendLoadingBroadcast(true);
 
             try {
-                return new DatabaseHelper(getContext()).getAllCursor(mFilter);
+                Cursor cursor = ContentProviderFuel.getAll(getContext(), mFilter);
+                cursor.setNotificationUri(getContext().getContentResolver(), ContentProviderFuel.URI_DATABASE);
+
+                return cursor;
             } finally {
                 ActivityMain.sendLoadingBroadcast(false);
             }
@@ -873,19 +874,25 @@ public class FragmentFueling extends FragmentFuel implements
             float costSum = 0, volumeSum = 0;
             float volume, total, firstTotal = 0, lastTotal = 0, average;
 
+            FuelingRecord fuelingRecord;
+
             int averageCount;
 
             boolean completeData = true; // Во всех записях указаны объём заправки и текущий пробег
 
-            for (int i = 0; i < mFuelingRecords.size(); i++) {
+            final int size = mFuelingRecords.size();
+
+            for (int i = 0; i < size; i++) {
 
                 if (isCancelled()) return null;
 
-                costSum += mFuelingRecords.get(i).getCost();
+                fuelingRecord = mFuelingRecords.get(i);
+
+                costSum += fuelingRecord.getCost();
 
                 if (completeData) {
-                    volume = mFuelingRecords.get(i).getVolume();
-                    total = mFuelingRecords.get(i).getTotal();
+                    volume = fuelingRecord.getVolume();
+                    total = fuelingRecord.getTotal();
 
                     if (volume == 0 || total == 0) completeData = false;
                     else {
@@ -896,7 +903,7 @@ public class FragmentFueling extends FragmentFuel implements
                         if (i == 0) lastTotal = total;
                         else {
                             volumeSum += volume;
-                            if (i == mFuelingRecords.size() - 1) firstTotal = total;
+                            if (i == size - 1) firstTotal = total;
                         }
                     }
                 }
@@ -907,7 +914,7 @@ public class FragmentFueling extends FragmentFuel implements
             else {
                 average = 0;
                 averageCount = 0;
-                for (int i = 0; i < mFuelingRecords.size() - 1; i++) {
+                for (int i = 0; i < size - 1; i++) {
 
                     if (isCancelled()) return null;
 
@@ -930,8 +937,10 @@ public class FragmentFueling extends FragmentFuel implements
 
         @Override
         protected void onPostExecute(CalcTotalResult calcTotalResult) {
-            mFragmentFueling.mTextAverage.setText(UtilsFormat.floatToString(calcTotalResult.average));
-            mFragmentFueling.mTextCostSum.setText(UtilsFormat.floatToString(calcTotalResult.costSum));
+            if (calcTotalResult != null) {
+                mFragmentFueling.mTextAverage.setText(UtilsFormat.floatToString(calcTotalResult.average));
+                mFragmentFueling.mTextCostSum.setText(UtilsFormat.floatToString(calcTotalResult.costSum));
+            }
 
             mFragmentFueling = null;
         }

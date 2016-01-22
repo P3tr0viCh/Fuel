@@ -259,7 +259,8 @@ public class FragmentChartCost extends FragmentFuel implements
 
         @Override
         public Cursor loadInBackground() {
-            return new DatabaseHelper(getContext()).getSumByMonthsForYear(mYear);
+//            return new DatabaseHelper(getContext()).getSumByMonthsForYear(mYear);
+            return ContentProviderFuel.getSumByMonthsForYear(getContext(), mYear);
         }
     }
 
@@ -273,7 +274,8 @@ public class FragmentChartCost extends FragmentFuel implements
 
         @Override
         public Cursor loadInBackground() {
-            return new DatabaseHelper(getContext()).getYears();
+//            return new DatabaseHelper(getContext()).getYears();
+            return ContentProviderFuel.getYears(getContext());
         }
     }
 
@@ -281,9 +283,9 @@ public class FragmentChartCost extends FragmentFuel implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case ChartCursorLoader.ID:
-                return new ChartCursorLoader(ApplicationFuel.getContext(), mYear);
+                return new ChartCursorLoader(getContext(), mYear);
             case YearsCursorLoader.ID:
-                return new YearsCursorLoader(ApplicationFuel.getContext());
+                return new YearsCursorLoader(getContext());
             default:
                 return null;
         }
@@ -301,8 +303,8 @@ public class FragmentChartCost extends FragmentFuel implements
                 mIsData = data.getCount() > 0;
 
                 if (data.moveToFirst()) do {
-                    sum = data.getFloat(0);
-                    month = data.getString(1);
+                    sum = data.getFloat(DatabaseHelper.COLUMN_COST_SUM_INDEX);
+                    month = data.getString(DatabaseHelper.COLUMN_MONTH_INDEX);
 
                     mSums[Integer.parseInt(month) - 1] = sum;
                 } while (data.moveToNext());
@@ -317,7 +319,7 @@ public class FragmentChartCost extends FragmentFuel implements
                     mYears = new int[count + 1];
 
                     if (data.moveToFirst()) do {
-                        year = data.getInt(0);
+                        year = data.getInt(DatabaseHelper.COLUMN_YEAR_INDEX);
 
                         mYears[i] = year;
                         i++;

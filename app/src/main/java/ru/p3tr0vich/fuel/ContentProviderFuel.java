@@ -1,13 +1,10 @@
 package ru.p3tr0vich.fuel;
 
 import android.content.ContentProvider;
-import android.content.ContentProviderOperation;
-import android.content.ContentProviderResult;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -53,19 +50,19 @@ public class ContentProviderFuel extends ContentProvider {
     public static final Uri URI_PREFERENCES =
             Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_PREFERENCES);
 
-    private static final int DATABASE = 10;
+    public static final int DATABASE = 10;
     private static final int DATABASE_ITEM = 11;
     private static final int DATABASE_YEARS = 13;
     private static final int DATABASE_SUM_BY_MONTHS = 14;
 
-    private static final int DATABASE_SYNC = 20;
+    public static final int DATABASE_SYNC = 20;
     private static final int DATABASE_SYNC_ALL = 21;
     private static final int DATABASE_SYNC_CHANGED = 22;
 
     private static final int PREFERENCES = 30;
     private static final int PREFERENCES_ITEM = 31;
 
-    private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    public static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
         sURIMatcher.addURI(URI_AUTHORITY,
@@ -237,24 +234,11 @@ public class ContentProviderFuel extends ContentProvider {
                     db.close();
                 }
 
-                notifyChange(getContext());
-
                 return numValues;
             default:
                 UtilsLog.d(TAG, "bulkInsert", "sURIMatcher.match() == default, uri == " + uri);
                 return -1;
         }
-    }
-
-    @NonNull
-    @Override
-    public ContentProviderResult[] applyBatch(@NonNull ArrayList<ContentProviderOperation> operations)
-            throws OperationApplicationException {
-        ContentProviderResult[] results = super.applyBatch(operations);
-
-        notifyChange(getContext());
-
-        return results;
     }
 
     public static Cursor getAll(@NonNull Context context, @NonNull DatabaseHelper.Filter filter) {
@@ -316,11 +300,33 @@ public class ContentProviderFuel extends ContentProvider {
         }
 
         context.getContentResolver().bulkInsert(URI_DATABASE, values);
+
+        notifyChangeAfterUser(context);
     }
 
-    private static void notifyChange(@Nullable Context context) {
+    private static void notifyChange(@Nullable Context context, @NonNull Uri uri) {
         if (context != null)
-            context.getContentResolver().notifyChange(URI_DATABASE, null, false);
+            context.getContentResolver().notifyChange(uri, null, false);
+    }
+
+    private static void notifyChangeAfterUser(@Nullable Context context) {
+        notifyChange(context, URI_DATABASE);
+    }
+
+    public static void notifyChangeAfterSync(@Nullable Context context) {
+        notifyChange(context, URI_DATABASE_SYNC);
+    }
+
+    public static boolean isDatabaseChangedAfterUser(@Nullable Uri uri) {
+        if (uri == null) return false;
+        switch (sURIMatcher.match(uri)) {
+            case DATABASE:
+                return true;
+            case DATABASE_SYNC:
+                return false;
+            default:
+                return false;
+        }
     }
 
     public static long insertRecord(@NonNull Context context, @NonNull FuelingRecord fuelingRecord) {
@@ -336,7 +342,7 @@ public class ContentProviderFuel extends ContentProvider {
                                 true,
                                 false)));
 
-        notifyChange(context);
+        notifyChangeAfterUser(context);
 
         return id;
     }
@@ -353,7 +359,7 @@ public class ContentProviderFuel extends ContentProvider {
                         true,
                         false), null, null);
 
-        notifyChange(context);
+        notifyChangeAfterUser(context);
 
         return rowsUpdated;
     }
@@ -363,7 +369,7 @@ public class ContentProviderFuel extends ContentProvider {
                 ContentUris.withAppendedId(URI_DATABASE, id),
                 DatabaseHelper.getValuesMarkAsDeleted(), null, null);
 
-        notifyChange(context);
+        notifyChangeAfterUser(context);
 
         return rowsUpdated;
     }

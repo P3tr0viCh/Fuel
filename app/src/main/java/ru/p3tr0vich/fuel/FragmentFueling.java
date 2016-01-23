@@ -364,32 +364,27 @@ public class FragmentFueling extends FragmentFuel implements
     public void insertRecord(FuelingRecord fuelingRecord) {
         long id = ContentProviderFuel.insertRecord(getContext(), fuelingRecord);
 
-        if (id > -1) {
-            fuelingRecord.setId(id);
-
-            if (needUpdateCurrentList(fuelingRecord)) {
-                mDataChanged = true;
-                scrollToPosition(mFuelingAdapter.insertRecord(fuelingRecord));
-            }
-        }
+//        if (id > -1) {
+//            fuelingRecord.setId(id);
+//
+//            if (needUpdateCurrentList(fuelingRecord)) {
+//                mDataChanged = true;
+//                scrollToPosition(mFuelingAdapter.insertRecord(fuelingRecord));
+//            }
+//        }
     }
 
     public void updateRecord(FuelingRecord fuelingRecord) {
-        if (ContentProviderFuel.updateRecord(getContext(), fuelingRecord) > -1)
-            if (needUpdateCurrentList(fuelingRecord)) {
-                mDataChanged = true;
-                scrollToPosition(mFuelingAdapter.updateRecord(fuelingRecord));
-            }
+        if (ContentProviderFuel.updateRecord(getContext(), fuelingRecord) > -1);
+//            if (needUpdateCurrentList(fuelingRecord)) {
+//                mDataChanged = true;
+//                scrollToPosition(mFuelingAdapter.updateRecord(fuelingRecord));
+//            }
     }
 
     public boolean markRecordAsDeleted(FuelingRecord fuelingRecord) {
         final long id = fuelingRecord.getId();
-        boolean deleted = ContentProviderFuel.markRecordAsDeleted(getContext(), id) > 0;
-        if (deleted) {
-            mDataChanged = true;
-            mFuelingAdapter.deleteRecord(id);
-        }
-        return deleted;
+        return ContentProviderFuel.markRecordAsDeleted(getContext(), id) > 0;
     }
 
     private boolean isItemVisible(int position) {

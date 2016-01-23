@@ -1,7 +1,6 @@
 package ru.p3tr0vich.fuel;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,8 +14,6 @@ public class FragmentBackup extends FragmentFuel {
     public static final String TAG = "FragmentBackup";
 
     private DatabaseBackupXmlHelper mDatabaseBackupXmlHelper;
-
-    private OnDataLoadedFromBackupListener mOnDataLoadedFromBackupListener;
 
     @Override
     public int getFragmentId() {
@@ -135,8 +132,6 @@ public class FragmentBackup extends FragmentFuel {
             Toast.makeText(getActivity(), R.string.message_load_file_ok, Toast.LENGTH_SHORT).show();
 
             PreferenceManagerFuel.putFullSync(true);
-
-            mOnDataLoadedFromBackupListener.onDataLoadedFromBackup();
         } else
             FragmentDialogMessage.show(getActivity(), getString(R.string.title_message_error), resultMessage);
     }
@@ -166,21 +161,4 @@ public class FragmentBackup extends FragmentFuel {
                 startOperationXml(false);
         }
     }
-
-    public interface OnDataLoadedFromBackupListener {
-        void onDataLoadedFromBackup();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        UtilsLog.d(TAG, "onAttach");
-        super.onAttach(context);
-        try {
-            mOnDataLoadedFromBackupListener = (OnDataLoadedFromBackupListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() +
-                    " must implement OnDataLoadedFromBackupListener");
-        }
-    }
-
 }

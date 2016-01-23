@@ -51,8 +51,7 @@ public class ActivityMain extends AppCompatActivity implements
         FragmentFueling.OnRecordChangeListener,
         FragmentInterface.OnFragmentChangeListener,
         FragmentPreference.OnPreferenceScreenChangeListener,
-        FragmentPreference.OnPreferenceSyncEnabledChangeListener,
-        FragmentBackup.OnDataLoadedFromBackupListener {
+        FragmentPreference.OnPreferenceSyncEnabledChangeListener {
 
     private static final String TAG = "ActivityMain";
 
@@ -345,8 +344,15 @@ public class ActivityMain extends AppCompatActivity implements
 
         @Override
         public void onChange(boolean selfChange, Uri changeUri) {
-            UtilsLog.d(TAG, "DatabaseObserver", "onChange: selfChange == " + selfChange +
-                    ", changeUri == " + changeUri);
+            boolean changedAfterUser = ContentProviderFuel.isDatabaseChangedAfterUser(changeUri);
+
+            UtilsLog.d(TAG, "DatabaseObserver", "onChange: changedAfterUser == " + changedAfterUser +
+                    ", selfChange == " + selfChange + ", changeUri == " + changeUri);
+
+            FragmentFueling fragmentFueling = getFragmentFueling();
+            if (fragmentFueling != null) fragmentFueling.forceLoad();
+
+            // TODO: if changedAfterUser -- start Sync
         }
     }
 
@@ -578,12 +584,6 @@ public class ActivityMain extends AppCompatActivity implements
 
         if (position != mToolbarSpinner.getSelectedItemPosition())
             mToolbarSpinner.setSelection(position);
-    }
-
-    @Override
-    public void onDataLoadedFromBackup() {
-        FragmentFueling fragmentFueling = getFragmentFueling();
-        if (fragmentFueling != null) fragmentFueling.forceLoad();
     }
 
     @Override

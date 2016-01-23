@@ -59,10 +59,12 @@ class SyncProviderDatabase {
     }
 
     public void syncDeletedRecords() throws RemoteException {
+        // Полностью удалить записи, отмеченные как удалённые
         mProvider.delete(ContentProviderFuel.URI_DATABASE_SYNC, null, null);
     }
 
     public void syncChangedRecords() throws RemoteException {
+        // Изменить записи, помеченные как изменённые, как не изменённые
         mProvider.update(ContentProviderFuel.URI_DATABASE_SYNC, new ContentValues(0), null, null);
     }
 
@@ -161,6 +163,7 @@ class SyncProviderDatabase {
     }
 
     public void clearDatabase() throws RemoteException {
+        // delete all records
         mProvider.delete(ContentProviderFuel.URI_DATABASE, null, null);
     }
 }

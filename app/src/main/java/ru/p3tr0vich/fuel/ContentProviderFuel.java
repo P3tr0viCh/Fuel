@@ -35,9 +35,9 @@ public class ContentProviderFuel extends ContentProvider {
 
     public static final Uri URI_DATABASE =
             Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE);
-    public static final Uri URI_DATABASE_YEARS =
+    private static final Uri URI_DATABASE_YEARS =
             Uri.withAppendedPath(URI_DATABASE, URI_PATH_DATABASE_YEARS);
-    public static final Uri URI_DATABASE_SUM_BY_MONTHS =
+    private static final Uri URI_DATABASE_SUM_BY_MONTHS =
             Uri.withAppendedPath(URI_DATABASE, URI_PATH_DATABASE_SUM_BY_MONTHS);
 
     public static final Uri URI_DATABASE_SYNC =
@@ -51,7 +51,7 @@ public class ContentProviderFuel extends ContentProvider {
             Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_PREFERENCES);
 
     public static final int DATABASE = 10;
-    private static final int DATABASE_ITEM = 11;
+    public static final int DATABASE_ITEM = 11;
     private static final int DATABASE_YEARS = 13;
     private static final int DATABASE_SUM_BY_MONTHS = 14;
 
@@ -246,7 +246,7 @@ public class ContentProviderFuel extends ContentProvider {
                 DatabaseHelper.filterModeToSql(filter), null, null, null);
     }
 
-    public static Cursor getRecord(@NonNull Context context, long id) {
+    private static Cursor getRecord(@NonNull Context context, long id) {
         return context.getContentResolver().query(ContentUris.withAppendedId(URI_DATABASE, id),
                 null, null, null, null, null);
     }
@@ -261,7 +261,7 @@ public class ContentProviderFuel extends ContentProvider {
         List<FuelingRecord> fuelingRecords = new ArrayList<>();
 
         Cursor cursor = context.getContentResolver().query(URI_DATABASE, null,
-                DatabaseHelper.WHERE_RECORD_NOT_DELETED, null, null, null);
+                DatabaseHelper.Where.RECORD_NOT_DELETED, null, null, null);
         if (cursor != null)
             try {
                 if (cursor.moveToFirst()) do
@@ -301,7 +301,7 @@ public class ContentProviderFuel extends ContentProvider {
 
         context.getContentResolver().bulkInsert(URI_DATABASE, values);
 
-        notifyChangeAfterUser(context);
+        notifyChangeAfterUser(context, -1);
     }
 
     private static void notifyChange(@Nullable Context context, @NonNull Uri uri) {
@@ -309,24 +309,14 @@ public class ContentProviderFuel extends ContentProvider {
             context.getContentResolver().notifyChange(uri, null, false);
     }
 
-    private static void notifyChangeAfterUser(@Nullable Context context) {
-        notifyChange(context, URI_DATABASE);
+    private static void notifyChangeAfterUser(@Nullable Context context, long id) {
+        notifyChange(context, id == -1 ?
+                URI_DATABASE :
+                ContentUris.withAppendedId(URI_DATABASE, id));
     }
 
     public static void notifyChangeAfterSync(@Nullable Context context) {
         notifyChange(context, URI_DATABASE_SYNC);
-    }
-
-    public static boolean isDatabaseChangedAfterUser(@Nullable Uri uri) {
-        if (uri == null) return false;
-        switch (sURIMatcher.match(uri)) {
-            case DATABASE:
-                return true;
-            case DATABASE_SYNC:
-                return false;
-            default:
-                return false;
-        }
     }
 
     public static long insertRecord(@NonNull Context context, @NonNull FuelingRecord fuelingRecord) {
@@ -342,14 +332,16 @@ public class ContentProviderFuel extends ContentProvider {
                                 true,
                                 false)));
 
-        notifyChangeAfterUser(context);
+        notifyChangeAfterUser(context, id);
 
         return id;
     }
 
     public static int updateRecord(@NonNull Context context, @NonNull FuelingRecord fuelingRecord) {
+        long id = fuelingRecord.getId();
+
         int rowsUpdated = context.getContentResolver().update(
-                ContentUris.withAppendedId(URI_DATABASE, fuelingRecord.getId()),
+                ContentUris.withAppendedId(URI_DATABASE, id),
                 DatabaseHelper.getValues(
                         null,
                         fuelingRecord.getDateTime(),
@@ -359,7 +351,7 @@ public class ContentProviderFuel extends ContentProvider {
                         true,
                         false), null, null);
 
-        notifyChangeAfterUser(context);
+        notifyChangeAfterUser(context, id);
 
         return rowsUpdated;
     }
@@ -369,7 +361,7 @@ public class ContentProviderFuel extends ContentProvider {
                 ContentUris.withAppendedId(URI_DATABASE, id),
                 DatabaseHelper.getValuesMarkAsDeleted(), null, null);
 
-        notifyChangeAfterUser(context);
+        notifyChangeAfterUser(context, -1);
 
         return rowsUpdated;
     }

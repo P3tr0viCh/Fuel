@@ -116,51 +116,51 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mOnFuelingRecordsChangeListener.OnFuelingRecordsChange(tempFuelingRecords);
     }
 
-    public int insertRecord(FuelingRecord fuelingRecord) {
-        fuelingRecord.showYear = mShowYear;
+//    public int insertRecord(FuelingRecord fuelingRecord) {
+//        fuelingRecord.showYear = mShowYear;
+//
+//        int position = findPositionForDate(fuelingRecord.getDateTime());
+//
+//        mFuelingRecords.add(position, fuelingRecord);
+//
+//        notifyItemInserted(position);
+//
+//        notifyFuelingRecordsChanged();
+//
+//        return position;
+//    }
 
-        int position = findPositionForDate(fuelingRecord.getDateTime());
-
-        mFuelingRecords.add(position, fuelingRecord);
-
-        notifyItemInserted(position);
-
-        notifyFuelingRecordsChanged();
-
-        return position;
-    }
-
-    public int updateRecord(FuelingRecord fuelingRecord) {
-        fuelingRecord.showYear = mShowYear;
-
-        int position = findPositionById(fuelingRecord.getId());
-
-        if (position > -1) {
-            long oldDateTime = mFuelingRecords.get(position).getDateTime();
-
-            long newDateTime = fuelingRecord.getDateTime();
-
-            mFuelingRecords.set(position, fuelingRecord);
-
-            notifyItemChanged(position);
-
-            if (oldDateTime != newDateTime) {
-                FuelingRecord temp = mFuelingRecords.remove(position);
-
-                int newPosition = findPositionForDate(newDateTime);
-
-                mFuelingRecords.add(newPosition, temp);
-
-                notifyItemMoved(position, newPosition);
-
-                position = newPosition;
-            }
-        }
-
-        notifyFuelingRecordsChanged();
-
-        return position;
-    }
+//    public int updateRecord(FuelingRecord fuelingRecord) {
+//        fuelingRecord.showYear = mShowYear;
+//
+//        int position = findPositionById(fuelingRecord.getId());
+//
+//        if (position > -1) {
+//            long oldDateTime = mFuelingRecords.get(position).getDateTime();
+//
+//            long newDateTime = fuelingRecord.getDateTime();
+//
+//            mFuelingRecords.set(position, fuelingRecord);
+//
+//            notifyItemChanged(position);
+//
+//            if (oldDateTime != newDateTime) {
+//                FuelingRecord temp = mFuelingRecords.remove(position);
+//
+//                int newPosition = findPositionForDate(newDateTime);
+//
+//                mFuelingRecords.add(newPosition, temp);
+//
+//                notifyItemMoved(position, newPosition);
+//
+//                position = newPosition;
+//            }
+//        }
+//
+//        notifyFuelingRecordsChanged();
+//
+//        return position;
+//    }
 
     public int findPositionById(long id) {
         for (int i = mShowHeader; i < mFuelingRecords.size() - mShowFooter; i++)
@@ -169,41 +169,41 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return -1;
     }
 
-    public void deleteRecord(long id) {
-        int position = findPositionById(id);
-        if (position > -1) {
-            mFuelingRecords.remove(position);
-            notifyItemRemoved(position);
+//    public void deleteRecord(long id) {
+//        int position = findPositionById(id);
+//        if (position > -1) {
+//            mFuelingRecords.remove(position);
+//            notifyItemRemoved(position);
+//
+//            notifyFuelingRecordsChanged();
+//        }
+//    }
 
-            notifyFuelingRecordsChanged();
-        }
-    }
+//    private boolean isEmpty() {
+//        return mFuelingRecords.size() - mShowHeader - mShowFooter == 0;
+//    }
 
-    private boolean isEmpty() {
-        return mFuelingRecords.size() - mShowHeader - mShowFooter == 0;
-    }
-
-    private int findPositionForDate(long date) {
-        if (isEmpty() || date >= mFuelingRecords.get(mShowHeader).getDateTime())
-            return mShowHeader;
-
-        int hi = mShowHeader;
-        int lo = mFuelingRecords.size() - 1 - mShowFooter;
-
-        while (hi <= lo) {
-            int mid = (lo + hi) >>> 1;
-            long midVal = mFuelingRecords.get(mid).getDateTime();
-
-            if (midVal < date) {
-                lo = mid - 1;
-            } else if (midVal > date) {
-                hi = mid + 1;
-            } else {
-                return mid;
-            }
-        }
-        return hi;
-    }
+//    private int findPositionForDate(long date) {
+//        if (isEmpty() || date >= mFuelingRecords.get(mShowHeader).getDateTime())
+//            return mShowHeader;
+//
+//        int hi = mShowHeader;
+//        int lo = mFuelingRecords.size() - 1 - mShowFooter;
+//
+//        while (hi <= lo) {
+//            int mid = (lo + hi) >>> 1;
+//            long midVal = mFuelingRecords.get(mid).getDateTime();
+//
+//            if (midVal < date) {
+//                lo = mid - 1;
+//            } else if (midVal > date) {
+//                hi = mid + 1;
+//            } else {
+//                return mid;
+//            }
+//        }
+//        return hi;
+//    }
 
     public void setShowYear(boolean showYear) {
         mShowYear = showYear;

@@ -41,15 +41,15 @@ class SyncProviderDatabase {
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    result.add(DatabaseHelper.getBoolean(cursor, DatabaseHelper.COLUMN_DELETED_INDEX) ?
+                    result.add(DatabaseHelper.getBoolean(cursor, DatabaseHelper.Fueling.DELETED_INDEX) ?
                             DELETE + SEPARATOR +
-                                    Long.toString(cursor.getLong(DatabaseHelper.COLUMN_ID_INDEX)) :
+                                    Long.toString(cursor.getLong(DatabaseHelper.Fueling._ID_INDEX)) :
                             ADD + SEPARATOR +
-                                    Long.toString(cursor.getLong(DatabaseHelper.COLUMN_ID_INDEX)) + SEPARATOR +
-                                    Long.toString(cursor.getLong(DatabaseHelper.COLUMN_DATETIME_INDEX)) + SEPARATOR +
-                                    Float.toString(cursor.getFloat(DatabaseHelper.COLUMN_COST_INDEX)) + SEPARATOR +
-                                    Float.toString(cursor.getFloat(DatabaseHelper.COLUMN_VOLUME_INDEX)) + SEPARATOR +
-                                    Float.toString(cursor.getFloat(DatabaseHelper.COLUMN_TOTAL_INDEX)));
+                                    Long.toString(cursor.getLong(DatabaseHelper.Fueling._ID_INDEX)) + SEPARATOR +
+                                    Long.toString(cursor.getLong(DatabaseHelper.Fueling.DATETIME_INDEX)) + SEPARATOR +
+                                    Float.toString(cursor.getFloat(DatabaseHelper.Fueling.COST_INDEX)) + SEPARATOR +
+                                    Float.toString(cursor.getFloat(DatabaseHelper.Fueling.VOLUME_INDEX)) + SEPARATOR +
+                                    Float.toString(cursor.getFloat(DatabaseHelper.Fueling.TOTAL_INDEX)));
                 } while (cursor.moveToNext());
             }
             cursor.close();

@@ -95,7 +95,7 @@ class PreferenceManagerFuel {
         mOnPreferencesUpdatingListener = onPreferencesUpdatingListener;
     }
 
-    public static boolean isChanged() {
+    private static boolean isChanged() {
         return sSharedPreferences.getBoolean(PREF_CHANGED, true);
     }
 

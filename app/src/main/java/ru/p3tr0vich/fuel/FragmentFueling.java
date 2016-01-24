@@ -44,8 +44,6 @@ public class FragmentFueling extends FragmentFuel implements
     private static final String KEY_FILTER_DATE_FROM = "KEY_FILTER_DATE_FROM";
     private static final String KEY_FILTER_DATE_TO = "KEY_FILTER_DATE_TO";
 
-    private static final String KEY_DATA_CHANGED = "KEY_DATA_CHANGED";
-
     private static final int LOADER_LIST_ID = 0;
 
     private Toolbar mToolbarDates;
@@ -77,9 +75,7 @@ public class FragmentFueling extends FragmentFuel implements
     private TextView mTextAverage;
     private TextView mTextCostSum;
 
-    private boolean mDataChanged;
-
-    private long mIdForScroll = -1; // TODO: onSaveInstanceState?
+    private long mIdForScroll = -1;
 
     private Snackbar mSnackbar = null;
     private final Snackbar.Callback snackBarCallback = new Snackbar.Callback() {
@@ -126,8 +122,6 @@ public class FragmentFueling extends FragmentFuel implements
 
             mFilter.dateFrom = PreferenceManagerFuel.getFilterDateFrom();
             mFilter.dateTo = PreferenceManagerFuel.getFilterDateTo();
-
-            mDataChanged = false;
         } else {
             UtilsLog.d(TAG, "onCreate", "savedInstanceState != null");
 
@@ -142,12 +136,11 @@ public class FragmentFueling extends FragmentFuel implements
                     mFilter.filterMode = DatabaseHelper.FILTER_MODE_DATES;
                     break;
                 default:
-                    mFilter.filterMode = DatabaseHelper.FILTER_MODE_CURRENT_YEAR;
+                    mFilter.filterMode = DatabaseHelper.FILTER_MODE_ALL;
             }
+
             mFilter.dateFrom = savedInstanceState.getLong(KEY_FILTER_DATE_FROM);
             mFilter.dateTo = savedInstanceState.getLong(KEY_FILTER_DATE_TO);
-
-            mDataChanged = savedInstanceState.getBoolean(KEY_DATA_CHANGED);
         }
     }
 
@@ -263,10 +256,7 @@ public class FragmentFueling extends FragmentFuel implements
 
         doSetFilterMode(mFilter.filterMode);
 
-        if (mDataChanged)
-            getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
-        else
-            getLoaderManager().initLoader(LOADER_LIST_ID, null, this);
+        getLoaderManager().initLoader(LOADER_LIST_ID, null, this);
     }
 
     @Override
@@ -274,10 +264,8 @@ public class FragmentFueling extends FragmentFuel implements
         super.onSaveInstanceState(outState);
 
         outState.putInt(KEY_FILTER_MODE, mFilter.filterMode);
-        outState.putSerializable(KEY_FILTER_DATE_FROM, mFilter.dateFrom);
-        outState.putSerializable(KEY_FILTER_DATE_TO, mFilter.dateTo);
-
-        outState.putBoolean(KEY_DATA_CHANGED, mDataChanged);
+        outState.putLong(KEY_FILTER_DATE_FROM, mFilter.dateFrom);
+        outState.putLong(KEY_FILTER_DATE_TO, mFilter.dateTo);
     }
 
     @Override
@@ -297,14 +285,7 @@ public class FragmentFueling extends FragmentFuel implements
         mOnFilterChangeListener.onFilterChange(filterMode);
     }
 
-    public boolean setFilterMode(@DatabaseHelper.FilterMode int filterMode) {
-        // Результат:
-        // true - фильтр не изменился.
-        // false - фильтр изменён и вызван рестарт лоадер (список полностью обновлён).
-
-//        Utils.logD("FragmentFueling -- setFilterMode: new FilterMode == " + filterMode +
-//                ", current FilterMode == " + mFilter.filterMode);
-
+    public void setFilterMode(@DatabaseHelper.FilterMode int filterMode) {
         if (mFilter.filterMode != filterMode) {
 
             setToolbarDatesVisible(filterMode == DatabaseHelper.FILTER_MODE_DATES, true);
@@ -314,75 +295,51 @@ public class FragmentFueling extends FragmentFuel implements
             getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
 
             setTotalAndFabVisible(true);
-
-            return false;
-        } else {
-            mIdForScroll = -1;
-            return true;
         }
     }
 
-    private boolean needUpdateCurrentList(FuelingRecord fuelingRecord) {
-        // Вызов после добавления или изменения записи.
-
-        // Результат:
-        // true - добавление или обновление записи в текущем списке.
-        // false - список полностью обновлён, добавлять или изменять запись в списке не нужно.
-
-        // Если установлен фильтр "все записи", то возвращается true,
-        // иначе проверяется год в дате записи.
-        // Если год в дате записи текущий,
-        // то нужно установить фильтр -> "текущий год".
-        // Если год в дате записи не текущий,
-        // то нужно установить фильтр -> "все записи".
-
-        // В setFilterMode проверяется текущий фильтр.
-        // Если он уже необходимый, то setFilterMode возвращает true,
-        // иначе в setFilterMode вызывается рестарт лоадер и возвращается false.
-
-        // В mIdForScroll сохраняется Id добавленной или изменёной записи.
-        // Если был вызван рестарт лоадер, список будет прокручен к записи с этим Id.
-
-        if (mFilter.filterMode == DatabaseHelper.FILTER_MODE_ALL) {
-            mIdForScroll = -1;
-            return true;
-        }
-
-        mIdForScroll = fuelingRecord.getId();
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(fuelingRecord.getDateTime());
-
-        return setFilterMode(calendar.get(Calendar.YEAR) == UtilsDate.getCurrentYear() ?
-                DatabaseHelper.FILTER_MODE_CURRENT_YEAR : DatabaseHelper.FILTER_MODE_ALL);
-    }
-
-    public void forceLoad() {
+    public void updateList(long id) {
+        mIdForScroll = id;
         getLoaderManager().getLoader(LOADER_LIST_ID).forceLoad();
     }
 
-    public void insertRecord(FuelingRecord fuelingRecord) {
-        long id = ContentProviderFuel.insertRecord(getContext(), fuelingRecord);
+    private void checkDateTime(@NonNull FuelingRecord fuelingRecord) {
+        switch (mFilter.filterMode) {
+            case DatabaseHelper.FILTER_MODE_ALL:
+                return;
+            case DatabaseHelper.FILTER_MODE_CURRENT_YEAR:
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(fuelingRecord.getDateTime());
 
-//        if (id > -1) {
-//            fuelingRecord.setId(id);
-//
-//            if (needUpdateCurrentList(fuelingRecord)) {
-//                mDataChanged = true;
-//                scrollToPosition(mFuelingAdapter.insertRecord(fuelingRecord));
-//            }
-//        }
+                if (calendar.get(Calendar.YEAR) == UtilsDate.getCurrentYear()) return;
+
+                break;
+            case DatabaseHelper.FILTER_MODE_DATES:
+                final long dateTime = fuelingRecord.getDateTime();
+
+                if (dateTime >= mFilter.dateFrom && dateTime <= mFilter.dateTo) return;
+
+                break;
+            case DatabaseHelper.FILTER_MODE_YEAR:
+                break;
+        }
+
+        setFilterMode(DatabaseHelper.FILTER_MODE_ALL);
     }
 
-    public void updateRecord(FuelingRecord fuelingRecord) {
-        if (ContentProviderFuel.updateRecord(getContext(), fuelingRecord) > -1);
-//            if (needUpdateCurrentList(fuelingRecord)) {
-//                mDataChanged = true;
-//                scrollToPosition(mFuelingAdapter.updateRecord(fuelingRecord));
-//            }
+    public void insertRecord(@NonNull FuelingRecord fuelingRecord) {
+        checkDateTime(fuelingRecord);
+
+        ContentProviderFuel.insertRecord(getContext(), fuelingRecord);
     }
 
-    public boolean markRecordAsDeleted(FuelingRecord fuelingRecord) {
+    public void updateRecord(@NonNull FuelingRecord fuelingRecord) {
+        checkDateTime(fuelingRecord);
+
+        ContentProviderFuel.updateRecord(getContext(), fuelingRecord);
+    }
+
+    private boolean markRecordAsDeleted(@NonNull FuelingRecord fuelingRecord) {
         final long id = fuelingRecord.getId();
         return ContentProviderFuel.markRecordAsDeleted(getContext(), id) > 0;
     }
@@ -435,13 +392,11 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        UtilsLog.d(TAG, "onLoadFinished");
+
         mFuelingAdapter.setShowYear(mFilter.filterMode != DatabaseHelper.FILTER_MODE_CURRENT_YEAR);
 
-        mDataChanged = false;
-
         mFuelingAdapter.swapCursor(data);
-
-        scrollToId();
 
         mFloatingActionButton.animate().scaleX(1.0f).scaleY(1.0f);
     }
@@ -468,6 +423,8 @@ public class FragmentFueling extends FragmentFuel implements
         mHandlerShowNoRecords.removeCallbacks(mRunnableShowNoRecords);
 
         calcTotalTaskCancel();
+
+        scrollToId();
 
         mCalcTotalTask = new CalcTotalTask(this, fuelingRecords);
 
@@ -515,7 +472,7 @@ public class FragmentFueling extends FragmentFuel implements
                         if (fuelingRecord == null) {
                             UtilsLog.d(TAG, "onMenuItemClick",
                                     "ContentProviderFuel.getFuelingRecord() == null");
-                            mFuelingAdapter.deleteRecord(id);
+                            updateList(-1);
                             return true;
                         }
 
@@ -574,7 +531,7 @@ public class FragmentFueling extends FragmentFuel implements
             mOnRecordChangeListener = (OnRecordChangeListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() +
-                    " must implement FilterChangeListener, RecordChangeListener");
+                    " must implement OnFilterChangeListener, OnRecordChangeListener");
         }
     }
 

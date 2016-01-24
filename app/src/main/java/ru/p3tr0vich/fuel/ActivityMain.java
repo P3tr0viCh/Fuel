@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -344,15 +345,25 @@ public class ActivityMain extends AppCompatActivity implements
 
         @Override
         public void onChange(boolean selfChange, Uri changeUri) {
-            boolean changedAfterUser = ContentProviderFuel.isDatabaseChangedAfterUser(changeUri);
+            UtilsLog.d(TAG, "DatabaseObserver", "onChange: changeUri == " + changeUri);
 
-            UtilsLog.d(TAG, "DatabaseObserver", "onChange: changedAfterUser == " + changedAfterUser +
-                    ", selfChange == " + selfChange + ", changeUri == " + changeUri);
+            long id = -1;
+
+            if (changeUri != null)
+                switch (ContentProviderFuel.sURIMatcher.match(changeUri)) {
+                    case ContentProviderFuel.DATABASE_ITEM:
+                        id = ContentUris.parseId(changeUri);
+                    case ContentProviderFuel.DATABASE:
+                        // TODO: start Sync
+                        break;
+                    case ContentProviderFuel.DATABASE_SYNC:
+                        break;
+                    default:
+                        return;
+                }
 
             FragmentFueling fragmentFueling = getFragmentFueling();
-            if (fragmentFueling != null) fragmentFueling.forceLoad();
-
-            // TODO: if changedAfterUser -- start Sync
+            if (fragmentFueling != null) fragmentFueling.updateList(id);
         }
     }
 
@@ -672,18 +683,6 @@ public class ActivityMain extends AppCompatActivity implements
         anim.start();
     }
 
-    private void requestManualSync(boolean syncDatabase, boolean syncPreferences) {
-        Bundle extras = new Bundle();
-
-        extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-
-        extras.putBoolean(SyncAdapter.SYNC_DATABASE, syncDatabase);
-        extras.putBoolean(SyncAdapter.SYNC_PREFERENCES, syncPreferences);
-
-        ContentResolver.requestSync(mSyncAccount.getAccount(), mSyncAccount.getAuthority(), extras);
-    }
-
     private void startSync(@StartSync int startSync) {
         boolean showDialogs = false;
         boolean startIfSyncActive = false;
@@ -733,9 +732,19 @@ public class ActivityMain extends AppCompatActivity implements
             if (!mSyncAccount.isSyncActive() || startIfSyncActive) {
                 if (!mSyncAccount.isYandexDiskTokenEmpty()) {
                     if (Utils.isInternetConnected()) {
-                        /* */
-                        requestManualSync(syncDatabase, syncPreferences);
-                        /* */
+                        /* ****** */
+
+                        Bundle extras = new Bundle();
+
+                        extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+                        extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+
+                        extras.putBoolean(SyncAdapter.SYNC_DATABASE, syncDatabase);
+                        extras.putBoolean(SyncAdapter.SYNC_PREFERENCES, syncPreferences);
+
+                        ContentResolver.requestSync(mSyncAccount.getAccount(), mSyncAccount.getAuthority(), extras);
+
+                        /* ****** */
                     } else {
                         UtilsLog.d(TAG, "startSync", "Internet disconnected");
                         if (showDialogs) FragmentDialogMessage.show(ActivityMain.this,

@@ -17,7 +17,7 @@ public class FuelingRecord implements Parcelable {
     private float mVolume;      // Объём заправки
     private float mTotal;       // Общий пробег
 
-    public boolean showYear;
+    public final boolean showYear;
 
     FuelingRecord(long id, long dateTime, float cost, float volume, float total, boolean showYear) {
         setId(id);
@@ -33,11 +33,11 @@ public class FuelingRecord implements Parcelable {
     }
 
     FuelingRecord(Cursor cursor, boolean showYear) {
-        this(cursor.getLong(DatabaseHelper.COLUMN_ID_INDEX),
-                cursor.getLong(DatabaseHelper.COLUMN_DATETIME_INDEX),
-                cursor.getFloat(DatabaseHelper.COLUMN_COST_INDEX),
-                cursor.getFloat(DatabaseHelper.COLUMN_VOLUME_INDEX),
-                cursor.getFloat(DatabaseHelper.COLUMN_TOTAL_INDEX),
+        this(cursor.getLong(DatabaseHelper.Fueling._ID_INDEX),
+                cursor.getLong(DatabaseHelper.Fueling.DATETIME_INDEX),
+                cursor.getFloat(DatabaseHelper.Fueling.COST_INDEX),
+                cursor.getFloat(DatabaseHelper.Fueling.VOLUME_INDEX),
+                cursor.getFloat(DatabaseHelper.Fueling.TOTAL_INDEX),
                 showYear);
     }
 
@@ -87,7 +87,7 @@ public class FuelingRecord implements Parcelable {
         return mId;
     }
 
-    public void setId(long id) {
+    private void setId(long id) {
         mId = id;
     }
 

@@ -18,72 +18,83 @@ import java.util.Locale;
 
 @SuppressWarnings("TryFinallyCanBeTryWithResources")
 // Try-with-resources requires API level 19 (current min is 17)
-class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
+class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "DatabaseHelper";
 
-    private static final String COLUMN_DATETIME = "datetime";
-    private static final String COLUMN_COST = "cost";
-    private static final String COLUMN_VOLUME = "volume";
-    private static final String COLUMN_TOTAL = "total";
-    public static final String COLUMN_CHANGED = "changed";
-    public static final String COLUMN_DELETED = "deleted";
+    interface FuelingColumns {
+        String DATETIME = "datetime";
+        String COST = "cost";
+        String VOLUME = "volume";
+        String TOTAL = "total";
+        String CHANGED = "changed";
+        String DELETED = "deleted";
 
-    private static final String COLUMN_YEAR = "year";
-    private static final String COLUMN_MONTH = "month";
+        String YEAR = "year";
+        String MONTH = "month";
+    }
 
-    private static final int DATABASE_VERSION = 1;
+    public static class Fueling implements BaseColumns, FuelingColumns {
 
-    private static final String FUEL_DB = "fuel.db";
+        private Fueling() {
+        }
 
-    private static final String TABLE_FUELING = "fueling";
+        public static final String NAME = "fueling";
+
+        private static final String[] COLUMNS = new String[]{
+                _ID, DATETIME, COST, VOLUME, TOTAL
+        };
+        public static final int _ID_INDEX = 0;
+        public static final int DATETIME_INDEX = 1;
+        public static final int COST_INDEX = 2;
+        public static final int VOLUME_INDEX = 3;
+        public static final int TOTAL_INDEX = 4;
+
+        private static final String[] COLUMNS_WITH_DELETED = new String[]{
+                _ID, DATETIME, COST, VOLUME, TOTAL, DELETED
+        };
+        public static final int DELETED_INDEX = 5;
+
+        private static final String[] COLUMNS_YEARS = new String[]{
+                "strftime('%Y', " + DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + YEAR};
+        public static final int YEAR_INDEX = 0;
+
+        private static final String[] COLUMNS_SUM_BY_MONTHS = new String[]{
+                "SUM(" + COST + ")",
+                "strftime('%m', " + DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + MONTH};
+        public static final int COST_SUM_INDEX = 0;
+        public static final int MONTH_INDEX = 1;
+
+        private static final String CREATE_STATEMENT = "CREATE TABLE " + Fueling.NAME + "(" +
+                Fueling._ID + " INTEGER PRIMARY KEY ON CONFLICT REPLACE, " +
+                Fueling.DATETIME + " INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE, " +
+                Fueling.COST + " REAL DEFAULT 0, " +
+                Fueling.VOLUME + " REAL DEFAULT 0, " +
+                Fueling.TOTAL + " REAL DEFAULT 0, " +
+                Fueling.CHANGED + " INTEGER DEFAULT " + TRUE + ", " +
+                Fueling.DELETED + " INTEGER DEFAULT " + FALSE +
+                ");";
+    }
+
+    public static class Database {
+        private static final int VERSION = 1;
+
+        private static final String NAME = "fuel.db";
+    }
 
     private static final String AND = " AND ";
     private static final String AS = " AS ";
     private static final String DESC = " DESC";
 
-    private static final String[] COLUMNS = new String[]{
-            _ID, COLUMN_DATETIME, COLUMN_COST, COLUMN_VOLUME, COLUMN_TOTAL
-    };
-    public static final int COLUMN_ID_INDEX = 0;
-    public static final int COLUMN_DATETIME_INDEX = 1;
-    public static final int COLUMN_COST_INDEX = 2;
-    public static final int COLUMN_VOLUME_INDEX = 3;
-    public static final int COLUMN_TOTAL_INDEX = 4;
+    private static final String EQUAL = "=";
+    private static final int TRUE = 1;
+    private static final int FALSE = 0;
 
-    private static final String[] COLUMNS_WITH_DELETED = new String[]{
-            _ID, COLUMN_DATETIME, COLUMN_COST, COLUMN_VOLUME, COLUMN_TOTAL,
-            COLUMN_DELETED
-    };
-    public static final int COLUMN_DELETED_INDEX = 5;
-
-    private static final String[] COLUMNS_YEARS = new String[]{
-            "strftime('%Y', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + COLUMN_YEAR};
-    public static final int COLUMN_YEAR_INDEX = 0;
-
-    private static final String[] COLUMNS_SUM_BY_MONTHS = new String[]{
-            "SUM(" + COLUMN_COST + ")",
-            "strftime('%m', " + COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + COLUMN_MONTH};
-    public static final int COLUMN_COST_SUM_INDEX = 0;
-    public static final int COLUMN_MONTH_INDEX = 1;
-
-    public static final String EQUAL = "=";
-    public static final int TRUE = 1;
-    public static final int FALSE = 0;
-
-    public static final String WHERE_RECORD_NOT_DELETED = COLUMN_DELETED + EQUAL + FALSE;
-    private static final String WHERE_LESS = "<'%d'";
-    private static final String WHERE_BETWEEN = " BETWEEN %1$d AND %2$d";
-
-    private static final String CREATE_TABLE_FUELING = "CREATE TABLE " + TABLE_FUELING + "(" +
-            _ID + " INTEGER PRIMARY KEY ON CONFLICT REPLACE, " +
-            COLUMN_DATETIME + " INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE, " +
-            COLUMN_COST + " REAL DEFAULT 0, " +
-            COLUMN_VOLUME + " REAL DEFAULT 0, " +
-            COLUMN_TOTAL + " REAL DEFAULT 0, " +
-            COLUMN_CHANGED + " INTEGER DEFAULT " + TRUE + ", " +
-            COLUMN_DELETED + " INTEGER DEFAULT " + FALSE +
-            ");";
+    public static class Where {
+        public static final String RECORD_NOT_DELETED = Fueling.DELETED + EQUAL + FALSE;
+        private static final String LESS = "<'%d'";
+        private static final String BETWEEN = " BETWEEN %1$d AND %2$d";
+    }
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FILTER_MODE_ALL, FILTER_MODE_CURRENT_YEAR, FILTER_MODE_YEAR, FILTER_MODE_DATES})
@@ -113,7 +124,7 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     }
 
     public DatabaseHelper(Context context) {
-        super(context, FUEL_DB, null, DATABASE_VERSION);
+        super(context, Database.NAME, null, Database.VERSION);
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -123,8 +134,8 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        UtilsLog.d(TAG, "onCreate", "sql == " + CREATE_TABLE_FUELING);
-        db.execSQL(CREATE_TABLE_FUELING);
+        UtilsLog.d(TAG, "onCreate", "sql == " + Fueling.CREATE_STATEMENT);
+        db.execSQL(Fueling.CREATE_STATEMENT);
     }
 
     @Override
@@ -143,14 +154,14 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
         ContentValues values = new ContentValues();
 
         if (id != null)
-            values.put(_ID, id);
+            values.put(Fueling._ID, id);
 
-        values.put(COLUMN_DATETIME, dateTime);
-        values.put(COLUMN_COST, cost);
-        values.put(COLUMN_VOLUME, volume);
-        values.put(COLUMN_TOTAL, total);
-        values.put(COLUMN_CHANGED, changed ? TRUE : FALSE);
-        values.put(COLUMN_DELETED, deleted ? TRUE : FALSE);
+        values.put(Fueling.DATETIME, dateTime);
+        values.put(Fueling.COST, cost);
+        values.put(Fueling.VOLUME, volume);
+        values.put(Fueling.TOTAL, total);
+        values.put(Fueling.CHANGED, changed ? TRUE : FALSE);
+        values.put(Fueling.DELETED, deleted ? TRUE : FALSE);
 
         return values;
     }
@@ -159,8 +170,8 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     public static ContentValues getValuesMarkAsDeleted() {
         ContentValues values = new ContentValues();
 
-        values.put(COLUMN_CHANGED, TRUE);
-        values.put(COLUMN_DELETED, TRUE);
+        values.put(Fueling.CHANGED, TRUE);
+        values.put(Fueling.DELETED, TRUE);
 
         return values;
     }
@@ -183,7 +194,7 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     @NonNull
     public static String filterModeToSql(@NonNull Filter filter) {
         if (filter.filterMode == FILTER_MODE_ALL)
-            return WHERE_RECORD_NOT_DELETED;
+            return Where.RECORD_NOT_DELETED;
         else {
             Calendar dateFrom = Calendar.getInstance();
             Calendar dateTo = Calendar.getInstance();
@@ -202,61 +213,62 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
             UtilsDate.setStartOfDay(dateFrom);
             UtilsDate.setEndOfDay(dateTo);
 
-            return COLUMN_DATETIME +
-                    String.format(Locale.US, WHERE_BETWEEN,
+            return Fueling.DATETIME +
+                    String.format(Locale.US, Where.BETWEEN,
                             dateFrom.getTimeInMillis(), dateTo.getTimeInMillis()) +
-                    AND + WHERE_RECORD_NOT_DELETED;
+                    AND + Where.RECORD_NOT_DELETED;
         }
     }
 
     public Cursor getAll(String selection) {
-        return query(COLUMNS, selection, null, COLUMN_DATETIME + DESC);
+        return query(Fueling.COLUMNS, selection, null, Fueling.DATETIME + DESC);
     }
 
     public Cursor getRecord(long id) {
-        return query(COLUMNS, _ID + EQUAL + id, null, null);
+        return query(Fueling.COLUMNS, Fueling._ID + EQUAL + id, null, null);
     }
 
     public Cursor getYears() {
         UtilsLog.d(TAG, "getYears");
-        return query(COLUMNS_YEARS, COLUMN_YEAR +
-                        String.format(Locale.US, WHERE_LESS, UtilsDate.getCurrentYear()) + AND +
-                        WHERE_RECORD_NOT_DELETED,
-                COLUMN_YEAR, COLUMN_YEAR);
+        return query(Fueling.COLUMNS_YEARS, Fueling.YEAR +
+                        String.format(Locale.US, Where.LESS, UtilsDate.getCurrentYear()) + AND +
+                        Where.RECORD_NOT_DELETED,
+                Fueling.YEAR, Fueling.YEAR);
     }
 
     public Cursor getSumByMonthsForYear(int year) {
         UtilsLog.d(TAG, "getSumByMonthsForYear", "year == " + year);
-        return query(COLUMNS_SUM_BY_MONTHS, filterModeToSql(new Filter(year)), COLUMN_MONTH, COLUMN_MONTH);
+        return query(Fueling.COLUMNS_SUM_BY_MONTHS, filterModeToSql(new Filter(year)),
+                Fueling.MONTH, Fueling.MONTH);
     }
 
     public Cursor getSyncRecords(boolean getChanged) {
         UtilsLog.d(TAG, "getSyncRecords", "getChanged == " + getChanged);
-        return query(COLUMNS_WITH_DELETED,
-                getChanged ? COLUMN_CHANGED + EQUAL + TRUE : null, null, null);
+        return query(Fueling.COLUMNS_WITH_DELETED,
+                getChanged ? Fueling.CHANGED + EQUAL + TRUE : null, null, null);
     }
 
     public int deleteMarkedAsDeleted() {
-        return delete(COLUMN_DELETED + EQUAL + TRUE);
+        return delete(Fueling.DELETED + EQUAL + TRUE);
     }
 
     public int updateChanged() {
         ContentValues values = new ContentValues();
-        values.put(COLUMN_CHANGED, FALSE);
+        values.put(Fueling.CHANGED, FALSE);
 
-        return update(values, COLUMN_CHANGED + EQUAL + TRUE);
+        return update(values, Fueling.CHANGED + EQUAL + TRUE);
     }
 
-    public Cursor query(String[] columns, String selection, String groupBy, String orderBy) {
+    private Cursor query(String[] columns, String selection, String groupBy, String orderBy) {
         UtilsLog.d(TAG, "query", "columns == " + Arrays.toString(columns) +
                 ", selection == " + selection + ", groupBy == " + groupBy + ", orderBy == " + orderBy);
 
-        return getReadableDatabase().query(TABLE_FUELING, columns, selection,
+        return getReadableDatabase().query(Fueling.NAME, columns, selection,
                 null, groupBy, null, orderBy);
     }
 
     public long insert(@NonNull SQLiteDatabase db, @NonNull ContentValues values) {
-        return db.insert(TABLE_FUELING, null, values);
+        return db.insert(Fueling.NAME, null, values);
     }
 
     public long insert(@NonNull ContentValues values) {
@@ -264,15 +276,15 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     }
 
     public int update(@NonNull ContentValues values, @NonNull String whereClause) {
-        return getWritableDatabase().update(TABLE_FUELING, values, whereClause, null);
+        return getWritableDatabase().update(Fueling.NAME, values, whereClause, null);
     }
 
     public int update(@NonNull ContentValues values, long id) {
-        return getWritableDatabase().update(TABLE_FUELING, values, _ID + EQUAL + id, null);
+        return getWritableDatabase().update(Fueling.NAME, values, Fueling._ID + EQUAL + id, null);
     }
 
     private int delete(@NonNull SQLiteDatabase db, @Nullable String whereClause) {
-        return db.delete(TABLE_FUELING, whereClause, null);
+        return db.delete(Fueling.NAME, whereClause, null);
     }
 
     public int delete(@Nullable String whereClause) {
@@ -280,6 +292,6 @@ class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
     }
 
     public int delete(long id) {
-        return delete(_ID + EQUAL + id);
+        return delete(Fueling._ID + EQUAL + id);
     }
 }

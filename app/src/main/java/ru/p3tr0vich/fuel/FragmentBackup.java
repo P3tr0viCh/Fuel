@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class FragmentBackup extends FragmentFuel {
 
@@ -127,9 +126,9 @@ public class FragmentBackup extends FragmentFuel {
         UtilsLog.d(TAG, "stopOperationXml: " + resultMessage);
 
         if (result == DatabaseBackupXmlHelper.RESULT_SAVE_OK)
-            Toast.makeText(getActivity(), R.string.message_save_file_ok, Toast.LENGTH_SHORT).show();
+            Utils.toast(R.string.message_save_file_ok);
         else if (result == DatabaseBackupXmlHelper.RESULT_LOAD_OK) {
-            Toast.makeText(getActivity(), R.string.message_load_file_ok, Toast.LENGTH_SHORT).show();
+            Utils.toast(R.string.message_load_file_ok);
 
             PreferenceManagerFuel.putFullSync(true);
         } else

@@ -90,8 +90,6 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         mFuelingRecords.clear();
 
-        notifyDataSetChanged();
-
         if (isShowHeader()) mFuelingRecords.add(null);
 
         if (data != null && data.getCount() != 0 && data.moveToFirst())

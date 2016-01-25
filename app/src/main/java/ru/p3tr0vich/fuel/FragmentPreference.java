@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 public class FragmentPreference extends PreferenceFragmentCompat implements
         FragmentInterface,
@@ -106,9 +105,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
                 UtilsLog.d(TAG, "onPreferenceClick(pref_sync_yandex_disk_key)",
                         "exception == " + e.toString());
 
-                Toast.makeText(getActivity(),
-                        R.string.message_error_yandex_disk_browser_open,
-                        Toast.LENGTH_SHORT).show();
+                Utils.toast(R.string.message_error_yandex_disk_browser_open);
             }
 
             return true;

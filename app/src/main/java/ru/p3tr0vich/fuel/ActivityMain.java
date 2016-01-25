@@ -742,7 +742,8 @@ public class ActivityMain extends AppCompatActivity implements
                         extras.putBoolean(SyncAdapter.SYNC_DATABASE, syncDatabase);
                         extras.putBoolean(SyncAdapter.SYNC_PREFERENCES, syncPreferences);
 
-                        ContentResolver.requestSync(mSyncAccount.getAccount(), mSyncAccount.getAuthority(), extras);
+                        ContentResolver.requestSync(mSyncAccount.getAccount(),
+                                mSyncAccount.getAuthority(), extras);
 
                         /* ****** */
                     } else {

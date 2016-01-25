@@ -280,7 +280,7 @@ public class ActivityYandexMap extends AppCompatActivity {
                             finish();
                     }
                 else
-                    Toast.makeText(this, R.string.text_empty_distance, Toast.LENGTH_SHORT).show();
+                    Utils.toast(R.string.text_empty_distance);
                 return true;
             case MAP_TYPE_CENTER:
                 setResult(RESULT_OK, new Intent()
@@ -345,6 +345,6 @@ public class ActivityYandexMap extends AppCompatActivity {
 
     public void errorConstructRoute() {
         setDistance(0);
-        Toast.makeText(this, R.string.message_error_yandex_map_route, Toast.LENGTH_SHORT).show();
+        Utils.toast(R.string.message_error_yandex_map_route);
     }
 }

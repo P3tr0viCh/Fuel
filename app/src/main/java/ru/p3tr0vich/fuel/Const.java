@@ -16,6 +16,7 @@ class Const {
     public static final int ANIMATION_CHART = 400;
 
     public static final int DELAYED_TIME_SHOW_NO_RECORDS = 400;
+    public static final int DELAYED_TIME_SHOW_PROGRESS_WHEEL = 1000;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({RECORD_ACTION_ADD, RECORD_ACTION_UPDATE, RECORD_ACTION_DELETE})

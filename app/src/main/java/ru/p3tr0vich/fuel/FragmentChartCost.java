@@ -242,7 +242,7 @@ public class FragmentChartCost extends FragmentFuel implements
 
     @Override
     public void onDestroy() {
-        mHandlerShowNoRecords.removeCallbacks(mRunnableShowNoRecords);
+        mHandler.removeCallbacks(mRunnableShowNoRecords);
         super.onDestroy();
     }
 
@@ -349,7 +349,7 @@ public class FragmentChartCost extends FragmentFuel implements
     }
 
     private void updateChart() {
-        mHandlerShowNoRecords.removeCallbacks(mRunnableShowNoRecords);
+        mHandler.removeCallbacks(mRunnableShowNoRecords);
 
         if (mIsData) {
             mTextNoRecords.setVisibility(View.GONE);
@@ -375,12 +375,12 @@ public class FragmentChartCost extends FragmentFuel implements
         } else {
             mChart.clear();
 
-            mHandlerShowNoRecords.postDelayed(mRunnableShowNoRecords,
+            mHandler.postDelayed(mRunnableShowNoRecords,
                     Const.DELAYED_TIME_SHOW_NO_RECORDS);
         }
     }
 
-    private final Handler mHandlerShowNoRecords = new Handler();
+    private final Handler mHandler = new Handler();
 
     private final Runnable mRunnableShowNoRecords = new Runnable() {
         @Override

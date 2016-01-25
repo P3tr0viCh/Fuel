@@ -281,13 +281,19 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             UtilsLog.d(TAG, TAG2, "isFullSyncFromServer == " + isFullSyncFromServer);
 
             if (isFullSyncFromServer) {
+                // FIXME: после повторного запуска загружаются все записи
+                // если данные не были загружены другим устройством
+                // данные будут обновлены только одним устройством
+                // работает все неправильно
+                // полностью переделать
+
                 syncDatabaseFullLoad(serverRevision);
 
                 return;
             }
 
 //            syncDatabaseSave(localRevision, false);
-            syncDatabaseLoad(-1, serverRevision);
+//            syncDatabaseLoad(-1, serverRevision);
 
             if (localRevision < serverRevision) {
                 // Синхронизация уже выполнялась на другом устройстве.
@@ -296,7 +302,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 UtilsLog.d(TAG, TAG2, "localRevision < serverRevision");
 
-//            syncPreferencesLoad(syncLocal, syncYandexDisk, syncProviderPreferences, serverRevision);
+                syncDatabaseLoad(localRevision, serverRevision);
             } else if (localRevision > serverRevision) {
                 // Файлы синхронизации были удалены
                 // (localRevision > -1 > serverRevision == -1).
@@ -304,8 +310,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 UtilsLog.d(TAG, TAG2, "localRevision > serverRevision");
 
-//            syncDatabaseSave(syncLocal, syncYandexDisk, syncProviderDatabase, syncProviderPreferences,
-//                    localRevision, true);
+                syncDatabaseSave(localRevision, true);
             } else /* localRevision == serverRevision */ {
                 // 1. Сихронизация выполняется в первый раз
                 // (localRevision == -1, serverRevision == -1).
@@ -315,10 +320,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 UtilsLog.d(TAG, TAG2, "localRevision == serverRevision");
 
-//            if (localRevision == -1) localRevision = 0;
+                if (localRevision == -1) localRevision = 0;
 
-//            syncDatabaseSave(syncLocal, syncYandexDisk, syncProviderDatabase, syncProviderPreferences,
-//                    localRevision, serverRevision == -1);
+                syncDatabaseSave(localRevision, serverRevision == -1);
             }
 
         } finally {
@@ -331,9 +335,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         // 1) Удалить все файлы с сервера.
         // 2) Сохранить файл-признак полного обновления  в папке кэша.
         // 3) Передать файл-признак из папки кэша на сервер.
-        // 3) Сохранить все записи на сервер.
-        // 5) Удалить признак полного обновления из настроек.
-        // 4) Изменить номер ревизии БД на 0 и сохранить в настройках.
+        // 4) Изменить номер ревизии БД на -1.
+        // 5) Сохранить все записи на сервер.
+        // 6) Удалить признак полного обновления из настроек.
 
         final String TAG2 = "syncDatabaseFullSave";
 
@@ -351,10 +355,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         mSyncYandexDisk.putDatabaseFullSync(true);
         UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.putDatabaseFullSync(true) OK");
 
-        syncDatabaseSave(0, true);
+        syncDatabaseSave(-1, true);
 
         mSyncProviderPreferences.putDatabaseFullSyncFalse();
-        mSyncProviderPreferences.putDatabaseRevision(0);
 
         UtilsLog.d(TAG, TAG2, "finish");
     }
@@ -385,12 +388,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             throws IOException, RemoteException, ServerException {
         // 1) Сохранить БД в файл в папке кэша.
         // 1.1) Выбрать изменённые и удалённые записи или, если fullSave, выбрать все записи.
-        // 2) Сохранить номер ревизии в файл в папке кэша.
-        // 3) Передать файл БД из папки кэша на сервер.
-        // 4) Передать файл с номером ревизии из папки кэша на сервер.
-        // 5) Удалить записи, отмеченные как удалённые.
-        // 6) Отметить изменённые записи как не изменённые.
-        // 7) Сохранить номер ревизии БД в настройках.
+        // 2) Если записи есть, увеличить номер ревизии на единицу и сохранить БД на сервер.
+        // 3) Сохранить номер ревизии в файл в папке кэша.
+        // 4) Передать файл БД из папки кэша на сервер.
+        // 5) Передать файл с номером ревизии из папки кэша на сервер.
+        // 6) Удалить записи, отмеченные как удалённые.
+        // 7) Отметить изменённые записи как не изменённые.
+        // 8) Сохранить номер ревизии БД в настройках.
 
         final String TAG2 = "syncDatabaseSave";
 
@@ -398,11 +402,17 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         List<String> syncRecords = mSyncProviderDatabase.getSyncRecords(fullSave);
         UtilsLog.d(TAG, TAG2, "mSyncProviderDatabase.getSyncRecords(fullSave == " + fullSave + ") OK");
-        UtilsLog.d(TAG, TAG2, "records count == " + syncRecords.size());
+
+        final int size = syncRecords.size();
+
+        UtilsLog.d(TAG, TAG2, "records count == " + size);
 
 //        for (String record : syncRecords) UtilsLog.d(TAG, record);
 
-        if (!syncRecords.isEmpty()) {
+        if (size != 0) {
+
+            revision++;
+
             mSyncLocal.saveDatabase(syncRecords);
             UtilsLog.d(TAG, TAG2, "mSyncLocal.saveDatabase() OK");
 
@@ -425,8 +435,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             UtilsLog.d(TAG, TAG2, "mSyncProviderDatabase.syncChangedRecords() OK");
 
             mSyncProviderPreferences.putDatabaseRevision(revision);
-        } else
-            UtilsLog.d(TAG, TAG2, "syncRecords.isEmpty() == true");
+        }
 
         UtilsLog.d(TAG, TAG2, "finish");
     }
@@ -436,7 +445,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         // 1) Получить файлы БД с сервера и сохранить в папку кэша.
         // 2) Прочитать записи из файлов в папке кэша.
         // 3) Сохранить полученные значения в БД.
-        // TODO: 4) Сохранить номер ревизии БД в настройках.
+        // 4) Сохранить номер ревизии БД в настройках.
 
         final String TAG2 = "syncDatabaseLoad";
 
@@ -462,9 +471,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         mSyncProviderDatabase.updateDatabase(syncRecords);
         UtilsLog.d(TAG, TAG2, "mSyncProviderDatabase.updateDatabase() OK");
 
-        ContentProviderFuel.notifyChangeAfterSync(getContext());
+        mSyncProviderPreferences.putDatabaseRevision(serverRevision);
 
-//        syncProviderPreferences.putPreferencesRevision(revision);
+        ContentProviderFuel.notifyChangeAfterSync(getContext());
 
         UtilsLog.d(TAG, TAG2, "finish");
     }

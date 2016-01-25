@@ -72,6 +72,8 @@ public class FragmentFueling extends FragmentFuel implements
 
     private CalcTotalTask mCalcTotalTask;
 
+    private final Handler mHandler = new Handler();
+
     private TextView mTextAverage;
     private TextView mTextCostSum;
 
@@ -270,7 +272,8 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void onDestroy() {
-        mHandlerShowNoRecords.removeCallbacks(mRunnableShowNoRecords);
+        mHandler.removeCallbacks(mRunnableShowNoRecords);
+        mHandler.removeCallbacks(mRunnableShowProgressWheelFueling);
 
         calcTotalTaskCancel();
 
@@ -330,18 +333,27 @@ public class FragmentFueling extends FragmentFuel implements
     public void insertRecord(@NonNull FuelingRecord fuelingRecord) {
         checkDateTime(fuelingRecord);
 
-        ContentProviderFuel.insertRecord(getContext(), fuelingRecord);
+        if (ContentProviderFuel.insertRecord(getContext(), fuelingRecord) == -1)
+            Utils.toast(R.string.message_error_insert_record);
     }
 
     public void updateRecord(@NonNull FuelingRecord fuelingRecord) {
         checkDateTime(fuelingRecord);
 
-        ContentProviderFuel.updateRecord(getContext(), fuelingRecord);
+        if (ContentProviderFuel.updateRecord(getContext(), fuelingRecord) == 0)
+            Utils.toast(R.string.message_error_update_record);
     }
 
     private boolean markRecordAsDeleted(@NonNull FuelingRecord fuelingRecord) {
         final long id = fuelingRecord.getId();
-        return ContentProviderFuel.markRecordAsDeleted(getContext(), id) > 0;
+
+        if (ContentProviderFuel.markRecordAsDeleted(getContext(), id) > 0)
+            return true;
+        else {
+            Utils.toast(R.string.message_error_delete_record);
+
+            return false;
+        }
     }
 
     private boolean isItemVisible(int position) {
@@ -420,7 +432,7 @@ public class FragmentFueling extends FragmentFuel implements
 
     @Override
     public void OnFuelingRecordsChange(@NonNull List<FuelingRecord> fuelingRecords) {
-        mHandlerShowNoRecords.removeCallbacks(mRunnableShowNoRecords);
+        mHandler.removeCallbacks(mRunnableShowNoRecords);
 
         calcTotalTaskCancel();
 
@@ -431,13 +443,10 @@ public class FragmentFueling extends FragmentFuel implements
         mCalcTotalTask.execute();
 
         if (fuelingRecords.isEmpty())
-            mHandlerShowNoRecords.postDelayed(mRunnableShowNoRecords,
-                    Const.DELAYED_TIME_SHOW_NO_RECORDS);
+            mHandler.postDelayed(mRunnableShowNoRecords, Const.DELAYED_TIME_SHOW_NO_RECORDS);
         else
             mTextNoRecords.setVisibility(View.GONE);
     }
-
-    private final Handler mHandlerShowNoRecords = new Handler();
 
     private final Runnable mRunnableShowNoRecords = new Runnable() {
         @Override
@@ -520,8 +529,20 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     public void setLoading(boolean loading) {
-        Utils.setViewVisibleAnimate(mProgressWheelFueling, loading);
+        mHandler.removeCallbacks(mRunnableShowProgressWheelFueling);
+        if (loading) {
+            mHandler.postDelayed(mRunnableShowProgressWheelFueling,
+                    Const.DELAYED_TIME_SHOW_PROGRESS_WHEEL);
+        } else
+            Utils.setViewVisibleAnimate(mProgressWheelFueling, false);
     }
+
+    private final Runnable mRunnableShowProgressWheelFueling = new Runnable() {
+        @Override
+        public void run() {
+            Utils.setViewVisibleAnimate(mProgressWheelFueling, true);
+        }
+    };
 
     @Override
     public void onAttach(Context context) {

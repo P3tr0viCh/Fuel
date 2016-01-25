@@ -150,6 +150,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
                                           float volume,
                                           float total,
                                           boolean changed,
+                                          @SuppressWarnings("SameParameterValue")
                                           boolean deleted) {
         ContentValues values = new ContentValues();
 
@@ -262,6 +263,15 @@ class DatabaseHelper extends SQLiteOpenHelper {
     private Cursor query(String[] columns, String selection, String groupBy, String orderBy) {
         UtilsLog.d(TAG, "query", "columns == " + Arrays.toString(columns) +
                 ", selection == " + selection + ", groupBy == " + groupBy + ", orderBy == " + orderBy);
+
+//        for (int i = 0, waitSeconds = 3; i < waitSeconds; i++) {
+//            try {
+//                TimeUnit.SECONDS.sleep(1);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            UtilsLog.d(TAG, "query", "wait... " + (waitSeconds - i));
+//        }
 
         return getReadableDatabase().query(Fueling.NAME, columns, selection,
                 null, groupBy, null, orderBy);

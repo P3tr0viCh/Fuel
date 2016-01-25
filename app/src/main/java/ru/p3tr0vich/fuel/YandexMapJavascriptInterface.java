@@ -2,6 +2,7 @@ package ru.p3tr0vich.fuel;
 
 import android.webkit.JavascriptInterface;
 
+@SuppressWarnings("unused")
 class YandexMapJavascriptInterface {
 
     public static final String NAME = "YandexMapJavascriptInterface";

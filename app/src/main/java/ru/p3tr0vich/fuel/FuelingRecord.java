@@ -17,6 +17,8 @@ public class FuelingRecord implements Parcelable {
     private float mVolume;      // Объём заправки
     private float mTotal;       // Общий пробег
 
+    @SuppressWarnings("WeakerAccess")
+    // used in fueling_listitem
     public final boolean showYear;
 
     FuelingRecord(long id, long dateTime, float cost, float volume, float total, boolean showYear) {
@@ -33,6 +35,7 @@ public class FuelingRecord implements Parcelable {
     }
 
     FuelingRecord(Cursor cursor, boolean showYear) {
+        // TODO: remove this constructor
         this(cursor.getLong(DatabaseHelper.Fueling._ID_INDEX),
                 cursor.getLong(DatabaseHelper.Fueling.DATETIME_INDEX),
                 cursor.getFloat(DatabaseHelper.Fueling.COST_INDEX),

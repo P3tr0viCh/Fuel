@@ -112,6 +112,10 @@
 
     <string name="message_error_no_internet">Отсутствует подключение к Интернет</string>
 
+    <string name="message_error_insert_record">Во время добавления записи произошла ошибка</string>
+    <string name="message_error_update_record">Во время обновления записи произошла ошибка</string>
+    <string name="message_error_delete_record">Во время удаления записи произошла ошибка</string>
+
     <string name="message_save_file_ok">Файл сохранён</string>
     <string name="message_load_file_ok">Данные из файла загружены</string>
 

@@ -8,6 +8,7 @@ import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.annotation.DimenRes;
+import android.support.annotation.StringRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
@@ -19,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 class Utils {
 
@@ -129,5 +131,9 @@ class Utils {
 
     public static int getDimensionPixelSize(@DimenRes int id) {
         return ApplicationFuel.getContext().getResources().getDimensionPixelSize(id);
+    }
+
+    public static void toast(@StringRes int resId) {
+        Toast.makeText(ApplicationFuel.getContext(), resId, Toast.LENGTH_SHORT).show();
     }
 }

@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 
 class SyncYandexDisk {
+
     public static final String WWW_URL = "https://disk.yandex.ru/client/disk";
 
     public static final String AUTH_URL = "https://oauth.yandex.ru/authorize?response_type=token&client_id=" +
@@ -111,23 +112,6 @@ class SyncYandexDisk {
 
     public void loadDatabase(int revision) throws IOException, ServerException {
         load(mSyncFiles.getServerFileDatabase(revision), mSyncFiles.getLocalFileDatabase());
-    }
-
-    public void putDatabaseFullSync(boolean fullSync) throws IOException, ServerException {
-        if (fullSync)
-            save(mSyncFiles.getServerFileDatabaseFullSync(), mSyncFiles.getLocalFileDatabaseFullSync());
-        else
-            delete(mSyncFiles.getServerFileDatabaseFullSync());
-    }
-
-    public boolean isDatabaseFullSync() throws IOException, ServerException {
-        try {
-            load(mSyncFiles.getServerFileDatabaseFullSync(), mSyncFiles.getLocalFileDatabaseFullSync());
-            return true;
-        } catch (HttpCodeException e) {
-            if (e.getCode() != HTTP_CODE_RESOURCE_NOT_FOUND) throw e;
-            return false;
-        }
     }
 
     public void savePreferences() throws IOException, ServerException {

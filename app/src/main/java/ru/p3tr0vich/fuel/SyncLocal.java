@@ -60,10 +60,6 @@ class SyncLocal {
         save(mSyncFiles.getLocalFileDatabase(), syncRecords);
     }
 
-    public void saveDatabaseFullSync() throws IOException {
-        UtilsFileIO.createFile(mSyncFiles.getLocalFileDatabaseFullSync());
-    }
-
     private void saveRevision(@NonNull File fileRevision, int revision) throws IOException {
         List<String> strings = new ArrayList<>();
         strings.add(String.valueOf(revision));
@@ -89,7 +85,6 @@ class SyncLocal {
         UtilsFileIO.deleteFile(mSyncFiles.getLocalFilePreferencesRevision());
 
         UtilsFileIO.deleteFile(mSyncFiles.getLocalFileDatabase());
-        UtilsFileIO.deleteFile(mSyncFiles.getLocalFileDatabaseFullSync());
         UtilsFileIO.deleteFile(mSyncFiles.getLocalFileDatabaseRevision());
     }
 

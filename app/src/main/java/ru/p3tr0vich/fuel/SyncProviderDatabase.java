@@ -22,6 +22,8 @@ class SyncProviderDatabase {
 
     private static final String ADD = "+";
     private static final String DELETE = "-";
+    private static final String CLEAR = "~";
+
     private static final String SEPARATOR = "\t";
 
     private final ContentProviderClient mProvider;
@@ -31,12 +33,14 @@ class SyncProviderDatabase {
     }
 
     @NonNull
-    public List<String> getSyncRecords(boolean fullSave) throws RemoteException {
+    public List<String> getSyncRecords(boolean getAllRecords, boolean addDeleteAll) throws RemoteException {
         List<String> result = new ArrayList<>();
 
-        Cursor cursor = mProvider.query(fullSave ?
+        Cursor cursor = mProvider.query(getAllRecords ?
                 ContentProviderFuel.URI_DATABASE_SYNC_ALL :
                 ContentProviderFuel.URI_DATABASE_SYNC_CHANGED, null, null, null, null);
+
+        if (addDeleteAll) result.add(CLEAR);
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -79,6 +83,8 @@ class SyncProviderDatabase {
 
         long id;
 
+        boolean clearDatabase = false;
+
         String[] stringValues;
 
         ContentValues values;
@@ -102,6 +108,9 @@ class SyncProviderDatabase {
             }
 
             switch (stringValues[0]) {
+                case CLEAR:
+                    clearDatabase = true;
+                    break;
                 case ADD:
                     records.put(id,
                             DatabaseHelper.getValues(
@@ -125,12 +134,15 @@ class SyncProviderDatabase {
             }
         }
 
-        size = records.size();
-
-        if (size == 0) return;
-
         ContentProviderOperation operation;
         ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+
+        if (clearDatabase)
+            operations.add(ContentProviderOperation
+                    .newDelete(ContentProviderFuel.URI_DATABASE)
+                    .build());
+
+        size = records.size();
 
         for (int i = 0; i < size; i++) {
             values = records.valueAt(i);
@@ -161,9 +173,9 @@ class SyncProviderDatabase {
             throw new FormatException(TAG + " -- updateDatabase: applyBatch exception == " + e.toString());
         }
     }
-
-    public void clearDatabase() throws RemoteException {
-        // delete all records
-        mProvider.delete(ContentProviderFuel.URI_DATABASE, null, null);
-    }
+//
+//    public void clearDatabase() throws RemoteException {
+//        // delete all records
+//        mProvider.delete(ContentProviderFuel.URI_DATABASE, null, null);
+//    }
 }

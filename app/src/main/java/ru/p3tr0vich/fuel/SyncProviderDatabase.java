@@ -99,38 +99,38 @@ class SyncProviderDatabase {
 //            for (int i = 0; i < stringValues.length; i++)
 //                UtilsLog.d(TAG, "updateDatabase", "stringValues[" + i + "] == " + stringValues[i]);
 
-            try {
-                id = Long.valueOf(stringValues[1]);
-            } catch (Exception e) {
-                throw new FormatException(TAG +
-                        " -- updateDatabase: exception == " + e.toString() +
-                        ", syncRecord == " + Arrays.toString(stringValues));
-            }
-
-            switch (stringValues[0]) {
-                case CLEAR:
-                    clearDatabase = true;
-                    break;
-                case ADD:
-                    records.put(id,
-                            DatabaseHelper.getValues(
-                                    id,
-                                    Long.valueOf(stringValues[2]),
-                                    Float.valueOf(stringValues[3]),
-                                    Float.valueOf(stringValues[4]),
-                                    Float.valueOf(stringValues[5]),
-                                    false,
-                                    false));
-
-                    break;
-                case DELETE:
-                    records.put(id, null);
-
-                    break;
-                default:
+            if (CLEAR.equals(stringValues[0]))
+                clearDatabase = true;
+            else {
+                try {
+                    id = Long.valueOf(stringValues[1]);
+                } catch (Exception e) {
                     throw new FormatException(TAG +
-                            " -- updateDatabase: error stringValues[0] == " + stringValues[0] +
-                            ", syncRecord == " + Arrays.toString(stringValues));
+                            " -- updateDatabase: error id, syncRecord == " + Arrays.toString(stringValues));
+                }
+
+                switch (stringValues[0]) {
+                    case ADD:
+                        records.put(id,
+                                DatabaseHelper.getValues(
+                                        id,
+                                        Long.valueOf(stringValues[2]),
+                                        Float.valueOf(stringValues[3]),
+                                        Float.valueOf(stringValues[4]),
+                                        Float.valueOf(stringValues[5]),
+                                        false,
+                                        false));
+
+                        break;
+                    case DELETE:
+                        records.put(id, null);
+
+                        break;
+                    default:
+                        throw new FormatException(TAG +
+                                " -- updateDatabase: error stringValues[0] == " + stringValues[0] +
+                                ", syncRecord == " + Arrays.toString(stringValues));
+                }
             }
         }
 
@@ -173,9 +173,4 @@ class SyncProviderDatabase {
             throw new FormatException(TAG + " -- updateDatabase: applyBatch exception == " + e.toString());
         }
     }
-//
-//    public void clearDatabase() throws RemoteException {
-//        // delete all records
-//        mProvider.delete(ContentProviderFuel.URI_DATABASE, null, null);
-//    }
 }

@@ -43,6 +43,8 @@ class SyncYandexDisk {
     }
 
     private void load(@NonNull File serverFile, @NonNull File localFile) throws IOException, ServerException {
+        UtilsFileIO.deleteFile(localFile);
+
         mRestClient.downloadFile(APP_DIR + serverFile.getPath(), localFile, null);
     }
 
@@ -110,8 +112,14 @@ class SyncYandexDisk {
         save(mSyncFiles.getServerFileDatabase(revision), mSyncFiles.getLocalFileDatabase());
     }
 
-    public void loadDatabase(int revision) throws IOException, ServerException {
-        load(mSyncFiles.getServerFileDatabase(revision), mSyncFiles.getLocalFileDatabase());
+    public boolean loadDatabase(int revision) throws IOException, ServerException {
+        try {
+            load(mSyncFiles.getServerFileDatabase(revision), mSyncFiles.getLocalFileDatabase());
+            return true;
+        } catch (HttpCodeException e) {
+            if (e.getCode() != HTTP_CODE_RESOURCE_NOT_FOUND) throw e;
+            return false;
+        }
     }
 
     public void savePreferences() throws IOException, ServerException {

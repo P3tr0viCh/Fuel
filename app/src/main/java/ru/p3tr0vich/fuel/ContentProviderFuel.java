@@ -24,28 +24,28 @@ public class ContentProviderFuel extends ContentProvider {
     private static final String URI_AUTHORITY = "ru.p3tr0vich.fuel.provider";
 
     private static final String URI_PATH_DATABASE = "database";
-    private static final String URI_PATH_DATABASE_YEARS = "years";
-    private static final String URI_PATH_DATABASE_SUM_BY_MONTHS = "sum_by_months";
+    private static final String URI_PATH_DATABASE_YEARS = URI_PATH_DATABASE + "/years";
+    private static final String URI_PATH_DATABASE_SUM_BY_MONTHS = URI_PATH_DATABASE + "/sum_by_months";
 
-    private static final String URI_PATH_DATABASE_SYNC = "sync";
-    private static final String URI_PATH_DATABASE_SYNC_ALL = "sync_get_all";
-    private static final String URI_PATH_DATABASE_SYNC_CHANGED = "sync_get_changed";
+    private static final String URI_PATH_DATABASE_SYNC = URI_PATH_DATABASE + "/sync";
+    private static final String URI_PATH_DATABASE_SYNC_ALL = URI_PATH_DATABASE + "/sync_get_all";
+    private static final String URI_PATH_DATABASE_SYNC_CHANGED = URI_PATH_DATABASE + "/sync_get_changed";
 
     private static final String URI_PATH_PREFERENCES = "preferences";
 
     public static final Uri URI_DATABASE =
             Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE);
     private static final Uri URI_DATABASE_YEARS =
-            Uri.withAppendedPath(URI_DATABASE, URI_PATH_DATABASE_YEARS);
+            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE_YEARS);
     private static final Uri URI_DATABASE_SUM_BY_MONTHS =
-            Uri.withAppendedPath(URI_DATABASE, URI_PATH_DATABASE_SUM_BY_MONTHS);
+            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE_SUM_BY_MONTHS);
 
     public static final Uri URI_DATABASE_SYNC =
-            Uri.withAppendedPath(URI_DATABASE, URI_PATH_DATABASE_SYNC);
+            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE_SYNC);
     public static final Uri URI_DATABASE_SYNC_ALL =
-            Uri.withAppendedPath(URI_DATABASE, URI_PATH_DATABASE_SYNC_ALL);
+            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE_SYNC_ALL);
     public static final Uri URI_DATABASE_SYNC_CHANGED =
-            Uri.withAppendedPath(URI_DATABASE, URI_PATH_DATABASE_SYNC_CHANGED);
+            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE_SYNC_CHANGED);
 
     public static final Uri URI_PREFERENCES =
             Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_PREFERENCES);
@@ -65,26 +65,17 @@ public class ContentProviderFuel extends ContentProvider {
     public static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        sURIMatcher.addURI(URI_AUTHORITY,
-                URI_DATABASE.getPath(), DATABASE);
-        sURIMatcher.addURI(URI_AUTHORITY,
-                Uri.withAppendedPath(URI_DATABASE, "#").getPath(), DATABASE_ITEM);
-        sURIMatcher.addURI(URI_AUTHORITY,
-                URI_DATABASE_YEARS.getPath(), DATABASE_YEARS);
-        sURIMatcher.addURI(URI_AUTHORITY,
-                Uri.withAppendedPath(URI_DATABASE_SUM_BY_MONTHS, "#").getPath(), DATABASE_SUM_BY_MONTHS);
+        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE, DATABASE);
+        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE + "/#", DATABASE_ITEM);
+        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE_YEARS, DATABASE_YEARS);
+        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE_SUM_BY_MONTHS + "/#", DATABASE_SUM_BY_MONTHS);
 
-        sURIMatcher.addURI(URI_AUTHORITY,
-                URI_DATABASE_SYNC.getPath(), DATABASE_SYNC);
-        sURIMatcher.addURI(URI_AUTHORITY,
-                URI_DATABASE_SYNC_ALL.getPath(), DATABASE_SYNC_ALL);
-        sURIMatcher.addURI(URI_AUTHORITY,
-                URI_DATABASE_SYNC_CHANGED.getPath(), DATABASE_SYNC_CHANGED);
+        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE_SYNC, DATABASE_SYNC);
+        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE_SYNC_ALL, DATABASE_SYNC_ALL);
+        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE_SYNC_CHANGED, DATABASE_SYNC_CHANGED);
 
-        sURIMatcher.addURI(URI_AUTHORITY,
-                URI_PREFERENCES.getPath(), PREFERENCES);
-        sURIMatcher.addURI(URI_AUTHORITY,
-                Uri.withAppendedPath(URI_PREFERENCES, "*").getPath(), PREFERENCES_ITEM);
+        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_PREFERENCES, PREFERENCES);
+        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_PREFERENCES + "/*", PREFERENCES_ITEM);
     }
 
     private static final String CURSOR_DIR_BASE_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE +
@@ -158,7 +149,7 @@ public class ContentProviderFuel extends ContentProvider {
             case PREFERENCES_ITEM:
                 return PreferenceManagerFuel.getPreference(uri.getLastPathSegment());
             default:
-                UtilsLog.d(TAG, "getType", "sURIMatcher.match() == default, uri == " + uri);
+                UtilsLog.d(TAG, "query", "sURIMatcher.match() == default, uri == " + uri);
                 return null;
         }
     }
@@ -320,17 +311,24 @@ public class ContentProviderFuel extends ContentProvider {
     }
 
     public static long insertRecord(@NonNull Context context, @NonNull FuelingRecord fuelingRecord) {
-        long id = ContentUris.parseId(
-                context.getContentResolver().insert(
-                        URI_DATABASE,
-                        DatabaseHelper.getValues(
-                                fuelingRecord.getDateTime(),
-                                fuelingRecord.getDateTime(),
-                                fuelingRecord.getCost(),
-                                fuelingRecord.getVolume(),
-                                fuelingRecord.getTotal(),
-                                true,
-                                false)));
+        final Uri result = context.getContentResolver().insert(
+                URI_DATABASE,
+                DatabaseHelper.getValues(
+                        fuelingRecord.getDateTime(),
+                        fuelingRecord.getDateTime(),
+                        fuelingRecord.getCost(),
+                        fuelingRecord.getVolume(),
+                        fuelingRecord.getTotal(),
+                        true,
+                        false));
+
+        long id;
+
+        try {
+            id = ContentUris.parseId(result);
+        } catch (Exception e) {
+            id = -1;
+        }
 
         notifyChangeAfterUser(context, id);
 

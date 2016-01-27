@@ -812,10 +812,7 @@ public class FragmentFueling extends FragmentFuel implements
             ActivityMain.sendLoadingBroadcast(true);
 
             try {
-                Cursor cursor = ContentProviderFuel.getAll(getContext(), mFilter);
-                cursor.setNotificationUri(getContext().getContentResolver(), ContentProviderFuel.URI_DATABASE);
-
-                return cursor;
+                return ContentProviderFuel.getAll(getContext(), mFilter);
             } finally {
                 ActivityMain.sendLoadingBroadcast(false);
             }

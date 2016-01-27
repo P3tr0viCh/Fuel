@@ -69,15 +69,16 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             try { // catch
                 mSyncLocal.makeDirs();
-                mSyncLocal.deleteFiles();
 
-                if (extras.getBoolean(SYNC_DATABASE, true))
-                    syncDatabase();
+                try {
+                    if (extras.getBoolean(SYNC_DATABASE, true))
+                        syncDatabase();
 
-                if (extras.getBoolean(SYNC_PREFERENCES, true))
-                    syncPreferences();
-
-                mSyncLocal.deleteFiles();
+                    if (extras.getBoolean(SYNC_PREFERENCES, true))
+                        syncPreferences();
+                } finally {
+                    mSyncLocal.deleteFiles();
+                }
             } catch (Exception e) {
                 if (e instanceof RemoteException) syncResult.databaseError = true;
                 else if (e instanceof IOException) syncResult.stats.numIoExceptions++;
@@ -260,41 +261,16 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     "serverRevision == " + serverRevision + ", localRevision == " + localRevision);
 
             // Проверить, что данные на этом устройстве были загружены из резервной копии.
-            // Если да, то сохранить полную копию БД и признак полного обновления БД на сервер.
             final boolean isFullSyncToServer = mSyncProviderPreferences.isDatabaseFullSync();
-
-            UtilsLog.d(TAG, TAG2, "isFullSyncToServer == " + isFullSyncToServer);
-
-            if (isFullSyncToServer) {
-                syncDatabaseSave(serverRevision, true, true);
-
-                return;
-            }
-
-            // Данные на другом устройстве были загружены из резервной копии.
-            // Загрузить полную копию БД с сервера, удалив имеющиеся на этом устройстве значения.
-
-//            boolean isFullSyncFromServer = mSyncYandexDisk.isDatabaseFullSync();
-//            UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.isDatabaseFullSync() OK");
-
-//            UtilsLog.d(TAG, TAG2, "isFullSyncFromServer == " + isFullSyncFromServer);
-
-//            if (isFullSyncFromServer) {
-            // FIXME: после повторного запуска загружаются все записи
-            // если данные не были загружены другим устройством
-            // данные будут обновлены только одним устройством
-            // работает все неправильно
-            // полностью переделать
-
-//                syncDatabaseFullLoad(serverRevision);
-//
-//                return;
-//            }
 
 //            syncDatabaseSave(localRevision, false);
 //            syncDatabaseLoad(-1, serverRevision);
 
-            if (localRevision < serverRevision) {
+            if (isFullSyncToServer) {
+                UtilsLog.d(TAG, TAG2, "isFullSyncToServer == true");
+
+                syncDatabaseFullSave(serverRevision);
+            } else if (localRevision < serverRevision) {
                 // Синхронизация уже выполнялась на другом устройстве.
                 // Загрузить записи с сервера.
                 // TODO:  Если есть изменённые или удалённые записи, сохранить их на сервер.
@@ -320,65 +296,30 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 syncDatabaseSave(localRevision, serverRevision == -1, false);
             }
-
         } finally {
             UtilsLog.d(TAG, TAG2, "finish");
         }
     }
-//
-//    private void syncDatabaseFullSave()
-//            throws IOException, ServerException, RemoteException {
-//        // 1) Удалить все файлы с сервера.
-//        // 2) Сохранить файл-признак полного обновления  в папке кэша.
-//        // 3) Передать файл-признак из папки кэша на сервер.
-//        // 4) Изменить номер ревизии БД на -1.
-//        // 5) Сохранить все записи на сервер.
-//        // 6) Удалить признак полного обновления из настроек.
-//
-//        final String TAG2 = "syncDatabaseFullSave";
-//
-//        UtilsLog.d(TAG, TAG2, "start");
-//
-//        mSyncYandexDisk.deleteDirDatabase();
-//        UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.deleteDirDatabase() OK");
-//
-//        mSyncLocal.saveDatabaseFullSync();
-//        UtilsLog.d(TAG, TAG2, "mSyncLocal.saveDatabaseFullSync() OK");
-//
-//        mSyncYandexDisk.makeDirs();
-//        UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.makeDirs() OK");
-//
-//        mSyncYandexDisk.putDatabaseFullSync(true);
-//        UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.putDatabaseFullSync(true) OK");
-//
-//        syncDatabaseSave(-1, true);
-//
-//        mSyncProviderPreferences.putDatabaseFullSyncFalse();
-//
-//        UtilsLog.d(TAG, TAG2, "finish");
-//    }
-//
-//    private void syncDatabaseFullLoad(int serverRevision)
-//            throws RemoteException, FormatException, ServerException, IOException {
-//        // 1) Удалить все записи из БД.
-//        // 2) Прочитать записи из файлов на сервере, сохранить полученные значения в БД
-//        //    и сохранить номер ревизии БД в настройках.
-//        // 3) Удалить признак полного обновления с сервера
-//
-//        final String TAG2 = "syncDatabaseFullLoad";
-//
-//        UtilsLog.d(TAG, TAG2, "start");
-//
-//        mSyncProviderDatabase.clearDatabase();
-//        UtilsLog.d(TAG, TAG2, "mSyncProviderDatabase.clearDatabase() OK");
-//
-//        syncDatabaseLoad(-1, serverRevision);
-//
-//        mSyncYandexDisk.putDatabaseFullSync(false);
-//        UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.putDatabaseFullSync(false) OK");
-//
-//        UtilsLog.d(TAG, TAG2, "finish");
-//    }
+
+    private void syncDatabaseFullSave(int revision)
+            throws IOException, ServerException, RemoteException {
+        // 1) Удалить все файлы с сервера.
+        // 2) Сохранить полную копию БД с признаком полного обновления БД на сервер.
+        // 3) Удалить признак загрузки из настроек.
+
+        final String TAG2 = "syncDatabaseFullSave";
+
+        UtilsLog.d(TAG, TAG2, "start");
+
+        mSyncYandexDisk.deleteDirDatabase();
+        UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.deleteDirDatabase() OK");
+
+        syncDatabaseSave(revision, true, true);
+
+        mSyncProviderPreferences.putDatabaseFullSyncFalse();
+
+        UtilsLog.d(TAG, TAG2, "finish");
+    }
 
     private void syncDatabaseSave(int revision, boolean saveAllRecords, boolean addDeleteAll)
             throws IOException, RemoteException, ServerException {
@@ -451,17 +392,18 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         List<String> syncRecords = new ArrayList<>();
 
+        boolean loadResult;
+
         for (int revision = localRevision + 1; revision <= serverRevision; revision++) {
 
-            mSyncYandexDisk.loadDatabase(revision);
-            UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.loadDatabase(revision == " + revision + ") OK");
+            loadResult = mSyncYandexDisk.loadDatabase(revision);
+            UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.loadDatabase(revision == " + revision +
+                    ", loadResult == " + loadResult + ") OK");
 
-            mSyncLocal.loadDatabase(syncRecords);
-            UtilsLog.d(TAG, TAG2, "mSyncLocal.loadDatabase() OK");
-
-            // Если не удалять, будет HttpCodeException{code=416, response=null}
-            // в syncYandexDisk.loadDatabase(revision)
-            mSyncLocal.deleteLocalFileDatabase();
+            if (loadResult) {
+                mSyncLocal.loadDatabase(syncRecords);
+                UtilsLog.d(TAG, TAG2, "mSyncLocal.loadDatabase() OK");
+            }
         }
 
 //        for (String record : syncRecords) UtilsLog.d(TAG, record);

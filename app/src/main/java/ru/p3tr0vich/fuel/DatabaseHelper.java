@@ -201,8 +201,8 @@ class DatabaseHelper extends SQLiteOpenHelper {
             Calendar dateTo = Calendar.getInstance();
 
             if (filter.filterMode == FILTER_MODE_DATES) {
-                dateFrom.setTimeInMillis(filter.dateFrom);
-                dateTo.setTimeInMillis(filter.dateTo);
+                dateFrom.setTimeInMillis(UtilsDate.localToUtc(filter.dateFrom));
+                dateTo.setTimeInMillis(UtilsDate.localToUtc(filter.dateTo));
             } else {
                 int year = filter.filterMode == FILTER_MODE_YEAR ?
                         filter.year : UtilsDate.getCurrentYear();
@@ -216,7 +216,8 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
             return Fueling.DATETIME +
                     String.format(Locale.US, Where.BETWEEN,
-                            dateFrom.getTimeInMillis(), dateTo.getTimeInMillis()) +
+                            UtilsDate.utcToLocal(dateFrom.getTimeInMillis()),
+                            UtilsDate.utcToLocal(dateTo.getTimeInMillis())) +
                     AND + Where.RECORD_NOT_DELETED;
         }
     }

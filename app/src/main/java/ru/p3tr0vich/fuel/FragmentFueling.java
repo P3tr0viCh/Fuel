@@ -312,7 +312,7 @@ public class FragmentFueling extends FragmentFuel implements
                 return;
             case DatabaseHelper.FILTER_MODE_CURRENT_YEAR:
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(fuelingRecord.getDateTime());
+                calendar.setTimeInMillis(UtilsDate.localToUtc(fuelingRecord.getDateTime()));
 
                 if (calendar.get(Calendar.YEAR) == UtilsDate.getCurrentYear()) return;
 
@@ -410,7 +410,7 @@ public class FragmentFueling extends FragmentFuel implements
 
         mFuelingAdapter.swapCursor(data);
 
-        mFloatingActionButton.animate().scaleX(1.0f).scaleY(1.0f);
+        setFabVisible(true); // TODO: неудачное место для вызова.
     }
 
     @Override
@@ -628,18 +628,24 @@ public class FragmentFueling extends FragmentFuel implements
     }
 
     private void setTotalAndFabVisible(boolean visible) {
-        // TODO: есть баг при количестве записей позволяющем сделать прокрутку вверх
+        // FIXME: есть баг при количестве записей позволяющем сделать прокрутку вверх
         // при показанном лайоте, что приводит к его скрытию, после чего прокрутка вниз невозможна,
         // так как записи начинают влезать по высоте.
         // Три записи в альбомном режиме с показанным тулбаром выбора периода
 
-        mFloatingActionButton.toggle(visible, true); // TODO: скрывать кнопку при открытии меню
+        mFloatingActionButton.toggle(visible, true);
         setLayoutTotalVisible(visible);
+    }
+
+    public void setFabVisible(boolean visible) {
+//        UtilsLog.d(TAG, "setFabVisible", "visible == " + visible);
+        final float value = visible ? 1.0f : 0.0f;
+        mFloatingActionButton.animate().scaleX(value).scaleY(value);
     }
 
     private void updateFilterDateButtons(final boolean dateFrom, final long date) {
         (dateFrom ? mBtnDateFrom : mBtnDateTo)
-                .setText(UtilsFormat.dateToString(date, true, Utils.isPhoneInPortrait()));
+                .setText(UtilsFormat.dateTimeToString(date, true, Utils.isPhoneInPortrait()));
     }
 
     private void setPopupFilterDate(final boolean setDateFrom, final int menuId) {
@@ -647,7 +653,9 @@ public class FragmentFueling extends FragmentFuel implements
             case R.id.action_dates_start_of_year:
             case R.id.action_dates_end_of_year:
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(setDateFrom ? mFilter.dateFrom : mFilter.dateTo);
+                calendar.setTimeInMillis(
+                        UtilsDate.localToUtc(
+                                setDateFrom ? mFilter.dateFrom : mFilter.dateTo));
 
                 switch (menuId) {
                     case R.id.action_dates_start_of_year:
@@ -660,7 +668,7 @@ public class FragmentFueling extends FragmentFuel implements
                         break;
                 }
 
-                long date = calendar.getTimeInMillis();
+                long date = UtilsDate.utcToLocal(calendar.getTimeInMillis());
 
                 updateFilterDateButtons(setDateFrom, date);
                 setFilterDate(setDateFrom, date);
@@ -677,7 +685,9 @@ public class FragmentFueling extends FragmentFuel implements
                 switch (menuId) {
                     case R.id.action_dates_winter:
                     case R.id.action_dates_summer:
-                        calendarFrom.setTimeInMillis(setDateFrom ? mFilter.dateFrom : mFilter.dateTo);
+                        calendarFrom.setTimeInMillis(
+                                UtilsDate.localToUtc(
+                                        setDateFrom ? mFilter.dateFrom : mFilter.dateTo));
 
                         year = calendarFrom.get(Calendar.YEAR);
                         break;
@@ -709,8 +719,8 @@ public class FragmentFueling extends FragmentFuel implements
                 UtilsDate.setStartOfDay(calendarFrom);
                 UtilsDate.setEndOfDay(calendarTo);
 
-                long dateFrom = calendarFrom.getTimeInMillis();
-                long dateTo = calendarTo.getTimeInMillis();
+                long dateFrom = UtilsDate.utcToLocal(calendarFrom.getTimeInMillis());
+                long dateTo = UtilsDate.utcToLocal(calendarTo.getTimeInMillis());
 
                 updateFilterDateButtons(true, dateFrom);
                 updateFilterDateButtons(false, dateTo);
@@ -765,7 +775,9 @@ public class FragmentFueling extends FragmentFuel implements
         mDateFromClicked = dateFrom;
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(mDateFromClicked ? mFilter.dateFrom : mFilter.dateTo);
+        calendar.setTimeInMillis(
+                UtilsDate.localToUtc(
+                        mDateFromClicked ? mFilter.dateFrom : mFilter.dateTo));
 
         DatePickerDialog.newInstance(
                 new DatePickerDialog.OnDateSetListener() {
@@ -774,7 +786,7 @@ public class FragmentFueling extends FragmentFuel implements
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(year, monthOfYear, dayOfMonth);
 
-                        long date = calendar.getTimeInMillis();
+                        long date = UtilsDate.utcToLocal(calendar.getTimeInMillis());
 
                         updateFilterDateButtons(mDateFromClicked, date);
 

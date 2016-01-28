@@ -283,6 +283,7 @@ public class ActivityYandexMap extends AppCompatActivity {
                     Utils.toast(R.string.text_empty_distance);
                 return true;
             case MAP_TYPE_CENTER:
+                // TODO: запрет при отсутствии выбора
                 setResult(RESULT_OK, new Intent()
                         .putExtra(INTENT_MAP_CENTER_TEXT, mMapCenter.text)
                         .putExtra(INTENT_MAP_CENTER_LATITUDE, mMapCenter.latitude)

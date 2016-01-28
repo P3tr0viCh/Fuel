@@ -152,11 +152,13 @@ class PreferenceManagerFuel {
     }
 
     public static long getFilterDateFrom() {
-        return sSharedPreferences.getLong(PREF_FILTER_DATE_FROM, System.currentTimeMillis());
+        return sSharedPreferences.getLong(PREF_FILTER_DATE_FROM,
+                UtilsDate.utcToLocal(System.currentTimeMillis()));
     }
 
     public static long getFilterDateTo() {
-        return sSharedPreferences.getLong(PREF_FILTER_DATE_TO, System.currentTimeMillis());
+        return sSharedPreferences.getLong(PREF_FILTER_DATE_TO,
+                UtilsDate.utcToLocal(System.currentTimeMillis()));
     }
 
     public static void putFilterDate(final long dateFrom, final long dateTo) {

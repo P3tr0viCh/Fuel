@@ -3,11 +3,20 @@ package ru.p3tr0vich.fuel;
 import android.support.annotation.NonNull;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 class UtilsDate {
 
     public static int getCurrentYear() {
         return Calendar.getInstance().get(Calendar.YEAR);
+    }
+
+    public static long utcToLocal(long utc) {
+        return utc + TimeZone.getDefault().getOffset(utc);
+    }
+
+    public static long localToUtc(long local) {
+        return local - TimeZone.getDefault().getOffset(local);
     }
 
     public static void setStartOfDay(@NonNull Calendar calendar) {

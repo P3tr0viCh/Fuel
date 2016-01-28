@@ -149,7 +149,7 @@ public class ActivityMain extends AppCompatActivity implements
         initToolbarSpinner();
         initDrawer();
 
-        mSyncAccount = new SyncAccount(ApplicationFuel.getContext());
+        mSyncAccount = new SyncAccount(this);
 
 //        mSyncAccount.setYandexDiskToken(null);
 
@@ -220,12 +220,22 @@ public class ActivityMain extends AppCompatActivity implements
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
+
+                FragmentFueling fragmentFueling = getFragmentFueling();
+                if (fragmentFueling != null && fragmentFueling.isVisible())
+                    fragmentFueling.setFabVisible(false);
+
                 Utils.hideKeyboard(ActivityMain.this);
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
+
+                FragmentFueling fragmentFueling = getFragmentFueling();
+                if (fragmentFueling != null && fragmentFueling.isVisible())
+                    fragmentFueling.setFabVisible(true);
+
                 selectItem(mClickedMenuId);
             }
         };

@@ -20,9 +20,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DatabaseBackupXmlHelper {
+
+    private static final String TAG = "DatabaseBackupXmlHelper";
 
     private static final String FEATURE_INDENT = "http://xmlpull.org/v1/doc/features.html#indent-output";
     private static final String EXCEL_COMPAT = "mso-application progid=\"Excel.Sheet\"";
@@ -84,8 +90,32 @@ public class DatabaseBackupXmlHelper {
     public static final int RESULT_ERROR_READ_FILE = 8;
     public static final int RESULT_ERROR_PARSE_XML = 9;
 
-    private static final String DEFAULT_DIR = "backup";
+    private static final String DEFAULT_DIR = "Backup";
     private static final String DEFAULT_NAME = "ru.p3tr0vich.fuel.database.xml";
+
+    private static class ExcelDateTime {
+
+        private static final String DATE_TEMPLATE = "yyyy-MM-dd";
+        private static final String TIME_TEMPLATE = "HH:mm:ss.SSS";
+        private static final String DATE_TIME_TEMPLATE = DATE_TEMPLATE + "'T'" + TIME_TEMPLATE;
+
+        private ExcelDateTime() {
+        }
+
+        private static long parse(String dateTime) throws ParseException {
+            Date date;
+            try {
+                date = new SimpleDateFormat(DATE_TIME_TEMPLATE, Locale.getDefault()).parse(dateTime);
+            } catch (ParseException e) {
+                date = new SimpleDateFormat(DATE_TEMPLATE, Locale.getDefault()).parse(dateTime);
+            }
+            return date.getTime();
+        }
+
+        private static String format(long date) {
+            return (new SimpleDateFormat(DATE_TIME_TEMPLATE, Locale.getDefault())).format(date);
+        }
+    }
 
     DatabaseBackupXmlHelper() {
         setExternalDirectory(null);
@@ -167,8 +197,9 @@ public class DatabaseBackupXmlHelper {
                                 serializer.startTag("", DATA);
                                 serializer.attribute("", DATA_TYPE, DATA_TYPE_DATETIME);
                                 serializer.text(
-                                        UtilsFormat.dateToSqlDateTime(
-                                                fuelingRecord.getDateTime()));
+                                        ExcelDateTime.format(
+                                                UtilsDate.localToUtc(
+                                                        fuelingRecord.getDateTime())));
                                 serializer.endTag("", DATA);
                             }
                             serializer.endTag("", CELL);
@@ -227,7 +258,9 @@ public class DatabaseBackupXmlHelper {
 
         String xmlName;
         String xmlText;
+
         int column = -1;
+
         boolean inRow = false;
         boolean inCell = false;
         boolean inData = false;
@@ -240,27 +273,28 @@ public class DatabaseBackupXmlHelper {
             switch (eventType) {
                 case XmlPullParser.START_TAG:
                     xmlName = xmlPullParser.getName();
-                    if (xmlName.equalsIgnoreCase(ROW)) {
+                    if (ROW.equalsIgnoreCase(xmlName)) {
                         column = -1;
                         inRow = true;
-                    } else if (xmlName.equalsIgnoreCase(CELL)) {
+                    } else if (CELL.equalsIgnoreCase(xmlName)) {
                         if (inRow) {
                             column++;
                             inCell = true;
                         }
-                    } else if (xmlName.equalsIgnoreCase(DATA)) {
+                    } else if (DATA.equalsIgnoreCase(xmlName)) {
                         if (inRow && inCell) inData = true;
                     }
                     break;
                 case XmlPullParser.TEXT:
                     xmlText = xmlPullParser.getText();
-                    if (inRow && inCell && inData) {
+                    if (inRow && inCell && inData)
                         try {
                             if (fuelingRecord == null) fuelingRecord = new FuelingRecord();
                             switch (column) {
                                 case 0:
                                     fuelingRecord.setDateTime(
-                                            UtilsFormat.sqlDateTimeToDate(xmlText).getTime());
+                                            UtilsDate.utcToLocal(
+                                                    ExcelDateTime.parse(xmlText)));
                                     break;
                                 case 1:
                                     fuelingRecord.setCost(UtilsFormat.stringToFloat(xmlText));
@@ -271,26 +305,29 @@ public class DatabaseBackupXmlHelper {
                                 case 3:
                                     fuelingRecord.setTotal(UtilsFormat.stringToFloat(xmlText));
                                     break;
+                                default:
+                                    throw new XmlPullParserException("TEXT -- wrong column index");
                             }
-                        } catch (NumberFormatException e) {
+                        } catch (NumberFormatException | ParseException e) {
                             throw new XmlPullParserException(e.toString());
                         }
-                    }
                     break;
                 case XmlPullParser.END_TAG:
                     xmlName = xmlPullParser.getName();
-                    if (xmlName.equalsIgnoreCase(ROW)) {
+                    if (ROW.equalsIgnoreCase(xmlName)) {
                         column++;
+
                         if (column != COLUMN_COUNT)
-                            throw new XmlPullParserException("Column count");
+                            throw new XmlPullParserException("END_TAG -- wrong column count");
+
                         column = -1;
                         inRow = false;
 
                         fuelingRecordList.add(fuelingRecord);
                         fuelingRecord = null;
-                    } else if (xmlName.equalsIgnoreCase(DATA)) {
+                    } else if (DATA.equalsIgnoreCase(xmlName)) {
                         inData = false;
-                    } else if (xmlName.equalsIgnoreCase(CELL)) {
+                    } else if (CELL.equalsIgnoreCase(xmlName)) {
                         inCell = false;
                     }
             }
@@ -306,38 +343,43 @@ public class DatabaseBackupXmlHelper {
         try {
             UtilsFileIO.makeDir(mExternalDirectory);
         } catch (IOException e) {
+            UtilsLog.d(TAG, "save", "makeDir exception == " + e.toString());
             return RESULT_ERROR_MKDIRS;
         }
 
-        String xmlString;
+        final String xmlString;
         try {
             xmlString = createXml(fuelingRecordList);
         } catch (Exception e) {
+            UtilsLog.d(TAG, "save", "createXml exception == " + e.toString());
             return RESULT_ERROR_CREATE_XML;
         }
 
         try {
             UtilsFileIO.createFile(mFullFileName);
         } catch (IOException e) {
+            UtilsLog.d(TAG, "save", "createFile exception == " + e.toString());
             return RESULT_ERROR_CREATE_FILE;
         }
 
-        ByteBuffer buff = ByteBuffer.wrap(xmlString.getBytes());
+        final ByteBuffer buff = ByteBuffer.wrap(xmlString.getBytes());
 
-        FileChannel mFileChannel;
+        final FileChannel fileChannel;
         try {
-            mFileChannel = new FileOutputStream(mFullFileName).getChannel();
+            fileChannel = new FileOutputStream(mFullFileName).getChannel();
         } catch (FileNotFoundException e) {
+            UtilsLog.d(TAG, "save", "getChannel exception == " + e.toString());
             return RESULT_ERROR_CREATE_FILE;
         }
 
         try {
             try {
-                mFileChannel.write(buff);
+                fileChannel.write(buff);
             } finally {
-                mFileChannel.close();
+                fileChannel.close();
             }
         } catch (IOException e) {
+            UtilsLog.d(TAG, "save", "write exception == " + e.toString());
             return RESULT_ERROR_SAVE_FILE;
         }
 
@@ -347,9 +389,9 @@ public class DatabaseBackupXmlHelper {
     @BackupResult
     public int load(@NonNull List<FuelingRecord> fuelingRecordList) {
 
-        mFullFileName = new File(mExternalDirectory.getPath(), mFileName.getName());
-
         if (!mExternalDirectory.exists()) return RESULT_ERROR_DIR_NOT_EXISTS;
+
+        mFullFileName = new File(mExternalDirectory.getPath(), mFileName.getName());
 
         try {
             UtilsFileIO.checkExists(mFullFileName);
@@ -367,8 +409,10 @@ public class DatabaseBackupXmlHelper {
         try {
             parseXml(fileInputStream, fuelingRecordList);
         } catch (XmlPullParserException e) {
+            UtilsLog.d(TAG, "load", "parseXml XmlPullParserException == " + e.toString());
             return RESULT_ERROR_PARSE_XML;
         } catch (IOException e) {
+            UtilsLog.d(TAG, "load", "parseXml IOException == " + e.toString());
             return RESULT_ERROR_READ_FILE;
         }
 

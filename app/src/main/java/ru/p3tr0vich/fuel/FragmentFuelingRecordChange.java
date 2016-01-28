@@ -16,7 +16,6 @@ import android.widget.EditText;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
-import java.util.Date;
 
 public class FragmentFuelingRecordChange extends Fragment implements View.OnClickListener {
 
@@ -53,7 +52,8 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
             case Const.RECORD_ACTION_ADD:
                 getActivity().setTitle(R.string.dialog_caption_add);
 
-                mFuelingRecord = new FuelingRecord(-1, new Date().getTime(),
+                mFuelingRecord = new FuelingRecord(-1,
+                        UtilsDate.utcToLocal(System.currentTimeMillis()),
                         PreferenceManagerFuel.getDefaultCost(),
                         PreferenceManagerFuel.getDefaultVolume(),
                         PreferenceManagerFuel.getLastTotal(), true);
@@ -84,7 +84,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
             @Override
             public void onClick(View v) {
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(mDateTime);
+                calendar.setTimeInMillis(UtilsDate.localToUtc(mDateTime));
 
                 DatePickerDialog.newInstance(
                         new DatePickerDialog.OnDateSetListener() {
@@ -117,10 +117,10 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     private void setDate(int year, int monthOfYear, int dayOfMonth) {
         Calendar calendar = Calendar.getInstance();
 
-        calendar.setTimeInMillis(mDateTime);
+        calendar.setTimeInMillis(UtilsDate.localToUtc(mDateTime));
         calendar.set(year, monthOfYear, dayOfMonth);
 
-        mDateTime = calendar.getTimeInMillis();
+        mDateTime = UtilsDate.utcToLocal(calendar.getTimeInMillis());
 
         updateDate();
     }

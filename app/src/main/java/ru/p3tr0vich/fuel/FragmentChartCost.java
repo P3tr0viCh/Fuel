@@ -191,7 +191,7 @@ public class FragmentChartCost extends FragmentFuel implements
         mUpdateYearInProcess = false;
     }
 
-    private String getMonth(Calendar calendar, int month) {
+    private String getMonthName(Calendar calendar, int month) {
         calendar.set(Calendar.MONTH, month);
         int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR | DateUtils.FORMAT_NO_MONTH_DAY;
         if (Utils.isPhoneInPortrait()) flags |= DateUtils.FORMAT_ABBREV_MONTH;
@@ -201,7 +201,7 @@ public class FragmentChartCost extends FragmentFuel implements
 
     private void updateMonths() {
         Calendar calendar = Calendar.getInstance();
-        for (int i = 0; i < 12; i++) mMonths[i] = getMonth(calendar, i);
+        for (int i = Calendar.JANUARY; i <= Calendar.DECEMBER; i++) mMonths[i] = getMonthName(calendar, i);
     }
 
     private void setYear(int year) {

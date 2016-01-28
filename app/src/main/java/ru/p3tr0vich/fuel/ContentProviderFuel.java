@@ -21,34 +21,48 @@ public class ContentProviderFuel extends ContentProvider {
 
     private static final String TAG = "ContentProviderFuel";
 
-    private static final String URI_AUTHORITY = "ru.p3tr0vich.fuel.provider";
+    private static class BaseUri {
 
-    private static final String URI_PATH_DATABASE = "database";
-    private static final String URI_PATH_DATABASE_YEARS = URI_PATH_DATABASE + "/years";
-    private static final String URI_PATH_DATABASE_SUM_BY_MONTHS = URI_PATH_DATABASE + "/sum_by_months";
+        private static final String SCHEME = ContentResolver.SCHEME_CONTENT;
+        private static final String AUTHORITY = "ru.p3tr0vich.fuel.provider";
 
-    private static final String URI_PATH_DATABASE_SYNC = URI_PATH_DATABASE + "/sync";
-    private static final String URI_PATH_DATABASE_SYNC_ALL = URI_PATH_DATABASE + "/sync_get_all";
-    private static final String URI_PATH_DATABASE_SYNC_CHANGED = URI_PATH_DATABASE + "/sync_get_changed";
+        private BaseUri() {
+        }
 
-    private static final String URI_PATH_PREFERENCES = "preferences";
+        public static Uri getUri(String path) {
+            return new android.net.Uri.Builder()
+                    .scheme(SCHEME)
+                    .authority(AUTHORITY)
+                    .path(path)
+                    .build();
+        }
+    }
 
-    public static final Uri URI_DATABASE =
-            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE);
-    private static final Uri URI_DATABASE_YEARS =
-            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE_YEARS);
-    private static final Uri URI_DATABASE_SUM_BY_MONTHS =
-            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE_SUM_BY_MONTHS);
+    private static class UriPath {
 
-    public static final Uri URI_DATABASE_SYNC =
-            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE_SYNC);
-    public static final Uri URI_DATABASE_SYNC_ALL =
-            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE_SYNC_ALL);
-    public static final Uri URI_DATABASE_SYNC_CHANGED =
-            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_DATABASE_SYNC_CHANGED);
+        private static final String DATABASE = "database";
+        private static final String DATABASE_ITEM = DATABASE + "/#";
+        private static final String DATABASE_YEARS = DATABASE + "/years";
+        private static final String DATABASE_SUM_BY_MONTHS = DATABASE + "/sum_by_months";
+        private static final String DATABASE_SUM_BY_MONTHS_ITEM = DATABASE_SUM_BY_MONTHS + "/#";
 
-    public static final Uri URI_PREFERENCES =
-            Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + URI_AUTHORITY + "/" + URI_PATH_PREFERENCES);
+        private static final String DATABASE_SYNC = DATABASE + "/sync";
+        private static final String DATABASE_SYNC_ALL = DATABASE + "/sync_get_all";
+        private static final String DATABASE_SYNC_CHANGED = DATABASE + "/sync_get_changed";
+
+        private static final String PREFERENCES = "preferences";
+        private static final String PREFERENCES_ITEM = PREFERENCES + "/*";
+    }
+
+    public static final Uri URI_DATABASE = BaseUri.getUri(UriPath.DATABASE);
+    private static final Uri URI_DATABASE_YEARS = BaseUri.getUri(UriPath.DATABASE_YEARS);
+    private static final Uri URI_DATABASE_SUM_BY_MONTHS = BaseUri.getUri(UriPath.DATABASE_SUM_BY_MONTHS);
+
+    public static final Uri URI_DATABASE_SYNC = BaseUri.getUri(UriPath.DATABASE_SYNC);
+    public static final Uri URI_DATABASE_SYNC_ALL = BaseUri.getUri(UriPath.DATABASE_SYNC_ALL);
+    public static final Uri URI_DATABASE_SYNC_CHANGED = BaseUri.getUri(UriPath.DATABASE_SYNC_CHANGED);
+
+    public static final Uri URI_PREFERENCES = BaseUri.getUri(UriPath.PREFERENCES);
 
     public static final int DATABASE = 10;
     public static final int DATABASE_ITEM = 11;
@@ -65,32 +79,32 @@ public class ContentProviderFuel extends ContentProvider {
     public static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE, DATABASE);
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE + "/#", DATABASE_ITEM);
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE_YEARS, DATABASE_YEARS);
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE_SUM_BY_MONTHS + "/#", DATABASE_SUM_BY_MONTHS);
+        sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE, DATABASE);
+        sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_ITEM, DATABASE_ITEM);
+        sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_YEARS, DATABASE_YEARS);
+        sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SUM_BY_MONTHS_ITEM, DATABASE_SUM_BY_MONTHS);
 
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE_SYNC, DATABASE_SYNC);
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE_SYNC_ALL, DATABASE_SYNC_ALL);
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_DATABASE_SYNC_CHANGED, DATABASE_SYNC_CHANGED);
+        sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SYNC, DATABASE_SYNC);
+        sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SYNC_ALL, DATABASE_SYNC_ALL);
+        sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SYNC_CHANGED, DATABASE_SYNC_CHANGED);
 
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_PREFERENCES, PREFERENCES);
-        sURIMatcher.addURI(URI_AUTHORITY, URI_PATH_PREFERENCES + "/*", PREFERENCES_ITEM);
+        sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.PREFERENCES, PREFERENCES);
+        sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.PREFERENCES_ITEM, PREFERENCES_ITEM);
     }
 
     private static final String CURSOR_DIR_BASE_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE +
-            "/vnd." + URI_AUTHORITY + ".";
+            "/vnd." + BaseUri.AUTHORITY + ".";
     private static final String CURSOR_ITEM_BASE_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE +
-            "/vnd." + URI_AUTHORITY + ".";
+            "/vnd." + BaseUri.AUTHORITY + ".";
 
     private static final String CURSOR_DIR_BASE_TYPE_DATABASE =
-            CURSOR_DIR_BASE_TYPE + URI_PATH_DATABASE;
+            CURSOR_DIR_BASE_TYPE + UriPath.DATABASE;
     private static final String CURSOR_ITEM_BASE_TYPE_DATABASE =
-            CURSOR_ITEM_BASE_TYPE + URI_PATH_DATABASE;
+            CURSOR_ITEM_BASE_TYPE + UriPath.DATABASE;
     private static final String CURSOR_DIR_BASE_TYPE_PREFERENCES =
-            CURSOR_DIR_BASE_TYPE + URI_PATH_PREFERENCES;
+            CURSOR_DIR_BASE_TYPE + UriPath.PREFERENCES;
     private static final String CURSOR_ITEM_BASE_TYPE_PREFERENCES =
-            CURSOR_ITEM_BASE_TYPE + URI_PATH_PREFERENCES;
+            CURSOR_ITEM_BASE_TYPE + UriPath.PREFERENCES;
 
     private DatabaseHelper mDatabaseHelper;
 

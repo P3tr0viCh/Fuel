@@ -63,7 +63,7 @@
                 android:layout_above="@+id/layoutTotal"
                 android:layout_below="@+id/fuelingListViewHeader"
                 android:choiceMode="none"
-                tools:listitem="@layout/fueling_listitem" />
+                tools:listitem="@layout/fueling_list_item" />
 
             <com.pnikosis.materialishprogress.ProgressWheel
                 android:id="@+id/progressWheelFueling"

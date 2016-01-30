@@ -8,6 +8,10 @@
         <variable
             name="fuelingRecord"
             type="ru.p3tr0vich.fuel.FuelingRecord" />
+
+        <variable
+            name="showYear"
+            type="boolean" />
     </data>
 
     <LinearLayout xmlns:tools="http://schemas.android.com/tools"
@@ -26,7 +30,7 @@
             android:layout_weight="4"
             android:clickable="false"
             android:gravity="center_vertical"
-            android:text="@{UtilsFormat.dateToString(fuelingRecord.getDateTime, fuelingRecord.showYear)}"
+            android:text="@{UtilsFormat.dateToString(fuelingRecord.getDateTime, showYear)}"
             android:textAppearance="@style/AppTheme.TextAppearance.Lists"
             tools:text="@string/list_item_date" />
 
@@ -67,6 +71,7 @@
             android:adjustViewBounds="false"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
+            android:scaleType="center"
             android:src="@mipmap/ic_more_vert_black_24dp"
             tools:ignore="ContentDescription" />
     </LinearLayout>

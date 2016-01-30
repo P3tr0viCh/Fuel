@@ -12,7 +12,7 @@ public class UtilsFormat {
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     private static String formatDateTime(long date, int flags) {
-        return DateUtils.formatDateTime(ApplicationFuel.getContext(), UtilsDate.localToUtc(date), flags);
+        return DateUtils.formatDateTime(ApplicationFuel.getContext(), date, flags);
     }
 
     public static String dateTimeToString(long date, boolean withYear, boolean abbrevMonth) {
@@ -20,11 +20,12 @@ public class UtilsFormat {
         flags |= withYear ? DateUtils.FORMAT_SHOW_YEAR : DateUtils.FORMAT_NO_YEAR;
         if (abbrevMonth) flags |= DateUtils.FORMAT_ABBREV_MONTH;
 
+        flags |= DateUtils.FORMAT_SHOW_TIME;
+
         return formatDateTime(date, flags);
     }
 
     public static String dateToString(long date, boolean withYear) {
-//        return dateToSqlDateTime(date);
         return dateTimeToString(date, withYear, false);
     }
 
@@ -33,7 +34,7 @@ public class UtilsFormat {
     }
 
     public static String dateTimeToString(Date date) {
-        return dateTimeToString(UtilsDate.utcToLocal(date.getTime()));
+        return dateTimeToString(date.getTime());
     }
 
     public static float stringToFloat(String value) {

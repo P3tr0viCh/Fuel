@@ -53,10 +53,10 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 getActivity().setTitle(R.string.dialog_caption_add);
 
                 mFuelingRecord = new FuelingRecord(-1,
-                        UtilsDate.utcToLocal(System.currentTimeMillis()),
+                        System.currentTimeMillis(),
                         PreferenceManagerFuel.getDefaultCost(),
                         PreferenceManagerFuel.getDefaultVolume(),
-                        PreferenceManagerFuel.getLastTotal(), true);
+                        PreferenceManagerFuel.getLastTotal());
 
                 break;
             case Const.RECORD_ACTION_UPDATE:
@@ -83,14 +83,17 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         mButtonDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(UtilsDate.localToUtc(mDateTime));
+                final Calendar calendar = UtilsDate.getCalendarInstance(mDateTime);
 
                 DatePickerDialog.newInstance(
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-                                setDate(year, monthOfYear, dayOfMonth);
+                                calendar.set(year, monthOfYear, dayOfMonth);
+
+                                mDateTime = calendar.getTimeInMillis();
+
+                                updateDate();
                             }
                         },
                         calendar.get(Calendar.YEAR),
@@ -112,17 +115,6 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         super.onSaveInstanceState(outState);
 
         outState.putLong(INTENT_EXTRA, mDateTime);
-    }
-
-    private void setDate(int year, int monthOfYear, int dayOfMonth) {
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTimeInMillis(UtilsDate.localToUtc(mDateTime));
-        calendar.set(year, monthOfYear, dayOfMonth);
-
-        mDateTime = UtilsDate.utcToLocal(calendar.getTimeInMillis());
-
-        updateDate();
     }
 
     private void updateDate() {

@@ -22,7 +22,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "DatabaseHelper";
 
-    interface FuelingColumns {
+    interface TableFuelingColumns {
         String DATETIME = "datetime";
         String COST = "cost";
         String VOLUME = "volume";
@@ -34,9 +34,9 @@ class DatabaseHelper extends SQLiteOpenHelper {
         String MONTH = "month";
     }
 
-    public static class Fueling implements BaseColumns, FuelingColumns {
+    public static class TableFueling implements BaseColumns, TableFuelingColumns {
 
-        private Fueling() {
+        private TableFueling() {
         }
 
         public static final String NAME = "fueling";
@@ -65,14 +65,14 @@ class DatabaseHelper extends SQLiteOpenHelper {
         public static final int COST_SUM_INDEX = 0;
         public static final int MONTH_INDEX = 1;
 
-        private static final String CREATE_STATEMENT = "CREATE TABLE " + Fueling.NAME + "(" +
-                Fueling._ID + " INTEGER PRIMARY KEY ON CONFLICT REPLACE, " +
-                Fueling.DATETIME + " INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE, " +
-                Fueling.COST + " REAL DEFAULT 0, " +
-                Fueling.VOLUME + " REAL DEFAULT 0, " +
-                Fueling.TOTAL + " REAL DEFAULT 0, " +
-                Fueling.CHANGED + " INTEGER DEFAULT " + TRUE + ", " +
-                Fueling.DELETED + " INTEGER DEFAULT " + FALSE +
+        private static final String CREATE_STATEMENT = "CREATE TABLE " + NAME + "(" +
+                _ID + " INTEGER PRIMARY KEY ON CONFLICT REPLACE, " +
+                DATETIME + " INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE, " +
+                COST + " REAL DEFAULT 0, " +
+                VOLUME + " REAL DEFAULT 0, " +
+                TOTAL + " REAL DEFAULT 0, " +
+                CHANGED + " INTEGER DEFAULT " + TRUE + ", " +
+                DELETED + " INTEGER DEFAULT " + FALSE +
                 ");";
     }
 
@@ -80,6 +80,11 @@ class DatabaseHelper extends SQLiteOpenHelper {
         private static final int VERSION = 1;
 
         private static final String NAME = "fuel.db";
+
+        private static final String CREATE_STATEMENT = TableFueling.CREATE_STATEMENT;
+
+        private Database() {
+        }
     }
 
     private static final String AND = " AND ";
@@ -91,35 +96,68 @@ class DatabaseHelper extends SQLiteOpenHelper {
     private static final int FALSE = 0;
 
     public static class Where {
-        public static final String RECORD_NOT_DELETED = Fueling.DELETED + EQUAL + FALSE;
+        public static final String RECORD_NOT_DELETED = TableFueling.DELETED + EQUAL + FALSE;
         private static final String LESS = "<'%d'";
         private static final String BETWEEN = " BETWEEN %1$d AND %2$d";
+
+        private Where() {
+        }
     }
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FILTER_MODE_ALL, FILTER_MODE_CURRENT_YEAR, FILTER_MODE_YEAR, FILTER_MODE_DATES})
-    public @interface FilterMode {
-    }
+    public static class Filter {
 
-    public static final int FILTER_MODE_ALL = 0;
-    public static final int FILTER_MODE_CURRENT_YEAR = 1;
-    public static final int FILTER_MODE_YEAR = 2;
-    public static final int FILTER_MODE_DATES = 3;
+        @Retention(RetentionPolicy.SOURCE)
+        @IntDef({MODE_ALL, MODE_CURRENT_YEAR, MODE_YEAR, MODE_DATES})
+        public @interface Mode {
+        }
 
-    static class Filter {
+        public static final int MODE_ALL = 0;
+        public static final int MODE_CURRENT_YEAR = 1;
+        public static final int MODE_YEAR = 2;
+        public static final int MODE_DATES = 3;
+
         public long dateFrom;
         public long dateTo;
         public int year;
-        @FilterMode
-        public int filterMode;
+        @Mode
+        public int mode;
 
         Filter() {
-            filterMode = FILTER_MODE_ALL;
+            mode = MODE_ALL;
         }
 
         Filter(int year) {
             this.year = year;
-            filterMode = FILTER_MODE_YEAR;
+            mode = MODE_YEAR;
+        }
+
+        @NonNull
+        public String getSelection() {
+            if (mode == MODE_ALL)
+                return Where.RECORD_NOT_DELETED;
+            else {
+                final Calendar calendarFrom = Calendar.getInstance();
+                final Calendar calendarTo = Calendar.getInstance();
+
+                if (mode == MODE_DATES) {
+                    calendarFrom.setTimeInMillis(dateFrom);
+                    calendarTo.setTimeInMillis(dateTo);
+                } else {
+                    final int year = mode == MODE_YEAR ? this.year : UtilsDate.getCurrentYear();
+
+                    calendarFrom.set(year, Calendar.JANUARY, 1);
+                    calendarTo.set(year, Calendar.DECEMBER, 31);
+                }
+
+                UtilsDate.setStartOfDay(calendarFrom);
+                UtilsDate.setEndOfDay(calendarTo);
+
+                return TableFueling.DATETIME +
+                        String.format(Locale.US, Where.BETWEEN,
+                                UtilsDate.utcToLocal(calendarFrom.getTimeInMillis()),
+                                UtilsDate.utcToLocal(calendarTo.getTimeInMillis())) +
+                        AND + Where.RECORD_NOT_DELETED;
+            }
         }
     }
 
@@ -134,8 +172,8 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        UtilsLog.d(TAG, "onCreate", "sql == " + Fueling.CREATE_STATEMENT);
-        db.execSQL(Fueling.CREATE_STATEMENT);
+        UtilsLog.d(TAG, "onCreate", "sql == " + Database.CREATE_STATEMENT);
+        db.execSQL(Database.CREATE_STATEMENT);
     }
 
     @Override
@@ -155,14 +193,16 @@ class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         if (id != null)
-            values.put(Fueling._ID, id);
+            values.put(TableFueling._ID, id);
 
-        values.put(Fueling.DATETIME, dateTime);
-        values.put(Fueling.COST, cost);
-        values.put(Fueling.VOLUME, volume);
-        values.put(Fueling.TOTAL, total);
-        values.put(Fueling.CHANGED, changed ? TRUE : FALSE);
-        values.put(Fueling.DELETED, deleted ? TRUE : FALSE);
+        values.put(TableFueling.DATETIME,
+                UtilsDate.utcToLocal(
+                        dateTime));
+        values.put(TableFueling.COST, cost);
+        values.put(TableFueling.VOLUME, volume);
+        values.put(TableFueling.TOTAL, total);
+        values.put(TableFueling.CHANGED, changed ? TRUE : FALSE);
+        values.put(TableFueling.DELETED, deleted ? TRUE : FALSE);
 
         return values;
     }
@@ -171,94 +211,60 @@ class DatabaseHelper extends SQLiteOpenHelper {
     public static ContentValues getValuesMarkAsDeleted() {
         ContentValues values = new ContentValues();
 
-        values.put(Fueling.CHANGED, TRUE);
-        values.put(Fueling.DELETED, TRUE);
+        values.put(TableFueling.CHANGED, TRUE);
+        values.put(TableFueling.DELETED, TRUE);
 
         return values;
     }
 
-    @Nullable
-    public static FuelingRecord cursorToFuelingRecord(@Nullable Cursor cursor) {
-        FuelingRecord fuelingRecord = null;
-
-        if (cursor != null)
-            try {
-                if (cursor.moveToFirst())
-                    fuelingRecord = new FuelingRecord(cursor);
-            } finally {
-                cursor.close();
-            }
-
-        return fuelingRecord;
-    }
-
     @NonNull
-    public static String filterModeToSql(@NonNull Filter filter) {
-        if (filter.filterMode == FILTER_MODE_ALL)
-            return Where.RECORD_NOT_DELETED;
-        else {
-            Calendar dateFrom = Calendar.getInstance();
-            Calendar dateTo = Calendar.getInstance();
-
-            if (filter.filterMode == FILTER_MODE_DATES) {
-                dateFrom.setTimeInMillis(UtilsDate.localToUtc(filter.dateFrom));
-                dateTo.setTimeInMillis(UtilsDate.localToUtc(filter.dateTo));
-            } else {
-                int year = filter.filterMode == FILTER_MODE_YEAR ?
-                        filter.year : UtilsDate.getCurrentYear();
-
-                dateFrom.set(year, Calendar.JANUARY, 1);
-                dateTo.set(year, Calendar.DECEMBER, 31);
-            }
-
-            UtilsDate.setStartOfDay(dateFrom);
-            UtilsDate.setEndOfDay(dateTo);
-
-            return Fueling.DATETIME +
-                    String.format(Locale.US, Where.BETWEEN,
-                            UtilsDate.utcToLocal(dateFrom.getTimeInMillis()),
-                            UtilsDate.utcToLocal(dateTo.getTimeInMillis())) +
-                    AND + Where.RECORD_NOT_DELETED;
-        }
+    public static FuelingRecord getFuelingRecordFromCursor(@NonNull Cursor cursor) {
+        return new FuelingRecord(
+                cursor.getLong(TableFueling._ID_INDEX),
+                UtilsDate.localToUtc(
+                        cursor.getLong(TableFueling.DATETIME_INDEX)),
+                cursor.getFloat(TableFueling.COST_INDEX),
+                cursor.getFloat(TableFueling.VOLUME_INDEX),
+                cursor.getFloat(TableFueling.TOTAL_INDEX));
     }
 
     public Cursor getAll(String selection) {
-        return query(Fueling.COLUMNS, selection, null, Fueling.DATETIME + DESC);
+        return query(TableFueling.COLUMNS, selection, null, TableFueling.DATETIME + DESC);
     }
 
     public Cursor getRecord(long id) {
-        return query(Fueling.COLUMNS, Fueling._ID + EQUAL + id, null, null);
+        return query(TableFueling.COLUMNS, TableFueling._ID + EQUAL + id, null, null);
     }
 
     public Cursor getYears() {
         UtilsLog.d(TAG, "getYears");
-        return query(Fueling.COLUMNS_YEARS, Fueling.YEAR +
+        return query(TableFueling.COLUMNS_YEARS, TableFueling.YEAR +
                         String.format(Locale.US, Where.LESS, UtilsDate.getCurrentYear()) + AND +
                         Where.RECORD_NOT_DELETED,
-                Fueling.YEAR, Fueling.YEAR);
+                TableFueling.YEAR, TableFueling.YEAR);
     }
 
     public Cursor getSumByMonthsForYear(int year) {
         UtilsLog.d(TAG, "getSumByMonthsForYear", "year == " + year);
-        return query(Fueling.COLUMNS_SUM_BY_MONTHS, filterModeToSql(new Filter(year)),
-                Fueling.MONTH, Fueling.MONTH);
+        return query(TableFueling.COLUMNS_SUM_BY_MONTHS, new Filter(year).getSelection(),
+                TableFueling.MONTH, TableFueling.MONTH);
     }
 
     public Cursor getSyncRecords(boolean getChanged) {
         UtilsLog.d(TAG, "getSyncRecords", "getChanged == " + getChanged);
-        return query(Fueling.COLUMNS_WITH_DELETED,
-                getChanged ? Fueling.CHANGED + EQUAL + TRUE : null, null, null);
+        return query(TableFueling.COLUMNS_WITH_DELETED,
+                getChanged ? TableFueling.CHANGED + EQUAL + TRUE : null, null, null);
     }
 
     public int deleteMarkedAsDeleted() {
-        return delete(Fueling.DELETED + EQUAL + TRUE);
+        return delete(TableFueling.DELETED + EQUAL + TRUE);
     }
 
     public int updateChanged() {
         ContentValues values = new ContentValues();
-        values.put(Fueling.CHANGED, FALSE);
+        values.put(TableFueling.CHANGED, FALSE);
 
-        return update(values, Fueling.CHANGED + EQUAL + TRUE);
+        return update(values, TableFueling.CHANGED + EQUAL + TRUE);
     }
 
     private Cursor query(String[] columns, String selection, String groupBy, String orderBy) {
@@ -274,12 +280,12 @@ class DatabaseHelper extends SQLiteOpenHelper {
 //            UtilsLog.d(TAG, "query", "wait... " + (waitSeconds - i));
 //        }
 
-        return getReadableDatabase().query(Fueling.NAME, columns, selection,
+        return getReadableDatabase().query(TableFueling.NAME, columns, selection,
                 null, groupBy, null, orderBy);
     }
 
     public long insert(@NonNull SQLiteDatabase db, @NonNull ContentValues values) {
-        return db.insert(Fueling.NAME, null, values);
+        return db.insert(TableFueling.NAME, null, values);
     }
 
     public long insert(@NonNull ContentValues values) {
@@ -287,15 +293,15 @@ class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int update(@NonNull ContentValues values, @NonNull String whereClause) {
-        return getWritableDatabase().update(Fueling.NAME, values, whereClause, null);
+        return getWritableDatabase().update(TableFueling.NAME, values, whereClause, null);
     }
 
     public int update(@NonNull ContentValues values, long id) {
-        return getWritableDatabase().update(Fueling.NAME, values, Fueling._ID + EQUAL + id, null);
+        return getWritableDatabase().update(TableFueling.NAME, values, TableFueling._ID + EQUAL + id, null);
     }
 
     private int delete(@NonNull SQLiteDatabase db, @Nullable String whereClause) {
-        return db.delete(Fueling.NAME, whereClause, null);
+        return db.delete(TableFueling.NAME, whereClause, null);
     }
 
     public int delete(@Nullable String whereClause) {
@@ -303,6 +309,6 @@ class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int delete(long id) {
-        return delete(Fueling._ID + EQUAL + id);
+        return delete(TableFueling._ID + EQUAL + id);
     }
 }

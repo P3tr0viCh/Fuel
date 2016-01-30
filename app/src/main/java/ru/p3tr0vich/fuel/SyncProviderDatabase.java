@@ -20,7 +20,7 @@ class SyncProviderDatabase {
 
     private static final String TAG = "SyncProviderDatabase";
 
-    private static final String ADD = "+";
+    private static final String INSERT = "+";
     private static final String DELETE = "-";
     private static final String CLEAR = "~";
 
@@ -45,15 +45,15 @@ class SyncProviderDatabase {
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    result.add(DatabaseHelper.getBoolean(cursor, DatabaseHelper.Fueling.DELETED_INDEX) ?
+                    result.add(DatabaseHelper.getBoolean(cursor, DatabaseHelper.TableFueling.DELETED_INDEX) ?
                             DELETE + SEPARATOR +
-                                    Long.toString(cursor.getLong(DatabaseHelper.Fueling._ID_INDEX)) :
-                            ADD + SEPARATOR +
-                                    Long.toString(cursor.getLong(DatabaseHelper.Fueling._ID_INDEX)) + SEPARATOR +
-                                    Long.toString(cursor.getLong(DatabaseHelper.Fueling.DATETIME_INDEX)) + SEPARATOR +
-                                    Float.toString(cursor.getFloat(DatabaseHelper.Fueling.COST_INDEX)) + SEPARATOR +
-                                    Float.toString(cursor.getFloat(DatabaseHelper.Fueling.VOLUME_INDEX)) + SEPARATOR +
-                                    Float.toString(cursor.getFloat(DatabaseHelper.Fueling.TOTAL_INDEX)));
+                                    Long.toString(cursor.getLong(DatabaseHelper.TableFueling._ID_INDEX)) :
+                            INSERT + SEPARATOR +
+                                    Long.toString(cursor.getLong(DatabaseHelper.TableFueling._ID_INDEX)) + SEPARATOR +
+                                    Long.toString(cursor.getLong(DatabaseHelper.TableFueling.DATETIME_INDEX)) + SEPARATOR +
+                                    Float.toString(cursor.getFloat(DatabaseHelper.TableFueling.COST_INDEX)) + SEPARATOR +
+                                    Float.toString(cursor.getFloat(DatabaseHelper.TableFueling.VOLUME_INDEX)) + SEPARATOR +
+                                    Float.toString(cursor.getFloat(DatabaseHelper.TableFueling.TOTAL_INDEX)));
                 } while (cursor.moveToNext());
             }
             cursor.close();
@@ -110,7 +110,7 @@ class SyncProviderDatabase {
                 }
 
                 switch (stringValues[0]) {
-                    case ADD:
+                    case INSERT:
                         records.put(id,
                                 DatabaseHelper.getValues(
                                         id,

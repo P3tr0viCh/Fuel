@@ -19,7 +19,7 @@ import android.widget.Spinner;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class FragmentCalc extends FragmentFuel implements
+public class FragmentCalc extends FragmentBase implements
         AdapterView.OnItemSelectedListener, View.OnClickListener {
 
     public static final String TAG = "FragmentCalc";

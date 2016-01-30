@@ -248,29 +248,36 @@ public class ContentProviderFuel extends ContentProvider {
 
     public static Cursor getAll(@NonNull Context context, @NonNull DatabaseHelper.Filter filter) {
         return context.getContentResolver().query(URI_DATABASE, null,
-                DatabaseHelper.filterModeToSql(filter), null, null, null);
-    }
-
-    private static Cursor getRecord(@NonNull Context context, long id) {
-        return context.getContentResolver().query(ContentUris.withAppendedId(URI_DATABASE, id),
-                null, null, null, null, null);
+                filter.getSelection(), null, null, null);
     }
 
     @Nullable
     public static FuelingRecord getFuelingRecord(@NonNull Context context, long id) {
-        return DatabaseHelper.cursorToFuelingRecord(getRecord(context, id));
+        final Cursor cursor = context.getContentResolver().query(
+                ContentUris.withAppendedId(URI_DATABASE, id), null, null, null, null, null);
+
+        if (cursor != null)
+            try {
+                if (cursor.moveToFirst())
+                    return DatabaseHelper.getFuelingRecordFromCursor(cursor);
+            } finally {
+                cursor.close();
+            }
+
+        return null;
     }
 
     @NonNull
     public static List<FuelingRecord> getAllRecordsList(@NonNull Context context) {
         List<FuelingRecord> fuelingRecords = new ArrayList<>();
 
-        Cursor cursor = context.getContentResolver().query(URI_DATABASE, null,
+        final Cursor cursor = context.getContentResolver().query(URI_DATABASE, null,
                 DatabaseHelper.Where.RECORD_NOT_DELETED, null, null, null);
+
         if (cursor != null)
             try {
                 if (cursor.moveToFirst()) do
-                    fuelingRecords.add(new FuelingRecord(cursor));
+                    fuelingRecords.add(DatabaseHelper.getFuelingRecordFromCursor(cursor));
                 while (cursor.moveToNext());
             } finally {
                 cursor.close();
@@ -350,9 +357,9 @@ public class ContentProviderFuel extends ContentProvider {
     }
 
     public static int updateRecord(@NonNull Context context, @NonNull FuelingRecord fuelingRecord) {
-        long id = fuelingRecord.getId();
+        final long id = fuelingRecord.getId();
 
-        int rowsUpdated = context.getContentResolver().update(
+        final int rowsUpdated = context.getContentResolver().update(
                 ContentUris.withAppendedId(URI_DATABASE, id),
                 DatabaseHelper.getValues(
                         null,
@@ -369,7 +376,7 @@ public class ContentProviderFuel extends ContentProvider {
     }
 
     public static int markRecordAsDeleted(@NonNull Context context, long id) {
-        int rowsUpdated = context.getContentResolver().update(
+        final int rowsUpdated = context.getContentResolver().update(
                 ContentUris.withAppendedId(URI_DATABASE, id),
                 DatabaseHelper.getValuesMarkAsDeleted(), null, null);
 

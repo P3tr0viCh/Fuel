@@ -151,8 +151,6 @@ public class ActivityMain extends AppCompatActivity implements
 
         mSyncAccount = new SyncAccount(this);
 
-//        mSyncAccount.setYandexDiskToken(null);
-
         initAnimationSync();
         initSyncViews();
 
@@ -573,26 +571,26 @@ public class ActivityMain extends AppCompatActivity implements
         }
     }
 
-    @DatabaseHelper.FilterMode
+    @DatabaseHelper.Filter.Mode
     private static int positionToFilterMode(int position) {
         switch (position) {
             case 0:
-                return DatabaseHelper.FILTER_MODE_CURRENT_YEAR;
+                return DatabaseHelper.Filter.MODE_CURRENT_YEAR;
             case 1:
-                return DatabaseHelper.FILTER_MODE_DATES;
+                return DatabaseHelper.Filter.MODE_DATES;
             default:
-                return DatabaseHelper.FILTER_MODE_ALL;
+                return DatabaseHelper.Filter.MODE_ALL;
         }
     }
 
-    private static int filterModeToPosition(@DatabaseHelper.FilterMode int filterMode) {
+    private static int filterModeToPosition(@DatabaseHelper.Filter.Mode int filterMode) {
         switch (filterMode) {
-            case DatabaseHelper.FILTER_MODE_CURRENT_YEAR:
+            case DatabaseHelper.Filter.MODE_CURRENT_YEAR:
                 return 0;
-            case DatabaseHelper.FILTER_MODE_YEAR:
-            case DatabaseHelper.FILTER_MODE_DATES:
+            case DatabaseHelper.Filter.MODE_YEAR:
+            case DatabaseHelper.Filter.MODE_DATES:
                 return 1;
-            case DatabaseHelper.FILTER_MODE_ALL:
+            case DatabaseHelper.Filter.MODE_ALL:
                 return 2;
             default:
                 return 0;
@@ -600,7 +598,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
-    public void onFilterChange(@DatabaseHelper.FilterMode int filterMode) {
+    public void onFilterChange(@DatabaseHelper.Filter.Mode int filterMode) {
         int position = filterModeToPosition(filterMode);
 
         if (position != mToolbarSpinner.getSelectedItemPosition())

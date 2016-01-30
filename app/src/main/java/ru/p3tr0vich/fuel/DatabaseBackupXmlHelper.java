@@ -3,6 +3,7 @@ package ru.p3tr0vich.fuel;
 import android.os.Environment;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -131,7 +132,7 @@ public class DatabaseBackupXmlHelper {
         return mExternalDirectory;
     }
 
-    private void setExternalDirectory(File externalDirectory) {
+    private void setExternalDirectory(@Nullable File externalDirectory) {
         if (externalDirectory == null)
             externalDirectory = new File(Environment.getExternalStorageDirectory(), DEFAULT_DIR);
         mExternalDirectory = externalDirectory;
@@ -141,14 +142,14 @@ public class DatabaseBackupXmlHelper {
         return mFileName;
     }
 
-    private void setFileName(File fileName) {
+    private void setFileName(@Nullable File fileName) {
         if (fileName == null) fileName = new File(DEFAULT_NAME);
         mFileName = fileName;
     }
 
-    private String createXml(List<FuelingRecord> fuelingRecordList) throws IOException, RuntimeException {
-        XmlSerializer serializer = Xml.newSerializer();
-        StringWriter writer = new StringWriter();
+    private String createXml(@NonNull List<FuelingRecord> fuelingRecordList) throws IOException, RuntimeException {
+        final XmlSerializer serializer = Xml.newSerializer();
+        final StringWriter writer = new StringWriter();
 
         serializer.setOutput(writer);
         serializer.setFeature(FEATURE_INDENT, true);
@@ -184,11 +185,6 @@ public class DatabaseBackupXmlHelper {
                 serializer.startTag("", TABLE);
                 {
                     for (FuelingRecord fuelingRecord : fuelingRecordList) {
-/*                        try {
-                            TimeUnit.MILLISECONDS.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }*/
                         serializer.startTag("", ROW);
                         {
                             serializer.startTag("", CELL);
@@ -198,8 +194,7 @@ public class DatabaseBackupXmlHelper {
                                 serializer.attribute("", DATA_TYPE, DATA_TYPE_DATETIME);
                                 serializer.text(
                                         ExcelDateTime.format(
-                                                UtilsDate.localToUtc(
-                                                        fuelingRecord.getDateTime())));
+                                                fuelingRecord.getDateTime()));
                                 serializer.endTag("", DATA);
                             }
                             serializer.endTag("", CELL);
@@ -246,13 +241,15 @@ public class DatabaseBackupXmlHelper {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void parseXml(FileInputStream fileInputStream, List<FuelingRecord> fuelingRecordList)
+    private void parseXml(@NonNull FileInputStream fileInputStream,
+                          @NonNull List<FuelingRecord> fuelingRecordList)
             throws XmlPullParserException, IOException {
 
-        XmlPullParserFactory xmlPullParserFactory = XmlPullParserFactory.newInstance();
+        final XmlPullParserFactory xmlPullParserFactory = XmlPullParserFactory.newInstance();
+
         xmlPullParserFactory.setNamespaceAware(false);
 
-        XmlPullParser xmlPullParser = xmlPullParserFactory.newPullParser();
+        final XmlPullParser xmlPullParser = xmlPullParserFactory.newPullParser();
 
         xmlPullParser.setInput(fileInputStream, null);
 
@@ -293,8 +290,7 @@ public class DatabaseBackupXmlHelper {
                             switch (column) {
                                 case 0:
                                     fuelingRecord.setDateTime(
-                                            UtilsDate.utcToLocal(
-                                                    ExcelDateTime.parse(xmlText)));
+                                            ExcelDateTime.parse(xmlText));
                                     break;
                                 case 1:
                                     fuelingRecord.setCost(UtilsFormat.stringToFloat(xmlText));

@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class FragmentBackup extends FragmentFuel {
+public class FragmentBackup extends FragmentBase {
 
     public static final String TAG = "FragmentBackup";
 

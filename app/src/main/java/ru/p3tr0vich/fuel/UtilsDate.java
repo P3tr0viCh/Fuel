@@ -32,4 +32,11 @@ class UtilsDate {
         calendar.set(Calendar.SECOND, 59);
         calendar.set(Calendar.MILLISECOND, 999);
     }
+
+    @NonNull
+    public static Calendar getCalendarInstance(long milliseconds) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliseconds);
+        return calendar;
+    }
 }

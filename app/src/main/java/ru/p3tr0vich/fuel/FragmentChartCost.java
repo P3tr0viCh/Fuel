@@ -10,7 +10,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -27,7 +26,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class FragmentChartCost extends FragmentFuel implements
+public class FragmentChartCost extends FragmentBase implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String TAG = "FragmentChartCost";
@@ -141,8 +140,8 @@ public class FragmentChartCost extends FragmentFuel implements
             }
         });
 
-        view.setOnTouchListener(onSwipeTouchListener);
-        mChart.setOnTouchListener(onSwipeTouchListener);
+        view.setOnTouchListener(mOnSwipeTouchListener);
+        mChart.setOnTouchListener(mOnSwipeTouchListener);
 
         return view;
     }
@@ -151,7 +150,7 @@ public class FragmentChartCost extends FragmentFuel implements
         if (tab != null) tab.select();
     }
 
-    private final OnSwipeTouchListener onSwipeTouchListener = new OnSwipeTouchListener(getActivity()) {
+    private final OnSwipeTouchListener mOnSwipeTouchListener = new OnSwipeTouchListener(getActivity()) {
         @Override
         public void onSwipeRight() {
             int position = mTabLayout.getSelectedTabPosition();
@@ -173,10 +172,6 @@ public class FragmentChartCost extends FragmentFuel implements
         @Override
         public void onSwipeBottom() {
 
-        }
-
-        public boolean onTouch(View v, MotionEvent event) {
-            return gestureDetector.onTouchEvent(event);
         }
     };
 
@@ -201,7 +196,8 @@ public class FragmentChartCost extends FragmentFuel implements
 
     private void updateMonths() {
         Calendar calendar = Calendar.getInstance();
-        for (int i = Calendar.JANUARY; i <= Calendar.DECEMBER; i++) mMonths[i] = getMonthName(calendar, i);
+        for (int month = Calendar.JANUARY; month <= Calendar.DECEMBER; month++) mMonths[month] =
+                getMonthName(calendar, month);
     }
 
     private void setYear(int year) {
@@ -259,7 +255,6 @@ public class FragmentChartCost extends FragmentFuel implements
 
         @Override
         public Cursor loadInBackground() {
-//            return new DatabaseHelper(getContext()).getSumByMonthsForYear(mYear);
             return ContentProviderFuel.getSumByMonthsForYear(getContext(), mYear);
         }
     }
@@ -274,7 +269,6 @@ public class FragmentChartCost extends FragmentFuel implements
 
         @Override
         public Cursor loadInBackground() {
-//            return new DatabaseHelper(getContext()).getYears();
             return ContentProviderFuel.getYears(getContext());
         }
     }
@@ -303,8 +297,8 @@ public class FragmentChartCost extends FragmentFuel implements
                 mIsData = data.getCount() > 0;
 
                 if (data.moveToFirst()) do {
-                    sum = data.getFloat(DatabaseHelper.Fueling.COST_SUM_INDEX);
-                    month = data.getString(DatabaseHelper.Fueling.MONTH_INDEX);
+                    sum = data.getFloat(DatabaseHelper.TableFueling.COST_SUM_INDEX);
+                    month = data.getString(DatabaseHelper.TableFueling.MONTH_INDEX);
 
                     mSums[Integer.parseInt(month) - 1] = sum;
                 } while (data.moveToNext());
@@ -319,7 +313,7 @@ public class FragmentChartCost extends FragmentFuel implements
                     mYears = new int[count + 1];
 
                     if (data.moveToFirst()) do {
-                        year = data.getInt(DatabaseHelper.Fueling.YEAR_INDEX);
+                        year = data.getInt(DatabaseHelper.TableFueling.YEAR_INDEX);
 
                         mYears[i] = year;
                         i++;

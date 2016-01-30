@@ -8,6 +8,10 @@
         <variable
             name="fuelingRecord"
             type="ru.p3tr0vich.fuel.FuelingRecord" />
+
+        <variable
+            name="showYear"
+            type="boolean" />
     </data>
 
     <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
@@ -28,7 +32,7 @@
             android:layout_toLeftOf="@+id/ibMenu"
             android:clickable="false"
             android:gravity="bottom"
-            android:text="@{UtilsFormat.dateToString(fuelingRecord.getDateTime, fuelingRecord.showYear)}"
+            android:text="@{UtilsFormat.dateToString(fuelingRecord.getDateTime, showYear)}"
             android:textAppearance="@style/AppTheme.TextAppearance.Lists"
             tools:text="@string/list_item_date" />
 

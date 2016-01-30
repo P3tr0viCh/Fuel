@@ -3,16 +3,22 @@ package ru.p3tr0vich.fuel;
 import android.content.Context;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.MotionEvent;
 
 @SuppressWarnings("EmptyMethod")
 abstract class OnSwipeTouchListener implements OnTouchListener {
 
-    public final GestureDetector gestureDetector;
+    private final GestureDetector mGestureDetector;
 
-    public OnSwipeTouchListener (Context ctx){
-        gestureDetector = new GestureDetector(ctx, new GestureListener());
+    public OnSwipeTouchListener (Context context){
+        mGestureDetector = new GestureDetector(context, new GestureListener());
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return mGestureDetector.onTouchEvent(event);
     }
 
     private final class GestureListener extends SimpleOnGestureListener {

@@ -1,7 +1,6 @@
 package ru.p3tr0vich.fuel;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,50 +10,38 @@ public class FuelingRecord implements Parcelable {
 
     private static final String NAME = "FUELING_RECORD";
 
+    // Устанавливается во время добавления записи в БД равной mDateTime,
+    // при изменении даты не меняется.
     private long mId;
-    private long mDateTime;     // Дата заправки в миллисекундах
-    private float mCost;        // Стоимость
-    private float mVolume;      // Объём заправки
-    private float mTotal;       // Общий пробег
+    // Дата заправки в формате Unix epoch, временная зона UTC.
+    // В базе хранится со сдвигом локальной зоны.
+    private long mDateTime;
+    // Стоимость.
+    private float mCost;
+    // Объём заправки.
+    private float mVolume;
+    // Общий пробег.
+    private float mTotal;
 
-    @SuppressWarnings("WeakerAccess")
-    // used in fueling_listitem
-    public final boolean showYear;
-
-    FuelingRecord(long id, long dateTime, float cost, float volume, float total, boolean showYear) {
+    FuelingRecord(long id, long dateTime, float cost, float volume, float total) {
         setId(id);
         setDateTime(dateTime);
         setCost(cost);
         setVolume(volume);
         setTotal(total);
-        this.showYear = showYear;
-    }
-
-    FuelingRecord(Cursor cursor) {
-        this(cursor, true);
-    }
-
-    FuelingRecord(Cursor cursor, boolean showYear) {
-        // TODO: remove this constructor
-        this(cursor.getLong(DatabaseHelper.Fueling._ID_INDEX),
-                cursor.getLong(DatabaseHelper.Fueling.DATETIME_INDEX),
-                cursor.getFloat(DatabaseHelper.Fueling.COST_INDEX),
-                cursor.getFloat(DatabaseHelper.Fueling.VOLUME_INDEX),
-                cursor.getFloat(DatabaseHelper.Fueling.TOTAL_INDEX),
-                showYear);
     }
 
     private FuelingRecord(Parcel in) {
-        this(in.readLong(), in.readLong(), in.readFloat(), in.readFloat(), in.readFloat(), in.readInt() == 1);
+        this(in.readLong(), in.readLong(), in.readFloat(), in.readFloat(), in.readFloat());
     }
 
     FuelingRecord() {
-        this(0, Long.MIN_VALUE, 0, 0, 0, true);
+        this(0, 0, 0, 0, 0);
     }
 
     FuelingRecord(FuelingRecord fuelingRecord) {
         this(fuelingRecord.mId, fuelingRecord.mDateTime, fuelingRecord.mCost,
-                fuelingRecord.mVolume, fuelingRecord.mTotal, fuelingRecord.showYear);
+                fuelingRecord.mVolume, fuelingRecord.mTotal);
     }
 
     FuelingRecord(Intent intent) {
@@ -138,7 +125,6 @@ public class FuelingRecord implements Parcelable {
         dest.writeFloat(mCost);
         dest.writeFloat(mVolume);
         dest.writeFloat(mTotal);
-        dest.writeInt(showYear ? 1 : 0);
     }
 
     public static final Parcelable.Creator<FuelingRecord> CREATOR = new Parcelable.Creator<FuelingRecord>() {

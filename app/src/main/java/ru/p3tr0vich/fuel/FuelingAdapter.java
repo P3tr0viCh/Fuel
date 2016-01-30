@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.p3tr0vich.fuel.databinding.FuelingListitemBinding;
+import ru.p3tr0vich.fuel.databinding.FuelingListItemBinding;
 
 class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -21,8 +21,8 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_ITEM = 1;
     public static final int TYPE_FOOTER = 2;
 
-    private static final int HEADER_ID = -2;
-    private static final int FOOTER_ID = -3;
+    private static final long HEADER_ID = Long.MAX_VALUE;
+    private static final long FOOTER_ID = Long.MIN_VALUE;
 
     public static final int HEADER_POSITION = 0;
 
@@ -92,9 +92,9 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if (isShowHeader()) mFuelingRecords.add(null);
 
-        if (data != null && data.getCount() != 0 && data.moveToFirst())
+        if (data != null && data.moveToFirst())
             do
-                mFuelingRecords.add(new FuelingRecord(data, mShowYear));
+                mFuelingRecords.add(DatabaseHelper.getFuelingRecordFromCursor(data));
             while (data.moveToNext());
 
         if (isShowFooter()) mFuelingRecords.add(null);
@@ -114,94 +114,12 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mOnFuelingRecordsChangeListener.OnFuelingRecordsChange(tempFuelingRecords);
     }
 
-//    public int insertRecord(FuelingRecord fuelingRecord) {
-//        fuelingRecord.showYear = mShowYear;
-//
-//        int position = findPositionForDate(fuelingRecord.getDateTime());
-//
-//        mFuelingRecords.add(position, fuelingRecord);
-//
-//        notifyItemInserted(position);
-//
-//        notifyFuelingRecordsChanged();
-//
-//        return position;
-//    }
-
-//    public int updateRecord(FuelingRecord fuelingRecord) {
-//        fuelingRecord.showYear = mShowYear;
-//
-//        int position = findPositionById(fuelingRecord.getId());
-//
-//        if (position > -1) {
-//            long oldDateTime = mFuelingRecords.get(position).getDateTime();
-//
-//            long newDateTime = fuelingRecord.getDateTime();
-//
-//            mFuelingRecords.set(position, fuelingRecord);
-//
-//            notifyItemChanged(position);
-//
-//            if (oldDateTime != newDateTime) {
-//                FuelingRecord temp = mFuelingRecords.remove(position);
-//
-//                int newPosition = findPositionForDate(newDateTime);
-//
-//                mFuelingRecords.add(newPosition, temp);
-//
-//                notifyItemMoved(position, newPosition);
-//
-//                position = newPosition;
-//            }
-//        }
-//
-//        notifyFuelingRecordsChanged();
-//
-//        return position;
-//    }
-
     public int findPositionById(long id) {
         for (int i = mShowHeader; i < mFuelingRecords.size() - mShowFooter; i++)
             if (mFuelingRecords.get(i).getId() == id) return i;
 
         return -1;
     }
-
-//    public void deleteRecord(long id) {
-//        int position = findPositionById(id);
-//        if (position > -1) {
-//            mFuelingRecords.remove(position);
-//            notifyItemRemoved(position);
-//
-//            notifyFuelingRecordsChanged();
-//        }
-//    }
-
-//    private boolean isEmpty() {
-//        return mFuelingRecords.size() - mShowHeader - mShowFooter == 0;
-//    }
-
-//    private int findPositionForDate(long date) {
-//        if (isEmpty() || date >= mFuelingRecords.get(mShowHeader).getDateTime())
-//            return mShowHeader;
-//
-//        int hi = mShowHeader;
-//        int lo = mFuelingRecords.size() - 1 - mShowFooter;
-//
-//        while (hi <= lo) {
-//            int mid = (lo + hi) >>> 1;
-//            long midVal = mFuelingRecords.get(mid).getDateTime();
-//
-//            if (midVal < date) {
-//                lo = mid - 1;
-//            } else if (midVal > date) {
-//                hi = mid + 1;
-//            } else {
-//                return mid;
-//            }
-//        }
-//        return hi;
-//    }
 
     public void setShowYear(boolean showYear) {
         mShowYear = showYear;
@@ -214,31 +132,37 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == TYPE_ITEM) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            FuelingListitemBinding binding = FuelingListitemBinding.inflate(inflater, parent, false);
-
-            return new FuelingItemViewHolder(binding.getRoot());
-        } else if (viewType == TYPE_HEADER)
-            return new HeaderViewHolder(
-                    LayoutInflater.from(parent.getContext()).
-                            inflate(R.layout.fueling_listview_header, parent, false));
-        else if (viewType == TYPE_FOOTER)
-            return new HeaderViewHolder(
-                    LayoutInflater.from(parent.getContext()).
-                            inflate(R.layout.fueling_listview_footer, parent, false));
-
-        throw new RuntimeException("Wrong type: " + viewType);
+        switch (viewType) {
+            case TYPE_ITEM:
+                return new FuelingItemViewHolder(
+                        FuelingListItemBinding.inflate(
+                                LayoutInflater.from(parent.getContext()), parent, false).getRoot());
+            case TYPE_HEADER:
+                return new HeaderViewHolder(
+                        LayoutInflater.from(parent.getContext()).
+                                inflate(R.layout.fueling_listview_header, parent, false));
+            case TYPE_FOOTER:
+                return new HeaderViewHolder(
+                        LayoutInflater.from(parent.getContext()).
+                                inflate(R.layout.fueling_listview_footer, parent, false));
+            default:
+                throw new RuntimeException("onCreateViewHolder: wrong viewType == " + viewType);
+        }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof FuelingItemViewHolder) {
-            FuelingRecord fuelingRecord = mFuelingRecords.get(position);
-            ((FuelingItemViewHolder) holder).binding.setFuelingRecord(fuelingRecord);
+            final FuelingRecord fuelingRecord = mFuelingRecords.get(position);
 
-            ((FuelingItemViewHolder) holder).binding.ibMenu.setTag(fuelingRecord.getId());
-            ((FuelingItemViewHolder) holder).binding.ibMenu.setOnClickListener(mOnClickListener);
+            final FuelingListItemBinding binding = ((FuelingItemViewHolder) holder).getBinding();
+
+            binding.setFuelingRecord(fuelingRecord);
+
+            binding.ibMenu.setTag(fuelingRecord.getId());
+            binding.ibMenu.setOnClickListener(mOnClickListener);
+
+            binding.setShowYear(mShowYear);
         }
     }
 
@@ -259,11 +183,15 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public class FuelingItemViewHolder extends RecyclerView.ViewHolder {
 
-        final FuelingListitemBinding binding;
+        private final FuelingListItemBinding mBinding;
 
         public FuelingItemViewHolder(View itemView) {
             super(itemView);
-            binding = DataBindingUtil.bind(itemView);
+            mBinding = DataBindingUtil.bind(itemView);
+        }
+
+        public FuelingListItemBinding getBinding() {
+            return mBinding;
         }
     }
 

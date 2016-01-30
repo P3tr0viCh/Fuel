@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
-public abstract class FragmentFuel extends Fragment implements FragmentInterface {
+public abstract class FragmentBase extends Fragment implements FragmentInterface {
 
     private OnFragmentChangeListener mOnFragmentChangeListener;
 

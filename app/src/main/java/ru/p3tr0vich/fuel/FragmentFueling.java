@@ -353,10 +353,14 @@ public class FragmentFueling extends FragmentBase implements
         }
     }
 
+    private LinearLayoutManager getRecyclerViewLayoutManager() {
+        return (LinearLayoutManager) mRecyclerViewFueling.getLayoutManager();
+    }
+
     private boolean isItemVisible(int position) {
-        int firstVisibleItem = ((LinearLayoutManager) mRecyclerViewFueling.getLayoutManager())
+        final int firstVisibleItem = getRecyclerViewLayoutManager()
                 .findFirstCompletelyVisibleItemPosition();
-        int lastVisibleItem = ((LinearLayoutManager) mRecyclerViewFueling.getLayoutManager())
+        final int lastVisibleItem = getRecyclerViewLayoutManager()
                 .findLastCompletelyVisibleItemPosition();
 
         return firstVisibleItem != RecyclerView.NO_POSITION &&
@@ -373,8 +377,7 @@ public class FragmentFueling extends FragmentBase implements
 
         if (isItemVisible(position)) return;
 
-        ((LinearLayoutManager) mRecyclerViewFueling.getLayoutManager())
-                .scrollToPositionWithOffset(position, 0);
+        getRecyclerViewLayoutManager().scrollToPositionWithOffset(position, 0);
     }
 
     private void setFilterDate(final long dateFrom, final long dateTo) {
@@ -842,11 +845,9 @@ public class FragmentFueling extends FragmentBase implements
         @Override
         protected CalcTotalResult doInBackground(Void... params) {
             float costSum = 0, volumeSum = 0;
-            float volume, total, firstTotal = 0, lastTotal = 0, average;
+            float volume, total, firstTotal = 0, lastTotal = 0;
 
             FuelingRecord fuelingRecord;
-
-            int averageCount;
 
             boolean completeData = true; // Во всех записях указаны объём заправки и текущий пробег
 
@@ -879,11 +880,14 @@ public class FragmentFueling extends FragmentBase implements
                 }
             }
 
+            float average;
+
             if (completeData)
                 average = volumeSum != 0 ? (volumeSum / (lastTotal - firstTotal)) * 100 : 0;
             else {
                 average = 0;
-                averageCount = 0;
+                int averageCount = 0;
+
                 for (int i = 0; i < size - 1; i++) {
 
                     if (isCancelled()) return null;
@@ -892,6 +896,7 @@ public class FragmentFueling extends FragmentBase implements
                     if (lastTotal != 0) {
                         volume = mFuelingRecords.get(i + 1).getVolume();
                         total = mFuelingRecords.get(i + 1).getTotal();
+
                         if (volume != 0 && total != 0) {
                             average += (volume / (lastTotal - total)) * 100;
                             averageCount++;

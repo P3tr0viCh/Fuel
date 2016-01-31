@@ -43,17 +43,23 @@ class SyncProviderDatabase {
         if (addDeleteAll) result.add(CLEAR);
 
         if (cursor != null) {
+            FuelingRecord fuelingRecord;
+
             if (cursor.moveToFirst()) {
                 do {
+                    fuelingRecord = DatabaseHelper.getFuelingRecordFromCursor(cursor);
+
                     result.add(DatabaseHelper.getBoolean(cursor, DatabaseHelper.TableFueling.DELETED_INDEX) ?
                             DELETE + SEPARATOR +
-                                    Long.toString(cursor.getLong(DatabaseHelper.TableFueling._ID_INDEX)) :
+                                    Long.toString(fuelingRecord.getId()) :
                             INSERT + SEPARATOR +
-                                    Long.toString(cursor.getLong(DatabaseHelper.TableFueling._ID_INDEX)) + SEPARATOR +
-                                    Long.toString(cursor.getLong(DatabaseHelper.TableFueling.DATETIME_INDEX)) + SEPARATOR +
-                                    Float.toString(cursor.getFloat(DatabaseHelper.TableFueling.COST_INDEX)) + SEPARATOR +
-                                    Float.toString(cursor.getFloat(DatabaseHelper.TableFueling.VOLUME_INDEX)) + SEPARATOR +
-                                    Float.toString(cursor.getFloat(DatabaseHelper.TableFueling.TOTAL_INDEX)));
+                                    Long.toString(fuelingRecord.getId()) + SEPARATOR +
+                                    Long.toString(
+                                            UtilsDate.utcToLocal(
+                                                    fuelingRecord.getDateTime())) + SEPARATOR +
+                                    Float.toString(fuelingRecord.getCost()) + SEPARATOR +
+                                    Float.toString(fuelingRecord.getVolume()) + SEPARATOR +
+                                    Float.toString(fuelingRecord.getTotal()));
                 } while (cursor.moveToNext());
             }
             cursor.close();
@@ -114,7 +120,8 @@ class SyncProviderDatabase {
                         records.put(id,
                                 DatabaseHelper.getValues(
                                         id,
-                                        Long.valueOf(stringValues[2]),
+                                        UtilsDate.localToUtc(
+                                                Long.valueOf(stringValues[2])),
                                         Float.valueOf(stringValues[3]),
                                         Float.valueOf(stringValues[4]),
                                         Float.valueOf(stringValues[5]),

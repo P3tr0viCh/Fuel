@@ -12,7 +12,7 @@ abstract class OnSwipeTouchListener implements OnTouchListener {
 
     private final GestureDetector mGestureDetector;
 
-    public OnSwipeTouchListener (Context context){
+    public OnSwipeTouchListener(Context context) {
         mGestureDetector = new GestureDetector(context, new GestureListener());
     }
 
@@ -33,38 +33,41 @@ abstract class OnSwipeTouchListener implements OnTouchListener {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            boolean result = false;
             try {
-                float diffY = e2.getY() - e1.getY();
-                float diffX = e2.getX() - e1.getX();
-                if (Math.abs(diffX) > Math.abs(diffY)) {
-                    if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                        if (diffX > 0) {
-                            onSwipeRight();
-                        } else {
-                            onSwipeLeft();
-                        }
-                    }
-                    result = true;
-                }
-                else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
-                    if (diffY > 0) {
-                        onSwipeBottom();
-                    } else {
-                        onSwipeTop();
-                    }
-                }
-                result = true;
+                final float diffX = e2.getX() - e1.getX();
+                final float diffY = e2.getY() - e1.getY();
 
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    if (Math.abs(diffX) > SWIPE_THRESHOLD &&
+                            Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffX > 0)
+                            onSwipeRight();
+                        else
+                            onSwipeLeft();
+
+                        return true;
+                    }
+                } else if (Math.abs(diffY) > SWIPE_THRESHOLD &&
+                        Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffY > 0)
+                        onSwipeBottom();
+                    else
+                        onSwipeTop();
+
+                    return true;
+                }
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
-            return result;
+            return false;
         }
     }
 
     abstract public void onSwipeRight();
+
     abstract public void onSwipeLeft();
+
     abstract public void onSwipeTop();
+
     abstract public void onSwipeBottom();
 }

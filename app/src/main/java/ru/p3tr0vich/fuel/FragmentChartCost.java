@@ -177,13 +177,15 @@ public class FragmentChartCost extends FragmentBase implements
 
     private void updateYears() {
         mUpdateYearInProcess = true;
-        for (int year : mYears)
-            mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(year)));
+        try {
+            for (int year : mYears)
+                mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(year)));
 
-        int position = getPositionForYear(mYear);
-        if (position != -1) selectTab(mTabLayout.getTabAt(position));
-
-        mUpdateYearInProcess = false;
+            int position = getPositionForYear(mYear);
+            if (position != -1) selectTab(mTabLayout.getTabAt(position));
+        } finally {
+            mUpdateYearInProcess = false;
+        }
     }
 
     private String getMonthName(Calendar calendar, int month) {

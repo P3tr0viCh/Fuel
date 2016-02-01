@@ -29,7 +29,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -142,6 +142,51 @@ public class ActivityMain extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         UtilsLog.d(TAG, "**************** onCreate ****************");
 
+        long dateTime = System.currentTimeMillis();
+
+        UtilsLog.d(TAG, "now",
+                UtilsFormat.getRelativeDateTime(dateTime));
+        UtilsLog.d(TAG, "- 2 sec",
+                UtilsFormat.getRelativeDateTime(dateTime - 2 * DateUtils.SECOND_IN_MILLIS));
+        UtilsLog.d(TAG, "- 9 sec",
+                UtilsFormat.getRelativeDateTime(dateTime - 9 * DateUtils.SECOND_IN_MILLIS));
+        UtilsLog.d(TAG, "- 10 sec",
+                UtilsFormat.getRelativeDateTime(dateTime - 10 * DateUtils.SECOND_IN_MILLIS));
+        UtilsLog.d(TAG, "- 1 min",
+                UtilsFormat.getRelativeDateTime(dateTime - DateUtils.MINUTE_IN_MILLIS));
+        UtilsLog.d(TAG, "- 2 min",
+                UtilsFormat.getRelativeDateTime(dateTime - 2 * DateUtils.MINUTE_IN_MILLIS));
+        UtilsLog.d(TAG, "- 5 min",
+                UtilsFormat.getRelativeDateTime(dateTime - 5 * DateUtils.MINUTE_IN_MILLIS));
+        UtilsLog.d(TAG, "- 10 min",
+                UtilsFormat.getRelativeDateTime(dateTime - 10 * DateUtils.MINUTE_IN_MILLIS));
+        UtilsLog.d(TAG, "- 42 min",
+                UtilsFormat.getRelativeDateTime(dateTime - 42 * DateUtils.MINUTE_IN_MILLIS));
+        UtilsLog.d(TAG, "- 1 hour",
+                UtilsFormat.getRelativeDateTime(dateTime - DateUtils.HOUR_IN_MILLIS));
+        UtilsLog.d(TAG, "- 1 hour 42 min",
+                UtilsFormat.getRelativeDateTime(dateTime - DateUtils.HOUR_IN_MILLIS - 42 * DateUtils.MINUTE_IN_MILLIS));
+        UtilsLog.d(TAG, "- 3 h",
+                UtilsFormat.getRelativeDateTime(dateTime - 3 * DateUtils.HOUR_IN_MILLIS));
+        UtilsLog.d(TAG, "- 12 h",
+                UtilsFormat.getRelativeDateTime(dateTime - 12 * DateUtils.HOUR_IN_MILLIS));
+        UtilsLog.d(TAG, "- 1 d",
+                UtilsFormat.getRelativeDateTime(dateTime - DateUtils.DAY_IN_MILLIS));
+        UtilsLog.d(TAG, "- 2 d",
+                UtilsFormat.getRelativeDateTime(dateTime - 2 * DateUtils.DAY_IN_MILLIS));
+        UtilsLog.d(TAG, "- 6 d",
+                UtilsFormat.getRelativeDateTime(dateTime - 6 * DateUtils.DAY_IN_MILLIS));
+        UtilsLog.d(TAG, "- 7 d",
+                UtilsFormat.getRelativeDateTime(dateTime - 7 * DateUtils.DAY_IN_MILLIS));
+        UtilsLog.d(TAG, "- 8 d",
+                UtilsFormat.getRelativeDateTime(dateTime - 8 * DateUtils.DAY_IN_MILLIS));
+        UtilsLog.d(TAG, "- 20 d",
+                UtilsFormat.getRelativeDateTime(dateTime - 20 * DateUtils.DAY_IN_MILLIS));
+        UtilsLog.d(TAG, "- 200 d",
+                UtilsFormat.getRelativeDateTime(dateTime - 200 * DateUtils.DAY_IN_MILLIS));
+        UtilsLog.d(TAG, "- 1 y",
+                UtilsFormat.getRelativeDateTime(dateTime - DateUtils.YEAR_IN_MILLIS));
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -215,6 +260,7 @@ public class ActivityMain extends AppCompatActivity implements
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mDrawerToggle = new ActionBarDrawerToggle(this,
                 mDrawerLayout, mToolbarMain, R.string.app_name, R.string.app_name) {
+
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
@@ -224,6 +270,8 @@ public class ActivityMain extends AppCompatActivity implements
                     fragmentFueling.setFabVisible(false);
 
                 Utils.hideKeyboard(ActivityMain.this);
+
+                updateSyncStatus();
             }
 
             @Override
@@ -781,9 +829,9 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void updateSyncStatus() {
-        String text;
-        int imgId;
-        boolean syncActive = mSyncAccount.isSyncActive();
+        final String text;
+        final int imgId;
+        final boolean syncActive = mSyncAccount.isSyncActive();
 
         if (syncActive) {
             text = getString(R.string.sync_in_process);
@@ -794,16 +842,15 @@ public class ActivityMain extends AppCompatActivity implements
                     text = getString(R.string.sync_no_token);
                     imgId = R.mipmap.ic_sync_off_grey600_24dp;
                 } else {
-                    String lastSync = PreferenceManagerFuel.getLastSync();
-
-                    if (TextUtils.isEmpty(lastSync)) {
-                        text = getString(R.string.sync_not_performed);
-                        imgId = R.mipmap.ic_sync_grey600_24dp;
-                    } else if (lastSync.equals(PreferenceManagerFuel.SYNC_ERROR)) {
+                    if (PreferenceManagerFuel.getLastSyncHasError()) {
                         text = getString(R.string.sync_error);
                         imgId = R.mipmap.ic_sync_alert_grey600_24dp;
                     } else {
-                        text = getString(R.string.sync_done, lastSync);
+                        final long dateTime = PreferenceManagerFuel.getLastSyncDateTime();
+
+                        text = dateTime != PreferenceManagerFuel.SYNC_NONE ?
+                                getString(R.string.sync_done, UtilsFormat.getRelativeDateTime(dateTime)) :
+                                getString(R.string.sync_not_performed);
                         imgId = R.mipmap.ic_sync_grey600_24dp;
                     }
                 }

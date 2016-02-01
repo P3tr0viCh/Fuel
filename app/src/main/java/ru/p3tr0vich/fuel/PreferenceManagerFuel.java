@@ -20,13 +20,14 @@ class PreferenceManagerFuel {
 
     private static final String TAG = "PreferenceManagerFuel";
 
-    public static final String SYNC_ERROR = "error";
+    public static final long SYNC_NONE = Long.MIN_VALUE;
 
     public static final String PREF_DATABASE_REVISION = "database revision";
     public static final String PREF_PREFERENCES_REVISION = "preferences revision";
 
     public static final String PREF_CHANGED = "changed";
-    public static final String PREF_LAST_SYNC = "last sync";
+    public static final String PREF_LAST_SYNC_DATE_TIME = "last sync date time";
+    public static final String PREF_LAST_SYNC_HAS_ERROR = "last sync has error";
     public static final String PREF_DATABASE_FULL_SYNC = "database full sync";
 
     private static final String PREF_FILTER_DATE_FROM = "filter date from";
@@ -86,7 +87,8 @@ class PreferenceManagerFuel {
         return !key.equals(PREF_CHANGED) &&
                 !key.equals(PREF_DATABASE_REVISION) &&
                 !key.equals(PREF_PREFERENCES_REVISION) &&
-                !key.equals(PREF_LAST_SYNC) &&
+                !key.equals(PREF_LAST_SYNC_DATE_TIME) &&
+                !key.equals(PREF_LAST_SYNC_HAS_ERROR) &&
                 !key.equals(PREF_DATABASE_FULL_SYNC) &&
                 !key.equals(sContext.getString(R.string.pref_sync_enabled));
     }
@@ -139,15 +141,25 @@ class PreferenceManagerFuel {
                 .apply();
     }
 
-    @NonNull
-    public static String getLastSync() {
-        return getString(PREF_LAST_SYNC);
+    public static long getLastSyncDateTime() {
+        return sSharedPreferences.getLong(PREF_LAST_SYNC_DATE_TIME, SYNC_NONE);
     }
 
-    private static void putLastSync(final String dateTime) {
+    public static boolean getLastSyncHasError() {
+        return sSharedPreferences.getBoolean(PREF_LAST_SYNC_HAS_ERROR, false);
+    }
+
+    private static void putLastSyncDateTime(final long dateTime) {
         sSharedPreferences
                 .edit()
-                .putString(PREF_LAST_SYNC, dateTime != null ? dateTime : SYNC_ERROR)
+                .putLong(PREF_LAST_SYNC_DATE_TIME, dateTime)
+                .apply();
+    }
+
+    private static void putLastSyncHasError(final boolean hasError) {
+        sSharedPreferences
+                .edit()
+                .putBoolean(PREF_LAST_SYNC_HAS_ERROR, hasError)
                 .apply();
     }
 
@@ -315,8 +327,11 @@ class PreferenceManagerFuel {
                 case PREF_PREFERENCES_REVISION:
                     result.put(preference, getRevision(preference));
                     break;
-                case PREF_LAST_SYNC:
-                    result.put(preference, getLastSync());
+                case PREF_LAST_SYNC_DATE_TIME:
+                    result.put(preference, getLastSyncDateTime());
+                    break;
+                case PREF_LAST_SYNC_HAS_ERROR:
+                    result.put(preference, getLastSyncHasError());
                     break;
                 default:
                     UtilsLog.d(TAG, "getPreferences", "unhandled preference == " + preference);
@@ -382,7 +397,6 @@ class PreferenceManagerFuel {
                     }
 
                     editor.commit();
-
                 } finally {
                     if (mOnPreferencesUpdatingListener != null)
                         mOnPreferencesUpdatingListener.onPreferencesUpdateEnd();
@@ -404,8 +418,11 @@ class PreferenceManagerFuel {
                 case PREF_DATABASE_FULL_SYNC:
                     putFullSync(preferences.getAsBoolean(preference));
                     break;
-                case PREF_LAST_SYNC:
-                    putLastSync(preferences.getAsString(preference));
+                case PREF_LAST_SYNC_DATE_TIME:
+                    putLastSyncDateTime(preferences.getAsLong(preference));
+                    break;
+                case PREF_LAST_SYNC_HAS_ERROR:
+                    putLastSyncHasError(preferences.getAsBoolean(preference));
                     break;
                 default:
                     UtilsLog.d(TAG, "setPreferences", "unhandled preference == " + preference);

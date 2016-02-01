@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 class SyncProviderPreferences {
@@ -43,23 +42,26 @@ class SyncProviderPreferences {
 
         String key;
 
-        if (cursor.moveToFirst())
-            do {
-                key = cursor.getString(0);
+        try {
+            if (cursor.moveToFirst())
+                do {
+                    key = cursor.getString(0);
 
-                switch (PreferenceManagerFuel.getPreferenceType(key)) {
-                    case PreferenceManagerFuel.PREFERENCE_TYPE_STRING:
-                        result.put(key, cursor.getString(1));
-                        break;
-                    case PreferenceManagerFuel.PREFERENCE_TYPE_INT:
-                        result.put(key, cursor.getInt(1));
-                        break;
-                    case PreferenceManagerFuel.PREFERENCE_TYPE_LONG:
-                        result.put(key, cursor.getLong(1));
-                        break;
-                }
-            } while (cursor.moveToNext());
-        cursor.close();
+                    switch (PreferenceManagerFuel.getPreferenceType(key)) {
+                        case PreferenceManagerFuel.PREFERENCE_TYPE_STRING:
+                            result.put(key, cursor.getString(1));
+                            break;
+                        case PreferenceManagerFuel.PREFERENCE_TYPE_INT:
+                            result.put(key, cursor.getInt(1));
+                            break;
+                        case PreferenceManagerFuel.PREFERENCE_TYPE_LONG:
+                            result.put(key, cursor.getLong(1));
+                            break;
+                    }
+                } while (cursor.moveToNext());
+        } finally {
+            cursor.close();
+        }
 
         return result;
     }
@@ -74,7 +76,6 @@ class SyncProviderPreferences {
 
     @NonNull
     public List<String> getPreferences() throws RemoteException, FormatException {
-
         ContentValues contentValues = query(null);
 
         List<String> result = new ArrayList<>();
@@ -136,6 +137,7 @@ class SyncProviderPreferences {
     public void putChangedFalse() throws RemoteException {
         ContentValues contentValues = new ContentValues();
         contentValues.put(PreferenceManagerFuel.PREF_CHANGED, false);
+
         update(contentValues, PreferenceManagerFuel.PREF_CHANGED);
     }
 
@@ -154,6 +156,7 @@ class SyncProviderPreferences {
     private void putRevision(String keyRevision, int revision) throws RemoteException {
         ContentValues contentValues = new ContentValues();
         contentValues.put(keyRevision, revision);
+
         update(contentValues, keyRevision);
     }
 
@@ -165,11 +168,13 @@ class SyncProviderPreferences {
         putRevision(PreferenceManagerFuel.PREF_PREFERENCES_REVISION, revision);
     }
 
-    public void putLastSync(@Nullable Date dateTime) throws RemoteException {
+    public void putLastSync(final long dateTime, final boolean hasError) throws RemoteException {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(PreferenceManagerFuel.PREF_LAST_SYNC,
-                dateTime != null ? UtilsFormat.dateTimeToString(dateTime) : null);
-        update(contentValues, PreferenceManagerFuel.PREF_LAST_SYNC);
+        contentValues.put(PreferenceManagerFuel.PREF_LAST_SYNC_DATE_TIME, dateTime);
+        contentValues.put(PreferenceManagerFuel.PREF_LAST_SYNC_HAS_ERROR, hasError);
+
+        update(contentValues, PreferenceManagerFuel.PREF_LAST_SYNC_DATE_TIME);
+        update(contentValues, PreferenceManagerFuel.PREF_LAST_SYNC_HAS_ERROR);
     }
 
     public boolean isDatabaseFullSync() throws RemoteException, FormatException {
@@ -180,6 +185,7 @@ class SyncProviderPreferences {
     public void putDatabaseFullSyncFalse() throws RemoteException {
         ContentValues contentValues = new ContentValues();
         contentValues.put(PreferenceManagerFuel.PREF_DATABASE_FULL_SYNC, false);
+
         update(contentValues, PreferenceManagerFuel.PREF_DATABASE_FULL_SYNC);
     }
 }

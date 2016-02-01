@@ -94,7 +94,7 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if (data != null && data.moveToFirst())
             do
-                mFuelingRecords.add(DatabaseHelper.getFuelingRecordFromCursor(data));
+                mFuelingRecords.add(DatabaseHelper.getFuelingRecord(data));
             while (data.moveToNext());
 
         if (isShowFooter()) mFuelingRecords.add(null);

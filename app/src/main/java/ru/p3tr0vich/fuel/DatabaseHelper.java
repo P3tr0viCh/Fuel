@@ -182,22 +182,24 @@ class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @NonNull
-    public static ContentValues getValues(@Nullable Long id,
-                                          long dateTime,
-                                          float cost,
-                                          float volume,
-                                          float total,
-                                          boolean changed,
-                                          @SuppressWarnings("SameParameterValue")
-                                          boolean deleted) {
+    private static ContentValues getValues(@Nullable Long id,
+                                           long dateTime,
+                                           float cost,
+                                           float volume,
+                                           float total,
+                                           boolean changed,
+                                           @SuppressWarnings("SameParameterValue")
+                                           boolean deleted,
+                                           boolean convertDate) {
         ContentValues values = new ContentValues();
 
         if (id != null)
             values.put(TableFueling._ID, id);
 
         values.put(TableFueling.DATETIME,
-                UtilsDate.utcToLocal(
-                        dateTime));
+                convertDate ?
+                        UtilsDate.utcToLocal(dateTime) :
+                        dateTime);
         values.put(TableFueling.COST, cost);
         values.put(TableFueling.VOLUME, volume);
         values.put(TableFueling.TOTAL, total);
@@ -205,6 +207,28 @@ class DatabaseHelper extends SQLiteOpenHelper {
         values.put(TableFueling.DELETED, deleted ? TRUE : FALSE);
 
         return values;
+    }
+
+    @NonNull
+    public static ContentValues getValuesForSync(@Nullable Long id,
+                                          long dateTime,
+                                          float cost,
+                                          float volume,
+                                          float total,
+                                          boolean changed,
+                                          boolean deleted) {
+        return getValues(id, dateTime, cost, volume, total, changed, deleted, false);
+    }
+
+    @NonNull
+    public static ContentValues getValues(@Nullable Long id,
+                                           long dateTime,
+                                           float cost,
+                                           float volume,
+                                           float total,
+                                           boolean changed,
+                                           boolean deleted) {
+        return getValues(id, dateTime, cost, volume, total, changed, deleted, true);
     }
 
     @NonNull
@@ -218,14 +242,26 @@ class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @NonNull
-    public static FuelingRecord getFuelingRecordFromCursor(@NonNull Cursor cursor) {
+    private static FuelingRecord getFuelingRecord(@NonNull Cursor cursor, boolean convertDate) {
+        final long dateTime = cursor.getLong(TableFueling.DATETIME_INDEX);
         return new FuelingRecord(
                 cursor.getLong(TableFueling._ID_INDEX),
-                UtilsDate.localToUtc(
-                        cursor.getLong(TableFueling.DATETIME_INDEX)),
+                convertDate ?
+                        UtilsDate.localToUtc(dateTime) :
+                        dateTime,
                 cursor.getFloat(TableFueling.COST_INDEX),
                 cursor.getFloat(TableFueling.VOLUME_INDEX),
                 cursor.getFloat(TableFueling.TOTAL_INDEX));
+    }
+
+    @NonNull
+    public static FuelingRecord getFuelingRecordForSync(@NonNull Cursor cursor) {
+        return getFuelingRecord(cursor, false);
+    }
+
+    @NonNull
+    public static FuelingRecord getFuelingRecord(@NonNull Cursor cursor) {
+        return getFuelingRecord(cursor, true);
     }
 
     public Cursor getAll(String selection) {

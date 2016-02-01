@@ -17,7 +17,6 @@ import com.yandex.disk.rest.exceptions.http.HttpCodeException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 class SyncAdapter extends AbstractThreadedSyncAdapter {
@@ -97,7 +96,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             }
         } finally {
             try {
-                mSyncProviderPreferences.putLastSync(syncResult.hasError() ? null : new Date());
+                mSyncProviderPreferences.putLastSync(System.currentTimeMillis(), syncResult.hasError());
             } catch (RemoteException e) {
                 syncResult.databaseError = true;
             }
@@ -168,7 +167,6 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     syncPreferencesSave(localRevision);
                 }
             }
-
         } finally {
             UtilsLog.d(TAG, TAG2, "finish");
         }

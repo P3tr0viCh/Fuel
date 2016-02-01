@@ -47,16 +47,14 @@ class SyncProviderDatabase {
 
             if (cursor.moveToFirst()) {
                 do {
-                    fuelingRecord = DatabaseHelper.getFuelingRecordFromCursor(cursor);
+                    fuelingRecord = DatabaseHelper.getFuelingRecordForSync(cursor);
 
                     result.add(DatabaseHelper.getBoolean(cursor, DatabaseHelper.TableFueling.DELETED_INDEX) ?
                             DELETE + SEPARATOR +
                                     Long.toString(fuelingRecord.getId()) :
                             INSERT + SEPARATOR +
                                     Long.toString(fuelingRecord.getId()) + SEPARATOR +
-                                    Long.toString(
-                                            UtilsDate.utcToLocal(
-                                                    fuelingRecord.getDateTime())) + SEPARATOR +
+                                    Long.toString(fuelingRecord.getDateTime()) + SEPARATOR +
                                     Float.toString(fuelingRecord.getCost()) + SEPARATOR +
                                     Float.toString(fuelingRecord.getVolume()) + SEPARATOR +
                                     Float.toString(fuelingRecord.getTotal()));
@@ -118,10 +116,9 @@ class SyncProviderDatabase {
                 switch (stringValues[0]) {
                     case INSERT:
                         records.put(id,
-                                DatabaseHelper.getValues(
+                                DatabaseHelper.getValuesForSync(
                                         id,
-                                        UtilsDate.localToUtc(
-                                                Long.valueOf(stringValues[2])),
+                                        Long.valueOf(stringValues[2]),
                                         Float.valueOf(stringValues[3]),
                                         Float.valueOf(stringValues[4]),
                                         Float.valueOf(stringValues[5]),

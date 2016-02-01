@@ -259,7 +259,7 @@ public class ContentProviderFuel extends ContentProvider {
         if (cursor != null)
             try {
                 if (cursor.moveToFirst())
-                    return DatabaseHelper.getFuelingRecordFromCursor(cursor);
+                    return DatabaseHelper.getFuelingRecord(cursor);
             } finally {
                 cursor.close();
             }
@@ -277,7 +277,7 @@ public class ContentProviderFuel extends ContentProvider {
         if (cursor != null)
             try {
                 if (cursor.moveToFirst()) do
-                    fuelingRecords.add(DatabaseHelper.getFuelingRecordFromCursor(cursor));
+                    fuelingRecords.add(DatabaseHelper.getFuelingRecord(cursor));
                 while (cursor.moveToNext());
             } finally {
                 cursor.close();

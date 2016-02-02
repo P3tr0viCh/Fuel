@@ -45,6 +45,7 @@ import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Calendar;
 
 public class ActivityMain extends AppCompatActivity implements
         SyncStatusObserver,
@@ -56,11 +57,8 @@ public class ActivityMain extends AppCompatActivity implements
 
     private static final String TAG = "ActivityMain";
 
-    private static final String ACTION_LOADING = "ru.p3tr0vich.fuel.ACTION_LOADING";
-    private static final String EXTRA_LOADING = "ru.p3tr0vich.fuel.EXTRA_LOADING";
-
-    private static final String ACTION_START_SYNC = "ru.p3tr0vich.fuel.ACTION_START_SYNC";
-    private static final String EXTRA_START_SYNC = "ru.p3tr0vich.fuel.EXTRA_START_SYNC";
+    private static final String ACTION_LOADING = BuildConfig.APPLICATION_ID + ".ACTION_LOADING";
+    private static final String EXTRA_LOADING = BuildConfig.APPLICATION_ID + ".EXTRA_LOADING";
 
     private static final String KEY_CURRENT_FRAGMENT_ID = "KEY_CURRENT_FRAGMENT_ID";
 
@@ -78,7 +76,8 @@ public class ActivityMain extends AppCompatActivity implements
     private Animation mAnimationSync;
     private TextView mBtnSync;
 
-    private TimerPreferenceChanged mTimerPreferenceChanged;
+    private boolean mSyncDatabase, mSyncPreferences;
+    private TimerSync mTimerSync;
 
     private BroadcastReceiver mLoadingStatusReceiver;
     private BroadcastReceiver mStartSyncReceiver;
@@ -91,16 +90,21 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({START_SYNC_APP_STARTED, START_SYNC_BUTTON_CLICKED,
-            START_SYNC_TOKEN_CHANGED, START_SYNC_PREFERENCES_CHANGED,
+            START_SYNC_TOKEN_CHANGED,
+            START_SYNC_PREFERENCES_CHANGED,
+            START_SYNC_DATABASE_CHANGED,
+            START_SYNC_CHANGED,
             START_SYNC_ACTIVITY_DESTROY})
     public @interface StartSync {
     }
 
     private static final int START_SYNC_APP_STARTED = 0;
     private static final int START_SYNC_BUTTON_CLICKED = 1;
-    public static final int START_SYNC_TOKEN_CHANGED = 2;
-    public static final int START_SYNC_PREFERENCES_CHANGED = 3;
-    private static final int START_SYNC_ACTIVITY_DESTROY = 4;
+    private static final int START_SYNC_TOKEN_CHANGED = 2;
+    private static final int START_SYNC_PREFERENCES_CHANGED = 3;
+    private static final int START_SYNC_DATABASE_CHANGED = 4;
+    private static final int START_SYNC_CHANGED = 5;
+    private static final int START_SYNC_ACTIVITY_DESTROY = 6;
 
     @Nullable
     private Fragment findFragmentByTag(@Nullable String fragmentTag) {
@@ -118,74 +122,140 @@ public class ActivityMain extends AppCompatActivity implements
         return (FragmentPreference) getSupportFragmentManager().findFragmentByTag(FragmentPreference.TAG);
     }
 
-    @NonNull
-    private static Intent getLoadingBroadcast(boolean startLoading) {
-        return new Intent(ACTION_LOADING).putExtra(EXTRA_LOADING, startLoading);
-    }
-
-    @NonNull
-    private static Intent getStartSyncBroadcast(@StartSync int startSync) {
-        return new Intent(ACTION_START_SYNC).putExtra(EXTRA_START_SYNC, startSync);
-    }
-
     public static void sendLoadingBroadcast(boolean startLoading) {
         LocalBroadcastManager.getInstance(ApplicationFuel.getContext())
-                .sendBroadcast(getLoadingBroadcast(startLoading));
+                .sendBroadcast(new Intent(ACTION_LOADING).putExtra(EXTRA_LOADING, startLoading));
     }
 
-    public static void sendStartSyncBroadcast(@StartSync int startSync) {
-        LocalBroadcastManager.getInstance(ApplicationFuel.getContext())
-                .sendBroadcast(getStartSyncBroadcast(startSync));
+    private void test(String s, Calendar calendar) {
+        UtilsLog.d(TAG, s + ", " +
+                DateUtils.formatDateTime(this, calendar.getTimeInMillis(),
+                        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME),
+                UtilsFormat.getRelativeDateTime(this, calendar.getTimeInMillis()));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         UtilsLog.d(TAG, "**************** onCreate ****************");
 
-        long dateTime = System.currentTimeMillis();
+        final Calendar calendar = Calendar.getInstance();
 
-        UtilsLog.d(TAG, "now",
-                UtilsFormat.getRelativeDateTime(dateTime));
-        UtilsLog.d(TAG, "- 2 sec",
-                UtilsFormat.getRelativeDateTime(dateTime - 2 * DateUtils.SECOND_IN_MILLIS));
-        UtilsLog.d(TAG, "- 9 sec",
-                UtilsFormat.getRelativeDateTime(dateTime - 9 * DateUtils.SECOND_IN_MILLIS));
-        UtilsLog.d(TAG, "- 10 sec",
-                UtilsFormat.getRelativeDateTime(dateTime - 10 * DateUtils.SECOND_IN_MILLIS));
-        UtilsLog.d(TAG, "- 1 min",
-                UtilsFormat.getRelativeDateTime(dateTime - DateUtils.MINUTE_IN_MILLIS));
-        UtilsLog.d(TAG, "- 2 min",
-                UtilsFormat.getRelativeDateTime(dateTime - 2 * DateUtils.MINUTE_IN_MILLIS));
-        UtilsLog.d(TAG, "- 5 min",
-                UtilsFormat.getRelativeDateTime(dateTime - 5 * DateUtils.MINUTE_IN_MILLIS));
-        UtilsLog.d(TAG, "- 10 min",
-                UtilsFormat.getRelativeDateTime(dateTime - 10 * DateUtils.MINUTE_IN_MILLIS));
-        UtilsLog.d(TAG, "- 42 min",
-                UtilsFormat.getRelativeDateTime(dateTime - 42 * DateUtils.MINUTE_IN_MILLIS));
-        UtilsLog.d(TAG, "- 1 hour",
-                UtilsFormat.getRelativeDateTime(dateTime - DateUtils.HOUR_IN_MILLIS));
-        UtilsLog.d(TAG, "- 1 hour 42 min",
-                UtilsFormat.getRelativeDateTime(dateTime - DateUtils.HOUR_IN_MILLIS - 42 * DateUtils.MINUTE_IN_MILLIS));
-        UtilsLog.d(TAG, "- 3 h",
-                UtilsFormat.getRelativeDateTime(dateTime - 3 * DateUtils.HOUR_IN_MILLIS));
-        UtilsLog.d(TAG, "- 12 h",
-                UtilsFormat.getRelativeDateTime(dateTime - 12 * DateUtils.HOUR_IN_MILLIS));
-        UtilsLog.d(TAG, "- 1 d",
-                UtilsFormat.getRelativeDateTime(dateTime - DateUtils.DAY_IN_MILLIS));
-        UtilsLog.d(TAG, "- 2 d",
-                UtilsFormat.getRelativeDateTime(dateTime - 2 * DateUtils.DAY_IN_MILLIS));
-        UtilsLog.d(TAG, "- 6 d",
-                UtilsFormat.getRelativeDateTime(dateTime - 6 * DateUtils.DAY_IN_MILLIS));
-        UtilsLog.d(TAG, "- 7 d",
-                UtilsFormat.getRelativeDateTime(dateTime - 7 * DateUtils.DAY_IN_MILLIS));
-        UtilsLog.d(TAG, "- 8 d",
-                UtilsFormat.getRelativeDateTime(dateTime - 8 * DateUtils.DAY_IN_MILLIS));
-        UtilsLog.d(TAG, "- 20 d",
-                UtilsFormat.getRelativeDateTime(dateTime - 20 * DateUtils.DAY_IN_MILLIS));
-        UtilsLog.d(TAG, "- 200 d",
-                UtilsFormat.getRelativeDateTime(dateTime - 200 * DateUtils.DAY_IN_MILLIS));
-        UtilsLog.d(TAG, "- 1 y",
-                UtilsFormat.getRelativeDateTime(dateTime - DateUtils.YEAR_IN_MILLIS));
+        final long now = System.currentTimeMillis();
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.DAY_OF_YEAR, +1);
+        test("+ 1 d", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.MONTH, +1);
+        test("+ 1 m", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.YEAR, +1);
+        test("+ 1 y", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.SECOND, 0);
+        test("now", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.SECOND, -2);
+        test("- 2 sec", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.SECOND, -9);
+        test("- 9 sec", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.SECOND, -1);
+        test("- 10 sec", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.SECOND, -15);
+        test("- 15 sec", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.SECOND, -42);
+        test("- 42 sec", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.MINUTE, -1);
+        test("- 1 min", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.MINUTE, -2);
+        test("- 2 min", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.MINUTE, -5);
+        test("- 5 min", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.MINUTE, -10);
+        test("- 10 min", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.MINUTE, -42);
+        test("- 42 min", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.HOUR_OF_DAY, -1);
+        test("- 1 hour", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.HOUR_OF_DAY, -1);
+        calendar.add(Calendar.MINUTE, -42);
+        test("- 1 hour 42 min", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.HOUR_OF_DAY, -3);
+        test("- 3 h", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.HOUR_OF_DAY, -12);
+        test("- 12 h", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        test("- 1 d", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        calendar.add(Calendar.HOUR_OF_DAY, -12);
+        test("- 1 d 12 h", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.DAY_OF_YEAR, -2);
+        test("- 2 d", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.DAY_OF_YEAR, -6);
+        test("- 6 d", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.DAY_OF_YEAR, -6);
+        calendar.add(Calendar.HOUR_OF_DAY, -12);
+        test("- 6 d 12 h", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.DAY_OF_YEAR, -7);
+        test("- 7 d", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.DAY_OF_YEAR, -8);
+        test("- 8 d", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.DAY_OF_YEAR, -20);
+        test("- 20 d", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.DAY_OF_YEAR, -200);
+        test("- 200 d", calendar);
+
+        calendar.setTimeInMillis(now);
+        calendar.add(Calendar.YEAR, -1);
+        test("- 1 y", calendar);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -344,7 +414,7 @@ public class ActivityMain extends AppCompatActivity implements
                     UtilsLog.d(TAG, "mLoadingStatusReceiver.onReceive", "fragmentFueling == null");
             }
         };
-        LocalBroadcastManager.getInstance(getApplicationContext())
+        LocalBroadcastManager.getInstance(this)
                 .registerReceiver(mLoadingStatusReceiver, new IntentFilter(ACTION_LOADING));
     }
 
@@ -352,13 +422,26 @@ public class ActivityMain extends AppCompatActivity implements
         mStartSyncReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                @StartSync int startSync = intent.getIntExtra(EXTRA_START_SYNC, START_SYNC_TOKEN_CHANGED);
+                final boolean syncDatabase = TimerTaskSync.isSyncDatabase(intent);
+                final boolean syncPreferences = TimerTaskSync.isSyncPreferences(intent);
 
-                startSync(startSync);
+                if (syncDatabase && syncPreferences)
+                    startSync(START_SYNC_CHANGED);
+                else if (syncDatabase)
+                    startSync(START_SYNC_DATABASE_CHANGED);
+                else if (syncPreferences)
+                    startSync(START_SYNC_PREFERENCES_CHANGED);
             }
         };
-        LocalBroadcastManager.getInstance(getApplicationContext())
-                .registerReceiver(mStartSyncReceiver, new IntentFilter(ACTION_START_SYNC));
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(mStartSyncReceiver, TimerTaskSync.getIntentFilter());
+    }
+
+    private void startTimerSync() {
+        TimerSync.stop(mTimerSync);
+
+        if (PreferenceManagerFuel.isSyncEnabled())
+            mTimerSync = TimerSync.start(mSyncDatabase, mSyncPreferences);
     }
 
     private class PreferencesObserver extends ContentObserver {
@@ -376,10 +459,8 @@ public class ActivityMain extends AppCompatActivity implements
             UtilsLog.d(TAG, "PreferencesObserver", "onChange: selfChange == " + selfChange +
                     ", changeUri == " + changeUri);
 
-            stopTimerPreferenceChanged();
-
-            if (PreferenceManagerFuel.isSyncEnabled())
-                mTimerPreferenceChanged = TimerPreferenceChanged.start();
+            mSyncPreferences = true;
+            startTimerSync();
         }
     }
 
@@ -410,7 +491,8 @@ public class ActivityMain extends AppCompatActivity implements
                     case ContentProviderFuel.DATABASE_ITEM:
                         id = ContentUris.parseId(changeUri);
                     case ContentProviderFuel.DATABASE:
-                        // TODO: start Sync
+                        mSyncDatabase = true;
+                        startTimerSync();
                         break;
                     case ContentProviderFuel.DATABASE_SYNC:
                         break;
@@ -740,49 +822,57 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void startSync(@StartSync int startSync) {
+        mSyncDatabase = false;
+        mSyncPreferences = false;
+
         boolean showDialogs = false;
         boolean startIfSyncActive = false;
         boolean syncDatabase = false;
         boolean syncPreferences = false;
 
+        TimerSync.stop(mTimerSync);
+
         switch (startSync) {
             case START_SYNC_APP_STARTED:
                 UtilsLog.d(TAG, "startSync", "START_SYNC_APP_STARTED");
-                showDialogs = false;
-                startIfSyncActive = false;
                 syncDatabase = true;
                 syncPreferences = true;
                 break;
             case START_SYNC_BUTTON_CLICKED:
                 UtilsLog.d(TAG, "startSync", "START_SYNC_BUTTON_CLICKED");
                 showDialogs = true;
-                startIfSyncActive = false;
                 syncDatabase = true;
                 syncPreferences = true;
                 break;
             case START_SYNC_TOKEN_CHANGED:
                 UtilsLog.d(TAG, "startSync", "START_SYNC_TOKEN_CHANGED");
-                showDialogs = false;
-                startIfSyncActive = false;
                 syncDatabase = true;
                 syncPreferences = true;
                 break;
             case START_SYNC_PREFERENCES_CHANGED:
                 UtilsLog.d(TAG, "startSync", "START_SYNC_PREFERENCES_CHANGED");
-                showDialogs = false;
                 startIfSyncActive = true;
                 syncDatabase = false;
                 syncPreferences = true;
                 break;
+            case START_SYNC_DATABASE_CHANGED:
+                UtilsLog.d(TAG, "startSync", "START_SYNC_DATABASE_CHANGED");
+                startIfSyncActive = true;
+                syncDatabase = true;
+                syncPreferences = false;
+                break;
+            case START_SYNC_CHANGED:
+                UtilsLog.d(TAG, "startSync", "START_SYNC_CHANGED");
+                startIfSyncActive = true;
+                syncDatabase = true;
+                syncPreferences = true;
+                break;
             case START_SYNC_ACTIVITY_DESTROY:
                 UtilsLog.d(TAG, "startSync", "START_SYNC_ACTIVITY_DESTROY");
-                showDialogs = false;
                 startIfSyncActive = true;
                 syncDatabase = true;
                 syncPreferences = true;
         }
-
-        stopTimerPreferenceChanged();
 
         if (PreferenceManagerFuel.isSyncEnabled()) {
             if (!mSyncAccount.isSyncActive() || startIfSyncActive) {
@@ -849,7 +939,8 @@ public class ActivityMain extends AppCompatActivity implements
                         final long dateTime = PreferenceManagerFuel.getLastSyncDateTime();
 
                         text = dateTime != PreferenceManagerFuel.SYNC_NONE ?
-                                getString(R.string.sync_done, UtilsFormat.getRelativeDateTime(dateTime)) :
+                                getString(R.string.sync_done,
+                                        UtilsFormat.getRelativeDateTime(this, dateTime)) :
                                 getString(R.string.sync_not_performed);
                         imgId = R.mipmap.ic_sync_grey600_24dp;
                     }
@@ -890,9 +981,5 @@ public class ActivityMain extends AppCompatActivity implements
     private void showDialogNeedAuth() {
         FragmentDialogQuestion.show(this, R.string.dialog_caption_auth,
                 R.string.message_dialog_auth, R.string.dialog_btn_agree, R.string.dialog_btn_disagree);
-    }
-
-    private void stopTimerPreferenceChanged() {
-        if (mTimerPreferenceChanged != null) mTimerPreferenceChanged.cancel();
     }
 }

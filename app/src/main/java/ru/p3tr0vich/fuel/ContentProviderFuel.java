@@ -24,7 +24,7 @@ public class ContentProviderFuel extends ContentProvider {
     private static class BaseUri {
 
         private static final String SCHEME = ContentResolver.SCHEME_CONTENT;
-        private static final String AUTHORITY = "ru.p3tr0vich.fuel.provider";
+        private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
 
         private BaseUri() {
         }
@@ -306,9 +306,7 @@ public class ContentProviderFuel extends ContentProvider {
                     fuelingRecord.getDateTime(),
                     fuelingRecord.getCost(),
                     fuelingRecord.getVolume(),
-                    fuelingRecord.getTotal(),
-                    true,
-                    false);
+                    fuelingRecord.getTotal());
         }
 
         context.getContentResolver().bulkInsert(URI_DATABASE, values);
@@ -339,9 +337,7 @@ public class ContentProviderFuel extends ContentProvider {
                         fuelingRecord.getDateTime(),
                         fuelingRecord.getCost(),
                         fuelingRecord.getVolume(),
-                        fuelingRecord.getTotal(),
-                        true,
-                        false));
+                        fuelingRecord.getTotal()));
 
         long id;
 
@@ -366,9 +362,7 @@ public class ContentProviderFuel extends ContentProvider {
                         fuelingRecord.getDateTime(),
                         fuelingRecord.getCost(),
                         fuelingRecord.getVolume(),
-                        fuelingRecord.getTotal(),
-                        true,
-                        false), null, null);
+                        fuelingRecord.getTotal()), null, null);
 
         notifyChangeAfterUser(context, id);
 

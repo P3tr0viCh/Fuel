@@ -121,9 +121,7 @@ class SyncProviderDatabase {
                                         Long.valueOf(stringValues[2]),
                                         Float.valueOf(stringValues[3]),
                                         Float.valueOf(stringValues[4]),
-                                        Float.valueOf(stringValues[5]),
-                                        false,
-                                        false));
+                                        Float.valueOf(stringValues[5])));
 
                         break;
                     case DELETE:

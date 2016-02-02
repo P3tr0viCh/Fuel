@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="relative_date_time_minute">less than a minute ago</string>
+    <string name="relative_date_time_now">just now</string>
+    <string name="relative_date_time_today">today</string>
+    <string name="relative_date_time_yesterday">yesterday</string>
+
+    <string name="sync_disabled">Sync disabled</string>
+    <string name="sync_done">Synchronized\n%s</string>
+    <string name="sync_error">Sync error</string>
+    <string name="sync_in_process">Synchronization is performed</string>
+    <string name="sync_no_token">Authorization required</string>
+    <string name="sync_not_performed">Never synced</string>
+</resources>

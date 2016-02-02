@@ -92,7 +92,7 @@ public class DatabaseBackupXmlHelper {
     public static final int RESULT_ERROR_PARSE_XML = 9;
 
     private static final String DEFAULT_DIR = "Backup";
-    private static final String DEFAULT_NAME = "ru.p3tr0vich.fuel.database.xml";
+    private static final String DEFAULT_NAME = BuildConfig.APPLICATION_ID + ".database.xml";
 
     private static class ExcelDateTime {
 

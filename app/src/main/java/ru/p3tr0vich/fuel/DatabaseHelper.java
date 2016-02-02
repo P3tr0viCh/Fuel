@@ -211,24 +211,20 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
     @NonNull
     public static ContentValues getValuesForSync(@Nullable Long id,
-                                          long dateTime,
-                                          float cost,
-                                          float volume,
-                                          float total,
-                                          boolean changed,
-                                          boolean deleted) {
-        return getValues(id, dateTime, cost, volume, total, changed, deleted, false);
+                                                 long dateTime,
+                                                 float cost,
+                                                 float volume,
+                                                 float total) {
+        return getValues(id, dateTime, cost, volume, total, false, false, false);
     }
 
     @NonNull
     public static ContentValues getValues(@Nullable Long id,
-                                           long dateTime,
-                                           float cost,
-                                           float volume,
-                                           float total,
-                                           boolean changed,
-                                           boolean deleted) {
-        return getValues(id, dateTime, cost, volume, total, changed, deleted, true);
+                                          long dateTime,
+                                          float cost,
+                                          float volume,
+                                          float total) {
+        return getValues(id, dateTime, cost, volume, total, true, false, true);
     }
 
     @NonNull

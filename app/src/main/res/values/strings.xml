@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Учёт топлива</string>
 
@@ -212,7 +213,9 @@
 
     <string name="relative_date_time_now">только что</string>
     <string name="relative_date_time_minute">меньше минуты назад</string>
+    <string name="relative_date_time_today">сегодня</string>
+    <string name="relative_date_time_yesterday">вчера</string>
 
-    <string name="scheme_yandex_disk">x-oauth-ru-p3tr0vich-fuel</string>
-    <string name="host_yandex_disk">yandex-disk-token</string>
+    <string name="scheme_yandex_disk" translatable="false">x-oauth-ru-p3tr0vich-fuel</string>
+    <string name="host_yandex_disk" translatable="false">yandex-disk-token</string>
 </resources>

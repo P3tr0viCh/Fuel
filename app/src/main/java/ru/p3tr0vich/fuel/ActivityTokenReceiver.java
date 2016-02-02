@@ -18,17 +18,18 @@ public class ActivityTokenReceiver extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         if (getIntent() != null && getIntent().getData() != null) {
-            Uri data = getIntent().getData();
+            final Uri data = getIntent().getData();
 
             UtilsLog.d(TAG, "onCreate", "data == " + data.toString());
 
             setIntent(null);
 
-            Pattern pattern = Pattern.compile(SyncYandexDisk.PATTERN_ACCESS_TOKEN);
-            Matcher matcher = pattern.matcher(data.toString());
+            final Matcher matcher = Pattern
+                    .compile(SyncYandexDisk.PATTERN_ACCESS_TOKEN)
+                    .matcher(data.toString());
 
             if (matcher.find()) {
-                String token = matcher.group(1);
+                final String token = matcher.group(1);
 
                 if (!TextUtils.isEmpty(token)) {
                     UtilsLog.d(TAG, "onCreate", "token == " + token);
@@ -38,14 +39,14 @@ public class ActivityTokenReceiver extends AppCompatActivity {
                     UtilsLog.d(TAG, "onCreate", "empty token");
             } else
                 UtilsLog.d(TAG, "onCreate", "token not found in return url");
-        }
+        } else
+            UtilsLog.d(TAG, "onCreate", "getIntent() == null || getIntent().getData() == null");
 
         finish();
 
-        Intent intent = new Intent(getApplicationContext(), ActivityMain.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
-
-        ActivityMain.sendStartSyncBroadcast(ActivityMain.START_SYNC_TOKEN_CHANGED);
+        startActivity(new Intent(getApplicationContext(), ActivityMain.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+// TODO: 02.02.2016
+//        ActivityMain.sendStartSyncBroadcast(ActivityMain.START_SYNC_TOKEN_CHANGED);
     }
 }

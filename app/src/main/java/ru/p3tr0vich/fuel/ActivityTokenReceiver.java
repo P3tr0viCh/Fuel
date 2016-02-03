@@ -46,7 +46,7 @@ public class ActivityTokenReceiver extends AppCompatActivity {
 
         startActivity(new Intent(getApplicationContext(), ActivityMain.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-// TODO: 02.02.2016
-//        ActivityMain.sendStartSyncBroadcast(ActivityMain.START_SYNC_TOKEN_CHANGED);
+
+        BroadcastReceiverSync.send(getApplicationContext(), false, false, true);
     }
 }

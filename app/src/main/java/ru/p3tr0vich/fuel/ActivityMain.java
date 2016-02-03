@@ -2,12 +2,10 @@ package ru.p3tr0vich.fuel;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SyncStatusObserver;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
@@ -57,9 +55,6 @@ public class ActivityMain extends AppCompatActivity implements
 
     private static final String TAG = "ActivityMain";
 
-    private static final String ACTION_LOADING = BuildConfig.APPLICATION_ID + ".ACTION_LOADING";
-    private static final String EXTRA_LOADING = BuildConfig.APPLICATION_ID + ".EXTRA_LOADING";
-
     private static final String KEY_CURRENT_FRAGMENT_ID = "KEY_CURRENT_FRAGMENT_ID";
 
     private Toolbar mToolbarMain;
@@ -76,11 +71,11 @@ public class ActivityMain extends AppCompatActivity implements
     private Animation mAnimationSync;
     private TextView mBtnSync;
 
-    private boolean mSyncDatabase, mSyncPreferences;
+    private boolean mDatabaseChanged, mPreferencesChanged;
     private TimerSync mTimerSync;
 
-    private BroadcastReceiver mLoadingStatusReceiver;
-    private BroadcastReceiver mStartSyncReceiver;
+    private BroadcastReceiverLoading mBroadcastReceiverLoading;
+    private BroadcastReceiverSync mBroadcastReceiverSync;
 
     private PreferencesObserver mPreferencesObserver;
     private DatabaseObserver mDatabaseObserver;
@@ -122,15 +117,10 @@ public class ActivityMain extends AppCompatActivity implements
         return (FragmentPreference) getSupportFragmentManager().findFragmentByTag(FragmentPreference.TAG);
     }
 
-    public static void sendLoadingBroadcast(boolean startLoading) {
-        LocalBroadcastManager.getInstance(ApplicationFuel.getContext())
-                .sendBroadcast(new Intent(ACTION_LOADING).putExtra(EXTRA_LOADING, startLoading));
-    }
-
     private void test(String s, Calendar calendar) {
         UtilsLog.d(TAG, s + ", " +
-                DateUtils.formatDateTime(this, calendar.getTimeInMillis(),
-                        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME),
+                        DateUtils.formatDateTime(this, calendar.getTimeInMillis(),
+                                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME),
                 UtilsFormat.getRelativeDateTime(this, calendar.getTimeInMillis()));
     }
 
@@ -403,45 +393,49 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void initLoadingStatusReceiver() {
-        mLoadingStatusReceiver = new BroadcastReceiver() {
+        mBroadcastReceiverLoading = new BroadcastReceiverLoading() {
+
             @Override
-            public void onReceive(Context context, Intent intent) {
+            public void onReceive(Context context, boolean loading) {
                 FragmentFueling fragmentFueling = getFragmentFueling();
 
+                UtilsLog.d(TAG, "mBroadcastReceiverLoading.onReceive", "loading == " + loading);
+
                 if (fragmentFueling != null)
-                    fragmentFueling.setLoading(intent.getBooleanExtra(EXTRA_LOADING, false));
+                    fragmentFueling.setLoading(loading);
                 else
-                    UtilsLog.d(TAG, "mLoadingStatusReceiver.onReceive", "fragmentFueling == null");
+                    UtilsLog.d(TAG, "mBroadcastReceiverLoading.onReceive", "fragmentFueling == null");
             }
         };
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(mLoadingStatusReceiver, new IntentFilter(ACTION_LOADING));
+        BroadcastReceiverLoading.register(this, mBroadcastReceiverLoading);
     }
 
     private void initStartSyncReceiver() {
-        mStartSyncReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                final boolean syncDatabase = TimerTaskSync.isSyncDatabase(intent);
-                final boolean syncPreferences = TimerTaskSync.isSyncPreferences(intent);
+        mBroadcastReceiverSync = new BroadcastReceiverSync() {
 
-                if (syncDatabase && syncPreferences)
-                    startSync(START_SYNC_CHANGED);
-                else if (syncDatabase)
-                    startSync(START_SYNC_DATABASE_CHANGED);
-                else if (syncPreferences)
-                    startSync(START_SYNC_PREFERENCES_CHANGED);
+            @Override
+            public void onReceive(Context context, boolean databaseChanged,
+                                  boolean preferencesChanged, boolean tokenChanged) {
+                if (tokenChanged)
+                    startSync(START_SYNC_TOKEN_CHANGED);
+                else {
+                    if (databaseChanged && preferencesChanged)
+                        startSync(START_SYNC_CHANGED);
+                    else if (databaseChanged)
+                        startSync(START_SYNC_DATABASE_CHANGED);
+                    else if (preferencesChanged)
+                        startSync(START_SYNC_PREFERENCES_CHANGED);
+                }
             }
         };
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(mStartSyncReceiver, TimerTaskSync.getIntentFilter());
+        BroadcastReceiverSync.register(this, mBroadcastReceiverSync);
     }
 
     private void startTimerSync() {
         TimerSync.stop(mTimerSync);
 
         if (PreferenceManagerFuel.isSyncEnabled())
-            mTimerSync = TimerSync.start(mSyncDatabase, mSyncPreferences);
+            mTimerSync = TimerSync.start(mDatabaseChanged, mPreferencesChanged);
     }
 
     private class PreferencesObserver extends ContentObserver {
@@ -459,7 +453,7 @@ public class ActivityMain extends AppCompatActivity implements
             UtilsLog.d(TAG, "PreferencesObserver", "onChange: selfChange == " + selfChange +
                     ", changeUri == " + changeUri);
 
-            mSyncPreferences = true;
+            mPreferencesChanged = true;
             startTimerSync();
         }
     }
@@ -491,7 +485,7 @@ public class ActivityMain extends AppCompatActivity implements
                     case ContentProviderFuel.DATABASE_ITEM:
                         id = ContentUris.parseId(changeUri);
                     case ContentProviderFuel.DATABASE:
-                        mSyncDatabase = true;
+                        mDatabaseChanged = true;
                         startTimerSync();
                         break;
                     case ContentProviderFuel.DATABASE_SYNC:
@@ -640,8 +634,8 @@ public class ActivityMain extends AppCompatActivity implements
         getContentResolver().unregisterContentObserver(mDatabaseObserver);
         getContentResolver().unregisterContentObserver(mPreferencesObserver);
 
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mStartSyncReceiver);
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mLoadingStatusReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiverSync);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiverLoading);
 
         startSync(START_SYNC_ACTIVITY_DESTROY);
 
@@ -822,8 +816,8 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void startSync(@StartSync int startSync) {
-        mSyncDatabase = false;
-        mSyncPreferences = false;
+        mDatabaseChanged = false;
+        mPreferencesChanged = false;
 
         boolean showDialogs = false;
         boolean startIfSyncActive = false;

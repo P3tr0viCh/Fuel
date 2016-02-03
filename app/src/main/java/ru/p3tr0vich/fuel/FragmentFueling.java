@@ -812,12 +812,12 @@ public class FragmentFueling extends FragmentBase implements
         public Cursor loadInBackground() {
             UtilsLog.d(TAG, "FuelingCursorLoader", "loadInBackground");
 
-            ActivityMain.sendLoadingBroadcast(true);
+            BroadcastReceiverLoading.send(getContext(), true);
 
             try {
                 return ContentProviderFuel.getAll(getContext(), mFilter);
             } finally {
-                ActivityMain.sendLoadingBroadcast(false);
+                BroadcastReceiverLoading.send(getContext(), false);
             }
         }
     }

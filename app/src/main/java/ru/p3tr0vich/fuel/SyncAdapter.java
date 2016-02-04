@@ -271,11 +271,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             } else if (localRevision < serverRevision) {
                 // Синхронизация уже выполнялась на другом устройстве.
                 // Загрузить записи с сервера.
-                // TODO:  Если есть изменённые или удалённые записи, сохранить их на сервер.
+                // Если есть изменённые или удалённые записи, сохранить их на сервер.
 
                 UtilsLog.d(TAG, TAG2, "localRevision < serverRevision");
 
                 syncDatabaseLoad(localRevision, serverRevision);
+
+                syncDatabaseSave(serverRevision, false, false);
             } else if (localRevision > serverRevision) {
                 // Файлы синхронизации были удалены (localRevision > -1 > serverRevision == -1).
                 // Сохранить все записи на сервер.

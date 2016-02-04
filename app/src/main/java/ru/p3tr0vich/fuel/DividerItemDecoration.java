@@ -8,7 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-// TODO: не работает с orientation != LinearLayoutManager.VERTICAL
+// TODO: не тестировалось с orientation != LinearLayoutManager.VERTICAL
 
 class DividerItemDecoration extends RecyclerView.ItemDecoration {
 

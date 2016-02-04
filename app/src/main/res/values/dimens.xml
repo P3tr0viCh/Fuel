@@ -27,7 +27,7 @@
 
     <dimen name="menu_item_margin">16dp</dimen>
 
-    <dimen name="recycler_view_scroll_threshold">4dp</dimen>
+    <dimen name="recycler_view_scroll_threshold">72dp</dimen>
 
     <dimen name="is_phone">1dp</dimen>
     <dimen name="is_portrait">1dp</dimen>

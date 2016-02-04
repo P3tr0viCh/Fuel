@@ -27,7 +27,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,7 +42,6 @@ import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Calendar;
 
 public class ActivityMain extends AppCompatActivity implements
         SyncStatusObserver,
@@ -117,135 +115,9 @@ public class ActivityMain extends AppCompatActivity implements
         return (FragmentPreference) getSupportFragmentManager().findFragmentByTag(FragmentPreference.TAG);
     }
 
-    private void test(String s, Calendar calendar) {
-        UtilsLog.d(TAG, s + ", " +
-                        DateUtils.formatDateTime(this, calendar.getTimeInMillis(),
-                                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME),
-                UtilsFormat.getRelativeDateTime(this, calendar.getTimeInMillis()));
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         UtilsLog.d(TAG, "**************** onCreate ****************");
-
-        final Calendar calendar = Calendar.getInstance();
-
-        final long now = System.currentTimeMillis();
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.DAY_OF_YEAR, +1);
-        test("+ 1 d", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.MONTH, +1);
-        test("+ 1 m", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.YEAR, +1);
-        test("+ 1 y", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.SECOND, 0);
-        test("now", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.SECOND, -2);
-        test("- 2 sec", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.SECOND, -9);
-        test("- 9 sec", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.SECOND, -1);
-        test("- 10 sec", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.SECOND, -15);
-        test("- 15 sec", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.SECOND, -42);
-        test("- 42 sec", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.MINUTE, -1);
-        test("- 1 min", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.MINUTE, -2);
-        test("- 2 min", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.MINUTE, -5);
-        test("- 5 min", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.MINUTE, -10);
-        test("- 10 min", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.MINUTE, -42);
-        test("- 42 min", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.HOUR_OF_DAY, -1);
-        test("- 1 hour", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.HOUR_OF_DAY, -1);
-        calendar.add(Calendar.MINUTE, -42);
-        test("- 1 hour 42 min", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.HOUR_OF_DAY, -3);
-        test("- 3 h", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.HOUR_OF_DAY, -12);
-        test("- 12 h", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.DAY_OF_YEAR, -1);
-        test("- 1 d", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.DAY_OF_YEAR, -1);
-        calendar.add(Calendar.HOUR_OF_DAY, -12);
-        test("- 1 d 12 h", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.DAY_OF_YEAR, -2);
-        test("- 2 d", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.DAY_OF_YEAR, -6);
-        test("- 6 d", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.DAY_OF_YEAR, -6);
-        calendar.add(Calendar.HOUR_OF_DAY, -12);
-        test("- 6 d 12 h", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.DAY_OF_YEAR, -7);
-        test("- 7 d", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.DAY_OF_YEAR, -8);
-        test("- 8 d", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.DAY_OF_YEAR, -20);
-        test("- 20 d", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.DAY_OF_YEAR, -200);
-        test("- 200 d", calendar);
-
-        calendar.setTimeInMillis(now);
-        calendar.add(Calendar.YEAR, -1);
-        test("- 1 y", calendar);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -398,8 +270,6 @@ public class ActivityMain extends AppCompatActivity implements
             @Override
             public void onReceive(Context context, boolean loading) {
                 FragmentFueling fragmentFueling = getFragmentFueling();
-
-                UtilsLog.d(TAG, "mBroadcastReceiverLoading.onReceive", "loading == " + loading);
 
                 if (fragmentFueling != null)
                     fragmentFueling.setLoading(loading);
@@ -934,7 +804,7 @@ public class ActivityMain extends AppCompatActivity implements
 
                         text = dateTime != PreferenceManagerFuel.SYNC_NONE ?
                                 getString(R.string.sync_done,
-                                        UtilsFormat.getRelativeDateTime(this, dateTime)) :
+                                        UtilsDate.getRelativeDateTime(this, dateTime)) :
                                 getString(R.string.sync_not_performed);
                         imgId = R.mipmap.ic_sync_grey600_24dp;
                     }

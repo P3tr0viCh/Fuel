@@ -44,8 +44,6 @@ public class FragmentFueling extends FragmentBase implements
     private static final String KEY_FILTER_DATE_FROM = "KEY_FILTER_DATE_FROM";
     private static final String KEY_FILTER_DATE_TO = "KEY_FILTER_DATE_TO";
 
-    private static final int LOADER_LIST_ID = 0;
-
     private Toolbar mToolbarDates;
     private View mToolbarShadow;
 
@@ -184,10 +182,7 @@ public class FragmentFueling extends FragmentBase implements
 
                 @Override
                 void onScrollDown() {
-                    if (mSnackbar == null)
-                        setTotalAndFabVisible(true);
-                    else if (!mSnackbar.isShown())
-                        setTotalAndFabVisible(true);
+                    if (mSnackbar == null || !mSnackbar.isShown()) setTotalAndFabVisible(true);
                 }
             });
 
@@ -257,7 +252,7 @@ public class FragmentFueling extends FragmentBase implements
 
         doSetFilterMode(mFilter.mode);
 
-        getLoaderManager().initLoader(LOADER_LIST_ID, null, this);
+        getLoaderManager().initLoader(FuelingCursorLoader.ID, null, this);
     }
 
     @Override
@@ -294,7 +289,7 @@ public class FragmentFueling extends FragmentBase implements
 
             doSetFilterMode(filterMode);
 
-            getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
+            getLoaderManager().restartLoader(FuelingCursorLoader.ID, null, this);
 
             setTotalAndFabVisible(true);
         }
@@ -302,7 +297,7 @@ public class FragmentFueling extends FragmentBase implements
 
     public void updateList(long id) {
         mIdForScroll = id;
-        getLoaderManager().getLoader(LOADER_LIST_ID).forceLoad();
+        getLoaderManager().getLoader(FuelingCursorLoader.ID).forceLoad();
     }
 
     private void checkDateTime(@NonNull FuelingRecord fuelingRecord) {
@@ -383,19 +378,19 @@ public class FragmentFueling extends FragmentBase implements
     private void setFilterDate(final long dateFrom, final long dateTo) {
         mFilter.dateFrom = dateFrom;
         mFilter.dateTo = dateTo;
-        getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
+        getLoaderManager().restartLoader(FuelingCursorLoader.ID, null, this);
     }
 
     private void setFilterDate(final boolean setDateFrom, final long date) {
         if (setDateFrom) mFilter.dateFrom = date;
         else mFilter.dateTo = date;
-        getLoaderManager().restartLoader(LOADER_LIST_ID, null, this);
+        getLoaderManager().restartLoader(FuelingCursorLoader.ID, null, this);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
-            case LOADER_LIST_ID:
+            case FuelingCursorLoader.ID:
                 return new FuelingCursorLoader(getContext(), mFilter);
             default:
                 return null;
@@ -618,7 +613,7 @@ public class FragmentFueling extends FragmentBase implements
                         Const.ANIMATION_DURATION_LAYOUT_TOTAL_HIDE)
                 .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     public void onAnimationUpdate(ValueAnimator animation) {
-                        int translationY = (Integer) animation.getAnimatedValue();
+                        final int translationY = (Integer) animation.getAnimatedValue();
 
                         mLayoutTotal.setTranslationY(translationY);
                         Utils.setViewTopMargin(mLayoutTotal, -translationY);
@@ -628,17 +623,11 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     private void setTotalAndFabVisible(boolean visible) {
-        // FIXME: есть баг при количестве записей позволяющем сделать прокрутку вверх
-        // при показанном лайоте, что приводит к его скрытию, после чего прокрутка вниз невозможна,
-        // так как записи начинают влезать по высоте.
-        // Три записи в альбомном режиме с показанным тулбаром выбора периода
-
         mFloatingActionButton.toggle(visible, true);
         setLayoutTotalVisible(visible);
     }
 
     public void setFabVisible(boolean visible) {
-//        UtilsLog.d(TAG, "setFabVisible", "visible == " + visible);
         final float value = visible ? 1.0f : 0.0f;
         mFloatingActionButton.animate().scaleX(value).scaleY(value);
     }
@@ -800,6 +789,8 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     static class FuelingCursorLoader extends CursorLoader {
+
+        public static final int ID = 0;
 
         private final DatabaseHelper.Filter mFilter;
 

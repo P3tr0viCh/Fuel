@@ -11,7 +11,7 @@
 
 График расходов за год по месяцам.
 
-Синхронизация настроек между устройствами при помощи Яндекс.Диска.
+Синхронизация базы данных и настроек между устройствами при помощи Яндекс.Диска.
 
 ------------------------------------------------------------
 (Google translate)
@@ -26,6 +26,6 @@ Flow Calculator.
 Calculation of the required amount of fuel and its value depending on the intended distance, the fuel consumption of a vehicle and the unit cost of fuel.
 The distance can be calculated using Yandex.Maps.
 
-Schedule of expenditure for the year by months.
+Chart of expenditure for the year by months.
 
-Synchronization settings between devices using Yandex.Disk.
+Datebase and settings synchronization between devices using Yandex.Disk.

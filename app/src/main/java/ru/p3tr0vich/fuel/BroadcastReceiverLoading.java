@@ -25,8 +25,8 @@ abstract class BroadcastReceiverLoading extends BroadcastReceiver {
     @Override
     @Deprecated
     public void onReceive(Context context, Intent intent) {
-        onReceive(context, intent.getBooleanExtra(EXTRA_LOADING, false));
+        onReceive(intent.getBooleanExtra(EXTRA_LOADING, false));
     }
 
-    public abstract void onReceive(Context context, boolean loading);
+    public abstract void onReceive(boolean loading);
 }

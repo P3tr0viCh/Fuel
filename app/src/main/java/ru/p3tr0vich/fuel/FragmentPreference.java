@@ -22,7 +22,6 @@ import android.widget.LinearLayout;
 
 public class FragmentPreference extends PreferenceFragmentCompat implements
         FragmentInterface,
-        PreferenceManagerFuel.OnPreferencesUpdatingListener,
         SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener {
 
@@ -79,7 +78,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-//        Utils.logD("FragmentPreference -- onSharedPreferenceChanged: key == " + key);
+//        UtilsLog.d(TAG, "onSharedPreferenceChanged", "key == " + key);
 
         updatePreferenceSummary(key);
 
@@ -210,30 +209,16 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         super.onStart();
         mOnFragmentChangeListener.onFragmentChange(this);
         mRootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-        PreferenceManagerFuel.registerOnPreferencesUpdatingListener(this);
     }
 
     @Override
     public void onStop() {
-        PreferenceManagerFuel.registerOnPreferencesUpdatingListener(null);
         mRootPreferenceScreen.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         super.onStop();
     }
 
-    @Override
-    public void onPreferencesUpdateStart() {
-        mRootPreferenceScreen.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onPreferencesUpdateEnd() {
-        UtilsLog.d(TAG, "onPreferencesUpdateEnd");
-        init(mRootPreferenceScreen);
-        mRootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-    }
-
     private void updatePreferenceSummary(String key) {
-        updatePreferenceSummary(findPreference(key));
+        updatePreferenceSummary(mRootPreferenceScreen.findPreference(key));
     }
 
     private void updatePreferenceSummary(@StringRes int resId) {
@@ -241,6 +226,8 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     }
 
     private void updatePreferenceSummary(Preference preference) {
+//        UtilsLog.d(TAG, "updatePreferenceSummary", "preference == " + preference);
+
         if (preference == null) return;
 
         String key = preference.getKey();
@@ -248,19 +235,20 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
         if (preference instanceof EditTextPreference) {
             EditTextPreference editPref = (EditTextPreference) preference;
-
-            String summary, text;
-
-            summary = (String) editPref.getSummary();
 //            text = editPref.getText() not updated after sync;
-            text = PreferenceManagerFuel.getString(key, "");
+            String text = PreferenceManagerFuel.getString(key);
+
+//            UtilsLog.d(TAG, "updatePreferenceSummary", "text == " + text);
+
             editPref.setText(text);
+
+            String summary = (String) editPref.getSummary();
 
             if (TextUtils.isEmpty(text)) text = "0";
 
             int i = summary.lastIndexOf(" (");
             if (i != -1) summary = summary.substring(0, i);
-            summary = summary + " (" + text + ")";
+            summary += " (" + text + ")";
 
             editPref.setSummary(summary);
         } else if (key.equals(getString(R.string.pref_map_center_text))) {
@@ -277,7 +265,7 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     private void init(Preference preference) {
         updatePreferenceSummary(preference);
         if (preference instanceof PreferenceScreen || preference instanceof PreferenceGroup) {
-            for (int i = 0; i < ((PreferenceGroup) preference).getPreferenceCount(); i++)
+            for (int i = 0, count = ((PreferenceGroup) preference).getPreferenceCount(); i < count; i++)
                 init(((PreferenceGroup) preference).getPreference(i));
         }
     }

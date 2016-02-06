@@ -31,12 +31,11 @@ abstract class BroadcastReceiverSync extends BroadcastReceiver {
     @Override
     @Deprecated
     public void onReceive(Context context, Intent intent) {
-        onReceive(context,
+        onReceive(
                 intent.getBooleanExtra(EXTRA_SYNC_DATABASE, true),
                 intent.getBooleanExtra(EXTRA_SYNC_PREFERENCES, true),
                 intent.getBooleanExtra(EXTRA_TOKEN_CHANGED, true));
     }
 
-    public abstract void onReceive(Context context,
-                                   boolean syncDatabase, boolean syncPreferences, boolean tokenChange);
+    public abstract void onReceive(boolean syncDatabase, boolean syncPreferences, boolean tokenChange);
 }

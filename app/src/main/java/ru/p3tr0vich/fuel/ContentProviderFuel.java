@@ -30,7 +30,7 @@ public class ContentProviderFuel extends ContentProvider {
         }
 
         public static Uri getUri(String path) {
-            return new android.net.Uri.Builder()
+            return new Uri.Builder()
                     .scheme(SCHEME)
                     .authority(AUTHORITY)
                     .path(path)

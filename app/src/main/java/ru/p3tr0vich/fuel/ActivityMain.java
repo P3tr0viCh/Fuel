@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.content.res.Configuration;
@@ -268,7 +267,7 @@ public class ActivityMain extends AppCompatActivity implements
         mBroadcastReceiverLoading = new BroadcastReceiverLoading() {
 
             @Override
-            public void onReceive(Context context, boolean loading) {
+            public void onReceive(boolean loading) {
                 FragmentFueling fragmentFueling = getFragmentFueling();
 
                 if (fragmentFueling != null)
@@ -284,7 +283,7 @@ public class ActivityMain extends AppCompatActivity implements
         mBroadcastReceiverSync = new BroadcastReceiverSync() {
 
             @Override
-            public void onReceive(Context context, boolean databaseChanged,
+            public void onReceive(boolean databaseChanged,
                                   boolean preferencesChanged, boolean tokenChanged) {
                 if (tokenChanged)
                     startSync(START_SYNC_TOKEN_CHANGED);

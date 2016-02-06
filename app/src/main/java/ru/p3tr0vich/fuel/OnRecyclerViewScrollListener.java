@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 
 abstract class OnRecyclerViewScrollListener extends RecyclerView.OnScrollListener {
 
-    private int mScrollThreshold;
+    private final int mScrollThreshold;
 
     private int mOffset = 0;
 

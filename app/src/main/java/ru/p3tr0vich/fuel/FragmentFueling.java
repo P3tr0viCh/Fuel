@@ -813,20 +813,11 @@ public class FragmentFueling extends FragmentBase implements
         }
     }
 
-    static class CalcTotalResult {
-        final float average;
-        final float costSum;
+    static class CalcTotalTask extends AsyncTask<Void, Void, Float[]> {
 
-        CalcTotalResult(float a, float s) {
-            average = a;
-            costSum = s;
-        }
-    }
-
-    static class CalcTotalTask extends AsyncTask<Void, Void, CalcTotalResult> {
+        private FragmentFueling mFragmentFueling;
 
         private final List<FuelingRecord> mFuelingRecords;
-        private FragmentFueling mFragmentFueling;
 
         CalcTotalTask(FragmentFueling fragmentFueling, List<FuelingRecord> fuelingRecords) {
             mFragmentFueling = fragmentFueling;
@@ -834,7 +825,7 @@ public class FragmentFueling extends FragmentBase implements
         }
 
         @Override
-        protected CalcTotalResult doInBackground(Void... params) {
+        protected Float[] doInBackground(Void... params) {
             float costSum = 0, volumeSum = 0;
             float volume, total, firstTotal = 0, lastTotal = 0;
 
@@ -898,14 +889,14 @@ public class FragmentFueling extends FragmentBase implements
                 average = averageCount != 0 ? average / averageCount : 0;
             }
 
-            return new CalcTotalResult(average, costSum);
+            return new Float[]{average, costSum};
         }
 
         @Override
-        protected void onPostExecute(CalcTotalResult calcTotalResult) {
-            if (calcTotalResult != null) {
-                mFragmentFueling.mTextAverage.setText(UtilsFormat.floatToString(calcTotalResult.average));
-                mFragmentFueling.mTextCostSum.setText(UtilsFormat.floatToString(calcTotalResult.costSum));
+        protected void onPostExecute(Float[] result) {
+            if (result != null) {
+                mFragmentFueling.mTextAverage.setText(UtilsFormat.floatToString(result[0]));
+                mFragmentFueling.mTextCostSum.setText(UtilsFormat.floatToString(result[1]));
             }
 
             mFragmentFueling = null;

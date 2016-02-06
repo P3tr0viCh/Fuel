@@ -59,18 +59,14 @@ class PreferenceManagerFuel {
     public static final int PREFERENCE_TYPE_INT = 1;
     public static final int PREFERENCE_TYPE_LONG = 2;
 
-    private static OnPreferencesUpdatingListener mOnPreferencesUpdatingListener = null;
-
-    interface OnPreferencesUpdatingListener {
-        void onPreferencesUpdateStart();
-
-        void onPreferencesUpdateEnd();
-    }
-
     public static void init(Context context) {
         sContext = context;
 
         sSharedPreferences = PreferenceManager.getDefaultSharedPreferences(sContext);
+
+//        sSharedPreferences.edit()
+//                .remove("default cost")
+//                .apply();
 
         sPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
@@ -91,10 +87,6 @@ class PreferenceManagerFuel {
                 !key.equals(PREF_LAST_SYNC_HAS_ERROR) &&
                 !key.equals(PREF_DATABASE_FULL_SYNC) &&
                 !key.equals(sContext.getString(R.string.pref_sync_enabled));
-    }
-
-    public static void registerOnPreferencesUpdatingListener(OnPreferencesUpdatingListener onPreferencesUpdatingListener) {
-        mOnPreferencesUpdatingListener = onPreferencesUpdatingListener;
     }
 
     private static boolean isChanged() {
@@ -288,7 +280,7 @@ class PreferenceManagerFuel {
     }
 
     @NonNull
-    private static String getString(final String key) {
+    public static String getString(final String key) {
         return sSharedPreferences.getString(key, "");
     }
 
@@ -369,39 +361,28 @@ class PreferenceManagerFuel {
                                      @Nullable String preference) {
         if (preferences == null || preferences.size() == 0) return -1;
 
-        UtilsLog.d(TAG, "setPreferences", "preference == " + preference +
-                ", mOnPreferencesUpdatingListener == " + mOnPreferencesUpdatingListener);
+        UtilsLog.d(TAG, "setPreferences", "preference == " + preference);
 
         if (TextUtils.isEmpty(preference)) {
             sSharedPreferences.unregisterOnSharedPreferenceChangeListener(sPreferenceChangeListener);
+            SharedPreferences.Editor editor = sSharedPreferences.edit();
             try {
+                Object value;
 
-                if (mOnPreferencesUpdatingListener != null)
-                    mOnPreferencesUpdatingListener.onPreferencesUpdateStart();
-                try {
-                    SharedPreferences.Editor editor = sSharedPreferences.edit();
+                for (String key : preferences.keySet()) {
+                    value = preferences.get(key);
 
-                    Object value;
-
-                    for (String key : preferences.keySet()) {
-                        value = preferences.get(key);
-
-                        if (value instanceof String) editor.putString(key, (String) value);
-                        else if (value instanceof Long) editor.putLong(key, (Long) value);
-                        else if (value instanceof Integer) editor.putInt(key, (Integer) value);
-                        else if (value instanceof Boolean) editor.putBoolean(key, (Boolean) value);
-                        else if (value instanceof Float) editor.putFloat(key, (Float) value);
-                        else
-                            UtilsLog.d(TAG, "setPreferences",
-                                    "unhandled class == " + value.getClass().getSimpleName());
-                    }
-
-                    editor.commit();
-                } finally {
-                    if (mOnPreferencesUpdatingListener != null)
-                        mOnPreferencesUpdatingListener.onPreferencesUpdateEnd();
+                    if (value instanceof String) editor.putString(key, (String) value);
+                    else if (value instanceof Long) editor.putLong(key, (Long) value);
+                    else if (value instanceof Integer) editor.putInt(key, (Integer) value);
+                    else if (value instanceof Boolean) editor.putBoolean(key, (Boolean) value);
+                    else if (value instanceof Float) editor.putFloat(key, (Float) value);
+                    else
+                        UtilsLog.d(TAG, "setPreferences",
+                                "unhandled class == " + value.getClass().getSimpleName());
                 }
             } finally {
+                editor.commit();
                 sSharedPreferences.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
             }
 

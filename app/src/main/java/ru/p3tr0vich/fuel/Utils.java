@@ -8,18 +8,13 @@ import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.annotation.DimenRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 class Utils {
@@ -82,25 +77,6 @@ class Utils {
         return false;
     }
 
-    public static void addSpinnerInToolbar(ActionBar actionBar, Toolbar toolbar, Spinner spinner,
-                                           ArrayAdapter adapter, AdapterView.OnItemSelectedListener listener) {
-        actionBar.setDisplayShowTitleEnabled(false);
-
-        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-
-        spinner.setAdapter(adapter);
-
-        int px = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                Const.TOOLBAR_SPINNER_DROPDOWN_OFFSET,
-                ApplicationFuel.getContext().getResources().getDisplayMetrics()));
-
-        spinner.setDropDownVerticalOffset(-px);
-
-        toolbar.addView(spinner);
-
-        spinner.setOnItemSelectedListener(listener);
-    }
-
     public static void setViewHeight(View view, int height) {
         view.getLayoutParams().height = height;
         view.requestLayout();
@@ -135,5 +111,9 @@ class Utils {
 
     public static void toast(@StringRes int resId) {
         Toast.makeText(ApplicationFuel.getContext(), resId, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void toast(@NonNull String text) {
+        Toast.makeText(ApplicationFuel.getContext(), text, Toast.LENGTH_SHORT).show();
     }
 }

@@ -26,6 +26,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -167,24 +168,39 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void initToolbarSpinner() {
+        ActionBar actionBar = getSupportActionBar();
+
         //noinspection ConstantConditions
-        mToolbarSpinner = new AppCompatSpinner(getSupportActionBar().getThemedContext());
+        mToolbarSpinner = new AppCompatSpinner(actionBar.getThemedContext());
 
-        Utils.addSpinnerInToolbar(getSupportActionBar(), mToolbarMain, mToolbarSpinner,
-                ArrayAdapter.createFromResource(this, R.array.filter_dates, R.layout.toolbar_spinner_item),
-                new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        FragmentFueling fragmentFueling = getFragmentFueling();
-                        if (fragmentFueling != null && fragmentFueling.isVisible())
-                            fragmentFueling.setFilterMode(positionToFilterMode(position));
-                    }
+        actionBar.setDisplayShowTitleEnabled(false);
 
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.filter_dates, R.layout.toolbar_spinner_item);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
-                    }
-                });
+        mToolbarSpinner.setAdapter(adapter);
+
+        final int px = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                Const.TOOLBAR_SPINNER_DROPDOWN_OFFSET,
+                ApplicationFuel.getContext().getResources().getDisplayMetrics()));
+
+        mToolbarSpinner.setDropDownVerticalOffset(-px);
+
+        mToolbarMain.addView(mToolbarSpinner);
+
+        mToolbarSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                FragmentFueling fragmentFueling = getFragmentFueling();
+                if (fragmentFueling != null && fragmentFueling.isVisible())
+                    fragmentFueling.setFilterMode(positionToFilterMode(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     private void initDrawer() {
@@ -233,7 +249,7 @@ public class ActivityMain extends AppCompatActivity implements
                 mClickedMenuId = menuItem.getItemId();
                 mOpenPreferenceSync = false;
                 // Если текущий фрагмент -- настройки, может отображаться стрелка влево.
-                // Если нажат другой пункт меню, показвается значок меню.
+                // Если нажат другой пункт меню, показывается значок меню.
                 if (mCurrentFragmentId == FragmentPreference.ID && mCurrentFragmentId != mClickedMenuId)
                     mDrawerToggle.setDrawerIndicatorEnabled(true);
 

@@ -23,7 +23,6 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 
@@ -194,18 +193,14 @@ public class ActivityYandexMap extends AppCompatActivity {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                    Toast.makeText(ActivityYandexMap.this,
-                            String.format(getString(R.string.text_error_webview), description),
-                            Toast.LENGTH_SHORT).show();
+                    Utils.toast(String.format(getString(R.string.text_error_webview), description));
                 }
 
                 @TargetApi(Build.VERSION_CODES.M) // TODO: MARSHMALLOW
                 @Override
                 public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                     super.onReceivedError(view, request, error);
-                    Toast.makeText(ActivityYandexMap.this,
-                            String.format(getString(R.string.text_error_webview),
-                                    error.getDescription()), Toast.LENGTH_SHORT).show();
+                    Utils.toast(String.format(getString(R.string.text_error_webview), error.getDescription()));
                 }
             });
 
@@ -312,8 +307,8 @@ public class ActivityYandexMap extends AppCompatActivity {
         return text.startsWith(PREFIX_RUSSIA) ? text.substring(PREFIX_RUSSIA.length()) : text;
     }
 
-    public void setMapCenter(final String text, final String title, final String subtitle,
-                             final double latitude, final double longitude) {
+    public void setMapCenter(String text, String title, String subtitle,
+                             double latitude, double longitude) {
         UtilsLog.d(TAG, "setMapCenterText", "text == " + text);
 
         if (!TextUtils.isEmpty(text))
@@ -322,10 +317,12 @@ public class ActivityYandexMap extends AppCompatActivity {
             mMapCenter.text =
                     UtilsFormat.floatToString((float) latitude) + ',' +
                     UtilsFormat.floatToString((float) longitude);
-        if (title.equals(""))
+
+        if (TextUtils.isEmpty(title))
             mMapCenter.title = mMapCenter.text;
         else
             mMapCenter.title = title;
+
         mMapCenter.subtitle = subtitle;
         mMapCenter.latitude = latitude;
         mMapCenter.longitude = longitude;

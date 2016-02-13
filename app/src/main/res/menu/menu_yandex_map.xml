@@ -7,11 +7,13 @@
         android:id="@+id/action_done"
         android:icon="@mipmap/ic_done_white_24dp"
         android:title="@string/action_done"
+        android:visible="false"
         app:showAsAction="always|withText" />
 
     <item
         android:id="@+id/action_done_x2"
         android:icon="@mipmap/ic_done_all_white_24dp"
         android:title="@string/action_done_all"
+        android:visible="false"
         app:showAsAction="ifRoom|withText" />
 </menu>

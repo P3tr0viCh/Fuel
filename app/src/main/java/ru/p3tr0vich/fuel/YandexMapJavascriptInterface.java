@@ -1,5 +1,7 @@
 package ru.p3tr0vich.fuel;
 
+import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.webkit.JavascriptInterface;
 
 @SuppressWarnings("unused")
@@ -11,27 +13,42 @@ class YandexMapJavascriptInterface {
     public final static double DEFAULT_MAP_CENTER_LATITUDE = 55.752023;  // Широта
     public final static double DEFAULT_MAP_CENTER_LONGITUDE = 37.617499; // Долгота
 
-    private final ActivityYandexMap mActivityYandexMap;
+    private final Activity mActivity;
 
     private final double mMapCenterLatitude;
     private final double mMapCenterLongitude;
 
-    private final String mStartSearchControlPlaceholderContent;
-    private final String mFinishSearchControlPlaceholderContent;
-    private final String mEmptyBalloonContent;
+    public interface YandexMap {
+        String getStartSearchControlPlaceholderContent();
 
-    YandexMapJavascriptInterface(ActivityYandexMap activityYandexMap) {
-        mActivityYandexMap = activityYandexMap;
+        String getFinishSearchControlPlaceholderContent();
+
+        String getEmptyBalloonContent();
+
+        void OnDistanceChange(int distance);
+
+        void OnMapCenterChange(String text, String title, String subtitle,
+                               double latitude, double longitude);
+
+        void OnEndLoading(boolean hasError);
+
+        void OnErrorConstructRoute();
+    }
+
+    YandexMapJavascriptInterface(@NonNull Activity activity) {
+        if (!(activity instanceof YandexMap))
+            throw new ClassCastException(activity.toString() +
+                    " must implement YandexMap");
+
+        mActivity = activity;
 
         mMapCenterLatitude = PreferenceManagerFuel.getMapCenterLatitude();
         mMapCenterLongitude = PreferenceManagerFuel.getMapCenterLongitude();
+    }
 
-        mStartSearchControlPlaceholderContent =
-                mActivityYandexMap.getString(R.string.yandex_map_start_search_control_placeholder_content);
-        mFinishSearchControlPlaceholderContent =
-                mActivityYandexMap.getString(R.string.yandex_map_finish_search_control_placeholder_content);
-        mEmptyBalloonContent = "<h3>" +
-                mActivityYandexMap.getString(R.string.yandex_map_empty_geocode) + "</h3>";
+    @NonNull
+    private YandexMap getYandexMapActivity() {
+        return (YandexMap) mActivity;
     }
 
     @JavascriptInterface
@@ -46,56 +63,56 @@ class YandexMapJavascriptInterface {
 
     @JavascriptInterface
     public String getStartSearchControlPlaceholderContent() {
-        return mStartSearchControlPlaceholderContent;
+        return getYandexMapActivity().getStartSearchControlPlaceholderContent();
     }
 
     @JavascriptInterface
     public String getFinishSearchControlPlaceholderContent() {
-        return mFinishSearchControlPlaceholderContent;
+        return getYandexMapActivity().getFinishSearchControlPlaceholderContent();
     }
 
     @JavascriptInterface
     public String getEmptyBalloonContent() {
-        return mEmptyBalloonContent;
+        return getYandexMapActivity().getEmptyBalloonContent();
     }
 
     @JavascriptInterface
-    public void updateDistance(final int distance) {
-        mActivityYandexMap.runOnUiThread(new Runnable() {
+    public void OnDistanceChange(final int distance) {
+        mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mActivityYandexMap.setDistance(distance);
+                getYandexMapActivity().OnDistanceChange(distance);
             }
         });
     }
 
     @JavascriptInterface
-    public void updateMapCenter(final String text, final String title, final String subtitle,
-                                final double latitude, final double longitude) {
-        mActivityYandexMap.runOnUiThread(new Runnable() {
+    public void OnMapCenterChange(final String text, final String title, final String subtitle,
+                             final double latitude, final double longitude) {
+        mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mActivityYandexMap.setMapCenter(text, title, subtitle, latitude, longitude);
+                getYandexMapActivity().OnMapCenterChange(text, title, subtitle, latitude, longitude);
             }
         });
     }
 
     @JavascriptInterface
-    public void endInit() {
-        mActivityYandexMap.runOnUiThread(new Runnable() {
+    public void OnEndLoading(final boolean hasError) {
+        mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mActivityYandexMap.endInitYandexMap();
+                getYandexMapActivity().OnEndLoading(hasError);
             }
         });
     }
 
     @JavascriptInterface
-    public void errorConstructRoute() {
-        mActivityYandexMap.runOnUiThread(new Runnable() {
+    public void OnErrorConstructRoute() {
+        mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mActivityYandexMap.errorConstructRoute();
+                getYandexMapActivity().OnErrorConstructRoute();
             }
         });
     }

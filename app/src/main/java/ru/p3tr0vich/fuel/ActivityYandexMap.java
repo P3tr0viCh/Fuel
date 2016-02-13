@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,7 +30,7 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class ActivityYandexMap extends AppCompatActivity {
+public class ActivityYandexMap extends AppCompatActivity implements YandexMapJavascriptInterface.YandexMap {
 
     private static final String TAG = "ActivityYandexMap";
 
@@ -45,8 +46,10 @@ public class ActivityYandexMap extends AppCompatActivity {
 
     private static final String EXTRA_TYPE = "EXTRA_TYPE";
 
-    private static final String MAP_HTML_DISTANCE = "file:///android_asset/distanceCalculator.html";
-    private static final String MAP_HTML_CENTER = "file:///android_asset/mapCenter.html";
+    private static final String URL_YANDEX_MAP = "file:///android_asset/yandexMap.html?";
+
+    private static final String URL_QUERY_MAP_TYPE_DISTANCE = "distance";
+    private static final String URL_QUERY_MAP_TYPE_CENTER = "center";
 
     @MapType
     private int mType;
@@ -59,6 +62,8 @@ public class ActivityYandexMap extends AppCompatActivity {
     private ProgressWheel mProgressWheelYandexMap;
     private FrameLayout mWebViewPlaceholder;
     private WebView mWebView;
+
+    private Menu mMenu;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({MAP_TYPE_DISTANCE, MAP_TYPE_CENTER})
@@ -127,6 +132,7 @@ public class ActivityYandexMap extends AppCompatActivity {
             case MAP_TYPE_CENTER:
                 mType = MAP_TYPE_CENTER;
         }
+
         mMapCenter = new MapCenter();
         mMapCenter.text = getString(R.string.yandex_map_map_center_title);
 
@@ -151,10 +157,10 @@ public class ActivityYandexMap extends AppCompatActivity {
 
         switch (mType) {
             case MAP_TYPE_DISTANCE:
-                setDistance(mDistance);
+                OnDistanceChange(mDistance);
                 break;
             case MAP_TYPE_CENTER:
-                setMapCenter(
+                OnMapCenterChange(
                         mMapCenter.text,
                         mMapCenter.title,
                         mMapCenter.subtitle,
@@ -172,7 +178,8 @@ public class ActivityYandexMap extends AppCompatActivity {
 
             mWebView.getSettings().setJavaScriptEnabled(true);
 
-            mWebView.addJavascriptInterface(new YandexMapJavascriptInterface(this), YandexMapJavascriptInterface.NAME);
+            mWebView.addJavascriptInterface(new YandexMapJavascriptInterface(this),
+                    YandexMapJavascriptInterface.NAME);
 
             mWebView.setWebChromeClient(new WebChromeClient() {
                 @Override
@@ -193,6 +200,8 @@ public class ActivityYandexMap extends AppCompatActivity {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                    UtilsLog.d(TAG, "onReceivedError", "errorCode == " + errorCode +
+                            ", description == " + description);
                     Utils.toast(String.format(getString(R.string.text_error_webview), description));
                 }
 
@@ -200,18 +209,24 @@ public class ActivityYandexMap extends AppCompatActivity {
                 @Override
                 public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                     super.onReceivedError(view, request, error);
+                    UtilsLog.d(TAG, "onReceivedError", "request == " + request.toString() +
+                            ", error == " + error.toString());
                     Utils.toast(String.format(getString(R.string.text_error_webview), error.getDescription()));
                 }
             });
 
+            String url = URL_YANDEX_MAP;
+
             switch (mType) {
                 case MAP_TYPE_DISTANCE:
-                    mWebView.loadUrl(MAP_HTML_DISTANCE);
+                    url += URL_QUERY_MAP_TYPE_DISTANCE;
                     break;
                 case MAP_TYPE_CENTER:
-                    mWebView.loadUrl(MAP_HTML_CENTER);
+                    url += URL_QUERY_MAP_TYPE_CENTER;
                     break;
             }
+
+            mWebView.loadUrl(url);
         }
 
         if (mLoading) mProgressWheelYandexMap.setVisibility(View.VISIBLE);
@@ -221,18 +236,22 @@ public class ActivityYandexMap extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        UtilsLog.d(TAG, "onDestroy");
+
         if (mWebView != null) {
             mWebView.stopLoading();
             mWebView.clearCache(true);
             mWebView.destroy();
             mWebView = null;
         }
+
         super.onDestroy();
-        UtilsLog.d(TAG, "onDestroy");
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        UtilsLog.d(TAG, "onConfigurationChanged");
+
         if (mWebView != null) mWebViewPlaceholder.removeView(mWebView);
 
         super.onConfigurationChanged(newConfig);
@@ -259,6 +278,9 @@ public class ActivityYandexMap extends AppCompatActivity {
         getMenuInflater().inflate(
                 mType == MAP_TYPE_DISTANCE ? R.menu.menu_yandex_map : R.menu.menu_yandex_map_center,
                 menu);
+
+        mMenu = menu;
+
         return true;
     }
 
@@ -278,7 +300,6 @@ public class ActivityYandexMap extends AppCompatActivity {
                     Utils.toast(R.string.text_empty_distance);
                 return true;
             case MAP_TYPE_CENTER:
-                // TODO: запрет при отсутствии выбора
                 setResult(RESULT_OK, new Intent()
                         .putExtra(INTENT_MAP_CENTER_TEXT, mMapCenter.text)
                         .putExtra(INTENT_MAP_CENTER_LATITUDE, mMapCenter.latitude)
@@ -290,14 +311,14 @@ public class ActivityYandexMap extends AppCompatActivity {
         }
     }
 
-    public void setDistance(int distance) {
+    public void OnDistanceChange(int distance) {
         mDistance = distance;
 
         String title = getString(R.string.title_yandex_map);
         if (mDistance > 0)
             title += String.format(getString(R.string.title_yandex_map_add), mDistance);
 
-        UtilsLog.d(TAG, "setDistance", "title == " + title);
+        UtilsLog.d(TAG, "OnDistanceChange", "title == " + title);
 
         //noinspection ConstantConditions
         getSupportActionBar().setTitle(title);
@@ -307,16 +328,31 @@ public class ActivityYandexMap extends AppCompatActivity {
         return text.startsWith(PREFIX_RUSSIA) ? text.substring(PREFIX_RUSSIA.length()) : text;
     }
 
-    public void setMapCenter(String text, String title, String subtitle,
-                             double latitude, double longitude) {
-        UtilsLog.d(TAG, "setMapCenterText", "text == " + text);
+    @Override
+    public String getStartSearchControlPlaceholderContent() {
+        return getString(R.string.yandex_map_start_search_control_placeholder_content);
+    }
+
+    @Override
+    public String getFinishSearchControlPlaceholderContent() {
+        return getString(R.string.yandex_map_finish_search_control_placeholder_content);
+    }
+
+    @Override
+    public String getEmptyBalloonContent() {
+        return "<h3>" + getString(R.string.yandex_map_empty_geocode) + "</h3>";
+    }
+
+    public void OnMapCenterChange(String text, String title, String subtitle,
+                                  double latitude, double longitude) {
+        UtilsLog.d(TAG, "OnMapCenterChange", "text == " + text);
 
         if (!TextUtils.isEmpty(text))
             mMapCenter.text = minimizeGeoCode(text);
         else
             mMapCenter.text =
                     UtilsFormat.floatToString((float) latitude) + ',' +
-                    UtilsFormat.floatToString((float) longitude);
+                            UtilsFormat.floatToString((float) longitude);
 
         if (TextUtils.isEmpty(title))
             mMapCenter.title = mMapCenter.text;
@@ -333,16 +369,25 @@ public class ActivityYandexMap extends AppCompatActivity {
         mToolbarYandexMap.setSubtitle(mMapCenter.subtitle);
     }
 
-    public void endInitYandexMap() {
-        UtilsLog.d(TAG, "endInitYandexMap");
+    private void setMenuItemVisibleTrue(@Nullable MenuItem menuItem) {
+        if (menuItem != null) menuItem.setVisible(true);
+    }
+
+    public void OnEndLoading(boolean hasError) {
+        UtilsLog.d(TAG, "OnEndLoading", "hasError == " + hasError);
 
         mLoading = false;
 
         mProgressWheelYandexMap.setVisibility(View.GONE);
+
+        if (!hasError && mMenu != null) {
+            setMenuItemVisibleTrue(mMenu.findItem(R.id.action_done));
+            setMenuItemVisibleTrue(mMenu.findItem(R.id.action_done_x2));
+        }
     }
 
-    public void errorConstructRoute() {
-        setDistance(0);
+    public void OnErrorConstructRoute() {
+        OnDistanceChange(0);
         Utils.toast(R.string.message_error_yandex_map_route);
     }
 }

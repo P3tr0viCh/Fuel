@@ -88,9 +88,9 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
         }
 
         MapCenter() {
-            this(YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_TEXT,
-                    YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_LATITUDE,
-                    YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_LONGITUDE);
+            this(PreferenceManagerFuel.DEFAULT_MAP_CENTER_TEXT,
+                    PreferenceManagerFuel.DEFAULT_MAP_CENTER_LATITUDE,
+                    PreferenceManagerFuel.DEFAULT_MAP_CENTER_LONGITUDE);
         }
     }
 
@@ -113,9 +113,9 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
         return new MapCenter(
                 data.getStringExtra(INTENT_MAP_CENTER_TEXT),
                 data.getDoubleExtra(INTENT_MAP_CENTER_LATITUDE,
-                        YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_LATITUDE),
+                        PreferenceManagerFuel.DEFAULT_MAP_CENTER_LATITUDE),
                 data.getDoubleExtra(INTENT_MAP_CENTER_LONGITUDE,
-                        YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_LONGITUDE));
+                        PreferenceManagerFuel.DEFAULT_MAP_CENTER_LONGITUDE));
     }
 
     @Override

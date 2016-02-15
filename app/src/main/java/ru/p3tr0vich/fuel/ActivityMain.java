@@ -438,7 +438,6 @@ public class ActivityMain extends AppCompatActivity implements
 
         String fragmentTag = null;
 
-        Fragment fragment;
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentFueling fragmentFueling = getFragmentFueling();
 
@@ -462,7 +461,7 @@ public class ActivityMain extends AppCompatActivity implements
                 fragmentTag = FragmentAbout.TAG;
         }
 
-        fragment = getFragmentNewInstance(fragmentTag);
+        Fragment fragment = getFragmentNewInstance(fragmentTag);
 
         if (fragment != null) {
             if (mOpenPreferenceSync) {

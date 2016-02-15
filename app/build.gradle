@@ -119,7 +119,7 @@ dependencies {
     //noinspection GroovyAssignabilityCheck
     compile support_recyclerview
 
-    compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
+    compile 'com.github.PhilJay:MPAndroidChart:v2.2.2'
     compile 'com.yandex.android:disk-restapi-sdk:1.03'
 
     compile project(':libs:fab')

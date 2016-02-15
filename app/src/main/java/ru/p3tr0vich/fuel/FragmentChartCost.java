@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -24,6 +27,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 
 public class FragmentChartCost extends FragmentBase implements
@@ -53,7 +57,7 @@ public class FragmentChartCost extends FragmentBase implements
             R.color.chart_winter};
 
     private boolean mIsData = false;
-    private boolean mUpdateYearInProcess = true;
+    private boolean mUpdateYearsInProcess = true;
 
     @Override
     public int getFragmentId() {
@@ -71,10 +75,12 @@ public class FragmentChartCost extends FragmentBase implements
     }
 
     private int getYearFromPosition(int index) {
-        return mYears[index];
+        return mYears != null ? mYears[index] : -1;
     }
 
     private int getPositionForYear(int year) {
+        if (mYears == null) return -1;
+
         for (int i = 0; i < mYears.length; i++)
             if (mYears[i] == year)
                 return i;
@@ -112,12 +118,15 @@ public class FragmentChartCost extends FragmentBase implements
         xAxis.setTextSize(8f);
 
         mChart.getAxisLeft().setEnabled(false);
+        mChart.getAxisLeft().setDrawLimitLinesBehindData(true);
+
         mChart.getAxisRight().setEnabled(false);
         mChart.getLegend().setEnabled(false);
 
         mChart.setHardwareAccelerationEnabled(true);
 
         updateMonths();
+
         if (savedInstanceState != null) {
             updateYears();
             updateChart();
@@ -126,7 +135,7 @@ public class FragmentChartCost extends FragmentBase implements
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if (!mUpdateYearInProcess) setYear(getYearFromPosition(tab.getPosition()));
+                if (!mUpdateYearsInProcess) setYear(getYearFromPosition(tab.getPosition()));
             }
 
             @Override
@@ -146,7 +155,7 @@ public class FragmentChartCost extends FragmentBase implements
         return view;
     }
 
-    private void selectTab(TabLayout.Tab tab) {
+    private void selectTab(@Nullable TabLayout.Tab tab) {
         if (tab != null) tab.select();
     }
 
@@ -176,15 +185,22 @@ public class FragmentChartCost extends FragmentBase implements
     };
 
     private void updateYears() {
-        mUpdateYearInProcess = true;
+        mUpdateYearsInProcess = true;
         try {
+            if (mYears == null || mYears.length == 0) return;
+
             for (int year : mYears)
                 mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(year)));
 
             int position = getPositionForYear(mYear);
-            if (position != -1) selectTab(mTabLayout.getTabAt(position));
+            if (position == -1) {
+                position = mYears.length - 1;
+                mYear = mYears[position];
+            }
+
+            selectTab(mTabLayout.getTabAt(position));
         } finally {
-            mUpdateYearInProcess = false;
+            mUpdateYearsInProcess = false;
         }
     }
 
@@ -198,14 +214,15 @@ public class FragmentChartCost extends FragmentBase implements
 
     private void updateMonths() {
         Calendar calendar = Calendar.getInstance();
-        for (int month = Calendar.JANUARY; month <= Calendar.DECEMBER; month++) mMonths[month] =
-                getMonthName(calendar, month);
+        for (int month = Calendar.JANUARY; month <= Calendar.DECEMBER; month++)
+            mMonths[month] = getMonthName(calendar, month);
     }
 
     private void setYear(int year) {
         if (year == mYear) return;
 
         mYear = year;
+
         getLoaderManager().restartLoader(ChartCursorLoader.ID, null, this);
     }
 
@@ -219,7 +236,6 @@ public class FragmentChartCost extends FragmentBase implements
             mYear = UtilsDate.getCurrentYear();
 
             getLoaderManager().initLoader(YearsCursorLoader.ID, null, this);
-            getLoaderManager().initLoader(ChartCursorLoader.ID, null, this);
         } else {
             mYear = savedInstanceState.getInt(KEY_FILTER_YEAR);
             mYears = savedInstanceState.getIntArray(KEY_YEARS);
@@ -309,25 +325,24 @@ public class FragmentChartCost extends FragmentBase implements
 
                 break;
             case YearsCursorLoader.ID:
-                int i = 0, year, count = data.getCount();
+                int count = data.getCount();
 
                 if (count > 0) {
-                    mYears = new int[count + 1];
+                    mYears = new int[count];
+
+                    int i = 0;
 
                     if (data.moveToFirst()) do {
-                        year = data.getInt(DatabaseHelper.TableFueling.YEAR_INDEX);
+                        mYears[i] = data.getInt(DatabaseHelper.TableFueling.YEAR_INDEX);
 
-                        mYears[i] = year;
                         i++;
                     } while (data.moveToNext());
 
-                    mYears[count] = UtilsDate.getCurrentYear();
-                } else {
-                    mYears = new int[1];
-                    mYears[0] = UtilsDate.getCurrentYear();
-                }
+                    updateYears();
 
-                updateYears();
+                    getLoaderManager().initLoader(ChartCursorLoader.ID, null, this);
+                } else
+                    mYears = null;
         }
     }
 
@@ -336,12 +351,22 @@ public class FragmentChartCost extends FragmentBase implements
 
     }
 
-    private final class FloatFormatter implements ValueFormatter {
+    private static final class FloatFormatter implements ValueFormatter {
 
         @Override
         public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
             return UtilsFormat.floatToString(value, false);
         }
+    }
+
+    private final FloatFormatter mFloatFormatter = new FloatFormatter();
+
+    private float median(@NonNull float[] values) {
+        if (values.length < 2) return 0;
+
+        int middle = values.length / 2;
+
+        return values.length % 2 == 1 ? values[middle] : (values[middle - 1] + values[middle]) / 2f;
     }
 
     private void updateChart() {
@@ -350,29 +375,54 @@ public class FragmentChartCost extends FragmentBase implements
         if (mIsData) {
             mTextNoRecords.setVisibility(View.GONE);
 
-            ArrayList<BarEntry> yValues = new ArrayList<>();
+            ArrayList<BarEntry> sumsEntries = new ArrayList<>();
 
-            for (int i = 0; i < 12; i++) yValues.add(new BarEntry(mSums[i], i));
+            for (int i = 0; i < 12; i++) sumsEntries.add(new BarEntry(mSums[i], i));
 
-            BarDataSet set = new BarDataSet(yValues, "");
-            set.setBarSpacePercent(35f);
-            set.setColors(mColors, getActivity());
+            BarDataSet sumsSet = new BarDataSet(sumsEntries, "");
+            sumsSet.setBarSpacePercent(35f);
+            sumsSet.setColors(mColors, getActivity());
 
-            ArrayList<BarDataSet> dataSets = new ArrayList<>();
-            dataSets.add(set);
+            BarData sumsData = new BarData(mMonths);
+            sumsData.addDataSet(sumsSet);
+            sumsData.setValueFormatter(mFloatFormatter);
+            sumsData.setValueTextSize(8f);
 
-            BarData data = new BarData(mMonths, dataSets);
-            data.setValueFormatter(new FloatFormatter());
-            data.setValueTextSize(8f);
+            mChart.getAxisLeft().removeAllLimitLines();
 
-            mChart.setData(data);
+            int aboveZeroCount = 0;
+            for (float value : mSums) if (value > 0) aboveZeroCount++;
+
+            float[] sortedSums = new float[aboveZeroCount];
+
+            int i = 0;
+            for (float value : mSums)
+                if (value > 0) {
+                    sortedSums[i] = value;
+                    i++;
+                }
+
+            Arrays.sort(sortedSums);
+
+            float median = median(sortedSums);
+
+            if (median > 0) {
+                LimitLine medianLine = new LimitLine(median);
+                //noinspection deprecation
+                medianLine.setLineColor(getResources().getColor(R.color.secondary_text));
+                medianLine.setLineWidth(0.5f);
+                medianLine.enableDashedLine(8f, 4f, 0f);
+
+                mChart.getAxisLeft().addLimitLine(medianLine);
+            }
+
+            mChart.setData(sumsData);
 
             mChart.animateXY(Const.ANIMATION_CHART, Const.ANIMATION_CHART);
         } else {
             mChart.clear();
 
-            mHandler.postDelayed(mRunnableShowNoRecords,
-                    Const.DELAYED_TIME_SHOW_NO_RECORDS);
+            mHandler.postDelayed(mRunnableShowNoRecords, Const.DELAYED_TIME_SHOW_NO_RECORDS);
         }
     }
 

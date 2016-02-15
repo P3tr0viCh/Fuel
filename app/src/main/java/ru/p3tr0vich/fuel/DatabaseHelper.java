@@ -56,12 +56,12 @@ class DatabaseHelper extends SQLiteOpenHelper {
         public static final int DELETED_INDEX = 5;
 
         private static final String[] COLUMNS_YEARS = new String[]{
-                "strftime('%Y', " + DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + YEAR};
+                "strftime('%Y', " + DATETIME + "/1000, 'unixepoch', 'utc')" + AS + YEAR};
         public static final int YEAR_INDEX = 0;
 
         private static final String[] COLUMNS_SUM_BY_MONTHS = new String[]{
                 "SUM(" + COST + ")",
-                "strftime('%m', " + DATETIME + "/1000, 'unixepoch', 'localtime')" + AS + MONTH};
+                "strftime('%m', " + DATETIME + "/1000, 'unixepoch', 'utc')" + AS + MONTH};
         public static final int COST_SUM_INDEX = 0;
         public static final int MONTH_INDEX = 1;
 
@@ -97,7 +97,6 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
     public static class Where {
         public static final String RECORD_NOT_DELETED = TableFueling.DELETED + EQUAL + FALSE;
-        private static final String LESS = "<'%d'";
         private static final String BETWEEN = " BETWEEN %1$d AND %2$d";
 
         private Where() {
@@ -270,9 +269,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getYears() {
         UtilsLog.d(TAG, "getYears");
-        return query(TableFueling.COLUMNS_YEARS, TableFueling.YEAR +
-                        String.format(Locale.US, Where.LESS, UtilsDate.getCurrentYear()) + AND +
-                        Where.RECORD_NOT_DELETED,
+        return query(TableFueling.COLUMNS_YEARS, Where.RECORD_NOT_DELETED,
                 TableFueling.YEAR, TableFueling.YEAR);
     }
 

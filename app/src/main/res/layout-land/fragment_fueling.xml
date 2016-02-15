@@ -73,7 +73,7 @@
                     android:layout_centerVertical="true"
                     android:gravity="center_vertical"
                     android:text="@string/text_average_cons"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts.Secondary" />
 
                 <TextView
                     android:id="@+id/tvAverage"
@@ -95,7 +95,7 @@
                     android:layout_toRightOf="@+id/tvAverage"
                     android:gravity="center_vertical"
                     android:text="@string/text_sum_cost"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Texts.Secondary" />
 
                 <TextView
                     android:id="@+id/tvCostSum"

@@ -9,10 +9,6 @@ class YandexMapJavascriptInterface {
 
     public static final String NAME = "YandexMapJavascriptInterface";
 
-    public final static String DEFAULT_MAP_CENTER_TEXT = "Москва, Кремль";
-    public final static double DEFAULT_MAP_CENTER_LATITUDE = 55.752023;  // Широта
-    public final static double DEFAULT_MAP_CENTER_LONGITUDE = 37.617499; // Долгота
-
     private final Activity mActivity;
 
     private final double mMapCenterLatitude;

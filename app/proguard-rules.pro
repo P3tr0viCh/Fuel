@@ -9,11 +9,6 @@
    public *;
 }
 
--keepclassmembers class ru.p3tr0vich.fuel.Functions {
-    public static java.lang.String sqlDateToString(java.lang.String, boolean);
-    public static java.lang.String floatToString(float);
-}
-
 -keepclassmembers class android.support.v7.widget.ListPopupWindow {
     public void setVerticalOffset(int);
     public void show();
@@ -41,6 +36,8 @@
 -dontnote com.wdullaer.materialdatetimepicker.**
 
 -keep class com.github.mikephil.charting.animation.ChartAnimator { *; }
+
+-dontwarn io.realm.**
 
 -dontnote com.github.mikephil.charting.charts.**
 -dontnote com.github.mikephil.charting.animation.**

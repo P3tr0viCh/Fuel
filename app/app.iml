@@ -114,9 +114,8 @@
     <orderEntry type="library" exported="" name="gson-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="okio-1.6.0" level="project" />
     <orderEntry type="library" exported="" name="commons-io-2.4" level="project" />
-    <orderEntry type="library" exported="" name="kotlin-runtime-1.0.0-beta-4584" level="project" />
     <orderEntry type="library" exported="" name="juniversalchardet-1.0.3" level="project" />
-    <orderEntry type="library" exported="" name="MPAndroidChart-v2.1.6" level="project" />
+    <orderEntry type="library" exported="" name="kotlin-runtime-1.0.0-beta-4584" level="project" />
     <orderEntry type="library" exported="" name="okhttp-2.3.0" level="project" />
     <orderEntry type="library" exported="" name="antlr4-4.5" level="project" />
     <orderEntry type="library" exported="" name="preference-v7-23.1.1" level="project" />
@@ -142,6 +141,7 @@
     <orderEntry type="library" exported="" name="compiler-2.0.0-beta4" level="project" />
     <orderEntry type="library" exported="" name="ST4-4.0.8" level="project" />
     <orderEntry type="library" exported="" name="commons-codec-1.10" level="project" />
+    <orderEntry type="library" exported="" name="MPAndroidChart-v2.2.2" level="project" />
     <orderEntry type="library" exported="" name="slf4j-api-1.7.10" level="project" />
     <orderEntry type="library" exported="" name="compilerCommon-2.0.0-beta4" level="project" />
     <orderEntry type="module" module-name="materialdatetimepicker" exported="" />

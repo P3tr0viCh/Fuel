@@ -32,6 +32,10 @@
 
     <style name="AppTheme.TextAppearance.Texts" parent="@style/AppTheme.TextAppearance.Body" />
 
+    <style name="AppTheme.TextAppearance.Texts.Secondary">
+        <item name="android:textColor">@color/secondary_text</item>
+    </style>
+
     <style name="AppTheme.TextAppearance.Caption" parent="@style/TextAppearance.AppCompat.Caption" />
 
     <style name="AppTheme.TextAppearance.Display" parent="@style/TextAppearance.AppCompat.Display1">

@@ -44,6 +44,10 @@ class PreferenceManagerFuel {
     private static final String PREF_MAP_CENTER_LATITUDE = "map center latitude";
     private static final String PREF_MAP_CENTER_LONGITUDE = "map center longitude";
 
+    public final static String DEFAULT_MAP_CENTER_TEXT = "Москва, Кремль";
+    public final static double DEFAULT_MAP_CENTER_LATITUDE = 55.752023;  // Широта
+    public final static double DEFAULT_MAP_CENTER_LONGITUDE = 37.617499; // Долгота
+
     @SuppressWarnings("WeakerAccess")
     // private - поле удаляется сборщиком мусора
     static SharedPreferences.OnSharedPreferenceChangeListener sPreferenceChangeListener; // TODO: this
@@ -248,19 +252,19 @@ class PreferenceManagerFuel {
     @NonNull
     public static String getMapCenterText() {
         return getString(sContext.getString(R.string.pref_map_center_text),
-                YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_TEXT);
+                DEFAULT_MAP_CENTER_TEXT);
     }
 
     public static double getMapCenterLatitude() {
         return Double.longBitsToDouble(sSharedPreferences.getLong(
                 PREF_MAP_CENTER_LATITUDE,
-                Double.doubleToLongBits(YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_LATITUDE)));
+                Double.doubleToLongBits(DEFAULT_MAP_CENTER_LATITUDE)));
     }
 
     public static double getMapCenterLongitude() {
         return Double.longBitsToDouble(sSharedPreferences.getLong(
                 PREF_MAP_CENTER_LONGITUDE,
-                Double.doubleToLongBits(YandexMapJavascriptInterface.DEFAULT_MAP_CENTER_LONGITUDE)));
+                Double.doubleToLongBits(DEFAULT_MAP_CENTER_LONGITUDE)));
     }
 
     public static void putMapCenter(final String text, final double latitude, final double longitude) {
@@ -275,13 +279,13 @@ class PreferenceManagerFuel {
     }
 
     @NonNull
-    public static String getString(final String key, final String defValue) {
+    private static String getString(final String key, final String defValue) {
         return sSharedPreferences.getString(key, defValue);
     }
 
     @NonNull
     public static String getString(final String key) {
-        return sSharedPreferences.getString(key, "");
+        return getString(key, "");
     }
 
     @NonNull

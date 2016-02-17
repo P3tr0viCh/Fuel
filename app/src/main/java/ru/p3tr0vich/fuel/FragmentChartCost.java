@@ -10,7 +10,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -204,18 +203,13 @@ public class FragmentChartCost extends FragmentBase implements
         }
     }
 
-    private String getMonthName(Calendar calendar, int month) {
-        calendar.set(Calendar.MONTH, month);
-        int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR | DateUtils.FORMAT_NO_MONTH_DAY;
-        if (Utils.isPhoneInPortrait()) flags |= DateUtils.FORMAT_ABBREV_MONTH;
-
-        return DateUtils.formatDateTime(getActivity(), calendar.getTimeInMillis(), flags);
-    }
-
     private void updateMonths() {
+        Context context = getContext();
         Calendar calendar = Calendar.getInstance();
+        boolean abbrev = Utils.isPhoneInPortrait();
+
         for (int month = Calendar.JANUARY; month <= Calendar.DECEMBER; month++)
-            mMonths[month] = getMonthName(calendar, month);
+            mMonths[month] = UtilsDate.getMonthName(context, calendar, month, abbrev);
     }
 
     private void setYear(int year) {
@@ -409,9 +403,9 @@ public class FragmentChartCost extends FragmentBase implements
             if (median > 0) {
                 LimitLine medianLine = new LimitLine(median);
                 //noinspection deprecation
-                medianLine.setLineColor(getResources().getColor(R.color.secondary_text));
-                medianLine.setLineWidth(0.5f);
-                medianLine.enableDashedLine(8f, 4f, 0f);
+                medianLine.setLineColor(getResources().getColor(R.color.chart_median));
+                medianLine.setLineWidth(0.2f);
+                medianLine.enableDashedLine(8f, 2f, 0f);
 
                 mChart.getAxisLeft().addLimitLine(medianLine);
             }

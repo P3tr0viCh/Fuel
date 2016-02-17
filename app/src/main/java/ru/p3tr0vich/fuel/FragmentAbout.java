@@ -27,7 +27,7 @@ public class FragmentAbout extends FragmentBase {
 
         View view = inflater.inflate(R.layout.fragment_about, container, false);
 
-        String versionName, buildDate;
+        String versionName;
         try {
             versionName = getActivity().getPackageManager()
                     .getPackageInfo(getActivity().getPackageName(), 0).versionName;
@@ -37,8 +37,8 @@ public class FragmentAbout extends FragmentBase {
         versionName = getActivity().getString(R.string.about_version) + " " + versionName;
         ((TextView) view.findViewById(R.id.textAboutVersion)).setText(versionName);
 
-        buildDate = "(" + BuildConfig.BUILD_DATE + ")";
-        ((TextView) view.findViewById(R.id.textAboutDate)).setText(buildDate);
+        ((TextView) view.findViewById(R.id.textAboutDate)).setText(
+                UtilsFormat.dateToString(BuildConfig.BUILD_DATE, true));
 
         return view;
     }

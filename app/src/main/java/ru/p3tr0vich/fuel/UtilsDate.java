@@ -44,6 +44,16 @@ class UtilsDate {
     }
 
     @NonNull
+    public static String getMonthName(@NonNull Context context, @NonNull Calendar calendar,
+                                int month, boolean abbrev) {
+        calendar.set(Calendar.MONTH, month);
+        int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR | DateUtils.FORMAT_NO_MONTH_DAY;
+        if (abbrev) flags |= DateUtils.FORMAT_ABBREV_MONTH;
+
+        return DateUtils.formatDateTime(context, calendar.getTimeInMillis(), flags);
+    }
+
+    @NonNull
     public static String getRelativeDateTime(@NonNull Context context, long dateTime) {
         final long now = System.currentTimeMillis();
         final long elapsed = now - dateTime;

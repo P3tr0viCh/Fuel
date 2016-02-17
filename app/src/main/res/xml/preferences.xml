@@ -111,6 +111,7 @@
             android:switchTextOn="@string/pref_sync_enabled_on" />
 
         <Preference
+            android:icon="@mipmap/ic_yandex_disk_24dp"
             android:key="@string/pref_sync_yandex_disk_key"
             android:summary="@string/pref_sync_yandex_disk_summary_on"
             android:title="@string/pref_sync_yandex_disk_title" />

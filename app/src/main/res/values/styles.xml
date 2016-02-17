@@ -14,35 +14,43 @@
         <item name="android:layout_width">1dp</item>
     </style>
 
-    <style name="AppTheme.PopupMenu" parent="@style/Widget.AppCompat.PopupMenu" />
+    <style name="AppTheme.PopupMenu" parent="Widget.AppCompat.PopupMenu" />
 
-    <style name="AppTheme.Button" parent="@style/Widget.AppCompat.Button" />
+    <style name="AppTheme.Button" parent="Widget.AppCompat.Button" />
 
-    <style name="AppTheme.Button.Colored" parent="@style/Widget.AppCompat.Button.Colored" />
+    <style name="AppTheme.Button.Colored" parent="Widget.AppCompat.Button.Colored" />
 
-    <style name="AppTheme.DatePickerButton" parent="@style/Base.Widget.AppCompat.Spinner.Underlined">
+    <style name="AppTheme.DatePickerButton" parent="Base.Widget.AppCompat.Spinner.Underlined">
         <item name="android:paddingRight">24dp</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Body" parent="@style/TextAppearance.AppCompat.Body1">
+    <style name="AppTheme.TextAppearance.Body" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Lists" parent="@style/AppTheme.TextAppearance.Body" />
+    <style name="AppTheme.TextAppearance.Lists" parent="AppTheme.TextAppearance.Body" />
 
-    <style name="AppTheme.TextAppearance.Texts" parent="@style/AppTheme.TextAppearance.Body" />
+    <style name="AppTheme.TextAppearance.Texts" parent="AppTheme.TextAppearance.Body" />
 
     <style name="AppTheme.TextAppearance.Texts.Secondary">
         <item name="android:textColor">@color/secondary_text</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Caption" parent="@style/TextAppearance.AppCompat.Caption" />
+    <style name="AppTheme.TextAppearance.Caption" parent="TextAppearance.AppCompat.Caption" />
 
-    <style name="AppTheme.TextAppearance.Display" parent="@style/TextAppearance.AppCompat.Display1">
+    <style name="AppTheme.TextAppearance.Display" parent="TextAppearance.AppCompat.Display1">
         <item name="android:textColor">@color/accent</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Medium" parent="@style/TextAppearance.AppCompat.Medium">
+    <style name="AppTheme.TextAppearance.Headline" parent="TextAppearance.AppCompat.Headline" />
+
+    <style name="AppTheme.TextAppearance.Subhead" parent="TextAppearance.AppCompat.Subhead" />
+
+    <style name="AppTheme.TextAppearance.Subhead.Secondary">
+        <item name="android:textColor">@color/secondary_text</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.Medium" parent="TextAppearance.AppCompat.Medium">
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -50,11 +58,11 @@
         <item name="android:textColor">@color/secondary_text</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Small" parent="@style/TextAppearance.AppCompat.Small">
+    <style name="AppTheme.TextAppearance.Small" parent="TextAppearance.AppCompat.Small">
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.ErrorValue" parent="@style/AppTheme.TextAppearance.Small">
+    <style name="AppTheme.TextAppearance.ErrorValue" parent="AppTheme.TextAppearance.Small">
         <item name="android:textColor">@color/edit_error</item>
     </style>
 
@@ -62,7 +70,7 @@
         <item name="android:textColor">@color/primary</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.DialogWindowTitle" parent="@style/TextAppearance.AppCompat.Title">
+    <style name="AppTheme.TextAppearance.DialogWindowTitle" parent="TextAppearance.AppCompat.Title">
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/primary_text</item>
         <item name="android:textStyle">bold</item>
@@ -81,7 +89,7 @@
         <item name="colorAccent">@color/accent</item>
     </style>
 
-    <style name="AppTheme.Toolbar" parent="@style/Widget.AppCompat.Toolbar">
+    <style name="AppTheme.Toolbar" parent="Widget.AppCompat.Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/toolbar_height</item>
         <item name="android:background">@color/primary</item>
@@ -133,7 +141,7 @@
         <item name="layout">@layout/apptheme_preference</item>
     </style>
 
-    <style name="AppTheme.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
+    <style name="AppTheme.ActionMode" parent="Widget.AppCompat.ActionMode">
         <item name="background">@color/primary</item>
         <item name="height">@dimen/toolbar_height</item>
     </style>

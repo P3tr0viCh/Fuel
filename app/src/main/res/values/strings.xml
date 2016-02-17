@@ -41,7 +41,7 @@
     <string name="action_dates_curr_year">Текущий год</string>
     <string name="action_dates_prev_year">Прошлый год</string>
 
-    <string name="list_item_date">29 марта 1981</string>
+    <string name="list_item_date">29 марта 1981 г.</string>
     <string name="list_item_cost">500</string>
     <string name="list_item_volume">16.37</string>
     <string name="list_item_total">12345</string>

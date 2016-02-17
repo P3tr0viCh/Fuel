@@ -39,6 +39,9 @@ public class FragmentChartCost extends FragmentBase implements
     private static final String KEY_SUMS = "KEY_SUMS";
     private static final String KEY_IS_DATA = "KEY_IS_DATA";
 
+    private static final int YEARS_CURSOR_LOADER_ID = 0;
+    private static final int CHART_CURSOR_LOADER_ID = 1;
+
     private int mYear;
 
     private TabLayout mTabLayout;
@@ -217,7 +220,7 @@ public class FragmentChartCost extends FragmentBase implements
 
         mYear = year;
 
-        getLoaderManager().restartLoader(ChartCursorLoader.ID, null, this);
+        getLoaderManager().restartLoader(CHART_CURSOR_LOADER_ID, null, this);
     }
 
     @Override
@@ -229,7 +232,7 @@ public class FragmentChartCost extends FragmentBase implements
 
             mYear = UtilsDate.getCurrentYear();
 
-            getLoaderManager().initLoader(YearsCursorLoader.ID, null, this);
+            getLoaderManager().initLoader(YEARS_CURSOR_LOADER_ID, null, this);
         } else {
             mYear = savedInstanceState.getInt(KEY_FILTER_YEAR);
             mYears = savedInstanceState.getIntArray(KEY_YEARS);
@@ -256,8 +259,6 @@ public class FragmentChartCost extends FragmentBase implements
 
     static class ChartCursorLoader extends CursorLoader {
 
-        private static final int ID = 0;
-
         private final int mYear;
 
         public ChartCursorLoader(Context context, int year) {
@@ -273,8 +274,6 @@ public class FragmentChartCost extends FragmentBase implements
 
     static class YearsCursorLoader extends CursorLoader {
 
-        private static final int ID = 1;
-
         public YearsCursorLoader(Context context) {
             super(context);
         }
@@ -288,9 +287,9 @@ public class FragmentChartCost extends FragmentBase implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
-            case ChartCursorLoader.ID:
+            case CHART_CURSOR_LOADER_ID:
                 return new ChartCursorLoader(getContext(), mYear);
-            case YearsCursorLoader.ID:
+            case YEARS_CURSOR_LOADER_ID:
                 return new YearsCursorLoader(getContext());
             default:
                 return null;
@@ -300,7 +299,7 @@ public class FragmentChartCost extends FragmentBase implements
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
-            case ChartCursorLoader.ID:
+            case CHART_CURSOR_LOADER_ID:
                 float sum;
                 String month;
 
@@ -318,7 +317,7 @@ public class FragmentChartCost extends FragmentBase implements
                 updateChart();
 
                 break;
-            case YearsCursorLoader.ID:
+            case YEARS_CURSOR_LOADER_ID:
                 int count = data.getCount();
 
                 if (count > 0) {
@@ -334,7 +333,7 @@ public class FragmentChartCost extends FragmentBase implements
 
                     updateYears();
 
-                    getLoaderManager().initLoader(ChartCursorLoader.ID, null, this);
+                    getLoaderManager().initLoader(CHART_CURSOR_LOADER_ID, null, this);
                 } else
                     mYears = null;
         }
@@ -382,35 +381,37 @@ public class FragmentChartCost extends FragmentBase implements
             sumsData.setValueFormatter(mFloatFormatter);
             sumsData.setValueTextSize(8f);
 
+            mChart.setData(sumsData);
+
             mChart.getAxisLeft().removeAllLimitLines();
 
             int aboveZeroCount = 0;
             for (float value : mSums) if (value > 0) aboveZeroCount++;
 
-            float[] sortedSums = new float[aboveZeroCount];
+            if (aboveZeroCount > 0) {
+                float[] sortedSums = new float[aboveZeroCount];
 
-            int i = 0;
-            for (float value : mSums)
-                if (value > 0) {
-                    sortedSums[i] = value;
-                    i++;
+                int i = 0;
+                for (float value : mSums)
+                    if (value > 0) {
+                        sortedSums[i] = value;
+                        i++;
+                    }
+
+                Arrays.sort(sortedSums);
+
+                float median = median(sortedSums);
+
+                if (median > 0) {
+                    LimitLine medianLine = new LimitLine(median);
+                    //noinspection deprecation
+                    medianLine.setLineColor(getResources().getColor(R.color.chart_median));
+                    medianLine.setLineWidth(0.5f); // 0.2 не выводится на планшете с апи 17
+                    medianLine.enableDashedLine(8f, 2f, 0f);
+
+                    mChart.getAxisLeft().addLimitLine(medianLine);
                 }
-
-            Arrays.sort(sortedSums);
-
-            float median = median(sortedSums);
-
-            if (median > 0) {
-                LimitLine medianLine = new LimitLine(median);
-                //noinspection deprecation
-                medianLine.setLineColor(getResources().getColor(R.color.chart_median));
-                medianLine.setLineWidth(0.2f);
-                medianLine.enableDashedLine(8f, 2f, 0f);
-
-                mChart.getAxisLeft().addLimitLine(medianLine);
             }
-
-            mChart.setData(sumsData);
 
             mChart.animateXY(Const.ANIMATION_CHART, Const.ANIMATION_CHART);
         } else {

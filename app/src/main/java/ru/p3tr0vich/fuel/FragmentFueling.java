@@ -44,6 +44,8 @@ public class FragmentFueling extends FragmentBase implements
     private static final String KEY_FILTER_DATE_FROM = "KEY_FILTER_DATE_FROM";
     private static final String KEY_FILTER_DATE_TO = "KEY_FILTER_DATE_TO";
 
+    private static final int FUELING_CURSOR_LOADER_ID = 0;
+
     private Toolbar mToolbarDates;
     private View mToolbarShadow;
 
@@ -252,7 +254,7 @@ public class FragmentFueling extends FragmentBase implements
 
         doSetFilterMode(mFilter.mode);
 
-        getLoaderManager().initLoader(FuelingCursorLoader.ID, null, this);
+        getLoaderManager().initLoader(FUELING_CURSOR_LOADER_ID, null, this);
     }
 
     @Override
@@ -289,7 +291,7 @@ public class FragmentFueling extends FragmentBase implements
 
             doSetFilterMode(filterMode);
 
-            getLoaderManager().restartLoader(FuelingCursorLoader.ID, null, this);
+            getLoaderManager().restartLoader(FUELING_CURSOR_LOADER_ID, null, this);
 
             setTotalAndFabVisible(true);
         }
@@ -297,7 +299,7 @@ public class FragmentFueling extends FragmentBase implements
 
     public void updateList(long id) {
         mIdForScroll = id;
-        getLoaderManager().getLoader(FuelingCursorLoader.ID).forceLoad();
+        getLoaderManager().getLoader(FUELING_CURSOR_LOADER_ID).forceLoad();
     }
 
     private void checkDateTime(@NonNull FuelingRecord fuelingRecord) {
@@ -378,19 +380,19 @@ public class FragmentFueling extends FragmentBase implements
     private void setFilterDate(final long dateFrom, final long dateTo) {
         mFilter.dateFrom = dateFrom;
         mFilter.dateTo = dateTo;
-        getLoaderManager().restartLoader(FuelingCursorLoader.ID, null, this);
+        getLoaderManager().restartLoader(FUELING_CURSOR_LOADER_ID, null, this);
     }
 
     private void setFilterDate(final boolean setDateFrom, final long date) {
         if (setDateFrom) mFilter.dateFrom = date;
         else mFilter.dateTo = date;
-        getLoaderManager().restartLoader(FuelingCursorLoader.ID, null, this);
+        getLoaderManager().restartLoader(FUELING_CURSOR_LOADER_ID, null, this);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
-            case FuelingCursorLoader.ID:
+            case FUELING_CURSOR_LOADER_ID:
                 return new FuelingCursorLoader(getContext(), mFilter);
             default:
                 return null;
@@ -789,8 +791,6 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     static class FuelingCursorLoader extends CursorLoader {
-
-        public static final int ID = 0;
 
         private final DatabaseHelper.Filter mFilter;
 

@@ -47,13 +47,21 @@ public class ActivityMain extends AppCompatActivity implements
         SyncStatusObserver,
         FragmentFueling.OnFilterChangeListener,
         FragmentFueling.OnRecordChangeListener,
+        FragmentCalc.OnCalcDistanceButtonClickListener,
         FragmentInterface.OnFragmentChangeListener,
         FragmentPreference.OnPreferenceScreenChangeListener,
-        FragmentPreference.OnPreferenceSyncEnabledChangeListener {
+        FragmentPreference.OnPreferenceSyncEnabledChangeListener,
+        FragmentPreference.OnPreferenceMapCenterClickListener {
 
     private static final String TAG = "ActivityMain";
 
     private static final String KEY_CURRENT_FRAGMENT_ID = "KEY_CURRENT_FRAGMENT_ID";
+
+    private static final int REQUEST_CODE_ACTIVITY_RECORD = 100;
+    private static final int REQUEST_CODE_ACTIVITY_MAP_DISTANCE = 101;
+    private static final int REQUEST_CODE_ACTIVITY_MAP_CENTER = 102;
+
+    private static final int REQUEST_CODE_DIALOG_QUESTION = 200;
 
     private Toolbar mToolbarMain;
     private Spinner mToolbarSpinner;
@@ -78,8 +86,27 @@ public class ActivityMain extends AppCompatActivity implements
     private PreferencesObserver mPreferencesObserver;
     private DatabaseObserver mDatabaseObserver;
 
-    private int mCurrentFragmentId, mClickedMenuId = -1;
+    @FragmentId
+    private int mCurrentFragmentId;
+    private int mClickedMenuId = -1;
     private boolean mOpenPreferenceSync = false;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({FRAGMENT_FUELING_ID,
+            FRAGMENT_CALC_ID,
+            FRAGMENT_CHART_COST_ID,
+            FRAGMENT_BACKUP_ID,
+            FRAGMENT_PREFERENCES_ID,
+            FRAGMENT_ABOUT_ID})
+    public @interface FragmentId {
+    }
+
+    private static final int FRAGMENT_FUELING_ID = 0;
+    private static final int FRAGMENT_CALC_ID = 1;
+    private static final int FRAGMENT_CHART_COST_ID = 2;
+    private static final int FRAGMENT_BACKUP_ID = 3;
+    private static final int FRAGMENT_PREFERENCES_ID = 4;
+    private static final int FRAGMENT_ABOUT_ID = 5;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({START_SYNC_APP_STARTED, START_SYNC_BUTTON_CLICKED,
@@ -103,6 +130,12 @@ public class ActivityMain extends AppCompatActivity implements
     private Fragment findFragmentByTag(@Nullable String fragmentTag) {
         return fragmentTag != null ?
                 getSupportFragmentManager().findFragmentByTag(fragmentTag) : null;
+    }
+
+    @NonNull
+    private FragmentInterface getCurrentFragment() {
+        return (FragmentInterface) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+
     }
 
     @Nullable
@@ -143,16 +176,18 @@ public class ActivityMain extends AppCompatActivity implements
                 ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
 
         if (savedInstanceState == null) {
-            mCurrentFragmentId = R.id.action_fueling;
+            mCurrentFragmentId = FRAGMENT_FUELING_ID;
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.contentFrame, new FragmentFueling(), FragmentFueling.TAG)
+                    .add(R.id.contentFrame,
+                            FragmentFueling.newInstance(FRAGMENT_FUELING_ID),
+                            FragmentFueling.TAG)
                     .setTransition(FragmentTransaction.TRANSIT_NONE)
                     .commit();
 
             startSync(START_SYNC_APP_STARTED);
         } else {
-            mCurrentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID);
-            if (mCurrentFragmentId == R.id.action_settings) {
+            mCurrentFragmentId = intToFragmentId(savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID));
+            if (mCurrentFragmentId == FRAGMENT_PREFERENCES_ID) {
                 FragmentPreference fragmentPreference = getFragmentPreference();
                 if (fragmentPreference != null)
                     mDrawerToggle.setDrawerIndicatorEnabled(fragmentPreference.isInRoot());
@@ -237,8 +272,9 @@ public class ActivityMain extends AppCompatActivity implements
         mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentPreference fragmentPreference = getFragmentPreference();
-                if (fragmentPreference != null) fragmentPreference.goToRootScreen();
+//                FragmentPreference fragmentPreference = getFragmentPreference();
+//                if (fragmentPreference != null) fragmentPreference.goToRootScreen();
+                getCurrentFragment().onBackPressed();
             }
         });
 
@@ -250,7 +286,8 @@ public class ActivityMain extends AppCompatActivity implements
                 mOpenPreferenceSync = false;
                 // Если текущий фрагмент -- настройки, может отображаться стрелка влево.
                 // Если нажат другой пункт меню, показывается значок меню.
-                if (mCurrentFragmentId == FragmentPreference.ID && mCurrentFragmentId != mClickedMenuId)
+                if (mCurrentFragmentId == FRAGMENT_PREFERENCES_ID &&
+                        mCurrentFragmentId != menuIdToFragmentId(mClickedMenuId))
                     mDrawerToggle.setDrawerIndicatorEnabled(true);
 
                 mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -404,17 +441,56 @@ public class ActivityMain extends AppCompatActivity implements
 
         switch (fragmentTag) {
             case FragmentCalc.TAG:
-                return new FragmentCalc();
+                return FragmentCalc.newInstance(FRAGMENT_CALC_ID);
             case FragmentChartCost.TAG:
-                return new FragmentChartCost();
+                return FragmentChartCost.newInstance(FRAGMENT_CHART_COST_ID);
             case FragmentPreference.TAG:
-                return new FragmentPreference();
+                return FragmentPreference.newInstance(FRAGMENT_PREFERENCES_ID);
             case FragmentBackup.TAG:
-                return new FragmentBackup();
+                return FragmentBackup.newInstance(FRAGMENT_BACKUP_ID);
             case FragmentAbout.TAG:
-                return new FragmentAbout();
+                return FragmentAbout.newInstance(FRAGMENT_ABOUT_ID);
             default:
                 return null;
+        }
+    }
+
+    @FragmentId
+    private int menuIdToFragmentId(int menuId) {
+        switch (menuId) {
+            case R.id.action_fueling:
+                return FRAGMENT_FUELING_ID;
+            case R.id.action_calc:
+                return FRAGMENT_CALC_ID;
+            case R.id.action_chart_cost:
+                return FRAGMENT_CHART_COST_ID;
+            case R.id.action_preferences:
+                return FRAGMENT_PREFERENCES_ID;
+            case R.id.action_backup:
+                return FRAGMENT_BACKUP_ID;
+            case R.id.action_about:
+                return FRAGMENT_ABOUT_ID;
+            default:
+                throw new IllegalArgumentException("Bad menu id == " + menuId);
+        }
+    }
+
+    private int fragmentIdToMenuId(@FragmentId int fragmentId) {
+        switch (fragmentId) {
+            case FRAGMENT_ABOUT_ID:
+                return R.id.action_about;
+            case FRAGMENT_BACKUP_ID:
+                return R.id.action_backup;
+            case FRAGMENT_CALC_ID:
+                return R.id.action_calc;
+            case FRAGMENT_CHART_COST_ID:
+                return R.id.action_chart_cost;
+            case FRAGMENT_FUELING_ID:
+                return R.id.action_fueling;
+            case FRAGMENT_PREFERENCES_ID:
+                return R.id.action_preferences;
+            default:
+                return -1;
         }
     }
 
@@ -423,8 +499,10 @@ public class ActivityMain extends AppCompatActivity implements
 
         mClickedMenuId = -1;
 
-        if (mCurrentFragmentId == menuId) {
-            if (mCurrentFragmentId == FragmentPreference.ID) {
+        int fragmentId = menuIdToFragmentId(menuId);
+
+        if (mCurrentFragmentId == fragmentId) {
+            if (mCurrentFragmentId == FRAGMENT_PREFERENCES_ID) {
                 FragmentPreference fragmentPreference = getFragmentPreference();
                 if (fragmentPreference != null) {
                     if (mOpenPreferenceSync)
@@ -436,29 +514,32 @@ public class ActivityMain extends AppCompatActivity implements
             return;
         }
 
-        String fragmentTag = null;
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentFueling fragmentFueling = getFragmentFueling();
 
         if (fragmentFueling != null)
             if (!fragmentFueling.isVisible()) fragmentManager.popBackStack();
 
-        switch (menuId) {
-            case R.id.action_calc:
-                fragmentTag = FragmentCalc.TAG;
+        String fragmentTag = null;
+
+        switch (fragmentId) {
+            case FRAGMENT_ABOUT_ID:
+                fragmentTag = FragmentAbout.TAG;
                 break;
-            case R.id.action_chart_cost:
-                fragmentTag = FragmentChartCost.TAG;
-                break;
-            case R.id.action_settings:
-                fragmentTag = FragmentPreference.TAG;
-                break;
-            case R.id.action_backup:
+            case FRAGMENT_BACKUP_ID:
                 fragmentTag = FragmentBackup.TAG;
                 break;
-            case R.id.action_about:
-                fragmentTag = FragmentAbout.TAG;
+            case FRAGMENT_CALC_ID:
+                fragmentTag = FragmentCalc.TAG;
+                break;
+            case FRAGMENT_CHART_COST_ID:
+                fragmentTag = FragmentChartCost.TAG;
+                break;
+            case FRAGMENT_FUELING_ID:
+                break;
+            case FRAGMENT_PREFERENCES_ID:
+                fragmentTag = FragmentPreference.TAG;
+                break;
         }
 
         Fragment fragment = getFragmentNewInstance(fragmentTag);
@@ -488,11 +569,12 @@ public class ActivityMain extends AppCompatActivity implements
         if (mDrawerLayout.isDrawerVisible(GravityCompat.START))
             mDrawerLayout.closeDrawer(GravityCompat.START);
         else {
-            if (mCurrentFragmentId == R.id.action_settings) {
-                FragmentPreference fragmentPreference = getFragmentPreference();
-                if (fragmentPreference != null && fragmentPreference.goToRootScreen())
-                    return;
-            }
+            FragmentInterface fragment = getCurrentFragment();
+
+            UtilsLog.d(TAG, "onBackPressed", "fragment == " + fragment);
+
+            if (fragment.onBackPressed()) return;
+
             if (getSupportFragmentManager().getBackStackEntryCount() != 0)
                 getSupportFragmentManager().popBackStack();
             else super.onBackPressed();
@@ -532,10 +614,12 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
-    public void onRecordChange(@Const.RecordAction int recordAction, FuelingRecord fuelingRecord) {
+    public void onRecordChange(@Const.RecordAction int recordAction,
+                               @Nullable FuelingRecord fuelingRecord) {
         if (recordAction != Const.RECORD_ACTION_DELETE)
             // ADD, UPDATE
-            ActivityFuelingRecordChange.start(this, recordAction, fuelingRecord);
+            ActivityFuelingRecordChange.start(this, REQUEST_CODE_ACTIVITY_RECORD,
+                    recordAction, fuelingRecord);
     }
 
     @Override
@@ -543,7 +627,7 @@ public class ActivityMain extends AppCompatActivity implements
         if (resultCode != RESULT_OK) return;
 
         switch (requestCode) {
-            case ActivityFuelingRecordChange.REQUEST_CODE:
+            case REQUEST_CODE_ACTIVITY_RECORD:
                 FragmentFueling fragmentFueling = getFragmentFueling();
 
                 if (fragmentFueling == null) return;
@@ -561,21 +645,23 @@ public class ActivityMain extends AppCompatActivity implements
                         break;
                 }
                 break;
-            case ActivityYandexMap.REQUEST_CODE_DISTANCE:
+            case REQUEST_CODE_ACTIVITY_MAP_CENTER:
                 FragmentCalc fragmentCalc = (FragmentCalc) findFragmentByTag(FragmentCalc.TAG);
                 if (fragmentCalc != null)
                     fragmentCalc.setDistance(ActivityYandexMap.getDistance(data));
+
                 break;
-            case ActivityYandexMap.REQUEST_CODE_MAP_CENTER:
+            case REQUEST_CODE_ACTIVITY_MAP_DISTANCE:
                 ActivityYandexMap.MapCenter mapCenter = ActivityYandexMap.getMapCenter(data);
 
                 PreferenceManagerFuel.putMapCenter(mapCenter.text,
                         mapCenter.latitude, mapCenter.longitude);
                 FragmentPreference fragmentPreference = getFragmentPreference();
                 if (fragmentPreference != null) fragmentPreference.updateMapCenter();
+
                 break;
-            case FragmentDialogQuestion.REQUEST_CODE:
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SyncYandexDisk.AUTH_URL)));
+            case REQUEST_CODE_DIALOG_QUESTION:
+                Utils.openUrl(this, SyncYandexDisk.AUTH_URL, null);
         }
     }
 
@@ -605,6 +691,11 @@ public class ActivityMain extends AppCompatActivity implements
         }
     }
 
+    @FragmentId
+    private static int intToFragmentId(int id) {
+        return id;
+    }
+
     @Override
     public void onFilterChange(@DatabaseHelper.Filter.Mode int filterMode) {
         int position = filterModeToPosition(filterMode);
@@ -615,16 +706,14 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onFragmentChange(FragmentInterface fragment) {
-        mCurrentFragmentId = fragment.getFragmentId();
+        mCurrentFragmentId = intToFragmentId(fragment.getFragmentId());
 
         setTitle(fragment.getTitle());
         setSubtitle(fragment.getSubtitle());
 
-        boolean showSpinner = fragment instanceof FragmentFueling;
+        mToolbarSpinner.setVisibility(mCurrentFragmentId == FRAGMENT_FUELING_ID ? View.VISIBLE : View.GONE);
 
-        mToolbarSpinner.setVisibility(showSpinner ? View.VISIBLE : View.GONE);
-
-        mNavigationView.getMenu().findItem(mCurrentFragmentId).setChecked(true);
+        mNavigationView.getMenu().findItem(fragmentIdToMenuId(mCurrentFragmentId)).setChecked(true);
     }
 
     @Override
@@ -785,7 +874,7 @@ public class ActivityMain extends AppCompatActivity implements
         } else {
             UtilsLog.d(TAG, "startSync", "sync disabled");
             if (showDialogs) {
-                mClickedMenuId = FragmentPreference.ID;
+                mClickedMenuId = R.id.action_preferences;
                 mOpenPreferenceSync = true;
 
                 if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
@@ -857,7 +946,36 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void showDialogNeedAuth() {
-        FragmentDialogQuestion.show(this, R.string.dialog_caption_auth,
-                R.string.message_dialog_auth, R.string.dialog_btn_agree, R.string.dialog_btn_disagree);
+        FragmentDialogQuestion.show(this, REQUEST_CODE_DIALOG_QUESTION,
+                R.string.dialog_caption_auth,
+                R.string.message_dialog_auth,
+                R.string.dialog_btn_agree, R.string.dialog_btn_disagree);
+    }
+
+    private void startYandexMap(@ActivityYandexMap.MapType int mapType) {
+        int requestCode;
+
+        switch (mapType) {
+            case ActivityYandexMap.MAP_TYPE_CENTER:
+                requestCode = REQUEST_CODE_ACTIVITY_MAP_DISTANCE;
+                break;
+            case ActivityYandexMap.MAP_TYPE_DISTANCE:
+                requestCode = REQUEST_CODE_ACTIVITY_MAP_CENTER;
+                break;
+            default:
+                return;
+        }
+
+        ActivityYandexMap.start(this, mapType, requestCode);
+    }
+
+    @Override
+    public void OnCalcDistanceButtonClick() {
+        startYandexMap(ActivityYandexMap.MAP_TYPE_DISTANCE);
+    }
+
+    @Override
+    public void OnPreferenceMapCenterClick() {
+        startYandexMap(ActivityYandexMap.MAP_TYPE_CENTER);
     }
 }

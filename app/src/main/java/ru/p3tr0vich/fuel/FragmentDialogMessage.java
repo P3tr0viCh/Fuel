@@ -17,7 +17,7 @@ public class FragmentDialogMessage extends DialogFragment {
     private static final String TITLE = "title";
     private static final String MESSAGE = "message";
 
-    private static FragmentDialogMessage getInstance(@NonNull String title, @NonNull String message) {
+    private static FragmentDialogMessage newInstance(@NonNull String title, @NonNull String message) {
         Bundle args = new Bundle();
         args.putString(TITLE, title);
         args.putString(MESSAGE, message);
@@ -31,7 +31,7 @@ public class FragmentDialogMessage extends DialogFragment {
     public static void show(@NonNull FragmentActivity parent,
                             @NonNull String title,
                             @NonNull String message) {
-        getInstance(title, message).show(parent.getSupportFragmentManager(), TAG);
+        newInstance(title, message).show(parent.getSupportFragmentManager(), TAG);
     }
 
     @NonNull

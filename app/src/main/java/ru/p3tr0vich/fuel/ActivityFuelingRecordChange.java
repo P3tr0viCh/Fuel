@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -11,16 +13,18 @@ import android.view.View;
 public class ActivityFuelingRecordChange extends AppCompatActivity {
 
     public static final String INTENT_EXTRA_ACTION = "EXTRA_ACTION";
-    public static final int REQUEST_CODE = 2309;
 
-    public static void start(Activity parent, @Const.RecordAction int recordAction, FuelingRecord fuelingRecord) {
+    public static void start(@NonNull Activity parent,
+                             int requestCode,
+                             @Const.RecordAction int recordAction,
+                             @Nullable FuelingRecord fuelingRecord) {
         Intent intent = new Intent(parent, ActivityFuelingRecordChange.class);
 
         intent.putExtra(INTENT_EXTRA_ACTION, recordAction);
-        if (recordAction == Const.RECORD_ACTION_UPDATE)
+        if (recordAction == Const.RECORD_ACTION_UPDATE && fuelingRecord != null)
             fuelingRecord.toIntent(intent);
 
-        parent.startActivityForResult(intent, REQUEST_CODE);
+        parent.startActivityForResult(intent, requestCode);
     }
 
     @Const.RecordAction

@@ -21,7 +21,7 @@
         android:id="@+id/menu_bottom"
         android:checkableBehavior="all">
         <item
-            android:id="@+id/action_settings"
+            android:id="@+id/action_preferences"
             android:icon="@mipmap/ic_settings_grey600_24dp"
             android:title="@string/action_settings" />
         <item

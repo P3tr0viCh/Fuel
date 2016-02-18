@@ -4,16 +4,17 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 interface FragmentInterface {
+
+    String KEY_ID = "KEY_ID";
+
     int getFragmentId();
 
-    @SuppressWarnings("unused")
     @StringRes
     int getTitleId();
 
     @Nullable
     String getTitle();
 
-    @SuppressWarnings("unused")
     @StringRes
     int getSubtitleId();
 
@@ -23,4 +24,6 @@ interface FragmentInterface {
     interface OnFragmentChangeListener {
         void onFragmentChange(FragmentInterface fragment);
     }
+
+    boolean onBackPressed();
 }

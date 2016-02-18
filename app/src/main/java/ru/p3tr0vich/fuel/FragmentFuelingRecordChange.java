@@ -143,7 +143,9 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 activity.setResult(Activity.RESULT_OK,
                         mFuelingRecord.toIntent()
                                 .putExtra(ActivityFuelingRecordChange.INTENT_EXTRA_ACTION, mRecordAction));
+
                 activity.finish();
+
                 return true;
         }
         return super.onOptionsItemSelected(item);

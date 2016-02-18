@@ -2,14 +2,18 @@ package ru.p3tr0vich.fuel;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
@@ -18,6 +22,8 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 class Utils {
+
+    public static final String TAG = "Utils";
 
     public static void showKeyboard(EditText editText) {
         editText.requestFocus();
@@ -115,5 +121,16 @@ class Utils {
 
     public static void toast(@NonNull String text) {
         Toast.makeText(ApplicationFuel.getContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void openUrl(@NonNull Context context, @NonNull String url,
+                               @Nullable String onErrorMessage) {
+        try {
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        } catch (Exception e) {
+            UtilsLog.d(TAG, "openUrl", "exception == " + e.toString());
+
+            if (!TextUtils.isEmpty(onErrorMessage)) toast(onErrorMessage);
+        }
     }
 }

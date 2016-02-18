@@ -3,6 +3,8 @@ package ru.p3tr0vich.fuel;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +14,14 @@ public class FragmentBackup extends FragmentBase {
 
     public static final String TAG = "FragmentBackup";
 
-    private DatabaseBackupXmlHelper mDatabaseBackupXmlHelper;
+    private static final int REQUEST_CODE_DIALOG_PROGRESS = 100;
+    private static final int REQUEST_CODE_DIALOG_QUESTION = 200;
 
-    @Override
-    public int getFragmentId() {
-        return R.id.action_backup;
+    private final DatabaseBackupXmlHelper mDatabaseBackupXmlHelper = new DatabaseBackupXmlHelper();
+
+    @NonNull
+    public static Fragment newInstance(int id) {
+        return newInstance(id, new FragmentBackup());
     }
 
     @Override
@@ -37,9 +42,9 @@ public class FragmentBackup extends FragmentBase {
                 Boolean.toString(fragmentDialogProgress != null));
 
         if (fragmentDialogProgress != null)
-            fragmentDialogProgress.setTargetFragment(this, FragmentDialogProgress.REQUEST_CODE);
+            fragmentDialogProgress.setTargetFragment(this, REQUEST_CODE_DIALOG_PROGRESS);
         if (fragmentDialogQuestion != null)
-            fragmentDialogQuestion.setTargetFragment(this, FragmentDialogQuestion.REQUEST_CODE);
+            fragmentDialogQuestion.setTargetFragment(this, REQUEST_CODE_DIALOG_QUESTION);
     }
 
     @Override
@@ -48,8 +53,6 @@ public class FragmentBackup extends FragmentBase {
         UtilsLog.d(TAG, "onCreateView");
 
         View view = inflater.inflate(R.layout.fragment_backup, container, false);
-
-        mDatabaseBackupXmlHelper = new DatabaseBackupXmlHelper();
 
         ((TextView) view.findViewById(R.id.textDirectory)).setText(mDatabaseBackupXmlHelper.getExternalDirectory().toString());
         ((TextView) view.findViewById(R.id.textFile)).setText(mDatabaseBackupXmlHelper.getFileName().toString());
@@ -74,7 +77,7 @@ public class FragmentBackup extends FragmentBase {
     private void startOperationXml(boolean doSave) {
         UtilsLog.d(TAG, "startOperationXml");
 
-        FragmentDialogProgress.show(this, mDatabaseBackupXmlHelper, doSave);
+        FragmentDialogProgress.show(this, REQUEST_CODE_DIALOG_PROGRESS, mDatabaseBackupXmlHelper, doSave);
     }
 
     private void stopOperationXml(@DatabaseBackupXmlHelper.BackupResult int result) {
@@ -140,7 +143,8 @@ public class FragmentBackup extends FragmentBase {
     }
 
     private void loadFromXml() { // TODO: Сохранять старые в old?
-        FragmentDialogQuestion.show(this, R.string.dialog_caption_load_from_xml,
+        FragmentDialogQuestion.show(this, REQUEST_CODE_DIALOG_QUESTION,
+                R.string.dialog_caption_load_from_xml,
                 PreferenceManagerFuel.isSyncEnabled() ?
                         R.string.message_dialog_load_from_xml_sync :
                         R.string.message_dialog_load_from_xml, R.string.dialog_btn_load, R.string.dialog_btn_disagree);
@@ -153,10 +157,10 @@ public class FragmentBackup extends FragmentBase {
         if (resultCode != Activity.RESULT_OK) return;
 
         switch (requestCode) {
-            case FragmentDialogProgress.REQUEST_CODE:
+            case REQUEST_CODE_DIALOG_PROGRESS:
                 stopOperationXml(FragmentDialogProgress.getResult(data));
                 break;
-            case FragmentDialogQuestion.REQUEST_CODE:
+            case REQUEST_CODE_DIALOG_QUESTION:
                 startOperationXml(false);
         }
     }

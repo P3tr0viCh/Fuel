@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 public class FragmentDialogQuestion extends DialogFragment {
 
-    public static final int REQUEST_CODE = 9106;
     public static final String TAG = "FragmentDialogQuestion";
 
     private static final String TITLE = "title";
@@ -24,11 +23,12 @@ public class FragmentDialogQuestion extends DialogFragment {
     private static final String POSITIVE_BUTTON_TEXT = "positive_button_text";
     private static final String NEGATIVE_BUTTON_TEXT = "negative_button_text";
 
-    private static FragmentDialogQuestion getInstance(@Nullable @StringRes Integer titleId,
+    private static FragmentDialogQuestion newInstance(@Nullable @StringRes Integer titleId,
                                                       @NonNull @StringRes Integer messageId,
                                                       @Nullable @StringRes Integer positiveButtonTextId,
                                                       @Nullable @StringRes Integer negativeButtonTextId) {
         Bundle args = new Bundle();
+
         if (titleId != null) args.putInt(TITLE, titleId);
         args.putInt(MESSAGE, messageId);
         if (positiveButtonTextId != null) args.putInt(POSITIVE_BUTTON_TEXT, positiveButtonTextId);
@@ -42,27 +42,29 @@ public class FragmentDialogQuestion extends DialogFragment {
 
     @SuppressWarnings("SameParameterValue")
     public static void show(@NonNull Fragment parent,
+                            int requestCode,
                             @Nullable @StringRes Integer titleId,
                             @NonNull @StringRes Integer messageId,
                             @Nullable @StringRes Integer positiveButtonTextId,
                             @Nullable @StringRes Integer negativeButtonTextId) {
-        FragmentDialogQuestion dialogQuestion = getInstance(titleId, messageId,
+        FragmentDialogQuestion dialogQuestion = newInstance(titleId, messageId,
                 positiveButtonTextId, negativeButtonTextId);
 
-        dialogQuestion.setTargetFragment(parent, REQUEST_CODE);
+        dialogQuestion.setTargetFragment(parent, requestCode);
         dialogQuestion.show(parent.getFragmentManager(), TAG);
     }
 
     @SuppressWarnings("SameParameterValue")
     public static void show(@NonNull AppCompatActivity parent,
+                            int requestCode,
                             @Nullable @StringRes Integer titleId,
                             @NonNull @StringRes Integer messageId,
                             @Nullable @StringRes Integer positiveButtonTextId,
                             @Nullable @StringRes Integer negativeButtonTextId) {
-        FragmentDialogQuestion dialogQuestion = getInstance(titleId, messageId,
+        FragmentDialogQuestion dialogQuestion = newInstance(titleId, messageId,
                 positiveButtonTextId, negativeButtonTextId);
 
-        dialogQuestion.setTargetFragment(null, REQUEST_CODE);
+        dialogQuestion.setTargetFragment(null, requestCode);
         dialogQuestion.show(parent.getSupportFragmentManager(), TAG);
     }
 

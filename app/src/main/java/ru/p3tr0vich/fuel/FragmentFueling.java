@@ -9,7 +9,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -105,9 +107,9 @@ public class FragmentFueling extends FragmentBase implements
     private OnFilterChangeListener mOnFilterChangeListener;
     private OnRecordChangeListener mOnRecordChangeListener;
 
-    @Override
-    public int getFragmentId() {
-        return R.id.action_fueling;
+    @NonNull
+    public static Fragment newInstance(int id) {
+        return newInstance(id, new FragmentFueling());
     }
 
     @Override
@@ -787,7 +789,8 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     public interface OnRecordChangeListener {
-        void onRecordChange(@Const.RecordAction int recordAction, FuelingRecord fuelingRecord);
+        void onRecordChange(@Const.RecordAction int recordAction,
+                            @Nullable FuelingRecord fuelingRecord);
     }
 
     static class FuelingCursorLoader extends CursorLoader {

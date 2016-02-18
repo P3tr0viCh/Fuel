@@ -218,4 +218,6 @@
 
     <string name="scheme_yandex_disk" translatable="false">x-oauth-ru-p3tr0vich-fuel</string>
     <string name="host_yandex_disk" translatable="false">yandex-disk-token</string>
+
+    <string name="exception_fragment_no_id" translatable="false">Fragment must have ID</string>
 </resources>

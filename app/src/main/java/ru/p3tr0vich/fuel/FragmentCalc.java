@@ -1,9 +1,12 @@
 package ru.p3tr0vich.fuel;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -49,14 +52,31 @@ public class FragmentCalc extends FragmentBase implements
     private static final int CALC_ACTION_COST = 1;
     private static final int CALC_ACTION_VOLUME = 2;
 
-    @Override
-    public int getFragmentId() {
-        return R.id.action_calc;
+    private OnCalcDistanceButtonClickListener mOnCalcDistanceButtonClickListener;
+
+    public interface OnCalcDistanceButtonClickListener {
+        void OnCalcDistanceButtonClick();
+    }
+
+    @NonNull
+    public static Fragment newInstance(int id) {
+        return newInstance(id, new FragmentCalc());
     }
 
     @Override
     public int getTitleId() {
         return R.string.title_calc;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mOnCalcDistanceButtonClickListener = (OnCalcDistanceButtonClickListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() +
+                    " must implement OnCalcDistanceButtonClickListener");
+        }
     }
 
     @Nullable
@@ -90,7 +110,7 @@ public class FragmentCalc extends FragmentBase implements
         view.findViewById(R.id.btnMaps).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityYandexMap.start(getActivity(), ActivityYandexMap.MAP_TYPE_DISTANCE);
+                mOnCalcDistanceButtonClickListener.OnCalcDistanceButtonClick();
             }
         });
 

@@ -1,13 +1,12 @@
 package ru.p3tr0vich.fuel;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.app.Fragment;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -26,20 +25,34 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         Preference.OnPreferenceClickListener {
 
     public static final String TAG = "FragmentPreference";
-    public static final int ID = R.id.action_settings;
 
     public static final String KEY_PREFERENCE_SCREEN = "KEY_PREFERENCE_SCREEN";
+
+    public int mFragmentId = -1;
 
     private OnFragmentChangeListener mOnFragmentChangeListener;
     private OnPreferenceScreenChangeListener mOnPreferenceScreenChangeListener;
     private OnPreferenceSyncEnabledChangeListener mOnPreferenceSyncEnabledChangeListener;
+    private OnPreferenceMapCenterClickListener mOnPreferenceMapCenterClickListener;
 
     private boolean mIsInRoot;
     private PreferenceScreen mRootPreferenceScreen;
 
+    @NonNull
+    public static Fragment newInstance(int id) {
+        Fragment fragment = new FragmentPreference();
+
+        Bundle args = new Bundle();
+        args.putInt(KEY_ID, id);
+
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
     @Override
     public int getFragmentId() {
-        return ID;
+        return mFragmentId;
     }
 
     @Override
@@ -62,6 +75,20 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     @Override
     public String getSubtitle() {
         return null;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) mFragmentId = getArguments().getInt(KEY_ID, -1);
+
+        if (mFragmentId == -1)
+            throw new IllegalArgumentException(getString(R.string.exception_fragment_no_id));
+    }
+
+    public interface OnPreferenceMapCenterClickListener {
+        void OnPreferenceMapCenterClick();
     }
 
     public interface OnPreferenceScreenChangeListener {
@@ -94,18 +121,12 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
         String key = preference.getKey();
 
         if (key.equals(getString(R.string.pref_map_center_text))) {
-            ActivityYandexMap.start(getActivity(), ActivityYandexMap.MAP_TYPE_CENTER);
+            mOnPreferenceMapCenterClickListener.OnPreferenceMapCenterClick();
 
             return true;
         } else if (key.equals(getString(R.string.pref_sync_yandex_disk_key))) {
-            try {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SyncYandexDisk.WWW_URL)));
-            } catch (Exception e) {
-                UtilsLog.d(TAG, "onPreferenceClick(pref_sync_yandex_disk_key)",
-                        "exception == " + e.toString());
-
-                Utils.toast(R.string.message_error_yandex_disk_browser_open);
-            }
+            Utils.openUrl(getContext(), SyncYandexDisk.WWW_URL,
+                    getString(R.string.message_error_yandex_disk_browser_open));
 
             return true;
         } else
@@ -191,16 +212,25 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     }
 
     @Override
+    public boolean onBackPressed() {
+        return goToRootScreen();
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
             mOnFragmentChangeListener = (OnFragmentChangeListener) context;
             mOnPreferenceScreenChangeListener = (OnPreferenceScreenChangeListener) context;
             mOnPreferenceSyncEnabledChangeListener = (OnPreferenceSyncEnabledChangeListener) context;
+            mOnPreferenceMapCenterClickListener = (OnPreferenceMapCenterClickListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() +
-                    " must implement OnPreferenceScreenChangeListener, OnFragmentChangeListener, " +
-                    "OnPreferenceSyncEnabledChangeListener");
+                    " must implement " +
+                    "OnFragmentChangeListener, " +
+                    "OnPreferenceScreenChangeListener, " +
+                    "OnPreferenceSyncEnabledChangeListener, " +
+                    "OnPreferenceMapCenterClickListener");
         }
     }
 

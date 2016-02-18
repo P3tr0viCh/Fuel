@@ -34,9 +34,6 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
 
     private static final String TAG = "ActivityYandexMap";
 
-    public static final int REQUEST_CODE_DISTANCE = 8829;
-    public static final int REQUEST_CODE_MAP_CENTER = 8830;
-
     private static final String INTENT_DISTANCE = "INTENT_DISTANCE";
     private static final String INTENT_MAP_CENTER_TEXT = "INTENT_MAP_CENTER_TEXT";
     private static final String INTENT_MAP_CENTER_LATITUDE = "INTENT_MAP_CENTER_LATITUDE";
@@ -94,11 +91,12 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
         }
     }
 
-    public static void start(FragmentActivity parent, @MapType int mapType) {
+    public static void start(@NonNull FragmentActivity parent,
+                             @MapType int mapType, int requestCode) {
         if (Utils.isInternetConnected())
             parent.startActivityForResult(new Intent(parent, ActivityYandexMap.class)
                             .putExtra(EXTRA_TYPE, mapType),
-                    mapType == MAP_TYPE_DISTANCE ? REQUEST_CODE_DISTANCE : REQUEST_CODE_MAP_CENTER);
+                    requestCode);
         else
             FragmentDialogMessage.show(parent,
                     parent.getString(R.string.title_message_error),

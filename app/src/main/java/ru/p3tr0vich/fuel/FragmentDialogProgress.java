@@ -15,19 +15,20 @@ import android.widget.TextView;
 public class FragmentDialogProgress extends DialogFragment {
 
     public static final String TAG = "FragmentDialogProgress";
-    public static final int REQUEST_CODE = 7548;
 
     private static final String MESSAGE = "message";
     private static final String EXTRA_XML_RESULT = "EXTRA_XML_RESULT";
 
     private AsyncTaskOperationXml mAsyncTaskOperationXml;
 
-    public static void show(Fragment parent, DatabaseBackupXmlHelper databaseBackupXmlHelper, boolean doSave) {
+    public static void show(Fragment parent, int requestCode,
+                            @NonNull DatabaseBackupXmlHelper databaseBackupXmlHelper,
+                            boolean doSave) {
         FragmentDialogProgress fragmentDialogProgress = new FragmentDialogProgress();
 
         fragmentDialogProgress.setTask(
                 new AsyncTaskOperationXml(parent.getContext(), databaseBackupXmlHelper, doSave));
-        fragmentDialogProgress.setTargetFragment(parent, REQUEST_CODE);
+        fragmentDialogProgress.setTargetFragment(parent, requestCode);
 
         Bundle args = new Bundle();
         args.putString(MESSAGE, parent.getString(doSave ? R.string.message_progress_save : R.string.message_progress_load));

@@ -74,8 +74,7 @@ public class FragmentCalc extends FragmentBase implements
         try {
             mOnCalcDistanceButtonClickListener = (OnCalcDistanceButtonClickListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() +
-                    " must implement OnCalcDistanceButtonClickListener");
+            throw new ImplementException(context, OnCalcDistanceButtonClickListener.class);
         }
     }
 

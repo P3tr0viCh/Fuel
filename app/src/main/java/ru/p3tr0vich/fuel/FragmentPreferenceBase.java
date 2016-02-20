@@ -5,8 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.preference.PreferenceFragmentCompat;
 
-public abstract class FragmentBase extends Fragment
+public abstract class FragmentPreferenceBase extends PreferenceFragmentCompat
         implements FragmentInterface {
 
     private int mFragmentId = -1;
@@ -43,13 +44,6 @@ public abstract class FragmentBase extends Fragment
         return -1;
     }
 
-    @Nullable
-    @Override
-    public String getTitle() {
-        int id = getTitleId();
-        return id != -1 ? getString(id) : null;
-    }
-
     @Override
     public int getSubtitleId() {
         return -1;
@@ -58,8 +52,7 @@ public abstract class FragmentBase extends Fragment
     @Nullable
     @Override
     public String getSubtitle() {
-        int id = getSubtitleId();
-        return id != -1 ? getString(id) : null;
+        return null;
     }
 
     @Override
@@ -76,10 +69,5 @@ public abstract class FragmentBase extends Fragment
     public void onStart() {
         super.onStart();
         mOnFragmentChangeListener.onFragmentChange(this);
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
     }
 }

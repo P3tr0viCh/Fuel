@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 class Utils {
 
-    public static final String TAG = "Utils";
+    private static final String TAG = "Utils";
 
     public static void showKeyboard(EditText editText) {
         editText.requestFocus();

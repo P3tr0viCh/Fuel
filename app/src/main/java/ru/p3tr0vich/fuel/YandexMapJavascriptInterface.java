@@ -33,8 +33,7 @@ class YandexMapJavascriptInterface {
 
     YandexMapJavascriptInterface(@NonNull Activity activity) {
         if (!(activity instanceof YandexMap))
-            throw new ClassCastException(activity.toString() +
-                    " must implement YandexMap");
+            throw new ImplementException(activity, YandexMap.class);
 
         mActivity = activity;
 

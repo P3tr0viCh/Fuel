@@ -550,8 +550,8 @@ public class FragmentFueling extends FragmentBase implements
             mOnFilterChangeListener = (OnFilterChangeListener) context;
             mOnRecordChangeListener = (OnRecordChangeListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() +
-                    " must implement OnFilterChangeListener, OnRecordChangeListener");
+            throw new ImplementException(context,
+                    new Class[]{OnFilterChangeListener.class, OnRecordChangeListener.class});
         }
     }
 

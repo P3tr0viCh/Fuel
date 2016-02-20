@@ -9,7 +9,6 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceGroup;
 import android.support.v7.preference.PreferenceScreen;
 import android.text.TextUtils;
@@ -19,8 +18,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-public class FragmentPreference extends PreferenceFragmentCompat implements
-        FragmentInterface,
+public class FragmentPreference extends FragmentPreferenceBase implements
         SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener {
 
@@ -28,64 +26,12 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
     public static final String KEY_PREFERENCE_SCREEN = "KEY_PREFERENCE_SCREEN";
 
-    public int mFragmentId = -1;
-
-    private OnFragmentChangeListener mOnFragmentChangeListener;
     private OnPreferenceScreenChangeListener mOnPreferenceScreenChangeListener;
     private OnPreferenceSyncEnabledChangeListener mOnPreferenceSyncEnabledChangeListener;
     private OnPreferenceMapCenterClickListener mOnPreferenceMapCenterClickListener;
 
     private boolean mIsInRoot;
     private PreferenceScreen mRootPreferenceScreen;
-
-    @NonNull
-    public static Fragment newInstance(int id) {
-        Fragment fragment = new FragmentPreference();
-
-        Bundle args = new Bundle();
-        args.putInt(KEY_ID, id);
-
-        fragment.setArguments(args);
-
-        return fragment;
-    }
-
-    @Override
-    public int getFragmentId() {
-        return mFragmentId;
-    }
-
-    @Override
-    public int getTitleId() {
-        return -1;
-    }
-
-    @NonNull
-    @Override
-    public String getTitle() {
-        return mIsInRoot ? getString(R.string.title_prefs) : (String) getPreferenceScreen().getTitle();
-    }
-
-    @Override
-    public int getSubtitleId() {
-        return -1;
-    }
-
-    @Nullable
-    @Override
-    public String getSubtitle() {
-        return null;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) mFragmentId = getArguments().getInt(KEY_ID, -1);
-
-        if (mFragmentId == -1)
-            throw new IllegalArgumentException(getString(R.string.exception_fragment_no_id));
-    }
 
     public interface OnPreferenceMapCenterClickListener {
         void OnPreferenceMapCenterClick();
@@ -97,6 +43,17 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
 
     public interface OnPreferenceSyncEnabledChangeListener {
         void OnPreferenceSyncEnabledChanged(final boolean enabled);
+    }
+
+    @NonNull
+    public static Fragment newInstance(int id) {
+        return newInstance(id, new FragmentPreference());
+    }
+
+    @NonNull
+    @Override
+    public String getTitle() {
+        return mIsInRoot ? getString(R.string.title_prefs) : (String) getPreferenceScreen().getTitle();
     }
 
     public boolean isInRoot() {
@@ -220,24 +177,20 @@ public class FragmentPreference extends PreferenceFragmentCompat implements
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mOnFragmentChangeListener = (OnFragmentChangeListener) context;
             mOnPreferenceScreenChangeListener = (OnPreferenceScreenChangeListener) context;
             mOnPreferenceSyncEnabledChangeListener = (OnPreferenceSyncEnabledChangeListener) context;
             mOnPreferenceMapCenterClickListener = (OnPreferenceMapCenterClickListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() +
-                    " must implement " +
-                    "OnFragmentChangeListener, " +
-                    "OnPreferenceScreenChangeListener, " +
-                    "OnPreferenceSyncEnabledChangeListener, " +
-                    "OnPreferenceMapCenterClickListener");
+            throw new ImplementException(context, new Class[]{
+                    OnPreferenceScreenChangeListener.class,
+                    OnPreferenceSyncEnabledChangeListener.class,
+                    OnPreferenceMapCenterClickListener.class});
         }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mOnFragmentChangeListener.onFragmentChange(this);
         mRootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 

@@ -65,7 +65,7 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public interface OnFuelingRecordsChangeListener {
-        void OnFuelingRecordsChange(@NonNull List<FuelingRecord> fuelingRecords);
+        void onFuelingRecordsChange(@NonNull List<FuelingRecord> fuelingRecords);
     }
 
     public boolean isShowHeader() {
@@ -111,7 +111,7 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (isShowFooter()) tempFuelingRecords.remove(tempFuelingRecords.size() - 1);
         }
 
-        mOnFuelingRecordsChangeListener.OnFuelingRecordsChange(tempFuelingRecords);
+        mOnFuelingRecordsChangeListener.onFuelingRecordsChange(tempFuelingRecords);
     }
 
     public int findPositionById(long id) {

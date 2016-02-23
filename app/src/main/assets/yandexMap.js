@@ -6,22 +6,65 @@ function init() {
                 zoom: 9,
                 type: 'yandex#map',
                 behaviors: ['multiTouch', 'drag'],
-                controls: ['zoomControl']
-            } , {
+                controls: []
+            }, {
                 suppressMapOpenBlock: true,
                 suppressObsoleteBrowserNotifier: true
-            });
+        });
+
+        var zoomControl = new ymaps.control.ZoomControl({
+                options: {
+                    size: 'large',
+                    float: 'none',
+                    position: {
+                         left: YandexMapJavascriptInterface.getZoomControlLeft(),
+                         top:  YandexMapJavascriptInterface.getZoomControlTop()
+                    }
+                }
+        });
+
+        yandexMap.controls.add(zoomControl);
+
+        var geolocationControl = new ymaps.control.GeolocationControl({
+            options: {
+                noPlacemark: true,
+                float: 'none',
+                position: {
+                    left: YandexMapJavascriptInterface.getGeolocationControlLeft(),
+                    bottom: YandexMapJavascriptInterface.getGeolocationControlBottom()
+                }
+            }
+        });
+
+        geolocationControl.events.add('locationchange', function (event) {
+            var position = event.get('position');
+
+            console.log("locationchange");
+            console.log(position);
+
+            yandexMap.panTo(position);
+
+            calculator.setStartPoint(position);
+        });
+
+        yandexMap.controls.add(geolocationControl);
 
         var searchStartPoint = new ymaps.control.SearchControl({
                 options: {
                     useMapBounds: true,
                     noPlacemark: true,
                     noPopup: true,
+                    suppressYandexSearch: true,
                     placeholderContent: YandexMapJavascriptInterface.getStartSearchControlPlaceholderContent(),
-                    size: 'large'
+                    size: 'large',
+                    float: 'none',
+                    position: {
+                        left: YandexMapJavascriptInterface.getStartSearchControlLeft(),
+                        top:  YandexMapJavascriptInterface.getStartSearchControlTop()
+                    }
                 }
-            });
-        yandexMap.controls.add(searchStartPoint);
+        });
+
         searchStartPoint.events.add('resultselect', function (e) {
             var results = searchStartPoint.getResultsArray(),
                 selected = e.get('index'),
@@ -30,11 +73,15 @@ function init() {
             calculator.setStartPoint(point);
         })
             .add('load', function (event) {
-                // По полю skip определяем, что это не дозагрузка данных.
-                // По getResultsCount определяем, что есть хотя бы 1 результат.
-                if (!event.get('skip') && searchStartPoint.getResultsCount())
-                    searchStartPoint.showResult(0);
+                if (!event.get('skip')) {
+                    if (searchStartPoint.getResultsCount())
+                        searchStartPoint.showResult(0);
+                    else
+                        YandexMapJavascriptInterface.onErrorSearchPoint();
+                }
             });
+
+        yandexMap.controls.add(searchStartPoint);
 
         if (mapType == MAP_TYPE_DISTANCE) {
             var searchFinishPoint = new ymaps.control.SearchControl({
@@ -43,13 +90,17 @@ function init() {
                         noCentering: true,
                         noPopup: true,
                         noPlacemark: true,
+                        suppressYandexSearch: true,
                         placeholderContent: YandexMapJavascriptInterface.getFinishSearchControlPlaceholderContent(),
                         size: 'large',
                         float: 'none',
-                        position: { left: 10, top: 44 }
+                        position: {
+                            left: YandexMapJavascriptInterface.getFinishSearchControlLeft(),
+                            top:  YandexMapJavascriptInterface.getFinishSearchControlTop()
+                        }
                     }
-                });
-            yandexMap.controls.add(searchFinishPoint);
+            });
+
             searchFinishPoint.events.add('resultselect', function (e) {
                 var results = searchFinishPoint.getResultsArray(),
                     selected = e.get('index'),
@@ -58,18 +109,22 @@ function init() {
                 calculator.setFinishPoint(point);
             })
                 .add('load', function (event) {
-                    // По полю skip определяем, что это не дозагрузка данных.
-                    // По getResultsCount определяем, что есть хотя бы 1 результат.
-                    if (!event.get('skip') && searchFinishPoint.getResultsCount())
-                        searchFinishPoint.showResult(0);
+                    if (!event.get('skip')) {
+                        if (searchFinishPoint.getResultsCount())
+                            searchFinishPoint.showResult(0);
+                        else
+                            YandexMapJavascriptInterface.onErrorSearchPoint();
+                    }
                 });
+
+            yandexMap.controls.add(searchFinishPoint);
         }
 
         var calculator = new DistanceCalculator(yandexMap);
     } finally {
         console.log('End of init');
 
-        YandexMapJavascriptInterface.OnEndLoading(false);
+        YandexMapJavascriptInterface.onEndLoading(false);
     }
 } // init
 
@@ -272,7 +327,7 @@ ptp.getMapCenter = function () {
 
         this.start.properties.set('balloonContentBody', startBalloon);
 
-        YandexMapJavascriptInterface.OnMapCenterChange(
+        YandexMapJavascriptInterface.onMapCenterChange(
             mapCenterText, mapCenterTitle, mapCenterSubtitle,
             startCoordinates[0], startCoordinates[1]);
     }
@@ -286,7 +341,7 @@ ptp.getDirection = function () {
             startCoordinates = this.start.geometry.getCoordinates(),
             finishCoordinates = this.finish.geometry.getCoordinates();
 
-        ymaps.route([startCoordinates, finishCoordinates])
+        ymaps.route([startCoordinates, finishCoordinates], { mapStateAutoApply: true })
             .then(function (router) {
                 var distance = Math.round(router.getLength() / 1000);
 
@@ -295,12 +350,13 @@ ptp.getDirection = function () {
                 self.route = router.getPaths();
 
                 self.route.options.set({ strokeWidth: 5, strokeColor: '0000ffff', opacity: 0.5 });
+
                 self.map.geoObjects.add(self.route);
 
-                YandexMapJavascriptInterface.OnDistanceChange(distance);
+                YandexMapJavascriptInterface.onDistanceChange(distance);
             }, function (err) {
                  console.log("error: " + err.toString());
-                 YandexMapJavascriptInterface.OnErrorConstructRoute();
+                 YandexMapJavascriptInterface.onErrorConstructRoute();
             });
 
         self.map.setBounds(self.map.geoObjects.getBounds())
@@ -322,7 +378,7 @@ if (YandexMapJavascriptInterface) {
         ymaps.ready(init);
     } catch (err) {
         console.log("error == " + err.toString());
-        YandexMapJavascriptInterface.OnEndLoading(true);
+        YandexMapJavascriptInterface.onEndLoading(true);
     }
 } else
     console.log("YandexMapJavascriptInterface not found");

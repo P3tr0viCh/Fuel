@@ -37,4 +37,13 @@
     <dimen name="abc_text_size_small_material" tools:override="true">12sp</dimen>
 
     <dimen name="tab_min_width">72dp</dimen>
+
+    <dimen name="yandex_map_start_search_left">8dp</dimen>
+    <dimen name="yandex_map_start_search_top">8dp</dimen>
+    <dimen name="yandex_map_finish_search_left">8dp</dimen>
+    <dimen name="yandex_map_finish_search_top">42dp</dimen>
+    <dimen name="yandex_map_zoom_left">8dp</dimen>
+    <dimen name="yandex_map_zoom_top">100dp</dimen>
+    <dimen name="yandex_map_geolocation_left">8dp</dimen>
+    <dimen name="yandex_map_geolocation_bottom">8dp</dimen>
 </resources>

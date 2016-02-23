@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -111,8 +112,10 @@ class Utils {
                 ApplicationInfo.FLAG_DEBUGGABLE) != 0;
     }
 
-    public static int getDimensionPixelSize(@DimenRes int id) {
-        return ApplicationFuel.getContext().getResources().getDimensionPixelSize(id);
+    public static int getDimension(@DimenRes int id) {
+        Resources resources = ApplicationFuel.getContext().getResources();
+        return Math.round(resources.getDimension(id) / resources.getDisplayMetrics().density);
+//        return ApplicationFuel.getContext().getResources().getDimensionPixelSize(id);
     }
 
     public static void toast(@StringRes int resId) {

@@ -430,7 +430,7 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     @Override
-    public void OnFuelingRecordsChange(@NonNull List<FuelingRecord> fuelingRecords) {
+    public void onFuelingRecordsChange(@NonNull List<FuelingRecord> fuelingRecords) {
         mHandler.removeCallbacks(mRunnableShowNoRecords);
 
         calcTotalTaskCancel();

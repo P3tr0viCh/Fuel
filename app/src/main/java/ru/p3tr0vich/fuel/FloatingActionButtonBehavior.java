@@ -27,9 +27,11 @@ public class FloatingActionButtonBehavior extends CoordinatorLayout.Behavior<Flo
         if (!child.isVisible()) return false;
 
         float translationY = Math.min(0, dependency.getTranslationY() - dependency.getHeight() +
-                Utils.getDimensionPixelSize(R.dimen.fab_margin_bottom) -
-                Utils.getDimensionPixelSize(R.dimen.fab_margin_bottom_snackbar));
+                dependency.getContext().getResources().getDimensionPixelSize(R.dimen.fab_margin_bottom) -
+                dependency.getContext().getResources().getDimensionPixelSize(R.dimen.fab_margin_bottom_snackbar));
+
         child.setTranslationY(translationY);
+
         return true;
     }
 }

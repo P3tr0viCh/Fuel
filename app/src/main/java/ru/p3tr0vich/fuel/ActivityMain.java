@@ -61,7 +61,7 @@ public class ActivityMain extends AppCompatActivity implements
     private static final int REQUEST_CODE_ACTIVITY_MAP_DISTANCE = 101;
     private static final int REQUEST_CODE_ACTIVITY_MAP_CENTER = 102;
 
-    private static final int REQUEST_CODE_DIALOG_QUESTION = 200;
+    private static final int REQUEST_CODE_DIALOG_YANDEX_AUTH = 200;
 
     private Toolbar mToolbarMain;
     private Spinner mToolbarSpinner;
@@ -656,11 +656,12 @@ public class ActivityMain extends AppCompatActivity implements
 
                 PreferenceManagerFuel.putMapCenter(mapCenter.text,
                         mapCenter.latitude, mapCenter.longitude);
+
                 FragmentPreference fragmentPreference = getFragmentPreference();
                 if (fragmentPreference != null) fragmentPreference.updateMapCenter();
 
                 break;
-            case REQUEST_CODE_DIALOG_QUESTION:
+            case REQUEST_CODE_DIALOG_YANDEX_AUTH:
                 Utils.openUrl(this, SyncYandexDisk.AUTH_URL, null);
         }
     }
@@ -736,7 +737,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
-    public void OnPreferenceScreenChanged(@NonNull CharSequence title, boolean isInRoot) {
+    public void onPreferenceScreenChanged(@NonNull CharSequence title, boolean isInRoot) {
         setTitle(title);
         toggleDrawer(mDrawerToggle, mDrawerLayout, !isInRoot);
     }
@@ -926,7 +927,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
-    public void OnPreferenceSyncEnabledChanged(final boolean enabled) {
+    public void onPreferenceSyncEnabledChanged(final boolean enabled) {
         mSyncAccount.setIsSyncable(enabled);
 
         updateSyncStatus();
@@ -946,7 +947,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void showDialogNeedAuth() {
-        FragmentDialogQuestion.show(this, REQUEST_CODE_DIALOG_QUESTION,
+        FragmentDialogQuestion.show(this, REQUEST_CODE_DIALOG_YANDEX_AUTH,
                 R.string.dialog_caption_auth,
                 R.string.message_dialog_auth,
                 R.string.dialog_btn_agree, R.string.dialog_btn_disagree);
@@ -970,12 +971,12 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
-    public void OnCalcDistanceButtonClick() {
+    public void onCalcDistanceButtonClick() {
         startYandexMap(ActivityYandexMap.MAP_TYPE_DISTANCE);
     }
 
     @Override
-    public void OnPreferenceMapCenterClick() {
+    public void onPreferenceMapCenterClick() {
         startYandexMap(ActivityYandexMap.MAP_TYPE_CENTER);
     }
 }

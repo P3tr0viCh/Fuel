@@ -13,9 +13,17 @@
         android:layout_height="match_parent">
 
         <FrameLayout
+            android:id="@+id/xxx"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/yandex_map_start_search_left"
+            android:background="#ff0000">
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/webViewPlaceholder"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_below="@+id/xxx" />
 
         <com.pnikosis.materialishprogress.ProgressWheel
             android:id="@+id/progressWheelYandexMap"

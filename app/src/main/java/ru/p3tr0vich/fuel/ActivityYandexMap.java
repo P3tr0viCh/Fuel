@@ -18,9 +18,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.ConsoleMessage;
+import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -95,8 +97,7 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
                              @MapType int mapType, int requestCode) {
         if (Utils.isInternetConnected())
             parent.startActivityForResult(new Intent(parent, ActivityYandexMap.class)
-                            .putExtra(EXTRA_TYPE, mapType),
-                    requestCode);
+                            .putExtra(EXTRA_TYPE, mapType), requestCode);
         else
             FragmentDialogMessage.show(parent,
                     parent.getString(R.string.title_message_error),
@@ -155,10 +156,10 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
 
         switch (mType) {
             case MAP_TYPE_DISTANCE:
-                OnDistanceChange(mDistance);
+                onDistanceChange(mDistance);
                 break;
             case MAP_TYPE_CENTER:
-                OnMapCenterChange(
+                onMapCenterChange(
                         mMapCenter.text,
                         mMapCenter.title,
                         mMapCenter.subtitle,
@@ -174,7 +175,9 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
         if (mWebView == null) {
             mWebView = new WebView(this);
 
-            mWebView.getSettings().setJavaScriptEnabled(true);
+            WebSettings webSettings = mWebView.getSettings();
+            webSettings.setJavaScriptEnabled(true);
+            webSettings.setGeolocationEnabled(true);
 
             mWebView.addJavascriptInterface(new YandexMapJavascriptInterface(this),
                     YandexMapJavascriptInterface.NAME);
@@ -184,6 +187,12 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
                 public boolean onConsoleMessage(@NonNull ConsoleMessage cm) {
                     UtilsLog.d(TAG, "onConsoleMessage", cm.message() + " [line " + cm.lineNumber() + "]");
                     return true;
+                }
+
+                @Override
+                public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                    UtilsLog.d(TAG, "onGeolocationPermissionsShowPrompt", "origin == " + origin);
+                    callback.invoke(origin, true, false);
                 }
             });
 
@@ -309,14 +318,14 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
         }
     }
 
-    public void OnDistanceChange(int distance) {
+    public void onDistanceChange(int distance) {
         mDistance = distance;
 
         String title = getString(R.string.title_yandex_map);
         if (mDistance > 0)
             title += String.format(getString(R.string.title_yandex_map_add), mDistance);
 
-        UtilsLog.d(TAG, "OnDistanceChange", "title == " + title);
+        UtilsLog.d(TAG, "onDistanceChange", "title == " + title);
 
         //noinspection ConstantConditions
         getSupportActionBar().setTitle(title);
@@ -324,6 +333,16 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
 
     private String minimizeGeoCode(String text) {
         return text.startsWith(PREFIX_RUSSIA) ? text.substring(PREFIX_RUSSIA.length()) : text;
+    }
+
+    @Override
+    public double getMapCenterLatitude() {
+        return PreferenceManagerFuel.getMapCenterLatitude();
+    }
+
+    @Override
+    public double getMapCenterLongitude() {
+        return PreferenceManagerFuel.getMapCenterLongitude();
     }
 
     @Override
@@ -341,9 +360,49 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
         return "<h3>" + getString(R.string.yandex_map_empty_geocode) + "</h3>";
     }
 
-    public void OnMapCenterChange(String text, String title, String subtitle,
+    @Override
+    public int getStartSearchControlLeft() {
+        return Utils.getDimension(R.dimen.yandex_map_start_search_left);
+    }
+
+    @Override
+    public int getStartSearchControlTop() {
+        return Utils.getDimension(R.dimen.yandex_map_start_search_top);
+    }
+
+    @Override
+    public int getFinishSearchControlLeft() {
+        return Utils.getDimension(R.dimen.yandex_map_finish_search_left);
+    }
+
+    @Override
+    public int getFinishSearchControlTop() {
+        return Utils.getDimension(R.dimen.yandex_map_finish_search_top);
+    }
+
+    @Override
+    public int getZoomControlLeft() {
+        return Utils.getDimension(R.dimen.yandex_map_zoom_left);
+    }
+
+    @Override
+    public int getZoomControlTop() {
+        return Utils.getDimension(R.dimen.yandex_map_zoom_top);
+    }
+
+    @Override
+    public int getGeolocationControlLeft() {
+        return Utils.getDimension(R.dimen.yandex_map_geolocation_left);
+    }
+
+    @Override
+    public int getGeolocationControlBottom() {
+        return Utils.getDimension(R.dimen.yandex_map_geolocation_bottom);
+    }
+
+    public void onMapCenterChange(String text, String title, String subtitle,
                                   double latitude, double longitude) {
-        UtilsLog.d(TAG, "OnMapCenterChange", "text == " + text);
+        UtilsLog.d(TAG, "onMapCenterChange", "text == " + text);
 
         if (!TextUtils.isEmpty(text))
             mMapCenter.text = minimizeGeoCode(text);
@@ -371,8 +430,8 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
         if (menuItem != null) menuItem.setVisible(true);
     }
 
-    public void OnEndLoading(boolean hasError) {
-        UtilsLog.d(TAG, "OnEndLoading", "hasError == " + hasError);
+    public void onEndLoading(boolean hasError) {
+        UtilsLog.d(TAG, "onEndLoading", "hasError == " + hasError);
 
         mLoading = false;
 
@@ -384,8 +443,13 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
         }
     }
 
-    public void OnErrorConstructRoute() {
-        OnDistanceChange(0);
+    @Override
+    public void onErrorSearchPoint() {
+        Utils.toast(R.string.message_error_yandex_map_search_point);
+    }
+
+    public void onErrorConstructRoute() {
+        onDistanceChange(0);
         Utils.toast(R.string.message_error_yandex_map_route);
     }
 }

@@ -55,7 +55,7 @@ public class FragmentCalc extends FragmentBase implements
     private OnCalcDistanceButtonClickListener mOnCalcDistanceButtonClickListener;
 
     public interface OnCalcDistanceButtonClickListener {
-        void OnCalcDistanceButtonClick();
+        void onCalcDistanceButtonClick();
     }
 
     @NonNull
@@ -109,7 +109,7 @@ public class FragmentCalc extends FragmentBase implements
         view.findViewById(R.id.btnMaps).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnCalcDistanceButtonClickListener.OnCalcDistanceButtonClick();
+                mOnCalcDistanceButtonClickListener.onCalcDistanceButtonClick();
             }
         });
 

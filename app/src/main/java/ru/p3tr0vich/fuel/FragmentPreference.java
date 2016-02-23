@@ -34,15 +34,15 @@ public class FragmentPreference extends FragmentPreferenceBase implements
     private PreferenceScreen mRootPreferenceScreen;
 
     public interface OnPreferenceMapCenterClickListener {
-        void OnPreferenceMapCenterClick();
+        void onPreferenceMapCenterClick();
     }
 
     public interface OnPreferenceScreenChangeListener {
-        void OnPreferenceScreenChanged(@NonNull CharSequence title, boolean isInRoot);
+        void onPreferenceScreenChanged(@NonNull CharSequence title, boolean isInRoot);
     }
 
     public interface OnPreferenceSyncEnabledChangeListener {
-        void OnPreferenceSyncEnabledChanged(final boolean enabled);
+        void onPreferenceSyncEnabledChanged(final boolean enabled);
     }
 
     @NonNull
@@ -68,7 +68,7 @@ public class FragmentPreference extends FragmentPreferenceBase implements
 
         if (key.equals(getString(R.string.pref_sync_enabled))) {
             updatePreferenceSummary(R.string.pref_sync_key);
-            mOnPreferenceSyncEnabledChangeListener.OnPreferenceSyncEnabledChanged(
+            mOnPreferenceSyncEnabledChangeListener.onPreferenceSyncEnabledChanged(
                     PreferenceManagerFuel.isSyncEnabled());
         }
     }
@@ -78,7 +78,7 @@ public class FragmentPreference extends FragmentPreferenceBase implements
         String key = preference.getKey();
 
         if (key.equals(getString(R.string.pref_map_center_text))) {
-            mOnPreferenceMapCenterClickListener.OnPreferenceMapCenterClick();
+            mOnPreferenceMapCenterClickListener.onPreferenceMapCenterClick();
 
             return true;
         } else if (key.equals(getString(R.string.pref_sync_yandex_disk_key))) {
@@ -153,7 +153,7 @@ public class FragmentPreference extends FragmentPreferenceBase implements
 
         setPreferenceScreen(mIsInRoot ? mRootPreferenceScreen : preferenceScreen);
 
-        mOnPreferenceScreenChangeListener.OnPreferenceScreenChanged(getTitle(), mIsInRoot);
+        mOnPreferenceScreenChangeListener.onPreferenceScreenChanged(getTitle(), mIsInRoot);
     }
 
     public boolean goToRootScreen() {

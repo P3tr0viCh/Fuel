@@ -1,3 +1,5 @@
+var calculator;
+
 function init() {
     try {
         var yandexMap = new ymaps.Map('map', {
@@ -24,30 +26,6 @@ function init() {
         });
 
         yandexMap.controls.add(zoomControl);
-
-        var geolocationControl = new ymaps.control.GeolocationControl({
-            options: {
-                noPlacemark: true,
-                float: 'none',
-                position: {
-                    left: YandexMapJavascriptInterface.getGeolocationControlLeft(),
-                    bottom: YandexMapJavascriptInterface.getGeolocationControlBottom()
-                }
-            }
-        });
-
-        geolocationControl.events.add('locationchange', function (event) {
-            var position = event.get('position');
-
-            console.log("locationchange");
-            console.log(position);
-
-            yandexMap.panTo(position);
-
-            calculator.setStartPoint(position);
-        });
-
-        yandexMap.controls.add(geolocationControl);
 
         var searchStartPoint = new ymaps.control.SearchControl({
                 options: {
@@ -120,7 +98,7 @@ function init() {
             yandexMap.controls.add(searchFinishPoint);
         }
 
-        var calculator = new DistanceCalculator(yandexMap);
+        calculator = new DistanceCalculator(yandexMap);
     } finally {
         console.log('End of init');
 
@@ -211,6 +189,7 @@ ptp.geocode = function (str, point) {
 
             if (mapCenterText != '') {
                 startBalloon = geoObject && geoObject.properties.get('balloonContent') || '';
+
                 console.log('balloonContent: ' + startBalloon);
 
                 console.log('text: ' + mapCenterText);
@@ -349,18 +328,31 @@ ptp.getDirection = function () {
 
                 self.route = router.getPaths();
 
-                self.route.options.set({ strokeWidth: 5, strokeColor: '0000ffff', opacity: 0.5 });
+                self.route.options.set({ strokeWidth: 5, strokeColor: "0000FFFF", opacity: 0.5 });
 
                 self.map.geoObjects.add(self.route);
 
                 YandexMapJavascriptInterface.onDistanceChange(distance);
             }, function (err) {
-                 console.log("error: " + err.toString());
+                 console.log("getDirection error: " + err.toString());
                  YandexMapJavascriptInterface.onErrorConstructRoute();
             });
 
         self.map.setBounds(self.map.geoObjects.getBounds())
     }
+}
+
+function performGeolocation() {
+    ymaps.geolocation.get().then(function (res) {
+        var position = res.geoObjects.get(0).geometry.getCoordinates();
+
+        calculator.map.panTo(position);
+
+        calculator.setStartPoint(position);
+    }, function (err) {
+        console.log("performGeolocation error: " + err.toString());
+        YandexMapJavascriptInterface.onErrorGeolocation();
+    });
 }
 
 if (YandexMapJavascriptInterface) {

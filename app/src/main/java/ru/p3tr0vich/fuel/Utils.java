@@ -4,13 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.DimenRes;
+import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -112,10 +111,8 @@ class Utils {
                 ApplicationInfo.FLAG_DEBUGGABLE) != 0;
     }
 
-    public static int getDimension(@DimenRes int id) {
-        Resources resources = ApplicationFuel.getContext().getResources();
-        return Math.round(resources.getDimension(id) / resources.getDisplayMetrics().density);
-//        return ApplicationFuel.getContext().getResources().getDimensionPixelSize(id);
+    public static int getInteger(@IntegerRes int id) {
+        return ApplicationFuel.getContext().getResources().getInteger(id);
     }
 
     public static void toast(@StringRes int resId) {

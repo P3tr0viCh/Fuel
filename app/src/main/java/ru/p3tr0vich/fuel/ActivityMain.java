@@ -571,8 +571,6 @@ public class ActivityMain extends AppCompatActivity implements
         else {
             FragmentInterface fragment = getCurrentFragment();
 
-            UtilsLog.d(TAG, "onBackPressed", "fragment == " + fragment);
-
             if (fragment.onBackPressed()) return;
 
             if (getSupportFragmentManager().getBackStackEntryCount() != 0)

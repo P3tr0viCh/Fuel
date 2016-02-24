@@ -111,6 +111,7 @@
     <string name="message_error_yandex_map_search_point">Маршрутная точка не найдена</string>
     <string name="message_error_yandex_map_route">Не удалось построить маршрут</string>
     <string name="message_error_yandex_disk_browser_open">Не удалось открыть Яндекс.Диск</string>
+    <string name="message_error_yandex_map_geolocation">Не удалось определить текущее местоположение</string>
 
     <string name="message_error_no_internet">Отсутствует подключение к Интернет</string>
 

@@ -35,10 +35,6 @@ class YandexMapJavascriptInterface {
 
         int getZoomControlTop();
 
-        int getGeolocationControlLeft();
-
-        int getGeolocationControlBottom();
-
         void onDistanceChange(int distance);
 
         void onMapCenterChange(String text, String title, String subtitle,
@@ -49,6 +45,8 @@ class YandexMapJavascriptInterface {
         void onErrorSearchPoint();
 
         void onErrorConstructRoute();
+
+        void onErrorGeolocation();
     }
 
     YandexMapJavascriptInterface(@NonNull Activity activity) {
@@ -101,16 +99,6 @@ class YandexMapJavascriptInterface {
     @JavascriptInterface
     public int getZoomControlTop() {
         return getYandexMapActivity().getZoomControlTop();
-    }
-
-    @JavascriptInterface
-    public int getGeolocationControlLeft() {
-        return getYandexMapActivity().getGeolocationControlLeft();
-    }
-
-    @JavascriptInterface
-    public int getGeolocationControlBottom() {
-        return getYandexMapActivity().getGeolocationControlBottom();
     }
 
     @JavascriptInterface
@@ -175,6 +163,16 @@ class YandexMapJavascriptInterface {
             @Override
             public void run() {
                 getYandexMapActivity().onErrorSearchPoint();
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void onErrorGeolocation() {
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getYandexMapActivity().onErrorGeolocation();
             }
         });
     }

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
@@ -27,6 +26,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.lang.annotation.Retention;
@@ -61,7 +61,7 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
     private ProgressWheel mProgressWheelYandexMap;
     private FrameLayout mWebViewPlaceholder;
     private WebView mWebView;
-
+    private FloatingActionButton mBtnGeolocation;
     private Menu mMenu;
 
     @Retention(RetentionPolicy.SOURCE)
@@ -170,6 +170,18 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
 
         mProgressWheelYandexMap = (ProgressWheel) findViewById(R.id.progressWheelYandexMap);
 
+        mBtnGeolocation = (FloatingActionButton) findViewById(R.id.btnGeolocation);
+        mBtnGeolocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String js = "javascript:performGeolocation()";
+
+                UtilsLog.d(TAG, "btnGeolocation onClick", "js == " + js);
+
+                mWebView.loadUrl(js);
+            }
+        });
+
         mWebViewPlaceholder = (FrameLayout) findViewById(R.id.webViewPlaceholder);
 
         if (mWebView == null) {
@@ -199,7 +211,14 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
             mWebView.setWebViewClient(new WebViewClient() {
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url)));
+                    final String innerUrl = url;
+
+                    ActivityYandexMap.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Utils.openUrl(ActivityYandexMap.this, innerUrl, null);
+                        }
+                    });
 
                     return true;
                 }
@@ -362,42 +381,32 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
 
     @Override
     public int getStartSearchControlLeft() {
-        return Utils.getDimension(R.dimen.yandex_map_start_search_left);
+        return Utils.getInteger(R.integer.yandex_map_start_search_left);
     }
 
     @Override
     public int getStartSearchControlTop() {
-        return Utils.getDimension(R.dimen.yandex_map_start_search_top);
+        return Utils.getInteger(R.integer.yandex_map_start_search_top);
     }
 
     @Override
     public int getFinishSearchControlLeft() {
-        return Utils.getDimension(R.dimen.yandex_map_finish_search_left);
+        return Utils.getInteger(R.integer.yandex_map_finish_search_left);
     }
 
     @Override
     public int getFinishSearchControlTop() {
-        return Utils.getDimension(R.dimen.yandex_map_finish_search_top);
+        return Utils.getInteger(R.integer.yandex_map_finish_search_top);
     }
 
     @Override
     public int getZoomControlLeft() {
-        return Utils.getDimension(R.dimen.yandex_map_zoom_left);
+        return Utils.getInteger(R.integer.yandex_map_zoom_left);
     }
 
     @Override
     public int getZoomControlTop() {
-        return Utils.getDimension(R.dimen.yandex_map_zoom_top);
-    }
-
-    @Override
-    public int getGeolocationControlLeft() {
-        return Utils.getDimension(R.dimen.yandex_map_geolocation_left);
-    }
-
-    @Override
-    public int getGeolocationControlBottom() {
-        return Utils.getDimension(R.dimen.yandex_map_geolocation_bottom);
+        return Utils.getInteger(R.integer.yandex_map_zoom_top);
     }
 
     public void onMapCenterChange(String text, String title, String subtitle,
@@ -437,9 +446,13 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
 
         mProgressWheelYandexMap.setVisibility(View.GONE);
 
-        if (!hasError && mMenu != null) {
-            setMenuItemVisibleTrue(mMenu.findItem(R.id.action_done));
-            setMenuItemVisibleTrue(mMenu.findItem(R.id.action_done_x2));
+        if (!hasError) {
+            Utils.setViewVisibleAnimate(mBtnGeolocation, true);
+
+            if (mMenu != null) {
+                setMenuItemVisibleTrue(mMenu.findItem(R.id.action_done));
+                setMenuItemVisibleTrue(mMenu.findItem(R.id.action_done_x2));
+            }
         }
     }
 
@@ -450,6 +463,11 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
 
     public void onErrorConstructRoute() {
         onDistanceChange(0);
+        Utils.toast(R.string.message_error_yandex_map_route);
+    }
+
+    @Override
+    public void onErrorGeolocation() {
         Utils.toast(R.string.message_error_yandex_map_route);
     }
 }

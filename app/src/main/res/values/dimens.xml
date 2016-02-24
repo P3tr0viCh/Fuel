@@ -24,7 +24,7 @@
     <dimen name="progress_wheel_fueling_size">80dp</dimen>
 
     <dimen name="fab_margin_bottom">46dp</dimen>
-    <dimen name="fab_margin_bottom_snackbar">16dp</dimen>
+    <dimen name="fab_and_snackbar_min_distance">16dp</dimen>
 
     <dimen name="menu_item_margin">16dp</dimen>
 

@@ -61,6 +61,11 @@ class YandexMapJavascriptInterface {
         return (YandexMap) mActivity;
     }
 
+    @NonNull
+    public static String performGeolocation() {
+        return "javascript:performGeolocation()";
+    }
+
     @JavascriptInterface
     public double getMapCenterLatitude() {
         return getYandexMapActivity().getMapCenterLatitude();

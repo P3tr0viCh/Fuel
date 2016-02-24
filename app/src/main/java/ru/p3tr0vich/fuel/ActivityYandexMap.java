@@ -174,11 +174,7 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
         mBtnGeolocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String js = "javascript:performGeolocation()";
-
-                UtilsLog.d(TAG, "btnGeolocation onClick", "js == " + js);
-
-                mWebView.loadUrl(js);
+                runJavaScript(YandexMapJavascriptInterface.performGeolocation());
             }
         });
 
@@ -468,6 +464,15 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
 
     @Override
     public void onErrorGeolocation() {
-        Utils.toast(R.string.message_error_yandex_map_route);
+        Utils.toast(R.string.message_error_yandex_map_geolocation);
+    }
+
+    private void runJavaScript(@NonNull String script) {
+        UtilsLog.d(TAG, "runJavaScript", "script == " + script);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+            mWebView.evaluateJavascript(script, null);
+        else
+            mWebView.loadUrl(script);
     }
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FloatingActionButtonBehavior">
+        <attr name="behavior_marginBottom" format="dimension" />
+        <attr name="behavior_minDistance" format="dimension" />
+    </declare-styleable>
+</resources>

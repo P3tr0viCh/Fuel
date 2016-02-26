@@ -41,7 +41,7 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
         Toolbar toolbarRecord = (Toolbar) findViewById(R.id.toolbarRecord);
         setSupportActionBar(toolbarRecord);
 
-        toolbarRecord.setNavigationIcon(R.drawable.abc_ic_clear_mtrl_alpha);
+        toolbarRecord.setNavigationIcon(R.mipmap.ic_close_white_24dp);
         toolbarRecord.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

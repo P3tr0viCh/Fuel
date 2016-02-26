@@ -18,10 +18,12 @@ android {
             storePassword props['storePassword']
         }
     }
+
     //noinspection GroovyAssignabilityCheck
     compileSdkVersion rootProject.ext.compileSdkVersion
     //noinspection GroovyAssignabilityCheck
     buildToolsVersion rootProject.ext.buildToolsVersion
+
     defaultConfig {
         applicationId "ru.p3tr0vich.fuel"
         //noinspection GroovyAssignabilityCheck

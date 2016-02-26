@@ -14,19 +14,6 @@ function init() {
                 suppressObsoleteBrowserNotifier: true
         });
 
-        var zoomControl = new ymaps.control.ZoomControl({
-                options: {
-                    size: 'large',
-                    float: 'none',
-                    position: {
-                         left: YandexMapJavascriptInterface.getZoomControlLeft(),
-                         top:  YandexMapJavascriptInterface.getZoomControlTop()
-                    }
-                }
-        });
-
-        yandexMap.controls.add(zoomControl);
-
         var searchStartPoint = new ymaps.control.SearchControl({
                 options: {
                     useMapBounds: true,
@@ -343,16 +330,37 @@ ptp.getDirection = function () {
 }
 
 function performGeolocation() {
-    ymaps.geolocation.get().then(function (res) {
-        var position = res.geoObjects.get(0).geometry.getCoordinates();
+    YandexMapJavascriptInterface.onGeolocationStart();
+    try {
+        ymaps.geolocation.get().then(function (res) {
+            var position = res.geoObjects.get(0).geometry.getCoordinates();
 
-        calculator.map.panTo(position);
+            calculator.map.panTo(position);
 
-        calculator.setStartPoint(position);
-    }, function (err) {
-        console.log("performGeolocation error: " + err.toString());
-        YandexMapJavascriptInterface.onErrorGeolocation();
-    });
+            calculator.setStartPoint(position);
+
+            YandexMapJavascriptInterface.onGeolocationFinish();
+        }, function (err) {
+            console.log("performGeolocation error: " + err.toString());
+            YandexMapJavascriptInterface.onErrorGeolocation();
+            YandexMapJavascriptInterface.onGeolocationFinish();
+        });
+    } catch (err) {
+        console.log("performGeolocation catch error == " + err.toString());
+        YandexMapJavascriptInterface.onGeolocationFinish();
+    }
+}
+
+function setZoom(inc) {
+    try {
+        var zoom = calculator.map.getZoom();
+
+        if (inc) zoom++; else zoom--;
+
+        calculator.map.setZoom(zoom, {checkZoomRange: true});
+    } catch (err) {
+        console.log("setZoom catch error == " + err.toString());
+    }
 }
 
 if (YandexMapJavascriptInterface) {

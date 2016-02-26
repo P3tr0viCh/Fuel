@@ -4,6 +4,4 @@
     <integer name="yandex_map_start_search_top">8</integer>
     <integer name="yandex_map_finish_search_left">8</integer>
     <integer name="yandex_map_finish_search_top">42</integer>
-    <integer name="yandex_map_zoom_left">8</integer>
-    <integer name="yandex_map_zoom_top">100</integer>
 </resources>

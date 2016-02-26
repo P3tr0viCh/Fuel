@@ -236,6 +236,9 @@ public class FragmentFueling extends FragmentBase implements
             }
         });
 
+        Utils.setBackgroundTint(mBtnDateFrom, R.color.toolbar_title_text, R.color.primary_light);
+        Utils.setBackgroundTint(mBtnDateTo, R.color.toolbar_title_text, R.color.primary_light);
+
         mToolbarDatesVisible = true;
         setToolbarDatesVisible(mFilter.mode == DatabaseHelper.Filter.MODE_DATES, false);
 

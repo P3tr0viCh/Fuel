@@ -12,7 +12,8 @@
     <dimen name="drawer_sync_text_start_padding">80dp</dimen>
 
     <dimen name="toolbar_height">64dp</dimen>
-    <dimen name="toolbar_dates_left_padding">64dp</dimen>
+    <dimen name="toolbar_dates_padding_left">64dp</dimen>
+    <dimen name="toolbar_dates_padding_right">8dp</dimen>
 
     <dimen name="fab_margin_bottom">22dp</dimen>
 

@@ -103,6 +103,8 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
             }
         });
 
+        Utils.setBackgroundTint(mButtonDate, R.color.secondary_text, R.color.accent);
+
         view.findViewById(R.id.textCost).setOnClickListener(this);
         view.findViewById(R.id.textVolume).setOnClickListener(this);
         view.findViewById(R.id.textTotal).setOnClickListener(this);

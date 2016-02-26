@@ -32,7 +32,9 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class ActivityYandexMap extends AppCompatActivity implements YandexMapJavascriptInterface.YandexMap {
+public class ActivityYandexMap extends AppCompatActivity implements
+        View.OnClickListener,
+        YandexMapJavascriptInterface.YandexMap {
 
     private static final String TAG = "ActivityYandexMap";
 
@@ -60,9 +62,14 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
     private Toolbar mToolbarYandexMap;
     private ProgressWheel mProgressWheelYandexMap;
     private FrameLayout mWebViewPlaceholder;
-    private WebView mWebView;
-    private FloatingActionButton mBtnGeolocation;
     private Menu mMenu;
+
+    private WebView mWebView;
+    private YandexMapJavascriptInterface mYandexMapJavascriptInterface;
+
+    private FloatingActionButton mBtnZoomIn;
+    private FloatingActionButton mBtnZoomOut;
+    private FloatingActionButton mBtnGeolocation;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({MAP_TYPE_DISTANCE, MAP_TYPE_CENTER})
@@ -97,7 +104,7 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
                              @MapType int mapType, int requestCode) {
         if (Utils.isInternetConnected())
             parent.startActivityForResult(new Intent(parent, ActivityYandexMap.class)
-                            .putExtra(EXTRA_TYPE, mapType), requestCode);
+                    .putExtra(EXTRA_TYPE, mapType), requestCode);
         else
             FragmentDialogMessage.show(parent,
                     parent.getString(R.string.title_message_error),
@@ -140,10 +147,12 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
 
     @SuppressLint({"SetJavaScriptEnabled", "PrivateResource"})
     private void initUI() {
+        mMenu = null;
+
         mToolbarYandexMap = (Toolbar) findViewById(R.id.toolbarYandexMap);
         setSupportActionBar(mToolbarYandexMap);
 
-        mToolbarYandexMap.setNavigationIcon(R.drawable.abc_ic_clear_mtrl_alpha);
+        mToolbarYandexMap.setNavigationIcon(R.mipmap.ic_close_white_24dp);
         mToolbarYandexMap.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -170,13 +179,15 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
 
         mProgressWheelYandexMap = (ProgressWheel) findViewById(R.id.progressWheelYandexMap);
 
+
+        mBtnZoomIn = (FloatingActionButton) findViewById(R.id.btnZoomIn);
+        mBtnZoomIn.setOnClickListener(this);
+
+        mBtnZoomOut = (FloatingActionButton) findViewById(R.id.btnZoomOut);
+        mBtnZoomOut.setOnClickListener(this);
+
         mBtnGeolocation = (FloatingActionButton) findViewById(R.id.btnGeolocation);
-        mBtnGeolocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                runJavaScript(YandexMapJavascriptInterface.performGeolocation());
-            }
-        });
+        mBtnGeolocation.setOnClickListener(this);
 
         mWebViewPlaceholder = (FrameLayout) findViewById(R.id.webViewPlaceholder);
 
@@ -187,7 +198,9 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
             webSettings.setJavaScriptEnabled(true);
             webSettings.setGeolocationEnabled(true);
 
-            mWebView.addJavascriptInterface(new YandexMapJavascriptInterface(this),
+            mYandexMapJavascriptInterface = new YandexMapJavascriptInterface(this, mWebView);
+
+            mWebView.addJavascriptInterface(mYandexMapJavascriptInterface,
                     YandexMapJavascriptInterface.NAME);
 
             mWebView.setWebChromeClient(new WebChromeClient() {
@@ -251,7 +264,10 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
             mWebView.loadUrl(url);
         }
 
-        if (mLoading) mProgressWheelYandexMap.setVisibility(View.VISIBLE);
+        if (mLoading)
+            mProgressWheelYandexMap.setVisibility(View.VISIBLE);
+        else
+            setButtonsVisible();
 
         mWebViewPlaceholder.addView(mWebView);
     }
@@ -303,7 +319,24 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
 
         mMenu = menu;
 
+        if (!mLoading) setMenuItemsVisible();
+
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnZoomIn:
+                mYandexMapJavascriptInterface.setZoom(true);
+                break;
+            case R.id.btnZoomOut:
+                mYandexMapJavascriptInterface.setZoom(false);
+                break;
+            case R.id.btnGeolocation:
+                mYandexMapJavascriptInterface.performGeolocation();
+                break;
+        }
     }
 
     @Override
@@ -395,16 +428,6 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
         return Utils.getInteger(R.integer.yandex_map_finish_search_top);
     }
 
-    @Override
-    public int getZoomControlLeft() {
-        return Utils.getInteger(R.integer.yandex_map_zoom_left);
-    }
-
-    @Override
-    public int getZoomControlTop() {
-        return Utils.getInteger(R.integer.yandex_map_zoom_top);
-    }
-
     public void onMapCenterChange(String text, String title, String subtitle,
                                   double latitude, double longitude) {
         UtilsLog.d(TAG, "onMapCenterChange", "text == " + text);
@@ -435,6 +458,19 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
         if (menuItem != null) menuItem.setVisible(true);
     }
 
+    private void setButtonsVisible() {
+        Utils.setViewVisibleAnimate(mBtnZoomIn, true);
+        Utils.setViewVisibleAnimate(mBtnZoomOut, true);
+        Utils.setViewVisibleAnimate(mBtnGeolocation, true);
+    }
+
+    private void setMenuItemsVisible() {
+        if (mMenu != null) {
+            setMenuItemVisibleTrue(mMenu.findItem(R.id.action_done));
+            setMenuItemVisibleTrue(mMenu.findItem(R.id.action_done_x2));
+        }
+    }
+
     public void onEndLoading(boolean hasError) {
         UtilsLog.d(TAG, "onEndLoading", "hasError == " + hasError);
 
@@ -443,13 +479,19 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
         mProgressWheelYandexMap.setVisibility(View.GONE);
 
         if (!hasError) {
-            Utils.setViewVisibleAnimate(mBtnGeolocation, true);
-
-            if (mMenu != null) {
-                setMenuItemVisibleTrue(mMenu.findItem(R.id.action_done));
-                setMenuItemVisibleTrue(mMenu.findItem(R.id.action_done_x2));
-            }
+            setButtonsVisible();
+            setMenuItemsVisible();
         }
+    }
+
+    @Override
+    public void onGeolocationStart() {
+        mBtnGeolocation.setEnabled(false);
+    }
+
+    @Override
+    public void onGeolocationFinish() {
+        mBtnGeolocation.setEnabled(true);
     }
 
     @Override
@@ -465,14 +507,5 @@ public class ActivityYandexMap extends AppCompatActivity implements YandexMapJav
     @Override
     public void onErrorGeolocation() {
         Utils.toast(R.string.message_error_yandex_map_geolocation);
-    }
-
-    private void runJavaScript(@NonNull String script) {
-        UtilsLog.d(TAG, "runJavaScript", "script == " + script);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-            mWebView.evaluateJavascript(script, null);
-        else
-            mWebView.loadUrl(script);
     }
 }

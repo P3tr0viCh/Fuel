@@ -2,9 +2,8 @@
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/AppTheme.Toolbar"
-    android:paddingLeft="@dimen/toolbar_dates_left_padding"
-    android:paddingRight="@dimen/abc_action_bar_default_padding_end_material"
-    tools:ignore="PrivateResource">
+    android:paddingLeft="@dimen/toolbar_dates_padding_left"
+    android:paddingRight="@dimen/toolbar_dates_padding_right">
 
     <Button
         android:id="@+id/btnDateFrom"

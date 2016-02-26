@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class FragmentBackup extends FragmentBase {
@@ -57,19 +58,24 @@ public class FragmentBackup extends FragmentBase {
         ((TextView) view.findViewById(R.id.textDirectory)).setText(mDatabaseBackupXmlHelper.getExternalDirectory().toString());
         ((TextView) view.findViewById(R.id.textFile)).setText(mDatabaseBackupXmlHelper.getFileName().toString());
 
-        view.findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
+        Button btnSave = (Button) view.findViewById(R.id.btnSave);
+        btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveToXml();
             }
         });
 
-        view.findViewById(R.id.btnLoad).setOnClickListener(new View.OnClickListener() {
+        Button btnLoad = (Button) view.findViewById(R.id.btnLoad);
+        btnLoad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadFromXml();
             }
         });
+
+        Utils.setBackgroundTint(btnSave, R.color.accent, R.color.primary_dark);
+        Utils.setBackgroundTint(btnLoad, R.color.accent, R.color.primary_dark);
 
         return view;
     }

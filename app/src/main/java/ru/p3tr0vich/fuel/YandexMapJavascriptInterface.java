@@ -1,15 +1,20 @@
 package ru.p3tr0vich.fuel;
 
 import android.app.Activity;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 
 @SuppressWarnings("unused")
 class YandexMapJavascriptInterface {
 
     public static final String NAME = "YandexMapJavascriptInterface";
 
+    private static final String JS = "javascript:";
+
     private final Activity mActivity;
+    private final WebView mWebView;
 
     public interface YandexMap {
 
@@ -31,16 +36,16 @@ class YandexMapJavascriptInterface {
 
         int getFinishSearchControlTop();
 
-        int getZoomControlLeft();
-
-        int getZoomControlTop();
-
         void onDistanceChange(int distance);
 
         void onMapCenterChange(String text, String title, String subtitle,
                                double latitude, double longitude);
 
         void onEndLoading(boolean hasError);
+
+        void onGeolocationStart();
+
+        void onGeolocationFinish();
 
         void onErrorSearchPoint();
 
@@ -49,11 +54,12 @@ class YandexMapJavascriptInterface {
         void onErrorGeolocation();
     }
 
-    YandexMapJavascriptInterface(@NonNull Activity activity) {
+    YandexMapJavascriptInterface(@NonNull Activity activity, @NonNull WebView webView) {
         if (!(activity instanceof YandexMap))
             throw new ImplementException(activity, YandexMap.class);
 
         mActivity = activity;
+        mWebView = webView;
     }
 
     @NonNull
@@ -61,9 +67,23 @@ class YandexMapJavascriptInterface {
         return (YandexMap) mActivity;
     }
 
-    @NonNull
-    public static String performGeolocation() {
-        return "javascript:performGeolocation()";
+    private void runJavaScript(@NonNull String script) {
+        script = JS + script;
+
+        UtilsLog.d(NAME, "runJavaScript", "script == " + script);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+            mWebView.evaluateJavascript(script, null);
+        else
+            mWebView.loadUrl(script);
+    }
+
+    public void performGeolocation() {
+        runJavaScript("performGeolocation()");
+    }
+
+    public void setZoom(boolean inc) {
+        runJavaScript("setZoom(" + inc + ")");
     }
 
     @JavascriptInterface
@@ -94,16 +114,6 @@ class YandexMapJavascriptInterface {
     @JavascriptInterface
     public int getFinishSearchControlTop() {
         return getYandexMapActivity().getFinishSearchControlTop();
-    }
-
-    @JavascriptInterface
-    public int getZoomControlLeft() {
-        return getYandexMapActivity().getZoomControlLeft();
-    }
-
-    @JavascriptInterface
-    public int getZoomControlTop() {
-        return getYandexMapActivity().getZoomControlTop();
     }
 
     @JavascriptInterface
@@ -138,6 +148,26 @@ class YandexMapJavascriptInterface {
             @Override
             public void run() {
                 getYandexMapActivity().onMapCenterChange(text, title, subtitle, latitude, longitude);
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void onGeolocationStart() {
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getYandexMapActivity().onGeolocationStart();
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void onGeolocationFinish() {
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getYandexMapActivity().onGeolocationFinish();
             }
         });
     }

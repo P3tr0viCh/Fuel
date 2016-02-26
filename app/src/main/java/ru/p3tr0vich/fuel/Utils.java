@@ -4,15 +4,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.res.ColorStateList;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.ColorRes;
 import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.view.TintableBackgroundView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -132,5 +135,18 @@ class Utils {
 
             if (!TextUtils.isEmpty(onErrorMessage)) toast(onErrorMessage);
         }
+    }
+
+    public static void setBackgroundTint(View view, @ColorRes int idDefault, @ColorRes int idPressed) {
+        if (view instanceof TintableBackgroundView)
+            //noinspection deprecation
+            ((TintableBackgroundView) view).setSupportBackgroundTintList(
+                    new ColorStateList(
+                            new int[][]{
+                                    new int[]{-android.R.attr.state_pressed, -android.R.attr.state_checked},
+                                    new int[]{}},
+                            new int[]{
+                                    ApplicationFuel.getContext().getResources().getColor(idDefault),
+                                    ApplicationFuel.getContext().getResources().getColor(idPressed)}));
     }
 }

@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -93,6 +94,9 @@ public class FragmentCalc extends FragmentBase implements
         mSpinnerCons = (Spinner) view.findViewById(R.id.spinnerCons);
         mSpinnerSeason = (Spinner) view.findViewById(R.id.spinnerSeason);
 
+        Utils.setBackgroundTint(mSpinnerCons, R.color.secondary_text, R.color.accent);
+        Utils.setBackgroundTint(mSpinnerSeason, R.color.secondary_text, R.color.accent);
+
         mLayoutPriceEmpty = (LinearLayout) view.findViewById(R.id.layoutPriceEmpty);
         mLayoutConsEmpty = (LinearLayout) view.findViewById(R.id.layoutConsEmpty);
 
@@ -106,12 +110,15 @@ public class FragmentCalc extends FragmentBase implements
         adapterSeason.setDropDownViewResource(R.layout.spinner_dropdown_item);
         mSpinnerSeason.setAdapter(adapterSeason);
 
-        view.findViewById(R.id.btnMaps).setOnClickListener(new View.OnClickListener() {
+        Button btnMaps = (Button) view.findViewById(R.id.btnMaps);
+        btnMaps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mOnCalcDistanceButtonClickListener.onCalcDistanceButtonClick();
             }
         });
+
+        Utils.setBackgroundTint(btnMaps, R.color.accent, R.color.primary_dark);
 
         mCalculating = true;
 

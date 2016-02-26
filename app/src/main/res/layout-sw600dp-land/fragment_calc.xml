@@ -184,7 +184,7 @@
 
                     <Spinner
                         android:id="@+id/spinnerCons"
-                        style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+                        style="@style/AppTheme.Spinner.Underlined"
                         android:layout_width="0dp"
                         android:layout_height="48dp"
                         android:layout_weight="1"
@@ -192,7 +192,7 @@
 
                     <Spinner
                         android:id="@+id/spinnerSeason"
-                        style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+                        style="@style/AppTheme.Spinner.Underlined"
                         android:layout_width="0dp"
                         android:layout_height="48dp"
                         android:layout_weight="1"

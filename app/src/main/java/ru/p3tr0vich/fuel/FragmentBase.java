@@ -13,6 +13,7 @@ public abstract class FragmentBase extends Fragment
 
     private OnFragmentChangeListener mOnFragmentChangeListener;
 
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     protected static Fragment newInstance(int id, @NonNull Fragment fragment) {
         Bundle args = new Bundle();

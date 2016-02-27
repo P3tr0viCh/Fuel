@@ -9,12 +9,14 @@ interface FragmentInterface {
 
     int getFragmentId();
 
+    @SuppressWarnings("unused")
     @StringRes
     int getTitleId();
 
     @Nullable
     String getTitle();
 
+    @SuppressWarnings("unused")
     @StringRes
     int getSubtitleId();
 

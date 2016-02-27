@@ -241,10 +241,11 @@ public class FragmentCalc extends FragmentBase implements
     }
 
     private class EditTextWatcher implements TextWatcher {
-        final EditText editText;
 
-        public EditTextWatcher(EditText e) {
-            this.editText = e;
+        private final EditText mEditText;
+
+        public EditTextWatcher(@NonNull EditText editText) {
+            mEditText = editText;
         }
 
         @Override
@@ -257,16 +258,16 @@ public class FragmentCalc extends FragmentBase implements
 
         @Override
         public void afterTextChanged(Editable s) {
-            switch (editText.getId()) {
+            switch (mEditText.getId()) {
                 case R.id.editPrice:
-                    checkTextOnEmpty(editText);
+                    checkTextOnEmpty(mEditText);
                     doCalculate(CALC_ACTION_DISTANCE);
                     break;
                 case R.id.editCost:
                     doCalculate(CALC_ACTION_COST);
                     break;
                 case R.id.editCons:
-                    checkTextOnEmpty(editText);
+                    checkTextOnEmpty(mEditText);
                 case R.id.editDistance:
                     doCalculate(CALC_ACTION_DISTANCE);
                     break;
@@ -292,10 +293,7 @@ public class FragmentCalc extends FragmentBase implements
             cost = UtilsFormat.editTextToFloat(mEditCost);
             volume = UtilsFormat.editTextToFloat(mEditVolume);
 
-            if (price == 0 || cons == 0) {
-                mCalculating = false;
-                return;
-            }
+            if (price == 0 || cons == 0)  return;
 
             distancePerOneFuel = (float) (100.0 / cons);
 

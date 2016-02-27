@@ -26,7 +26,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -109,7 +108,8 @@ public class ActivityMain extends AppCompatActivity implements
     private static final int FRAGMENT_ABOUT_ID = 5;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({START_SYNC_APP_STARTED, START_SYNC_BUTTON_CLICKED,
+    @IntDef({START_SYNC_APP_STARTED,
+            START_SYNC_BUTTON_CLICKED,
             START_SYNC_TOKEN_CHANGED,
             START_SYNC_PREFERENCES_CHANGED,
             START_SYNC_DATABASE_CHANGED,
@@ -208,6 +208,8 @@ public class ActivityMain extends AppCompatActivity implements
         //noinspection ConstantConditions
         mToolbarSpinner = new AppCompatSpinner(actionBar.getThemedContext());
 
+        Utils.setBackgroundTint(mToolbarSpinner, R.color.toolbar_title_text, R.color.primary_light);
+
         actionBar.setDisplayShowTitleEnabled(false);
 
         ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.filter_dates, R.layout.toolbar_spinner_item);
@@ -215,11 +217,7 @@ public class ActivityMain extends AppCompatActivity implements
 
         mToolbarSpinner.setAdapter(adapter);
 
-        final int px = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                Const.TOOLBAR_SPINNER_DROPDOWN_OFFSET,
-                ApplicationFuel.getContext().getResources().getDisplayMetrics()));
-
-        mToolbarSpinner.setDropDownVerticalOffset(-px);
+        mToolbarSpinner.setDropDownVerticalOffset(-getResources().getDimensionPixelOffset(R.dimen.toolbar_height)); // minus
 
         mToolbarMain.addView(mToolbarSpinner);
 
@@ -267,13 +265,11 @@ public class ActivityMain extends AppCompatActivity implements
                 selectItem(mClickedMenuId);
             }
         };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
         mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                FragmentPreference fragmentPreference = getFragmentPreference();
-//                if (fragmentPreference != null) fragmentPreference.goToRootScreen();
                 getCurrentFragment().onBackPressed();
             }
         });
@@ -783,7 +779,7 @@ public class ActivityMain extends AppCompatActivity implements
             }
         });
         anim.setInterpolator(new DecelerateInterpolator());
-        anim.setDuration(300);
+        anim.setDuration(Const.ANIMATION_DURATION_DRAWER_TOGGLE);
         anim.start();
     }
 

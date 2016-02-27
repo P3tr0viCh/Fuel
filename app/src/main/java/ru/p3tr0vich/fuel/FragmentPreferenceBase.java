@@ -14,6 +14,7 @@ public abstract class FragmentPreferenceBase extends PreferenceFragmentCompat
 
     private OnFragmentChangeListener mOnFragmentChangeListener;
 
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     protected static Fragment newInstance(int id, @NonNull Fragment fragment) {
         Bundle args = new Bundle();

@@ -9,7 +9,6 @@
             name="fuelingRecord"
             type="ru.p3tr0vich.fuel.FuelingRecord" />
 
-        <!--suppress AndroidDomInspection -->
         <variable
             name="showYear"
             type="boolean" />

@@ -145,14 +145,15 @@ public class ActivityYandexMap extends AppCompatActivity implements
         initUI();
     }
 
-    @SuppressLint({"SetJavaScriptEnabled", "PrivateResource"})
+    @SuppressLint({"SetJavaScriptEnabled"})
     private void initUI() {
         mMenu = null;
 
         mToolbarYandexMap = (Toolbar) findViewById(R.id.toolbarYandexMap);
         setSupportActionBar(mToolbarYandexMap);
 
-        mToolbarYandexMap.setNavigationIcon(R.mipmap.ic_close_white_24dp);
+        mToolbarYandexMap.setNavigationIcon(R.drawable.ic_close);
+
         mToolbarYandexMap.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -313,9 +314,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(
-                mType == MAP_TYPE_DISTANCE ? R.menu.menu_yandex_map : R.menu.menu_yandex_map_center,
-                menu);
+        getMenuInflater().inflate(R.menu.menu_yandex_map, menu);
 
         mMenu = menu;
 
@@ -467,7 +466,9 @@ public class ActivityYandexMap extends AppCompatActivity implements
     private void setMenuItemsVisible() {
         if (mMenu != null) {
             setMenuItemVisibleTrue(mMenu.findItem(R.id.action_done));
-            setMenuItemVisibleTrue(mMenu.findItem(R.id.action_done_x2));
+
+            if (mType == MAP_TYPE_DISTANCE)
+                setMenuItemVisibleTrue(mMenu.findItem(R.id.action_done_x2));
         }
     }
 

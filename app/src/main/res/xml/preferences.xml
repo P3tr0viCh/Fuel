@@ -1,6 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceScreen
-        android:icon="@mipmap/ic_plus_circle_outline_grey600_24dp"
+        android:icon="@drawable/ic_plus_circle"
         android:key="@string/pref_def_key"
         android:summary="@string/pref_def_summary"
         android:title="@string/pref_def_title">
@@ -25,7 +25,7 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:icon="@mipmap/ic_calculator_grey600_24dp"
+        android:icon="@drawable/ic_calculator"
         android:key="@string/pref_cons_key"
         android:summary="@string/pref_cons_summary"
         android:title="@string/pref_cons_title">
@@ -96,12 +96,12 @@
     </PreferenceScreen>
 
     <Preference
-        android:icon="@mipmap/ic_map_marker_grey600_24dp"
+        android:icon="@drawable/ic_map"
         android:key="@string/pref_map_center_text"
         android:title="@string/pref_yandex_map_title" />
 
     <PreferenceScreen
-        android:icon="@mipmap/ic_sync_grey600_24dp"
+        android:icon="@drawable/ic_sync"
         android:key="@string/pref_sync_key"
         android:title="@string/pref_sync_title">
         <!--suppress AndroidElementNotAllowed -->

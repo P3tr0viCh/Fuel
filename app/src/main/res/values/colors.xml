@@ -20,7 +20,11 @@
     <!-- 54% black -->
     <color name="secondary_text">#8A000000</color>
 
+    <color name="toolbar_icon">#FFFFFFFF</color>
     <color name="toolbar_title_text">#FFFFFFFF</color>
+
+    <!-- grey 600 -->
+    <color name="grey_600">#757575</color>
 
     <!-- 12% black -->
     <color name="divider">#1F000000</color>

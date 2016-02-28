@@ -5,15 +5,15 @@
         android:checkableBehavior="all">
         <item
             android:id="@+id/action_fueling"
-            android:icon="@mipmap/ic_gas_station_grey600_24dp"
+            android:icon="@drawable/ic_gas_station"
             android:title="@string/action_list" />
         <item
             android:id="@+id/action_calc"
-            android:icon="@mipmap/ic_calculator_grey600_24dp"
+            android:icon="@drawable/ic_calculator"
             android:title="@string/action_calc" />
         <item
             android:id="@+id/action_chart_cost"
-            android:icon="@mipmap/ic_chart_bar_grey600_24dp"
+            android:icon="@drawable/ic_chart_bar"
             android:title="@string/action_chart_cost" />
     </group>
 
@@ -22,15 +22,15 @@
         android:checkableBehavior="all">
         <item
             android:id="@+id/action_preferences"
-            android:icon="@mipmap/ic_settings_grey600_24dp"
+            android:icon="@drawable/ic_settings"
             android:title="@string/action_settings" />
         <item
             android:id="@+id/action_backup"
-            android:icon="@mipmap/ic_archive_grey600_24dp"
+            android:icon="@drawable/ic_archive"
             android:title="@string/action_backup" />
         <item
             android:id="@+id/action_about"
-            android:icon="@mipmap/ic_help_circle_grey600_24dp"
+            android:icon="@drawable/ic_information"
             android:title="@string/action_about" />
     </group>
 </menu>

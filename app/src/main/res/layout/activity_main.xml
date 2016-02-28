@@ -52,7 +52,6 @@
                 android:layout_marginEnd="0dp"
                 android:layout_marginStart="@dimen/drawer_sync_padding"
                 android:scaleType="center"
-                android:src="@mipmap/ic_sync_off_grey600_24dp"
                 tools:ignore="contentDescription" />
 
             <TextView

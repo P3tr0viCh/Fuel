@@ -1,10 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_fueling_update"
-        android:icon="@mipmap/ic_pen_grey600_24dp"
+        android:icon="@drawable/ic_pen"
         android:title="@string/action_update" />
     <item
         android:id="@+id/action_fueling_delete"
-        android:icon="@mipmap/ic_delete_grey600_24dp"
+        android:icon="@drawable/ic_delete"
         android:title="@string/action_delete" />
 </menu>

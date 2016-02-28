@@ -48,9 +48,9 @@ public class ActivityMain extends AppCompatActivity implements
         FragmentFueling.OnRecordChangeListener,
         FragmentCalc.OnCalcDistanceButtonClickListener,
         FragmentInterface.OnFragmentChangeListener,
-        FragmentPreference.OnPreferenceScreenChangeListener,
-        FragmentPreference.OnPreferenceSyncEnabledChangeListener,
-        FragmentPreference.OnPreferenceMapCenterClickListener {
+        FragmentPreferences.OnPreferenceScreenChangeListener,
+        FragmentPreferences.OnPreferenceSyncEnabledChangeListener,
+        FragmentPreferences.OnPreferenceMapCenterClickListener {
 
     private static final String TAG = "ActivityMain";
 
@@ -144,8 +144,8 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Nullable
-    private FragmentPreference getFragmentPreference() {
-        return (FragmentPreference) getSupportFragmentManager().findFragmentByTag(FragmentPreference.TAG);
+    private FragmentPreferences getFragmentPreferences() {
+        return (FragmentPreferences) getSupportFragmentManager().findFragmentByTag(FragmentPreferences.TAG);
     }
 
     @Override
@@ -188,9 +188,9 @@ public class ActivityMain extends AppCompatActivity implements
         } else {
             mCurrentFragmentId = intToFragmentId(savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID));
             if (mCurrentFragmentId == FRAGMENT_PREFERENCES_ID) {
-                FragmentPreference fragmentPreference = getFragmentPreference();
-                if (fragmentPreference != null)
-                    mDrawerToggle.setDrawerIndicatorEnabled(fragmentPreference.isInRoot());
+                FragmentPreferences fragmentPreferences = getFragmentPreferences();
+                if (fragmentPreferences != null)
+                    mDrawerToggle.setDrawerIndicatorEnabled(fragmentPreferences.isInRoot());
             }
         }
     }
@@ -440,8 +440,8 @@ public class ActivityMain extends AppCompatActivity implements
                 return FragmentCalc.newInstance(FRAGMENT_CALC_ID);
             case FragmentChartCost.TAG:
                 return FragmentChartCost.newInstance(FRAGMENT_CHART_COST_ID);
-            case FragmentPreference.TAG:
-                return FragmentPreference.newInstance(FRAGMENT_PREFERENCES_ID);
+            case FragmentPreferences.TAG:
+                return FragmentPreferences.newInstance(FRAGMENT_PREFERENCES_ID);
             case FragmentBackup.TAG:
                 return FragmentBackup.newInstance(FRAGMENT_BACKUP_ID);
             case FragmentAbout.TAG:
@@ -499,12 +499,12 @@ public class ActivityMain extends AppCompatActivity implements
 
         if (mCurrentFragmentId == fragmentId) {
             if (mCurrentFragmentId == FRAGMENT_PREFERENCES_ID) {
-                FragmentPreference fragmentPreference = getFragmentPreference();
-                if (fragmentPreference != null) {
+                FragmentPreferences fragmentPreferences = getFragmentPreferences();
+                if (fragmentPreferences != null) {
                     if (mOpenPreferenceSync)
-                        fragmentPreference.goToSyncScreen();
+                        fragmentPreferences.goToSyncScreen();
                     else
-                        fragmentPreference.goToRootScreen();
+                        fragmentPreferences.goToRootScreen();
                 }
             }
             return;
@@ -534,7 +534,7 @@ public class ActivityMain extends AppCompatActivity implements
             case FRAGMENT_FUELING_ID:
                 break;
             case FRAGMENT_PREFERENCES_ID:
-                fragmentTag = FragmentPreference.TAG;
+                fragmentTag = FragmentPreferences.TAG;
                 break;
         }
 
@@ -542,9 +542,10 @@ public class ActivityMain extends AppCompatActivity implements
 
         if (fragment != null) {
             if (mOpenPreferenceSync) {
-                Bundle bundle = new Bundle();
+                Bundle bundle = fragment.getArguments();
+                if (bundle == null) bundle = new Bundle();
 
-                bundle.putString(FragmentPreference.KEY_PREFERENCE_SCREEN,
+                bundle.putString(FragmentPreferences.KEY_PREFERENCE_SCREEN,
                         getString(R.string.pref_sync_key));
 
                 fragment.setArguments(bundle);
@@ -651,8 +652,8 @@ public class ActivityMain extends AppCompatActivity implements
                 PreferenceManagerFuel.putMapCenter(mapCenter.text,
                         mapCenter.latitude, mapCenter.longitude);
 
-                FragmentPreference fragmentPreference = getFragmentPreference();
-                if (fragmentPreference != null) fragmentPreference.updateMapCenter();
+                FragmentPreferences fragmentPreferences = getFragmentPreferences();
+                if (fragmentPreferences != null) fragmentPreferences.updateMapCenter();
 
                 break;
             case REQUEST_CODE_DIALOG_YANDEX_AUTH:
@@ -887,16 +888,16 @@ public class ActivityMain extends AppCompatActivity implements
 
         if (syncActive) {
             text = getString(R.string.sync_in_process);
-            imgId = R.mipmap.ic_sync_grey600_24dp;
+            imgId = R.drawable.ic_sync;
         } else {
             if (PreferenceManagerFuel.isSyncEnabled()) {
                 if (mSyncAccount.isYandexDiskTokenEmpty()) {
                     text = getString(R.string.sync_no_token);
-                    imgId = R.mipmap.ic_sync_off_grey600_24dp;
+                    imgId = R.drawable.ic_sync_off;
                 } else {
                     if (PreferenceManagerFuel.getLastSyncHasError()) {
                         text = getString(R.string.sync_error);
-                        imgId = R.mipmap.ic_sync_alert_grey600_24dp;
+                        imgId = R.drawable.ic_sync_alert;
                     } else {
                         final long dateTime = PreferenceManagerFuel.getLastSyncDateTime();
 
@@ -904,12 +905,12 @@ public class ActivityMain extends AppCompatActivity implements
                                 getString(R.string.sync_done,
                                         UtilsDate.getRelativeDateTime(this, dateTime)) :
                                 getString(R.string.sync_not_performed);
-                        imgId = R.mipmap.ic_sync_grey600_24dp;
+                        imgId = R.drawable.ic_sync;
                     }
                 }
             } else {
                 text = getString(R.string.sync_disabled);
-                imgId = R.mipmap.ic_sync_off_grey600_24dp;
+                imgId = R.drawable.ic_sync_off;
             }
         }
 

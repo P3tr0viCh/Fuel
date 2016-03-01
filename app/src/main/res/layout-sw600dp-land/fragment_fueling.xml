@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -151,7 +152,7 @@
                 android:layout_gravity="bottom|end"
                 android:layout_marginBottom="@dimen/fab_margin_bottom"
                 android:layout_marginEnd="16dp"
-                android:src="@mipmap/ic_add_white_24dp"
+                app:srcCompat="@drawable/ic_plus_white"
                 fab:fab_colorNormal="@color/primary"
                 fab:fab_colorPressed="@color/primary_dark" />
         </RelativeLayout>

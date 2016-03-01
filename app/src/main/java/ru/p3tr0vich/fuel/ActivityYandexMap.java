@@ -180,7 +180,6 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
         mProgressWheelYandexMap = (ProgressWheel) findViewById(R.id.progressWheelYandexMap);
 
-
         mBtnZoomIn = (FloatingActionButton) findViewById(R.id.btnZoomIn);
         mBtnZoomIn.setOnClickListener(this);
 
@@ -189,6 +188,11 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
         mBtnGeolocation = (FloatingActionButton) findViewById(R.id.btnGeolocation);
         mBtnGeolocation.setOnClickListener(this);
+
+        // FIXME: app:srcCompat не работает
+        mBtnZoomIn.setImageResource(R.drawable.ic_plus);
+        mBtnZoomOut.setImageResource(R.drawable.ic_minus);
+        mBtnGeolocation.setImageResource(R.drawable.ic_crosshairs_gps);
 
         mWebViewPlaceholder = (FrameLayout) findViewById(R.id.webViewPlaceholder);
 

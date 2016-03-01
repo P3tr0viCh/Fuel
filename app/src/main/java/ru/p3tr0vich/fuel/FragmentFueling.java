@@ -197,6 +197,8 @@ public class FragmentFueling extends FragmentBase implements
         mTextCostSum = (TextView) view.findViewById(R.id.tvCostSum);
 
         mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.floatingActionButton);
+        // FIXME: app:srcCompat не работает
+        mFloatingActionButton.setImageResource(R.drawable.ic_plus_white);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

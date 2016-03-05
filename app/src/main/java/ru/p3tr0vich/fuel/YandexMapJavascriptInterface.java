@@ -70,7 +70,7 @@ class YandexMapJavascriptInterface {
     private void runJavaScript(@NonNull String script) {
         script = JS + script;
 
-        UtilsLog.d(NAME, "runJavaScript", "script == " + script);
+//        UtilsLog.d(NAME, "runJavaScript", "script == " + script);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
             mWebView.evaluateJavascript(script, null);
@@ -78,8 +78,8 @@ class YandexMapJavascriptInterface {
             mWebView.loadUrl(script);
     }
 
-    public void performGeolocation() {
-        runJavaScript("performGeolocation()");
+    public void setStartLocation(double latitude, double longitude) {
+        runJavaScript("setStartLocation(" + String.valueOf(latitude) + ", " + String.valueOf(longitude) + ")");
     }
 
     public void setZoom(boolean inc) {

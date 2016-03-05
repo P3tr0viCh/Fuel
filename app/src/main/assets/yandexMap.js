@@ -321,7 +321,7 @@ ptp.getDirection = function () {
 
                 YandexMapJavascriptInterface.onDistanceChange(distance);
             }, function (err) {
-                 console.log("getDirection error: " + err.toString());
+                 console.log("getDirection error: " + err.message);
                  YandexMapJavascriptInterface.onErrorConstructRoute();
             });
 
@@ -329,26 +329,12 @@ ptp.getDirection = function () {
     }
 }
 
-function performGeolocation() {
-    YandexMapJavascriptInterface.onGeolocationStart();
-    try {
-        ymaps.geolocation.get().then(function (res) {
-            var position = res.geoObjects.get(0).geometry.getCoordinates();
+function setStartLocation(latitude, longitude) {
+//    console.log("setStartLocation: latitude == " + latitude + ", longitude == " + longitude);
 
-            calculator.map.panTo(position);
+    calculator.map.panTo([latitude, longitude]);
 
-            calculator.setStartPoint(position);
-
-            YandexMapJavascriptInterface.onGeolocationFinish();
-        }, function (err) {
-            console.log("performGeolocation error: " + err.toString());
-            YandexMapJavascriptInterface.onErrorGeolocation();
-            YandexMapJavascriptInterface.onGeolocationFinish();
-        });
-    } catch (err) {
-        console.log("performGeolocation catch error == " + err.toString());
-        YandexMapJavascriptInterface.onGeolocationFinish();
-    }
+    calculator.setStartPoint([latitude, longitude]);
 }
 
 function setZoom(inc) {

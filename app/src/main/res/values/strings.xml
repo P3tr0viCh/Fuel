@@ -100,6 +100,8 @@
     <string name="message_progress_load">Подождите, выполняется чтение файла…</string>
     <string name="message_record_deleted">Запись удалена</string>
 
+    <string name="message_yandex_map_geolocation_in_progress">Местоположение определяется…</string>
+
     <string name="message_error_mkdirs">Не удалось создать каталог\n\"%s\"</string>
     <string name="message_error_dir_not_exists">Каталог \"%s\" не существует</string>
     <string name="message_error_file_not_exists">Файл \"%1$s\" в каталоге \"%2$s\" не существует</string>
@@ -112,7 +114,6 @@
     <string name="message_error_yandex_map_route">Не удалось построить маршрут</string>
     <string name="message_error_yandex_disk_browser_open">Не удалось открыть Яндекс.Диск</string>
     <string name="message_error_yandex_map_geolocation">Не удалось определить текущее местоположение</string>
-
     <string name="message_error_no_internet">Отсутствует подключение к Интернет</string>
 
     <string name="message_error_insert_record">Во время добавления записи произошла ошибка</string>

@@ -2,8 +2,10 @@ package ru.p3tr0vich.fuel;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
@@ -26,6 +28,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.Status;
 import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
@@ -34,7 +38,8 @@ import java.lang.annotation.RetentionPolicy;
 
 public class ActivityYandexMap extends AppCompatActivity implements
         View.OnClickListener,
-        YandexMapJavascriptInterface.YandexMap {
+        YandexMapJavascriptInterface.YandexMap,
+        LocationHelper.LocationHelperListener {
 
     private static final String TAG = "ActivityYandexMap";
 
@@ -52,6 +57,8 @@ public class ActivityYandexMap extends AppCompatActivity implements
     private static final String URL_QUERY_MAP_TYPE_DISTANCE = "distance";
     private static final String URL_QUERY_MAP_TYPE_CENTER = "center";
 
+    private static final int RESOLUTION_REQUIRED_REQUEST_CODE = 1000;
+
     @MapType
     private int mType;
 
@@ -66,6 +73,8 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
     private WebView mWebView;
     private YandexMapJavascriptInterface mYandexMapJavascriptInterface;
+
+    private LocationHelper mLocationHelper;
 
     private FloatingActionButton mBtnZoomIn;
     private FloatingActionButton mBtnZoomOut;
@@ -142,6 +151,8 @@ public class ActivityYandexMap extends AppCompatActivity implements
         mMapCenter = new MapCenter();
         mMapCenter.text = getString(R.string.yandex_map_map_center_title);
 
+        mLocationHelper = new LocationHelper(this).setLocationHelperListener(this);
+
         initUI();
     }
 
@@ -201,7 +212,6 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
             WebSettings webSettings = mWebView.getSettings();
             webSettings.setJavaScriptEnabled(true);
-            webSettings.setGeolocationEnabled(true);
 
             mYandexMapJavascriptInterface = new YandexMapJavascriptInterface(this, mWebView);
 
@@ -292,6 +302,24 @@ public class ActivityYandexMap extends AppCompatActivity implements
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        UtilsLog.d(TAG, "onStart");
+
+        mLocationHelper.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        UtilsLog.d(TAG, "onStop");
+
+        mLocationHelper.disconnect();
+
+        super.onStop();
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         UtilsLog.d(TAG, "onConfigurationChanged");
 
@@ -337,7 +365,18 @@ public class ActivityYandexMap extends AppCompatActivity implements
                 mYandexMapJavascriptInterface.setZoom(false);
                 break;
             case R.id.btnGeolocation:
-                mYandexMapJavascriptInterface.performGeolocation();
+                final int googlePlayServicesAvailable = mLocationHelper.isGooglePlayServicesAvailable();
+
+                if (googlePlayServicesAvailable == ConnectionResult.SUCCESS) {
+                    if (mLocationHelper.isRequestLocationUpdatesInProcess())
+                        Utils.toast(R.string.message_yandex_map_geolocation_in_progress);
+                    else
+                        mLocationHelper.getLocation();
+                } else
+                    FragmentDialogMessage.show(this,
+                            mLocationHelper.getConnectionResultTitle(googlePlayServicesAvailable),
+                            mLocationHelper.getConnectionResultMessage(googlePlayServicesAvailable));
+
                 break;
         }
     }
@@ -512,5 +551,53 @@ public class ActivityYandexMap extends AppCompatActivity implements
     @Override
     public void onErrorGeolocation() {
         Utils.toast(R.string.message_error_yandex_map_geolocation);
+    }
+
+
+    @Override
+    public void onLastLocationReturn(@Nullable Location location) {
+        if (location != null)
+            mYandexMapJavascriptInterface.setStartLocation(
+                    location.getLatitude(), location.getLongitude());
+    }
+
+    @Override
+    public void onUpdatedLocationReturn(@Nullable Location location) {
+        if (location != null)
+            mYandexMapJavascriptInterface.setStartLocation(
+                    location.getLatitude(), location.getLongitude());
+        else
+            onErrorGeolocation();
+    }
+
+    @Override
+    public void onResolutionRequired(@NonNull Status status) {
+        try {
+            status.startResolutionForResult(this, RESOLUTION_REQUIRED_REQUEST_CODE);
+        } catch (Exception e) {
+            UtilsLog.d(TAG, "onResolutionRequired", "Exception e == " + e.toString());
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case RESOLUTION_REQUIRED_REQUEST_CODE:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        mBtnGeolocation.callOnClick();
+
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        UtilsLog.d(TAG, "onActivityResult", "RESOLUTION_REQUIRED_REQUEST_CODE result == RESULT_CANCELED");
+
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

@@ -7,7 +7,7 @@
 
 Калькулятор расхода.
 Расчёт необходимого количества топлива и его стоимости в зависимости от предполагаемого расстояния, топливного расхода автомобиля и стоимости единицы топлива.
-Расстояние можно вычислять при помощи Яндекс.Карт.
+Расстояние можно вычислять при помощи Яндекс.Карт. Определение текущего местоположения на карте.
 
 График расходов за год по месяцам.
 
@@ -24,7 +24,7 @@ Keeping records from the database in a file XML, a format compatible with Micros
 
 Flow Calculator.
 Calculation of the required amount of fuel and its value depending on the intended distance, the fuel consumption of a vehicle and the unit cost of fuel.
-The distance can be calculated using Yandex.Maps.
+The distance can be calculated using Yandex.Maps. Determining the current location on the map.
 
 Chart of expenditure for the year by months.
 

@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 public class FragmentBackup extends FragmentBase {
@@ -39,8 +38,8 @@ public class FragmentBackup extends FragmentBase {
         FragmentDialogQuestion fragmentDialogQuestion =
                 (FragmentDialogQuestion) getFragmentManager().findFragmentByTag(FragmentDialogQuestion.TAG);
 
-        UtilsLog.d(TAG, "onCreate", "fragmentDialogProgress != null " +
-                Boolean.toString(fragmentDialogProgress != null));
+        UtilsLog.d(TAG, "onCreate", "fragmentDialogProgress " +
+                (fragmentDialogProgress == null ? "=" : "!") + "= null");
 
         if (fragmentDialogProgress != null)
             fragmentDialogProgress.setTargetFragment(this, REQUEST_CODE_DIALOG_PROGRESS);
@@ -55,27 +54,24 @@ public class FragmentBackup extends FragmentBase {
 
         View view = inflater.inflate(R.layout.fragment_backup, container, false);
 
-        ((TextView) view.findViewById(R.id.textDirectory)).setText(mDatabaseBackupXmlHelper.getExternalDirectory().toString());
-        ((TextView) view.findViewById(R.id.textFile)).setText(mDatabaseBackupXmlHelper.getFileName().toString());
+        ((TextView) view.findViewById(R.id.textDirectory)).setText(
+                mDatabaseBackupXmlHelper.getExternalDirectory().toString());
+        ((TextView) view.findViewById(R.id.textFile)).setText(
+                mDatabaseBackupXmlHelper.getFileName().toString());
 
-        Button btnSave = (Button) view.findViewById(R.id.btnSave);
-        btnSave.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveToXml();
             }
         });
 
-        Button btnLoad = (Button) view.findViewById(R.id.btnLoad);
-        btnLoad.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btnLoad).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadFromXml();
             }
         });
-
-        Utils.setBackgroundTint(btnSave, R.color.accent, R.color.primary_dark);
-        Utils.setBackgroundTint(btnLoad, R.color.accent, R.color.primary_dark);
 
         return view;
     }

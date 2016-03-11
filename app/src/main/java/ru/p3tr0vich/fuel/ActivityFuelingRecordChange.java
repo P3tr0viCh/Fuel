@@ -39,6 +39,8 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
         Toolbar toolbarRecord = (Toolbar) findViewById(R.id.toolbarRecord);
         setSupportActionBar(toolbarRecord);
 
+        assert toolbarRecord != null;
+
         toolbarRecord.setNavigationIcon(R.drawable.ic_close);
 
         toolbarRecord.setNavigationOnClickListener(new View.OnClickListener() {

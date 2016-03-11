@@ -137,7 +137,8 @@ class Utils {
         }
     }
 
-    public static void setBackgroundTint(View view, @ColorRes int idDefault, @ColorRes int idPressed) {
+    public static void setBackgroundTint(@NonNull View view,
+                                         @ColorRes int defaultColor, @ColorRes int pressedColor) {
         if (view instanceof TintableBackgroundView)
             //noinspection deprecation
             ((TintableBackgroundView) view).setSupportBackgroundTintList(
@@ -146,7 +147,7 @@ class Utils {
                                     new int[]{-android.R.attr.state_pressed, -android.R.attr.state_checked},
                                     new int[]{}},
                             new int[]{
-                                    ApplicationFuel.getContext().getResources().getColor(idDefault),
-                                    ApplicationFuel.getContext().getResources().getColor(idPressed)}));
+                                    view.getResources().getColor(defaultColor),
+                                    view.getResources().getColor(pressedColor)}));
     }
 }

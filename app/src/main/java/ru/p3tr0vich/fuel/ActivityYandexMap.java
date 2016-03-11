@@ -192,12 +192,15 @@ public class ActivityYandexMap extends AppCompatActivity implements
         mProgressWheelYandexMap = (ProgressWheel) findViewById(R.id.progressWheelYandexMap);
 
         mBtnZoomIn = (FloatingActionButton) findViewById(R.id.btnZoomIn);
+        assert mBtnZoomIn != null;
         mBtnZoomIn.setOnClickListener(this);
 
         mBtnZoomOut = (FloatingActionButton) findViewById(R.id.btnZoomOut);
+        assert mBtnZoomOut != null;
         mBtnZoomOut.setOnClickListener(this);
 
         mBtnGeolocation = (FloatingActionButton) findViewById(R.id.btnGeolocation);
+        assert mBtnGeolocation != null;
         mBtnGeolocation.setOnClickListener(this);
 
         // FIXME: app:srcCompat не работает

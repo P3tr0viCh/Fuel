@@ -356,8 +356,6 @@ public class FragmentChartCost extends FragmentBase implements
     private final FloatFormatter mFloatFormatter = new FloatFormatter();
 
     private float median(@NonNull float[] values) {
-        if (values.length < 2) return 0;
-
         int middle = values.length / 2;
 
         return values.length % 2 == 1 ? values[middle] : (values[middle - 1] + values[middle]) / 2f;
@@ -389,7 +387,7 @@ public class FragmentChartCost extends FragmentBase implements
             int aboveZeroCount = 0;
             for (float value : mSums) if (value > 0) aboveZeroCount++;
 
-            if (aboveZeroCount > 0) {
+            if (aboveZeroCount > 1) {
                 float[] sortedSums = new float[aboveZeroCount];
 
                 int i = 0;
@@ -399,11 +397,19 @@ public class FragmentChartCost extends FragmentBase implements
                         i++;
                     }
 
-                Arrays.sort(sortedSums);
+                boolean valuesNotEquals = false;
+                float value = sortedSums[0];
+                for (int j = 1; j < sortedSums.length; j++)
+                    if (sortedSums[j] != value) {
+                        valuesNotEquals = true;
+                        break;
+                    }
 
-                float median = median(sortedSums);
+                if (valuesNotEquals) {
+                    Arrays.sort(sortedSums);
 
-                if (median > 0) {
+                    float median = median(sortedSums);
+
                     LimitLine medianLine = new LimitLine(median);
                     //noinspection deprecation
                     medianLine.setLineColor(getResources().getColor(R.color.chart_median));

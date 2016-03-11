@@ -19,14 +19,9 @@
 
     <style name="AppTheme.Button" parent="Widget.AppCompat.Button" />
 
-    <style name="AppTheme.Button.Colored" parent="Widget.AppCompat.Button">
-        <item name="android:background">@drawable/apptheme_btn_colored</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Widget.Button.Inverse</item>
-    </style>
+    <style name="AppTheme.Button.Colored" parent="Widget.AppCompat.Button.Colored" />
 
-    <style name="AppTheme.Spinner.Underlined" parent="Base.Widget.AppCompat.Spinner">
-        <item name="android:background">@drawable/apptheme_spinner_textfield_background</item>
-    </style>
+    <style name="AppTheme.Spinner.Underlined" parent="Widget.AppCompat.Spinner.Underlined" />
 
     <style name="AppTheme.DatePickerButton" parent="AppTheme.Spinner.Underlined">
         <item name="android:paddingRight">24dp</item>

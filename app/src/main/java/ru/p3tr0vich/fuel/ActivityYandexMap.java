@@ -111,12 +111,12 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
     public static void start(@NonNull FragmentActivity parent,
                              @MapType int mapType, int requestCode) {
-        if (Utils.isInternetConnected())
+        if (ConnectivityHelper.getConnectedState(parent.getApplicationContext()) != ConnectivityHelper.DISCONNECTED)
             parent.startActivityForResult(new Intent(parent, ActivityYandexMap.class)
                     .putExtra(EXTRA_TYPE, mapType), requestCode);
         else
             FragmentDialogMessage.show(parent,
-                    parent.getString(R.string.title_message_error),
+                    null,
                     parent.getString(R.string.message_error_no_internet));
     }
 

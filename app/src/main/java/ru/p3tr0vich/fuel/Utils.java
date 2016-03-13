@@ -5,11 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.res.ColorStateList;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
@@ -61,29 +57,6 @@ class Utils {
     @Const.RecordAction
     public static int intToRecordAction(int i) {
         return i;
-    }
-
-    public static boolean isInternetConnected() {
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) ApplicationFuel.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                @SuppressWarnings("deprecation")
-                NetworkInfo[] networkInfos = connectivityManager.getAllNetworkInfo();
-                if (networkInfos != null)
-                    for (NetworkInfo networkInfo : networkInfos)
-                        if (networkInfo.getState() == NetworkInfo.State.CONNECTED)
-                            return true;
-            } else {
-                Network[] networks = connectivityManager.getAllNetworks();
-                if (networks != null)
-                    for (Network network : networks) {
-                        NetworkInfo networkInfo = connectivityManager.getNetworkInfo(network);
-                        if (networkInfo != null && networkInfo.isConnected()) return true;
-                    }
-            }
-        }
-        return false;
     }
 
     public static void setViewHeight(View view, int height) {

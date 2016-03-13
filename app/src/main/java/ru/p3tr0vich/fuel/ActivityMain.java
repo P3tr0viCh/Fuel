@@ -837,38 +837,9 @@ public class ActivityMain extends AppCompatActivity implements
                 syncPreferences = true;
         }
 
-        if (PreferenceManagerFuel.isSyncEnabled()) {
-            if (!mSyncAccount.isSyncActive() || startIfSyncActive) {
-                if (!mSyncAccount.isYandexDiskTokenEmpty()) {
-                    if (Utils.isInternetConnected()) {
-                        /* ****** */
-
-                        Bundle extras = new Bundle();
-
-                        extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-                        extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-
-                        extras.putBoolean(SyncAdapter.SYNC_DATABASE, syncDatabase);
-                        extras.putBoolean(SyncAdapter.SYNC_PREFERENCES, syncPreferences);
-
-                        ContentResolver.requestSync(mSyncAccount.getAccount(),
-                                mSyncAccount.getAuthority(), extras);
-
-                        /* ****** */
-                    } else {
-                        UtilsLog.d(TAG, "startSync", "Internet disconnected");
-                        if (showDialogs) FragmentDialogMessage.show(ActivityMain.this,
-                                getString(R.string.title_message_error),
-                                getString(R.string.message_error_no_internet));
-                    }
-                } else {
-                    UtilsLog.d(TAG, "startSync", "Yandex.Disk token empty");
-                    if (showDialogs) showDialogNeedAuth();
-                }
-            } else
-                UtilsLog.d(TAG, "startSync", "sync active");
-        } else {
+        if (!PreferenceManagerFuel.isSyncEnabled()) {
             UtilsLog.d(TAG, "startSync", "sync disabled");
+
             if (showDialogs) {
                 mClickedMenuId = R.id.action_preferences;
                 mOpenPreferenceSync = true;
@@ -878,7 +849,43 @@ public class ActivityMain extends AppCompatActivity implements
                 else
                     selectItem(mClickedMenuId);
             }
+
+            return;
         }
+
+        if (mSyncAccount.isSyncActive() && !startIfSyncActive) {
+            UtilsLog.d(TAG, "startSync", "sync active");
+
+            return;
+        }
+
+        if (mSyncAccount.isYandexDiskTokenEmpty()) {
+            UtilsLog.d(TAG, "startSync", "Yandex.Disk token empty");
+
+            if (showDialogs) showDialogNeedAuth();
+
+            return;
+        }
+
+        if (ConnectivityHelper.getConnectedState(this) == ConnectivityHelper.DISCONNECTED) {
+            UtilsLog.d(TAG, "startSync", "Internet disconnected");
+
+            if (showDialogs) FragmentDialogMessage.show(ActivityMain.this,
+                    null,
+                    getString(R.string.message_error_no_internet));
+
+            return;
+        }
+
+        Bundle extras = new Bundle();
+
+        extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+
+        extras.putBoolean(SyncAdapter.SYNC_DATABASE, syncDatabase);
+        extras.putBoolean(SyncAdapter.SYNC_PREFERENCES, syncPreferences);
+
+        ContentResolver.requestSync(mSyncAccount.getAccount(), mSyncAccount.getAuthority(), extras);
     }
 
     private void updateSyncStatus() {

@@ -399,7 +399,7 @@ public class ActivityMain extends AppCompatActivity implements
             long id = -1;
 
             if (changeUri != null)
-                switch (ContentProviderFuel.sURIMatcher.match(changeUri)) {
+                switch (ContentProviderFuel.uriMatch(changeUri)) {
                     case ContentProviderFuel.DATABASE_ITEM:
                         id = ContentUris.parseId(changeUri);
                     case ContentProviderFuel.DATABASE:
@@ -609,12 +609,8 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
-    public void onRecordChange(@Const.RecordAction int recordAction,
-                               @Nullable FuelingRecord fuelingRecord) {
-        if (recordAction != Const.RECORD_ACTION_DELETE)
-            // ADD, UPDATE
-            ActivityFuelingRecordChange.start(this, REQUEST_CODE_ACTIVITY_RECORD,
-                    recordAction, fuelingRecord);
+    public void onRecordChange(@Nullable FuelingRecord fuelingRecord) {
+        ActivityFuelingRecordChange.start(this, REQUEST_CODE_ACTIVITY_RECORD, fuelingRecord);
     }
 
     @Override
@@ -625,23 +621,17 @@ public class ActivityMain extends AppCompatActivity implements
             case REQUEST_CODE_ACTIVITY_RECORD:
                 FragmentFueling fragmentFueling = getFragmentFueling();
 
-                if (fragmentFueling == null) return;
+                if (fragmentFueling == null || data == null || !data.hasExtra(FuelingRecord.NAME))
+                    return;
 
                 FuelingRecord fuelingRecord = new FuelingRecord(data);
 
-                switch (ActivityFuelingRecordChange.getAction(data)) {
-                    case Const.RECORD_ACTION_ADD:
-                        fragmentFueling.insertRecord(fuelingRecord);
-                        break;
-                    case Const.RECORD_ACTION_UPDATE:
-                        fragmentFueling.updateRecord(fuelingRecord);
-                        break;
-                    case Const.RECORD_ACTION_DELETE:
-                        break;
-                }
+                fragmentFueling.checkDateTime(fuelingRecord.getDateTime());
+
                 break;
             case REQUEST_CODE_ACTIVITY_MAP_CENTER:
                 FragmentCalc fragmentCalc = (FragmentCalc) findFragmentByTag(FragmentCalc.TAG);
+
                 if (fragmentCalc != null)
                     fragmentCalc.setDistance(ActivityYandexMap.getDistance(data));
 

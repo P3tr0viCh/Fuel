@@ -21,8 +21,6 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
     private static final String INTENT_EXTRA = "EXTRA_DATE";
 
-    private @Const.RecordAction int mRecordAction;
-
     private long mDateTime;
 
     private FuelingRecord mFuelingRecord;
@@ -46,27 +44,18 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
         Intent intent = getActivity().getIntent();
 
-        mRecordAction = ActivityFuelingRecordChange.getAction(intent);
+        if (intent.hasExtra(FuelingRecord.NAME)) {
+            getActivity().setTitle(R.string.dialog_caption_update);
 
-        switch (mRecordAction) {
-            case Const.RECORD_ACTION_ADD:
-                getActivity().setTitle(R.string.dialog_caption_add);
+            mFuelingRecord = new FuelingRecord(intent);
+        } else {
+            getActivity().setTitle(R.string.dialog_caption_add);
 
-                mFuelingRecord = new FuelingRecord(-1,
-                        System.currentTimeMillis(),
-                        PreferenceManagerFuel.getDefaultCost(),
-                        PreferenceManagerFuel.getDefaultVolume(),
-                        PreferenceManagerFuel.getLastTotal());
-
-                break;
-            case Const.RECORD_ACTION_UPDATE:
-                getActivity().setTitle(R.string.dialog_caption_update);
-
-                mFuelingRecord = new FuelingRecord(intent);
-
-                break;
-            case Const.RECORD_ACTION_DELETE:
-                throw new UnsupportedOperationException();
+            mFuelingRecord = new FuelingRecord(-1,
+                    System.currentTimeMillis(),
+                    PreferenceManagerFuel.getDefaultCost(),
+                    PreferenceManagerFuel.getDefaultVolume(),
+                    PreferenceManagerFuel.getLastTotal());
         }
 
         UtilsFormat.floatToEditText(mEditCost, mFuelingRecord.getCost(), false);
@@ -136,13 +125,25 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 mFuelingRecord.setVolume(UtilsFormat.editTextToFloat(mEditVolume));
                 mFuelingRecord.setTotal(UtilsFormat.editTextToFloat(mEditTotal));
 
+                if (mFuelingRecord.getId() > 0) {
+                    if (ContentProviderFuel.updateRecord(getContext(), mFuelingRecord) == 0) {
+                        Utils.toast(R.string.message_error_update_record);
+
+                        return false;
+                    }
+                } else {
+                    if (ContentProviderFuel.insertRecord(getContext(), mFuelingRecord) == -1) {
+                        Utils.toast(R.string.message_error_insert_record);
+
+                        return false;
+                    }
+                }
+
                 Activity activity = getActivity();
 
                 PreferenceManagerFuel.putLastTotal(mFuelingRecord.getTotal());
 
-                activity.setResult(Activity.RESULT_OK,
-                        mFuelingRecord.toIntent()
-                                .putExtra(ActivityFuelingRecordChange.INTENT_EXTRA_ACTION, mRecordAction));
+                activity.setResult(Activity.RESULT_OK, mFuelingRecord.toIntent());
 
                 activity.finish();
 

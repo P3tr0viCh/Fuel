@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 
 public class FuelingRecord implements Parcelable {
 
-    private static final String NAME = "FUELING_RECORD";
+    public static final String NAME = "FUELING_RECORD";
 
     // Устанавливается во время добавления записи в БД равной mDateTime,
     // при изменении даты не меняется.

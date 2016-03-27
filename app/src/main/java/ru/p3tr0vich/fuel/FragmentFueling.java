@@ -96,9 +96,7 @@ public class FragmentFueling extends FragmentBase implements
     private final View.OnClickListener undoClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            UtilsLog.d(TAG, "undoClickListener", deletedFuelingRecord.toString());
-
-            insertRecord(deletedFuelingRecord);
+            ContentProviderFuel.insertRecord(getContext(), deletedFuelingRecord);
 
             deletedFuelingRecord = null;
         }
@@ -202,7 +200,7 @@ public class FragmentFueling extends FragmentBase implements
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnRecordChangeListener.onRecordChange(Const.RECORD_ACTION_ADD, null);
+                mOnRecordChangeListener.onRecordChange(null);
             }
         });
         mFloatingActionButton.setScaleX(0.0f);
@@ -309,18 +307,16 @@ public class FragmentFueling extends FragmentBase implements
         getLoaderManager().getLoader(FUELING_CURSOR_LOADER_ID).forceLoad();
     }
 
-    private void checkDateTime(@NonNull FuelingRecord fuelingRecord) {
+    public void checkDateTime(final long dateTime) {
         switch (mFilter.mode) {
             case DatabaseHelper.Filter.MODE_ALL:
                 return;
             case DatabaseHelper.Filter.MODE_CURRENT_YEAR:
-                if (UtilsDate.getCalendarInstance(fuelingRecord.getDateTime()).get(Calendar.YEAR) ==
+                if (UtilsDate.getCalendarInstance(dateTime).get(Calendar.YEAR) ==
                         UtilsDate.getCurrentYear()) return;
 
                 break;
             case DatabaseHelper.Filter.MODE_DATES:
-                final long dateTime = fuelingRecord.getDateTime();
-
                 if (dateTime >= mFilter.dateFrom && dateTime <= mFilter.dateTo) return;
 
                 break;
@@ -329,20 +325,6 @@ public class FragmentFueling extends FragmentBase implements
         }
 
         setFilterMode(DatabaseHelper.Filter.MODE_ALL);
-    }
-
-    public void insertRecord(@NonNull FuelingRecord fuelingRecord) {
-        checkDateTime(fuelingRecord);
-
-        if (ContentProviderFuel.insertRecord(getContext(), fuelingRecord) == -1)
-            Utils.toast(R.string.message_error_insert_record);
-    }
-
-    public void updateRecord(@NonNull FuelingRecord fuelingRecord) {
-        checkDateTime(fuelingRecord);
-
-        if (ContentProviderFuel.updateRecord(getContext(), fuelingRecord) == 0)
-            Utils.toast(R.string.message_error_update_record);
     }
 
     private boolean markRecordAsDeleted(@NonNull FuelingRecord fuelingRecord) {
@@ -491,7 +473,7 @@ public class FragmentFueling extends FragmentBase implements
 
                         switch (item.getItemId()) {
                             case R.id.action_fueling_update:
-                                mOnRecordChangeListener.onRecordChange(Const.RECORD_ACTION_UPDATE, fuelingRecord);
+                                mOnRecordChangeListener.onRecordChange(fuelingRecord);
                                 return true;
                             case R.id.action_fueling_delete:
                                 deletedFuelingRecord = fuelingRecord;
@@ -794,8 +776,7 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     public interface OnRecordChangeListener {
-        void onRecordChange(@Const.RecordAction int recordAction,
-                            @Nullable FuelingRecord fuelingRecord);
+        void onRecordChange(@Nullable FuelingRecord fuelingRecord);
     }
 
     static class FuelingCursorLoader extends CursorLoader {

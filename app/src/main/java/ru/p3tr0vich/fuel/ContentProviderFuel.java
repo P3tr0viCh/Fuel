@@ -76,7 +76,7 @@ public class ContentProviderFuel extends ContentProvider {
     private static final int PREFERENCES = 30;
     private static final int PREFERENCES_ITEM = 31;
 
-    public static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
         sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE, DATABASE);
@@ -112,6 +112,10 @@ public class ContentProviderFuel extends ContentProvider {
     public boolean onCreate() {
         mDatabaseHelper = new DatabaseHelper(getContext());
         return true;
+    }
+
+    public static int uriMatch(@NonNull Uri uri) {
+        return sURIMatcher.match(uri);
     }
 
     @Nullable

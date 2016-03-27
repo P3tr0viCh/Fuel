@@ -54,11 +54,6 @@ class Utils {
         }
     }
 
-    @Const.RecordAction
-    public static int intToRecordAction(int i) {
-        return i;
-    }
-
     public static void setViewHeight(View view, int height) {
         view.getLayoutParams().height = height;
         view.requestLayout();

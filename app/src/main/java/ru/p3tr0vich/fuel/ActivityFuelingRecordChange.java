@@ -11,24 +11,15 @@ import android.view.View;
 
 public class ActivityFuelingRecordChange extends AppCompatActivity {
 
-    public static final String INTENT_EXTRA_ACTION = "EXTRA_ACTION";
-
     public static void start(@NonNull Activity parent,
                              int requestCode,
-                             @Const.RecordAction int recordAction,
                              @Nullable FuelingRecord fuelingRecord) {
         Intent intent = new Intent(parent, ActivityFuelingRecordChange.class);
 
-        intent.putExtra(INTENT_EXTRA_ACTION, recordAction);
-        if (recordAction == Const.RECORD_ACTION_UPDATE && fuelingRecord != null)
+        if (fuelingRecord != null)
             fuelingRecord.toIntent(intent);
 
         parent.startActivityForResult(intent, requestCode);
-    }
-
-    @Const.RecordAction
-    public static int getAction(Intent data) {
-        return Utils.intToRecordAction(data.getIntExtra(INTENT_EXTRA_ACTION, -1));
     }
 
     @Override

@@ -610,7 +610,8 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onRecordChange(@Nullable FuelingRecord fuelingRecord) {
-        ActivityFuelingRecordChange.start(this, REQUEST_CODE_ACTIVITY_RECORD, fuelingRecord);
+        startActivityForResult(ActivityFuelingRecordChange.getIntent(this, fuelingRecord),
+                REQUEST_CODE_ACTIVITY_RECORD);
     }
 
     @Override

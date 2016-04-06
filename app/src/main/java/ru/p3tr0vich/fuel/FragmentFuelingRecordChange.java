@@ -1,8 +1,8 @@
 package ru.p3tr0vich.fuel;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,7 +19,9 @@ import java.util.Calendar;
 
 public class FragmentFuelingRecordChange extends Fragment implements View.OnClickListener {
 
-    private static final String INTENT_EXTRA = "EXTRA_DATE";
+    public static final String TAG = "FragmentFuelingRecordChange";
+
+    private static final String INTENT_EXTRA_DATE = "EXTRA_DATE";
 
     private long mDateTime;
 
@@ -29,6 +31,15 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     private EditText mEditCost;
     private EditText mEditVolume;
     private EditText mEditTotal;
+
+    public static Fragment getInstance(@Nullable FuelingRecord fuelingRecord) {
+        FragmentFuelingRecordChange fragment = new FragmentFuelingRecordChange();
+
+        if (fuelingRecord != null)
+            fragment.setArguments(fuelingRecord.toBundle());
+
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,21 +53,19 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         mEditVolume = (EditText) view.findViewById(R.id.editVolume);
         mEditTotal = (EditText) view.findViewById(R.id.editTotal);
 
-        Intent intent = getActivity().getIntent();
+        Bundle bundle = getArguments();
 
-        if (intent.hasExtra(FuelingRecord.NAME)) {
-            getActivity().setTitle(R.string.dialog_caption_update);
-
-            mFuelingRecord = new FuelingRecord(intent);
-        } else {
-            getActivity().setTitle(R.string.dialog_caption_add);
-
-            mFuelingRecord = new FuelingRecord(-1,
-                    System.currentTimeMillis(),
+        if (bundle != null && bundle.containsKey(FuelingRecord.NAME))
+            mFuelingRecord = new FuelingRecord(bundle);
+        else
+            mFuelingRecord = new FuelingRecord(
                     PreferenceManagerFuel.getDefaultCost(),
                     PreferenceManagerFuel.getDefaultVolume(),
                     PreferenceManagerFuel.getLastTotal());
-        }
+
+        getActivity().setTitle(mFuelingRecord.getId() != 0 ?
+                R.string.dialog_caption_update :
+                R.string.dialog_caption_add);
 
         UtilsFormat.floatToEditText(mEditCost, mFuelingRecord.getCost(), false);
         UtilsFormat.floatToEditText(mEditVolume, mFuelingRecord.getVolume(), false);
@@ -65,7 +74,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         if (savedInstanceState == null)
             mDateTime = mFuelingRecord.getDateTime();
         else
-            mDateTime = savedInstanceState.getLong(INTENT_EXTRA);
+            mDateTime = savedInstanceState.getLong(INTENT_EXTRA_DATE);
 
         updateDate();
 
@@ -103,7 +112,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putLong(INTENT_EXTRA, mDateTime);
+        outState.putLong(INTENT_EXTRA_DATE, mDateTime);
     }
 
     private void updateDate() {
@@ -125,7 +134,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 mFuelingRecord.setVolume(UtilsFormat.editTextToFloat(mEditVolume));
                 mFuelingRecord.setTotal(UtilsFormat.editTextToFloat(mEditTotal));
 
-                if (mFuelingRecord.getId() > 0) {
+                if (mFuelingRecord.getId() != 0) {
                     if (ContentProviderFuel.updateRecord(getContext(), mFuelingRecord) == 0) {
                         Utils.toast(R.string.message_error_update_record);
 

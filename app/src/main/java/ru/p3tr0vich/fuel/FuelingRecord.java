@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 public class FuelingRecord implements Parcelable {
 
@@ -12,6 +13,7 @@ public class FuelingRecord implements Parcelable {
 
     // Устанавливается во время добавления записи в БД равной mDateTime,
     // при изменении даты не меняется.
+    // По умолчанию равна 0. Возможны проблемы, связанные с датой.
     private long mId;
     // Дата заправки в формате Unix epoch, временная зона UTC.
     // В базе хранится со сдвигом локальной зоны.
@@ -39,17 +41,27 @@ public class FuelingRecord implements Parcelable {
         this(0, 0, 0, 0, 0);
     }
 
-    FuelingRecord(FuelingRecord fuelingRecord) {
-        this(fuelingRecord.mId, fuelingRecord.mDateTime, fuelingRecord.mCost,
-                fuelingRecord.mVolume, fuelingRecord.mTotal);
+    FuelingRecord(float cost, float volume, float total) {
+        this(0, System.currentTimeMillis(), cost, volume, total);
+    }
+
+    FuelingRecord(@Nullable FuelingRecord fuelingRecord) {
+        this();
+
+        if (fuelingRecord != null) {
+            mId = fuelingRecord.mId;
+            mDateTime = fuelingRecord.mDateTime;
+            mCost = fuelingRecord.mCost;
+            mVolume = fuelingRecord.mVolume;
+            mTotal = fuelingRecord.mTotal;
+        }
     }
 
     FuelingRecord(Intent intent) {
         this((FuelingRecord) intent.getParcelableExtra(NAME));
     }
 
-    @SuppressWarnings("unused")
-    FuelingRecord(Bundle bundle) {
+    FuelingRecord(@NonNull Bundle bundle) {
         this((FuelingRecord) bundle.getParcelable(NAME));
     }
 
@@ -62,13 +74,11 @@ public class FuelingRecord implements Parcelable {
         return this.toIntent(new Intent());
     }
 
-    @SuppressWarnings("WeakerAccess")
     public Bundle toBundle(@NonNull Bundle bundle) {
         bundle.putParcelable(NAME, this);
         return bundle;
     }
 
-    @SuppressWarnings("unused")
     public Bundle toBundle() {
         return this.toBundle(new Bundle());
     }

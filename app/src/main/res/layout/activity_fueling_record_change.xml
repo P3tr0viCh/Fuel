@@ -9,10 +9,8 @@
         android:id="@+id/toolbarRecord"
         layout="@layout/toolbar" />
 
-    <fragment
-        android:id="@+id/fragmentFuelingRecordChange"
-        android:name="ru.p3tr0vich.fuel.FragmentFuelingRecordChange"
+    <FrameLayout
+        android:id="@+id/contentFrame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/fragment_fueling_record_change" />
+        android:layout_height="match_parent" />
 </LinearLayout>

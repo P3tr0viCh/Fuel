@@ -12,8 +12,12 @@ abstract class BroadcastReceiverLoading extends BroadcastReceiver {
     private static final String ACTION = BuildConfig.APPLICATION_ID + ".ACTION_LOADING";
     private static final String EXTRA_LOADING = BuildConfig.APPLICATION_ID + ".EXTRA_LOADING";
 
-    public static void register(@NonNull Context context, @NonNull BroadcastReceiverLoading broadcastReceiverSync) {
-        LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiverSync, new IntentFilter(ACTION));
+    public void register(@NonNull Context context) {
+        LocalBroadcastManager.getInstance(context).registerReceiver(this, new IntentFilter(ACTION));
+    }
+
+    public void unregister(@NonNull Context context) {
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
     }
 
     public static void send(@NonNull Context context,

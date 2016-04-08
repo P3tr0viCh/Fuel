@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
@@ -66,10 +65,14 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
         updatePreferenceSummary(key);
 
-        if (key.equals(getString(R.string.pref_sync_enabled))) {
-            updatePreferenceSummary(R.string.pref_sync_key);
-            mOnPreferenceSyncEnabledChangeListener.onPreferenceSyncEnabledChanged(
-                    PreferenceManagerFuel.isSyncEnabled());
+        switch (key) {
+            case PreferenceManagerFuel.PREF_SYNC_ENABLED:
+                updatePreferenceSummary(PreferenceManagerFuel.PREF_SYNC_KEY);
+                mOnPreferenceSyncEnabledChangeListener.onPreferenceSyncEnabledChanged(
+                        PreferenceManagerFuel.isSyncEnabled());
+                break;
+            case PreferenceManagerFuel.PREF_SMS_ENABLED:
+                updatePreferenceSummary(PreferenceManagerFuel.PREF_SMS_KEY);
         }
     }
 
@@ -77,7 +80,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
 
-        if (key.equals(getString(R.string.pref_map_center_text))) {
+        if (key.equals(PreferenceManagerFuel.PREF_MAP_CENTER_TEXT)) {
             mOnPreferenceMapCenterClickListener.onPreferenceMapCenterClick();
 
             return true;
@@ -97,7 +100,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
         init(mRootPreferenceScreen);
 
-        findPreference(getString(R.string.pref_map_center_text)).setOnPreferenceClickListener(this);
+        findPreference(PreferenceManagerFuel.PREF_MAP_CENTER_TEXT).setOnPreferenceClickListener(this);
 
         findPreference(getString(R.string.pref_sync_yandex_disk_key)).setOnPreferenceClickListener(this);
 
@@ -165,7 +168,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
     }
 
     public void goToSyncScreen() {
-        navigateToScreen((PreferenceScreen) findPreference(getString(R.string.pref_sync_key)));
+        navigateToScreen((PreferenceScreen) findPreference(PreferenceManagerFuel.PREF_SYNC_KEY));
     }
 
     @Override
@@ -204,10 +207,6 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
         updatePreferenceSummary(mRootPreferenceScreen.findPreference(key));
     }
 
-    private void updatePreferenceSummary(@StringRes int resId) {
-        updatePreferenceSummary(getString(resId));
-    }
-
     private void updatePreferenceSummary(Preference preference) {
 //        UtilsLog.d(TAG, "updatePreferenceSummary", "preference == " + preference);
 
@@ -234,14 +233,37 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
             summary += " (" + text + ")";
 
             editPref.setSummary(summary);
-        } else if (key.equals(getString(R.string.pref_map_center_text))) {
-            preference.setSummary(PreferenceManagerFuel.getMapCenterText());
-        } else if (key.equals(getString(R.string.pref_sync_key))) {
-            preference.setSummary(getString(PreferenceManagerFuel.isSyncEnabled() ?
-                    R.string.pref_sync_summary_on : R.string.pref_sync_summary_off));
-        } else if (key.equals(getString(R.string.pref_sync_enabled))) {
-            preference.setTitle(getString(PreferenceManagerFuel.isSyncEnabled() ?
-                    R.string.pref_sync_summary_on : R.string.pref_sync_summary_off));
+        } else {
+            String text;
+
+            switch (key) {
+                case PreferenceManagerFuel.PREF_MAP_CENTER_TEXT:
+                    text = PreferenceManagerFuel.getMapCenterText();
+                    break;
+                case PreferenceManagerFuel.PREF_SYNC_KEY:
+                case PreferenceManagerFuel.PREF_SYNC_ENABLED:
+                    text = getString(PreferenceManagerFuel.isSyncEnabled() ?
+                            R.string.pref_sync_summary_on : R.string.pref_sync_summary_off);
+                    break;
+                case PreferenceManagerFuel.PREF_SMS_KEY:
+                case PreferenceManagerFuel.PREF_SMS_ENABLED:
+                    text = getString(PreferenceManagerFuel.isSMSEnabled() ?
+                            R.string.pref_sms_summary_on : R.string.pref_sms_summary_off);
+                    break;
+                default:
+                    text = null;
+            }
+
+            switch (key) {
+                case PreferenceManagerFuel.PREF_MAP_CENTER_TEXT:
+                case PreferenceManagerFuel.PREF_SYNC_KEY:
+                case PreferenceManagerFuel.PREF_SMS_KEY:
+                    preference.setSummary(text);
+                    break;
+                case PreferenceManagerFuel.PREF_SYNC_ENABLED:
+                case PreferenceManagerFuel.PREF_SMS_ENABLED:
+                    preference.setTitle(text);
+            }
         }
     }
 
@@ -254,6 +276,6 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
     }
 
     public void updateMapCenter() {
-        updatePreferenceSummary(R.string.pref_map_center_text);
+        updatePreferenceSummary(PreferenceManagerFuel.PREF_MAP_CENTER_TEXT);
     }
 }

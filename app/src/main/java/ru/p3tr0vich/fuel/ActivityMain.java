@@ -18,7 +18,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -325,7 +324,7 @@ public class ActivityMain extends AppCompatActivity implements
                     UtilsLog.d(TAG, "mBroadcastReceiverLoading.onReceive", "fragmentFueling == null");
             }
         };
-        BroadcastReceiverLoading.register(this, mBroadcastReceiverLoading);
+        mBroadcastReceiverLoading.register(this);
     }
 
     private void initStartSyncReceiver() {
@@ -346,7 +345,7 @@ public class ActivityMain extends AppCompatActivity implements
                 }
             }
         };
-        BroadcastReceiverSync.register(this, mBroadcastReceiverSync);
+        mBroadcastReceiverSync.register(this);
     }
 
     private void startTimerSync() {
@@ -546,7 +545,7 @@ public class ActivityMain extends AppCompatActivity implements
                 if (bundle == null) bundle = new Bundle();
 
                 bundle.putString(FragmentPreferences.KEY_PREFERENCE_SCREEN,
-                        getString(R.string.pref_sync_key));
+                        PreferenceManagerFuel.PREF_SYNC_KEY);
 
                 fragment.setArguments(bundle);
 
@@ -595,8 +594,8 @@ public class ActivityMain extends AppCompatActivity implements
         getContentResolver().unregisterContentObserver(mDatabaseObserver);
         getContentResolver().unregisterContentObserver(mPreferencesObserver);
 
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiverSync);
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiverLoading);
+        mBroadcastReceiverSync.unregister(this);
+        mBroadcastReceiverLoading.unregister(this);
 
         startSync(START_SYNC_ACTIVITY_DESTROY);
 

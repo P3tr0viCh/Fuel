@@ -41,12 +41,21 @@ class PreferenceManagerFuel {
     private static final String PREF_CONS = "consumption";
     private static final String PREF_SEASON = "season";
 
+    // @preferences
+    public static final String PREF_MAP_CENTER_TEXT = "map center text";
+
     private static final String PREF_MAP_CENTER_LATITUDE = "map center latitude";
     private static final String PREF_MAP_CENTER_LONGITUDE = "map center longitude";
 
-    public final static String DEFAULT_MAP_CENTER_TEXT = "Москва, Кремль";
-    public final static double DEFAULT_MAP_CENTER_LATITUDE = 55.752023;  // Широта
-    public final static double DEFAULT_MAP_CENTER_LONGITUDE = 37.617499; // Долгота
+    public static final String DEFAULT_MAP_CENTER_TEXT = "Москва, Кремль";
+    public static final double DEFAULT_MAP_CENTER_LATITUDE = 55.752023;  // Широта
+    public static final double DEFAULT_MAP_CENTER_LONGITUDE = 37.617499; // Долгота
+
+    // @preferences
+    public static final String PREF_SYNC_KEY = "key_sync";
+    public static final String PREF_SYNC_ENABLED = "sync enabled";
+    public static final String PREF_SMS_KEY = "key_sms";
+    public static final String PREF_SMS_ENABLED = "sms enabled";
 
     @SuppressWarnings("WeakerAccess")
     // private - поле удаляется сборщиком мусора
@@ -84,13 +93,19 @@ class PreferenceManagerFuel {
     }
 
     private static boolean isSyncKey(String key) {
-        return !key.equals(PREF_CHANGED) &&
-                !key.equals(PREF_DATABASE_REVISION) &&
-                !key.equals(PREF_PREFERENCES_REVISION) &&
-                !key.equals(PREF_LAST_SYNC_DATE_TIME) &&
-                !key.equals(PREF_LAST_SYNC_HAS_ERROR) &&
-                !key.equals(PREF_DATABASE_FULL_SYNC) &&
-                !key.equals(sContext.getString(R.string.pref_sync_enabled));
+        switch (key) {
+            case PREF_CHANGED:
+            case PREF_DATABASE_REVISION:
+            case PREF_PREFERENCES_REVISION:
+            case PREF_LAST_SYNC_DATE_TIME:
+            case PREF_LAST_SYNC_HAS_ERROR:
+            case PREF_DATABASE_FULL_SYNC:
+            case PREF_SYNC_ENABLED:
+            case PREF_SMS_ENABLED:
+                return false;
+            default:
+                return true;
+        }
     }
 
     private static boolean isChanged() {
@@ -110,7 +125,11 @@ class PreferenceManagerFuel {
     }
 
     public static boolean isSyncEnabled() {
-        return sSharedPreferences.getBoolean(sContext.getString(R.string.pref_sync_enabled), false);
+        return sSharedPreferences.getBoolean(PREF_SYNC_ENABLED, false);
+    }
+
+    public static boolean isSMSEnabled() {
+        return sSharedPreferences.getBoolean(PREF_SMS_ENABLED, false);
     }
 
     private static int getRevision(String keyRevision) {
@@ -251,8 +270,7 @@ class PreferenceManagerFuel {
 
     @NonNull
     public static String getMapCenterText() {
-        return getString(sContext.getString(R.string.pref_map_center_text),
-                DEFAULT_MAP_CENTER_TEXT);
+        return getString(PREF_MAP_CENTER_TEXT, DEFAULT_MAP_CENTER_TEXT);
     }
 
     public static double getMapCenterLatitude() {
@@ -270,7 +288,7 @@ class PreferenceManagerFuel {
     public static void putMapCenter(final String text, final double latitude, final double longitude) {
         sSharedPreferences
                 .edit()
-                .putString(sContext.getString(R.string.pref_map_center_text), text)
+                .putString(PREF_MAP_CENTER_TEXT, text)
                 .putLong(PREF_MAP_CENTER_LATITUDE,
                         Double.doubleToRawLongBits(latitude))
                 .putLong(PREF_MAP_CENTER_LONGITUDE,

@@ -14,8 +14,12 @@ abstract class BroadcastReceiverSync extends BroadcastReceiver {
     private static final String EXTRA_SYNC_PREFERENCES = BuildConfig.APPLICATION_ID + ".EXTRA_SYNC_PREFERENCES";
     private static final String EXTRA_TOKEN_CHANGED = BuildConfig.APPLICATION_ID + ".EXTRA_TOKEN_CHANGED";
 
-    public static void register(@NonNull Context context, @NonNull BroadcastReceiverSync broadcastReceiverSync) {
-        LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiverSync, new IntentFilter(ACTION));
+    public void register(@NonNull Context context) {
+        LocalBroadcastManager.getInstance(context).registerReceiver(this, new IntentFilter(ACTION));
+    }
+
+    public void unregister(@NonNull Context context) {
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
     }
 
     public static void send(@NonNull Context context,

@@ -187,14 +187,10 @@
     <string name="pref_winter_highway" translatable="false">winter highway</string>
     <string name="pref_winter_mixed" translatable="false">winter mixed</string>
 
-    <string name="pref_map_center_text" translatable="false">map center text</string>
-
-    <string name="pref_sync_key" translatable="false">key_sync</string>
     <string name="pref_sync_title">Синхронизация</string>
     <string name="pref_sync_summary_on">Включена</string>
     <string name="pref_sync_summary_off">Выключена</string>
 
-    <string name="pref_sync_enabled" translatable="false">sync enabled</string>
     <string name="pref_sync_enabled_on">Включена</string>
     <string name="pref_sync_enabled_off">Выключена</string>
 
@@ -202,6 +198,13 @@
     <string name="pref_sync_yandex_disk_title">Синхронизация выполняется при помощи облачного
         хранилища Яндекс.Диск</string>
     <string name="pref_sync_yandex_disk_summary_on">Открыть Яндекс.Диск</string>
+
+    <string name="pref_sms_title">Отслеживание СМС</string>
+    <string name="pref_sms_summary_on">Включено</string>
+    <string name="pref_sms_summary_off">Выключено</string>
+
+    <string name="pref_sms_enabled_on">Включено</string>
+    <string name="pref_sms_enabled_off">Выключено</string>
 
     <string name="sync_authority" translatable="false">ru.p3tr0vich.fuel.provider</string>
     <string name="sync_account_name" translatable="false">Sync</string>

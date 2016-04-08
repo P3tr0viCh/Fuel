@@ -3,79 +3,27 @@ package ru.p3tr0vich.fuel;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.os.Build;
-import android.os.Bundle;
-import android.provider.Telephony;
-import android.telephony.SmsMessage;
+import android.support.annotation.NonNull;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class BroadcastReceiverSMS extends BroadcastReceiver {
+public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
-    private class Message {
-        int id;
-        String message;
-
-        Message(int id, String message) {
-            this.id = id;
-            this.message = message;
-        }
+    @Override
+    public boolean isEnabled() {
+        return PreferenceManagerFuel.isSMSEnabled();
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
-        if (intent != null && Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction())) {
+    public void onReceive(Context context, @NonNull Map<String, Message> messages) {
+        for (String address : messages.keySet()) {
+            Message message = messages.get(address);
 
-            SmsMessage[] smsMessages = null;
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                smsMessages = Telephony.Sms.Intents.getMessagesFromIntent(intent);
-            else {
-                Bundle extras = intent.getExtras();
-
-                if (extras != null) {
-                    Object[] pduArray = (Object[]) extras.get("pdus");
-
-                    if (pduArray != null) {
-                        smsMessages = new SmsMessage[pduArray.length];
-
-                        for (int i = 0; i < pduArray.length; i++) {
-                            //noinspection deprecation
-                            smsMessages[i] = SmsMessage.createFromPdu((byte[]) pduArray[i]);
-                        }
-                    }
-                }
-            }
-
-            if (smsMessages != null) {
-                Map<String, Message> messages = new HashMap<>(smsMessages.length);
-
-                for (SmsMessage smsMessage : smsMessages) {
-                    String originatingAddress = smsMessage.getOriginatingAddress();
-                    int id = smsMessage.hashCode();
-                    String messageBody = smsMessage.getMessageBody();
-
-                    if (messages.containsKey(originatingAddress)) {
-                        Message message = messages.get(originatingAddress);
-                        message.message += messageBody;
-
-                        messages.put(originatingAddress, message);
-                    } else
-                        messages.put(originatingAddress, new Message(id, messageBody));
-                }
-
-                for (String address : messages.keySet()) {
-                    Message message = messages.get(address);
-
-                    showNotification(context, message.id, address, message.message);
-                }
-            }
+            showNotification(context, message.id, address, message.message);
         }
     }
 

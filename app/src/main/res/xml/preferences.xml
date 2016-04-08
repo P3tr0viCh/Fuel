@@ -97,16 +97,16 @@
 
     <Preference
         android:icon="@drawable/ic_map"
-        android:key="@string/pref_map_center_text"
+        android:key="map center text"
         android:title="@string/pref_yandex_map_title" />
 
     <PreferenceScreen
         android:icon="@drawable/ic_sync"
-        android:key="@string/pref_sync_key"
+        android:key="key_sync"
         android:title="@string/pref_sync_title">
         <!--suppress AndroidElementNotAllowed -->
         <android.support.v7.preference.SwitchPreferenceCompat
-            android:key="@string/pref_sync_enabled"
+            android:key="sync enabled"
             android:switchTextOff="@string/pref_sync_enabled_off"
             android:switchTextOn="@string/pref_sync_enabled_on" />
 
@@ -115,5 +115,16 @@
             android:key="@string/pref_sync_yandex_disk_key"
             android:summary="@string/pref_sync_yandex_disk_summary_on"
             android:title="@string/pref_sync_yandex_disk_title" />
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:icon="@drawable/ic_sms"
+        android:key="key_sms"
+        android:title="@string/pref_sms_title">
+        <!--suppress AndroidElementNotAllowed -->
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:key="sms enabled"
+            android:switchTextOff="@string/pref_sms_enabled_off"
+            android:switchTextOn="@string/pref_sms_enabled_on" />
     </PreferenceScreen>
 </PreferenceScreen>

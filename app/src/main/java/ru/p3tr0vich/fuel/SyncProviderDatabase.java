@@ -37,8 +37,8 @@ class SyncProviderDatabase {
         List<String> result = new ArrayList<>();
 
         Cursor cursor = mProvider.query(getAllRecords ?
-                ContentProviderFuel.URI_DATABASE_SYNC_ALL :
-                ContentProviderFuel.URI_DATABASE_SYNC_CHANGED, null, null, null, null);
+                ContentProviderHelper.URI_DATABASE_SYNC_ALL :
+                ContentProviderHelper.URI_DATABASE_SYNC_CHANGED, null, null, null, null);
 
         if (addDeleteAll) result.add(CLEAR);
 
@@ -68,12 +68,12 @@ class SyncProviderDatabase {
 
     public void syncDeletedRecords() throws RemoteException {
         // Полностью удалить записи, отмеченные как удалённые
-        mProvider.delete(ContentProviderFuel.URI_DATABASE_SYNC, null, null);
+        mProvider.delete(ContentProviderHelper.URI_DATABASE_SYNC, null, null);
     }
 
     public void syncChangedRecords() throws RemoteException {
         // Изменить записи, помеченные как изменённые, как не изменённые
-        mProvider.update(ContentProviderFuel.URI_DATABASE_SYNC, new ContentValues(0), null, null);
+        mProvider.update(ContentProviderHelper.URI_DATABASE_SYNC, new ContentValues(0), null, null);
     }
 
     public void updateDatabase(@NonNull List<String> syncRecords)
@@ -141,7 +141,7 @@ class SyncProviderDatabase {
 
         if (clearDatabase)
             operations.add(ContentProviderOperation
-                    .newDelete(ContentProviderFuel.URI_DATABASE)
+                    .newDelete(ContentProviderHelper.URI_DATABASE)
                     .build());
 
         size = records.size();
@@ -151,12 +151,12 @@ class SyncProviderDatabase {
 
             if (values != null)
                 operation = ContentProviderOperation
-                        .newInsert(ContentProviderFuel.URI_DATABASE)
+                        .newInsert(ContentProviderHelper.URI_DATABASE)
                         .withValues(values)
                         .build();
             else
                 operation = ContentProviderOperation
-                        .newDelete(ContentUris.withAppendedId(ContentProviderFuel.URI_DATABASE,
+                        .newDelete(ContentUris.withAppendedId(ContentProviderHelper.URI_DATABASE,
                                 records.keyAt(i)))
                         .build();
 

@@ -17,9 +17,15 @@ public class ConnectivityHelper {
     }
 
     public static final int DISCONNECTED = 0;
+    @SuppressWarnings("WeakerAccess")
     public static final int CONNECTED = 1;
+    @SuppressWarnings("WeakerAccess")
     public static final int CONNECTED_WIFI = 2;
+    @SuppressWarnings("WeakerAccess")
     public static final int CONNECTED_ROAMING = 3;
+
+    private ConnectivityHelper() {
+    }
 
     @ConnectedState
     public static int getConnectedState(@NonNull Context context) {

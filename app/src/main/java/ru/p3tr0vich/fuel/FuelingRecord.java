@@ -74,6 +74,7 @@ public class FuelingRecord implements Parcelable {
         return this.toIntent(new Intent());
     }
 
+    @SuppressWarnings("WeakerAccess")
     public Bundle toBundle(@NonNull Bundle bundle) {
         bundle.putParcelable(NAME, this);
         return bundle;

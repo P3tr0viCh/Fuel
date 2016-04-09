@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import java.util.Arrays;
 
-class ImplementException  extends ClassCastException {
+class ImplementException extends ClassCastException {
 
     ImplementException(@NonNull Context context, @NonNull Class[] ints) {
         super(context.getClass().getSimpleName() + " must implement " + Arrays.toString(ints));

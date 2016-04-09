@@ -413,7 +413,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         mSyncProviderPreferences.putDatabaseRevision(serverRevision);
 
-        ContentProviderFuel.notifyChangeAfterSync(getContext());
+        ContentProviderHelper.notifyChangeAfterSync(getContext());
 
         UtilsLog.d(TAG, TAG2, "finish");
     }

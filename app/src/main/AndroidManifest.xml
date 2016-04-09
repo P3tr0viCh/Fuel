@@ -95,7 +95,7 @@
         </service>
 
         <provider
-            android:name=".ContentProviderFuel"
+            android:name=".ContentProviderHelper"
             android:authorities="@string/sync_authority"
             android:exported="false"
             android:syncable="true" />

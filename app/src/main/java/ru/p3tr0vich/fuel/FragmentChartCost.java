@@ -269,7 +269,7 @@ public class FragmentChartCost extends FragmentBase implements
 
         @Override
         public Cursor loadInBackground() {
-            return ContentProviderFuel.getSumByMonthsForYear(getContext(), mYear);
+            return ContentProviderHelper.getSumByMonthsForYear(getContext(), mYear);
         }
     }
 
@@ -281,7 +281,7 @@ public class FragmentChartCost extends FragmentBase implements
 
         @Override
         public Cursor loadInBackground() {
-            return ContentProviderFuel.getYears(getContext());
+            return ContentProviderHelper.getYears(getContext());
         }
     }
 

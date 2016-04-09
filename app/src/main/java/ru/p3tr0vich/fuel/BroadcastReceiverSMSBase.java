@@ -15,7 +15,7 @@ import java.util.Map;
 abstract class BroadcastReceiverSMSBase extends BroadcastReceiver {
 
     public class Message {
-        int id;
+        final int id;
         String message;
 
         Message(int id, String message) {
@@ -24,11 +24,10 @@ abstract class BroadcastReceiverSMSBase extends BroadcastReceiver {
         }
     }
 
-    public abstract boolean isEnabled();
+    protected abstract boolean isEnabled();
 
     @Override
-    @Deprecated
-    public void onReceive(Context context, Intent intent) {
+    public final void onReceive(Context context, Intent intent) {
 
         if (!isEnabled()) return;
 
@@ -78,5 +77,5 @@ abstract class BroadcastReceiverSMSBase extends BroadcastReceiver {
         onReceive(context, messages);
     }
 
-    public abstract void onReceive(Context context, @NonNull Map<String, Message> messages);
+    protected abstract void onReceive(Context context, @NonNull Map<String, Message> messages);
 }

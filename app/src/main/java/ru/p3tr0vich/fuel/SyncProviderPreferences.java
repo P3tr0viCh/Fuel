@@ -29,8 +29,8 @@ class SyncProviderPreferences {
     private ContentValues query(@Nullable String preference) throws RemoteException, FormatException {
         final Cursor cursor = mProvider.query(
                 TextUtils.isEmpty(preference) ?
-                        ContentProviderFuel.URI_PREFERENCES :
-                        Uri.withAppendedPath(ContentProviderFuel.URI_PREFERENCES, preference),
+                        ContentProviderHelper.URI_PREFERENCES :
+                        Uri.withAppendedPath(ContentProviderHelper.URI_PREFERENCES, preference),
                 null, null, null, null);
 
         if (cursor == null)
@@ -69,8 +69,8 @@ class SyncProviderPreferences {
     private void update(@NonNull ContentValues contentValues,
                         @Nullable String preference) throws RemoteException {
         mProvider.update(TextUtils.isEmpty(preference) ?
-                        ContentProviderFuel.URI_PREFERENCES :
-                        Uri.withAppendedPath(ContentProviderFuel.URI_PREFERENCES, preference),
+                        ContentProviderHelper.URI_PREFERENCES :
+                        Uri.withAppendedPath(ContentProviderHelper.URI_PREFERENCES, preference),
                 contentValues, null, null);
     }
 

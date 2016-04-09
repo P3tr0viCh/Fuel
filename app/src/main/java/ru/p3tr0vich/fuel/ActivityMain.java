@@ -377,7 +377,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     private void initPreferencesObserver() {
         mPreferencesObserver = new PreferencesObserver(new Handler());
-        getContentResolver().registerContentObserver(ContentProviderFuel.URI_PREFERENCES,
+        getContentResolver().registerContentObserver(ContentProviderHelper.URI_PREFERENCES,
                 false, mPreferencesObserver);
     }
 
@@ -398,14 +398,14 @@ public class ActivityMain extends AppCompatActivity implements
             long id = -1;
 
             if (changeUri != null)
-                switch (ContentProviderFuel.uriMatch(changeUri)) {
-                    case ContentProviderFuel.DATABASE_ITEM:
+                switch (ContentProviderHelper.uriMatch(changeUri)) {
+                    case ContentProviderHelper.DATABASE_ITEM:
                         id = ContentUris.parseId(changeUri);
-                    case ContentProviderFuel.DATABASE:
+                    case ContentProviderHelper.DATABASE:
                         mDatabaseChanged = true;
                         startTimerSync();
                         break;
-                    case ContentProviderFuel.DATABASE_SYNC:
+                    case ContentProviderHelper.DATABASE_SYNC:
                         break;
                     default:
                         return;
@@ -418,7 +418,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     private void initDatabaseObserver() {
         mDatabaseObserver = new DatabaseObserver(new Handler());
-        getContentResolver().registerContentObserver(ContentProviderFuel.URI_DATABASE,
+        getContentResolver().registerContentObserver(ContentProviderHelper.URI_DATABASE,
                 true, mDatabaseObserver);
     }
 

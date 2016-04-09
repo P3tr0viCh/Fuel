@@ -96,7 +96,7 @@ public class FragmentFueling extends FragmentBase implements
     private final View.OnClickListener undoClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ContentProviderFuel.insertRecord(getContext(), deletedFuelingRecord);
+            ContentProviderHelper.insertRecord(getContext(), deletedFuelingRecord);
 
             deletedFuelingRecord = null;
         }
@@ -330,7 +330,7 @@ public class FragmentFueling extends FragmentBase implements
     private boolean markRecordAsDeleted(@NonNull FuelingRecord fuelingRecord) {
         final long id = fuelingRecord.getId();
 
-        if (ContentProviderFuel.markRecordAsDeleted(getContext(), id) > 0)
+        if (ContentProviderHelper.markRecordAsDeleted(getContext(), id) > 0)
             return true;
         else {
             Utils.toast(R.string.message_error_delete_record);
@@ -462,11 +462,11 @@ public class FragmentFueling extends FragmentBase implements
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         FuelingRecord fuelingRecord =
-                                ContentProviderFuel.getFuelingRecord(getContext(), id);
+                                ContentProviderHelper.getFuelingRecord(getContext(), id);
 
                         if (fuelingRecord == null) {
                             UtilsLog.d(TAG, "onMenuItemClick",
-                                    "ContentProviderFuel.getFuelingRecord() == null");
+                                    "ContentProviderHelper.getFuelingRecord() == null");
                             updateList(-1);
                             return true;
                         }
@@ -795,7 +795,7 @@ public class FragmentFueling extends FragmentBase implements
             BroadcastReceiverLoading.send(getContext(), true);
 
             try {
-                return ContentProviderFuel.getAll(getContext(), mFilter);
+                return ContentProviderHelper.getAll(getContext(), mFilter);
             } finally {
                 BroadcastReceiverLoading.send(getContext(), false);
             }

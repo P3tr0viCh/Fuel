@@ -135,13 +135,13 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 mFuelingRecord.setTotal(UtilsFormat.editTextToFloat(mEditTotal));
 
                 if (mFuelingRecord.getId() != 0) {
-                    if (ContentProviderFuel.updateRecord(getContext(), mFuelingRecord) == 0) {
+                    if (ContentProviderHelper.updateRecord(getContext(), mFuelingRecord) == 0) {
                         Utils.toast(R.string.message_error_update_record);
 
                         return false;
                     }
                 } else {
-                    if (ContentProviderFuel.insertRecord(getContext(), mFuelingRecord) == -1) {
+                    if (ContentProviderHelper.insertRecord(getContext(), mFuelingRecord) == -1) {
                         Utils.toast(R.string.message_error_insert_record);
 
                         return false;

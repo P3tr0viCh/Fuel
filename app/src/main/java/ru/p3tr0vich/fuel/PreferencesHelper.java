@@ -121,7 +121,7 @@ class PreferencesHelper {
         UtilsLog.d(TAG, "putChanged", "changed == " + changed);
 
         if (changed)
-            sContext.getContentResolver().notifyChange(ContentProviderFuel.URI_PREFERENCES, null, false);
+            sContext.getContentResolver().notifyChange(ContentProviderHelper.URI_PREFERENCES, null, false);
     }
 
     public static boolean isSyncEnabled() {

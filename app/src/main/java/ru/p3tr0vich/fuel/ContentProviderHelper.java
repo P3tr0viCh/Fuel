@@ -17,9 +17,9 @@ import java.util.List;
 
 @SuppressWarnings("TryFinallyCanBeTryWithResources")
 // Try-with-resources requires API level 19 (current min is 17)
-public class ContentProviderFuel extends ContentProvider {
+public class ContentProviderHelper extends ContentProvider {
 
-    private static final String TAG = "ContentProviderFuel";
+    private static final String TAG = "ContentProviderHelper";
 
     private static class BaseUri {
 

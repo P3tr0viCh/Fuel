@@ -1,7 +1,6 @@
 package ru.p3tr0vich.fuel;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +14,7 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
     @Override
     public boolean isEnabled() {
-        return PreferenceManagerFuel.isSMSEnabled();
+        return PreferencesHelper.isSMSEnabled();
     }
 
     @Override
@@ -31,13 +30,12 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
         FuelingRecord fuelingRecord = new FuelingRecord(
                 new Random().nextInt(1000),
                 new Random().nextInt(100),
-                PreferenceManagerFuel.getLastTotal());
+                PreferencesHelper.getLastTotal());
 
         PendingIntent contentIntent = PendingIntent.getActivity(context, id,
                 ActivityFuelingRecordChange.getIntent(context, fuelingRecord)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                                Intent.FLAG_ACTIVITY_SINGLE_TOP |
-                                Intent.FLAG_ACTIVITY_NO_HISTORY),
+                                Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification.Builder builder = new Notification.Builder(context)
@@ -48,7 +46,6 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
                 .setAutoCancel(true);
 
-        ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
-                .notify(id, builder.build());
+        SystemServicesHelper.getNotificationManager(context).notify(id, builder.build());
     }
 }

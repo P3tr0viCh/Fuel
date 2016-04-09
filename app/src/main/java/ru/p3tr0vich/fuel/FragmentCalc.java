@@ -195,20 +195,20 @@ public class FragmentCalc extends FragmentBase implements
     }
 
     private void loadPrefs() {
-        mEditDistance.setText(PreferenceManagerFuel.getCalcDistance());
-        mEditCost.setText(PreferenceManagerFuel.getCalcCost());
-        mEditVolume.setText(PreferenceManagerFuel.getCalcVolume());
+        mEditDistance.setText(PreferencesHelper.getCalcDistance());
+        mEditCost.setText(PreferencesHelper.getCalcCost());
+        mEditVolume.setText(PreferencesHelper.getCalcVolume());
 
-        mEditPrice.setText(PreferenceManagerFuel.getCalcPrice());
+        mEditPrice.setText(PreferencesHelper.getCalcPrice());
 
-        arrCons = PreferenceManagerFuel.getCalcCons();
+        arrCons = PreferencesHelper.getCalcCons();
 
-        mSpinnerCons.setSelection(PreferenceManagerFuel.getCalcSelectedCons());
-        mSpinnerSeason.setSelection(PreferenceManagerFuel.getCalcSelectedSeason());
+        mSpinnerCons.setSelection(PreferencesHelper.getCalcSelectedCons());
+        mSpinnerSeason.setSelection(PreferencesHelper.getCalcSelectedSeason());
     }
 
     private void savePrefs() {
-        PreferenceManagerFuel.putCalc(
+        PreferencesHelper.putCalc(
                 mEditDistance.getText().toString(),
                 mEditCost.getText().toString(),
                 mEditVolume.getText().toString(),

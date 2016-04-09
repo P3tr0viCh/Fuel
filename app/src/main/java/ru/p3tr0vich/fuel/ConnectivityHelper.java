@@ -24,7 +24,7 @@ public class ConnectivityHelper {
     @ConnectedState
     public static int getConnectedState(@NonNull Context context) {
         ConnectivityManager connectivityManager =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                SystemServicesHelper.getConnectivityManager(context);
 
         if (connectivityManager != null) {
             NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

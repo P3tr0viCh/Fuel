@@ -12,6 +12,8 @@ import android.view.View;
 
 public class ActivityFuelingRecordChange extends AppCompatActivity {
 
+    private static final String TAG = "ActivityFuelingRecordChange";
+
     @NonNull
     public static Intent getIntent(@NonNull Context context, @Nullable FuelingRecord fuelingRecord) {
         Intent intent = new Intent(context, ActivityFuelingRecordChange.class);
@@ -24,6 +26,8 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        UtilsLog.d(TAG, "onCreate");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fueling_record_change);
 
@@ -44,6 +48,12 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
 
         if (savedInstanceState == null)
             addFragment(getIntent());
+    }
+
+    @Override
+    protected void onDestroy() {
+        UtilsLog.d(TAG, "onDestroy");
+        super.onDestroy();
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 class SyncAccount {
@@ -20,8 +21,8 @@ class SyncAccount {
 
     private final Account mAccount;
 
-    SyncAccount(Context context) {
-        mAccountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
+    SyncAccount(@NonNull Context context) {
+        mAccountManager = SystemServicesHelper.getAccountManager(context);
 
         mAuthority = context.getString(R.string.sync_authority);
         mAccountName = context.getString(R.string.sync_account_name);
@@ -41,7 +42,7 @@ class SyncAccount {
             account = new Account(getAccountName(), getAccountType());
 
             if (mAccountManager.addAccountExplicitly(account, null, null)) {
-                setIsSyncable(account, PreferenceManagerFuel.isSyncEnabled());
+                setIsSyncable(account, PreferencesHelper.isSyncEnabled());
 
                 UtilsLog.d(TAG, "createAccount", "addAccountExplicitly == true");
             } else {

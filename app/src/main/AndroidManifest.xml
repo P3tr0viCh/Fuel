@@ -45,6 +45,7 @@
 
         <activity
             android:name=".ActivityFuelingRecordChange"
+            android:launchMode="singleTop"
             android:parentActivityName=".ActivityMain"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
 

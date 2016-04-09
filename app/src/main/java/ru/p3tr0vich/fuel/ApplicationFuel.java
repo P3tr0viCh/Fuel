@@ -12,7 +12,7 @@ public class ApplicationFuel extends Application {
     public void onCreate() {
         super.onCreate();
         CONTEXT = getApplicationContext();
-        PreferenceManagerFuel.init(CONTEXT);
+        PreferencesHelper.init(CONTEXT);
     }
 
     @NonNull

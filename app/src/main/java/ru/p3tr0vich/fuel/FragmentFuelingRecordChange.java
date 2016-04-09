@@ -59,9 +59,9 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
             mFuelingRecord = new FuelingRecord(bundle);
         else
             mFuelingRecord = new FuelingRecord(
-                    PreferenceManagerFuel.getDefaultCost(),
-                    PreferenceManagerFuel.getDefaultVolume(),
-                    PreferenceManagerFuel.getLastTotal());
+                    PreferencesHelper.getDefaultCost(),
+                    PreferencesHelper.getDefaultVolume(),
+                    PreferencesHelper.getLastTotal());
 
         getActivity().setTitle(mFuelingRecord.getId() != 0 ?
                 R.string.dialog_caption_update :
@@ -150,7 +150,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
                 Activity activity = getActivity();
 
-                PreferenceManagerFuel.putLastTotal(mFuelingRecord.getTotal());
+                PreferencesHelper.putLastTotal(mFuelingRecord.getTotal());
 
                 activity.setResult(Activity.RESULT_OK, mFuelingRecord.toIntent());
 

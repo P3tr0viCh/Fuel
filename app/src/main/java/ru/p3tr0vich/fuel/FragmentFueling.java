@@ -121,8 +121,8 @@ public class FragmentFueling extends FragmentBase implements
 
             mFilter.mode = DatabaseHelper.Filter.MODE_CURRENT_YEAR;
 
-            mFilter.dateFrom = PreferenceManagerFuel.getFilterDateFrom();
-            mFilter.dateTo = PreferenceManagerFuel.getFilterDateTo();
+            mFilter.dateFrom = PreferencesHelper.getFilterDateFrom();
+            mFilter.dateTo = PreferencesHelper.getFilterDateTo();
         } else {
             UtilsLog.d(TAG, "onCreate", "savedInstanceState != null");
 
@@ -278,7 +278,7 @@ public class FragmentFueling extends FragmentBase implements
 
         calcTotalTaskCancel();
 
-        PreferenceManagerFuel.putFilterDate(mFilter.dateFrom, mFilter.dateTo);
+        PreferencesHelper.putFilterDate(mFilter.dateFrom, mFilter.dateTo);
 
         super.onDestroy();
     }

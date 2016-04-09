@@ -27,16 +27,14 @@ class Utils {
     public static void showKeyboard(EditText editText) {
         editText.requestFocus();
         editText.selectAll();
-        ((InputMethodManager)
-                ApplicationFuel.getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+        SystemServicesHelper.getInputMethodManager(editText.getContext())
                 .showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
     }
 
     public static void hideKeyboard(Activity activity) {
         View view = activity.getCurrentFocus();
         if (view != null)
-            ((InputMethodManager)
-                    ApplicationFuel.getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+            SystemServicesHelper.getInputMethodManager(view.getContext())
                     .hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 

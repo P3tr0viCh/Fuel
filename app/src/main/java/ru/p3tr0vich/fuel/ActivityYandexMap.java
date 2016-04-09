@@ -103,9 +103,9 @@ public class ActivityYandexMap extends AppCompatActivity implements
         }
 
         MapCenter() {
-            this(PreferenceManagerFuel.DEFAULT_MAP_CENTER_TEXT,
-                    PreferenceManagerFuel.DEFAULT_MAP_CENTER_LATITUDE,
-                    PreferenceManagerFuel.DEFAULT_MAP_CENTER_LONGITUDE);
+            this(PreferencesHelper.DEFAULT_MAP_CENTER_TEXT,
+                    PreferencesHelper.DEFAULT_MAP_CENTER_LATITUDE,
+                    PreferencesHelper.DEFAULT_MAP_CENTER_LONGITUDE);
         }
     }
 
@@ -128,9 +128,9 @@ public class ActivityYandexMap extends AppCompatActivity implements
         return new MapCenter(
                 data.getStringExtra(INTENT_MAP_CENTER_TEXT),
                 data.getDoubleExtra(INTENT_MAP_CENTER_LATITUDE,
-                        PreferenceManagerFuel.DEFAULT_MAP_CENTER_LATITUDE),
+                        PreferencesHelper.DEFAULT_MAP_CENTER_LATITUDE),
                 data.getDoubleExtra(INTENT_MAP_CENTER_LONGITUDE,
-                        PreferenceManagerFuel.DEFAULT_MAP_CENTER_LONGITUDE));
+                        PreferencesHelper.DEFAULT_MAP_CENTER_LONGITUDE));
     }
 
     @Override
@@ -430,12 +430,12 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
     @Override
     public double getMapCenterLatitude() {
-        return PreferenceManagerFuel.getMapCenterLatitude();
+        return PreferencesHelper.getMapCenterLatitude();
     }
 
     @Override
     public double getMapCenterLongitude() {
-        return PreferenceManagerFuel.getMapCenterLongitude();
+        return PreferencesHelper.getMapCenterLongitude();
     }
 
     @Override

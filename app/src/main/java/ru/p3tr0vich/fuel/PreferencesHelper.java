@@ -16,9 +16,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
-class PreferenceManagerFuel {
+class PreferencesHelper {
 
-    private static final String TAG = "PreferenceManagerFuel";
+    private static final String TAG = "PreferencesHelper";
 
     public static final long SYNC_NONE = Long.MIN_VALUE;
 
@@ -361,7 +361,7 @@ class PreferenceManagerFuel {
     private static Cursor getPreferencesCursor(@Nullable String preference) {
         MatrixCursor matrixCursor = new MatrixCursor(new String[]{"key", "value"});
 
-        ContentValues preferences = PreferenceManagerFuel.getPreferences(preference);
+        ContentValues preferences = PreferencesHelper.getPreferences(preference);
         for (String key : preferences.keySet())
             matrixCursor.addRow(new Object[]{key, preferences.get(key)});
 

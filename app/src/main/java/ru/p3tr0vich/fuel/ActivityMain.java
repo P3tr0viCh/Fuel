@@ -351,7 +351,7 @@ public class ActivityMain extends AppCompatActivity implements
     private void startTimerSync() {
         TimerSync.stop(mTimerSync);
 
-        if (PreferenceManagerFuel.isSyncEnabled())
+        if (PreferencesHelper.isSyncEnabled())
             mTimerSync = TimerSync.start(mDatabaseChanged, mPreferencesChanged);
     }
 
@@ -545,7 +545,7 @@ public class ActivityMain extends AppCompatActivity implements
                 if (bundle == null) bundle = new Bundle();
 
                 bundle.putString(FragmentPreferences.KEY_PREFERENCE_SCREEN,
-                        PreferenceManagerFuel.PREF_SYNC_KEY);
+                        PreferencesHelper.PREF_SYNC_KEY);
 
                 fragment.setArguments(bundle);
 
@@ -639,7 +639,7 @@ public class ActivityMain extends AppCompatActivity implements
             case REQUEST_CODE_ACTIVITY_MAP_DISTANCE:
                 ActivityYandexMap.MapCenter mapCenter = ActivityYandexMap.getMapCenter(data);
 
-                PreferenceManagerFuel.putMapCenter(mapCenter.text,
+                PreferencesHelper.putMapCenter(mapCenter.text,
                         mapCenter.latitude, mapCenter.longitude);
 
                 FragmentPreferences fragmentPreferences = getFragmentPreferences();
@@ -827,7 +827,7 @@ public class ActivityMain extends AppCompatActivity implements
                 syncPreferences = true;
         }
 
-        if (!PreferenceManagerFuel.isSyncEnabled()) {
+        if (!PreferencesHelper.isSyncEnabled()) {
             UtilsLog.d(TAG, "startSync", "sync disabled");
 
             if (showDialogs) {
@@ -887,18 +887,18 @@ public class ActivityMain extends AppCompatActivity implements
             text = getString(R.string.sync_in_process);
             imgId = R.drawable.ic_sync;
         } else {
-            if (PreferenceManagerFuel.isSyncEnabled()) {
+            if (PreferencesHelper.isSyncEnabled()) {
                 if (mSyncAccount.isYandexDiskTokenEmpty()) {
                     text = getString(R.string.sync_no_token);
                     imgId = R.drawable.ic_sync_off;
                 } else {
-                    if (PreferenceManagerFuel.getLastSyncHasError()) {
+                    if (PreferencesHelper.getLastSyncHasError()) {
                         text = getString(R.string.sync_error);
                         imgId = R.drawable.ic_sync_alert;
                     } else {
-                        final long dateTime = PreferenceManagerFuel.getLastSyncDateTime();
+                        final long dateTime = PreferencesHelper.getLastSyncDateTime();
 
-                        text = dateTime != PreferenceManagerFuel.SYNC_NONE ?
+                        text = dateTime != PreferencesHelper.SYNC_NONE ?
                                 getString(R.string.sync_done,
                                         UtilsDate.getRelativeDateTime(this, dateTime)) :
                                 getString(R.string.sync_not_performed);

@@ -163,9 +163,9 @@ public class ContentProviderFuel extends ContentProvider {
                 return mDatabaseHelper.getSyncRecords(true);
 
             case PREFERENCES:
-                return PreferenceManagerFuel.getPreferences();
+                return PreferencesHelper.getPreferences();
             case PREFERENCES_ITEM:
-                return PreferenceManagerFuel.getPreference(uri.getLastPathSegment());
+                return PreferencesHelper.getPreference(uri.getLastPathSegment());
             default:
                 UtilsLog.d(TAG, "query", "sURIMatcher.match() == default, uri == " + uri);
                 return null;
@@ -196,9 +196,9 @@ public class ContentProviderFuel extends ContentProvider {
             case DATABASE_SYNC:
                 return mDatabaseHelper.updateChanged();
             case PREFERENCES:
-                return PreferenceManagerFuel.setPreferences(values, null);
+                return PreferencesHelper.setPreferences(values, null);
             case PREFERENCES_ITEM:
-                return PreferenceManagerFuel.setPreferences(values, uri.getLastPathSegment());
+                return PreferencesHelper.setPreferences(values, uri.getLastPathSegment());
             default:
                 UtilsLog.d(TAG, "update", "sURIMatcher.match() == default, uri == " + uri);
                 return -1;

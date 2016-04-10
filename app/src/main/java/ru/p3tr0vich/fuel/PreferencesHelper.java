@@ -52,10 +52,13 @@ class PreferencesHelper {
     public static final double DEFAULT_MAP_CENTER_LONGITUDE = 37.617499; // Долгота
 
     // @preferences
-    public static final String PREF_SYNC_KEY = "key_sync";
+    public static final String PREF_SYNC = "key_sync";
     public static final String PREF_SYNC_ENABLED = "sync enabled";
-    public static final String PREF_SMS_KEY = "key_sms";
+    public static final String PREF_SYNC_YANDEX_DISK = "key_sync_yandex_disk";
+
+    public static final String PREF_SMS = "key_sms";
     public static final String PREF_SMS_ENABLED = "sms enabled";
+    public static final String PREF_SMS_ADDRESS = "sms address";
 
     @SuppressWarnings("WeakerAccess")
     // private - поле удаляется сборщиком мусора
@@ -130,6 +133,12 @@ class PreferencesHelper {
 
     public static boolean isSMSEnabled() {
         return sSharedPreferences.getBoolean(PREF_SMS_ENABLED, false);
+    }
+
+    @NonNull
+    public static String getSMSAddress() {
+        // TODO: remove address
+        return getString(PREF_SMS_ADDRESS, "(650) 555-1212");
     }
 
     private static int getRevision(String keyRevision) {

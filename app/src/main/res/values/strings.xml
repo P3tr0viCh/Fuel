@@ -194,7 +194,6 @@
     <string name="pref_sync_enabled_on">Включена</string>
     <string name="pref_sync_enabled_off">Выключена</string>
 
-    <string name="pref_sync_yandex_disk_key" translatable="false">key_sync_yandex_disk</string>
     <string name="pref_sync_yandex_disk_title">Синхронизация выполняется при помощи облачного
         хранилища Яндекс.Диск</string>
     <string name="pref_sync_yandex_disk_summary_on">Открыть Яндекс.Диск</string>
@@ -205,6 +204,8 @@
 
     <string name="pref_sms_enabled_on">Включено</string>
     <string name="pref_sms_enabled_off">Выключено</string>
+
+    <string name="pref_sms_address_title">Номер</string>
 
     <string name="sync_authority" translatable="false">ru.p3tr0vich.fuel.provider</string>
     <string name="sync_account_name" translatable="false">Sync</string>

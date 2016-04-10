@@ -3,18 +3,32 @@ package ru.p3tr0vich.fuel;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.telephony.PhoneNumberUtils;
 
 import java.util.Map;
 import java.util.Random;
 
 public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
+    private boolean mEnabled;
+
+    private String mOriginatingAddress;
+
     @Override
     public boolean isEnabled() {
-        return PreferencesHelper.isSMSEnabled();
+        return mEnabled;
+    }
+
+    @Override
+    public boolean isCheckAddress(String originatingAddress) {
+        return PhoneNumberUtils.compare(originatingAddress, mOriginatingAddress);
+    }
+
+    public BroadcastReceiverSMS() {
+        mEnabled = PreferencesHelper.isSMSEnabled();
+        mOriginatingAddress = PreferencesHelper.getSMSAddress();
     }
 
     @Override
@@ -27,15 +41,14 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
     }
 
     private void showNotification(Context context, int id, String address, String message) {
+        // TODO:
         FuelingRecord fuelingRecord = new FuelingRecord(
                 new Random().nextInt(1000),
                 new Random().nextInt(100),
                 PreferencesHelper.getLastTotal());
 
         PendingIntent contentIntent = PendingIntent.getActivity(context, id,
-                ActivityFuelingRecordChange.getIntent(context, fuelingRecord)
-                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                                Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                ActivityFuelingRecordChange.getIntentForStart(context, fuelingRecord),
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification.Builder builder = new Notification.Builder(context)

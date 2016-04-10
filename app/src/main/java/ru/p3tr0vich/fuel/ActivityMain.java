@@ -49,15 +49,14 @@ public class ActivityMain extends AppCompatActivity implements
         FragmentInterface.OnFragmentChangeListener,
         FragmentPreferences.OnPreferenceScreenChangeListener,
         FragmentPreferences.OnPreferenceSyncEnabledChangeListener,
-        FragmentPreferences.OnPreferenceMapCenterClickListener {
+        FragmentPreferences.OnPreferenceClickListener {
 
     private static final String TAG = "ActivityMain";
 
     private static final String KEY_CURRENT_FRAGMENT_ID = "KEY_CURRENT_FRAGMENT_ID";
 
-    private static final int REQUEST_CODE_ACTIVITY_RECORD = 100;
-    private static final int REQUEST_CODE_ACTIVITY_MAP_DISTANCE = 101;
-    private static final int REQUEST_CODE_ACTIVITY_MAP_CENTER = 102;
+    private static final int REQUEST_CODE_ACTIVITY_MAP_DISTANCE = 100;
+    private static final int REQUEST_CODE_ACTIVITY_MAP_CENTER = 101;
 
     private static final int REQUEST_CODE_DIALOG_YANDEX_AUTH = 200;
 
@@ -545,7 +544,7 @@ public class ActivityMain extends AppCompatActivity implements
                 if (bundle == null) bundle = new Bundle();
 
                 bundle.putString(FragmentPreferences.KEY_PREFERENCE_SCREEN,
-                        PreferencesHelper.PREF_SYNC_KEY);
+                        PreferencesHelper.PREF_SYNC);
 
                 fragment.setArguments(bundle);
 
@@ -609,8 +608,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onRecordChange(@Nullable FuelingRecord fuelingRecord) {
-        startActivityForResult(ActivityFuelingRecordChange.getIntent(this, fuelingRecord),
-                REQUEST_CODE_ACTIVITY_RECORD);
+        startActivity(ActivityFuelingRecordChange.getIntentForStart(this, fuelingRecord));
     }
 
     @Override
@@ -618,17 +616,6 @@ public class ActivityMain extends AppCompatActivity implements
         if (resultCode != RESULT_OK) return;
 
         switch (requestCode) {
-            case REQUEST_CODE_ACTIVITY_RECORD:
-                FragmentFueling fragmentFueling = getFragmentFueling();
-
-                if (fragmentFueling == null || data == null || !data.hasExtra(FuelingRecord.NAME))
-                    return;
-
-                FuelingRecord fuelingRecord = new FuelingRecord(data);
-
-                fragmentFueling.checkDateTime(fuelingRecord.getDateTime());
-
-                break;
             case REQUEST_CODE_ACTIVITY_MAP_CENTER:
                 FragmentCalc fragmentCalc = (FragmentCalc) findFragmentByTag(FragmentCalc.TAG);
 
@@ -647,7 +634,7 @@ public class ActivityMain extends AppCompatActivity implements
 
                 break;
             case REQUEST_CODE_DIALOG_YANDEX_AUTH:
-                Utils.openUrl(this, SyncYandexDisk.AUTH_URL, null);
+                Utils.openUrl(this, SyncYandexDisk.URL.AUTH, null);
         }
     }
 
@@ -970,5 +957,15 @@ public class ActivityMain extends AppCompatActivity implements
     @Override
     public void onPreferenceMapCenterClick() {
         startYandexMap(ActivityYandexMap.MAP_TYPE_CENTER);
+    }
+
+    @Override
+    public void onPreferenceSyncYandexDiskClick() {
+        Utils.openUrl(this, SyncYandexDisk.URL.WWW, getString(R.string.message_error_yandex_disk_browser_open));
+    }
+
+    @Override
+    public void onPreferenceSMSAddressClick() {
+        Utils.toast(PreferencesHelper.PREF_SMS_ADDRESS + " click!");
     }
 }

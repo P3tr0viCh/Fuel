@@ -289,7 +289,9 @@ public class FragmentFueling extends FragmentBase implements
         mOnFilterChangeListener.onFilterChange(filterMode);
     }
 
-    public void setFilterMode(@DatabaseHelper.Filter.Mode int filterMode) {
+    public boolean setFilterMode(@DatabaseHelper.Filter.Mode int filterMode) {
+        // Результат: true -- фильтр изменён, вызван restartLoader.
+
         if (mFilter.mode != filterMode) {
 
             setToolbarDatesVisible(filterMode == DatabaseHelper.Filter.MODE_DATES, true);
@@ -299,32 +301,57 @@ public class FragmentFueling extends FragmentBase implements
             getLoaderManager().restartLoader(FUELING_CURSOR_LOADER_ID, null, this);
 
             setTotalAndFabVisible(true);
+
+            return true;
         }
+
+        return false;
+    }
+
+    private boolean isDateTimeInCurrentYear(final long dateTime) {
+        return UtilsDate.getCalendarInstance(dateTime).get(Calendar.YEAR) ==
+                UtilsDate.getCurrentYear();
+    }
+
+    public boolean checkDateTime(final long dateTime) {
+        // Результат:
+        // true -- dateTime входит в фильтр, можно вызвать forceLoad.
+        // false -- фильтр изменён, вызван restartLoader.
+
+        switch (mFilter.mode) {
+            case DatabaseHelper.Filter.MODE_ALL:
+                return true;
+
+            case DatabaseHelper.Filter.MODE_CURRENT_YEAR:
+                if (isDateTimeInCurrentYear(dateTime))
+                    return true;
+
+            case DatabaseHelper.Filter.MODE_DATES:
+                if (dateTime >= mFilter.dateFrom && dateTime <= mFilter.dateTo)
+                    return true;
+                else if (isDateTimeInCurrentYear(dateTime))
+                    return !setFilterMode(DatabaseHelper.Filter.MODE_CURRENT_YEAR);
+
+            case DatabaseHelper.Filter.MODE_YEAR:
+        }
+
+        return !setFilterMode(DatabaseHelper.Filter.MODE_ALL); // not
     }
 
     public void updateList(long id) {
         mIdForScroll = id;
-        getLoaderManager().getLoader(FUELING_CURSOR_LOADER_ID).forceLoad();
-    }
 
-    public void checkDateTime(final long dateTime) {
-        switch (mFilter.mode) {
-            case DatabaseHelper.Filter.MODE_ALL:
-                return;
-            case DatabaseHelper.Filter.MODE_CURRENT_YEAR:
-                if (UtilsDate.getCalendarInstance(dateTime).get(Calendar.YEAR) ==
-                        UtilsDate.getCurrentYear()) return;
+        boolean forceLoad = true;
 
-                break;
-            case DatabaseHelper.Filter.MODE_DATES:
-                if (dateTime >= mFilter.dateFrom && dateTime <= mFilter.dateTo) return;
+        if (id != -1) {
+            FuelingRecord fuelingRecord = ContentProviderHelper.getFuelingRecord(getContext(), id);
 
-                break;
-            case DatabaseHelper.Filter.MODE_YEAR:
-                break;
+            if (fuelingRecord != null)
+                forceLoad = checkDateTime(fuelingRecord.getDateTime());
         }
 
-        setFilterMode(DatabaseHelper.Filter.MODE_ALL);
+        if (forceLoad)
+            getLoaderManager().getLoader(FUELING_CURSOR_LOADER_ID).forceLoad();
     }
 
     private boolean markRecordAsDeleted(@NonNull FuelingRecord fuelingRecord) {

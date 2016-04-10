@@ -20,4 +20,8 @@ class UtilsLog {
     public static void d(@NonNull String aClass, @NonNull String msg) {
         d(aClass, msg, null);
     }
+
+    public static void d(@NonNull Object o, @NonNull String msg) {
+        d(o.getClass().getSimpleName(), msg, null);
+    }
 }

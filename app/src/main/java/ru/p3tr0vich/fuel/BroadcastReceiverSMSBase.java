@@ -26,6 +26,8 @@ abstract class BroadcastReceiverSMSBase extends BroadcastReceiver {
 
     protected abstract boolean isEnabled();
 
+    protected abstract boolean isCheckAddress(String originatingAddress);
+
     @Override
     public final void onReceive(Context context, Intent intent) {
 
@@ -62,6 +64,9 @@ abstract class BroadcastReceiverSMSBase extends BroadcastReceiver {
 
         for (SmsMessage smsMessage : smsMessages) {
             String originatingAddress = smsMessage.getOriginatingAddress();
+
+            if (!isCheckAddress(originatingAddress)) continue;
+
             int id = smsMessage.hashCode();
             String messageBody = smsMessage.getMessageBody();
 
@@ -74,7 +79,7 @@ abstract class BroadcastReceiverSMSBase extends BroadcastReceiver {
                 messages.put(originatingAddress, new Message(id, messageBody));
         }
 
-        onReceive(context, messages);
+        if (!messages.isEmpty()) onReceive(context, messages);
     }
 
     protected abstract void onReceive(Context context, @NonNull Map<String, Message> messages);

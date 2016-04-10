@@ -14,8 +14,10 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
 
     private static final String TAG = "ActivityFuelingRecordChange";
 
+    private static final String EXTRA_FINISH = "EXTRA_FINISH";
+
     @NonNull
-    public static Intent getIntent(@NonNull Context context, @Nullable FuelingRecord fuelingRecord) {
+    public static Intent getIntentForStart(@NonNull Context context, @Nullable FuelingRecord fuelingRecord) {
         Intent intent = new Intent(context, ActivityFuelingRecordChange.class);
 
         if (fuelingRecord != null)
@@ -58,6 +60,18 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
+        UtilsLog.d(TAG, "onNewIntent");
+
+        if (intent.hasExtra(EXTRA_FINISH)) {
+            UtilsLog.d(TAG, "onNewIntent", "hasExtra");
+
+            setIntent(intent);
+
+            finish();
+
+            return;
+        }
+
         super.onNewIntent(intent);
 
         addFragment(intent);
@@ -78,10 +92,19 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
 
     @Override
     public void finish() {
+        UtilsLog.d(TAG, "finish");
+
         if (getSupportFragmentManager().getBackStackEntryCount() > 1)
             getSupportFragmentManager().popBackStack();
-        else
-            super.finish();
+        else {
+            if (getIntent().hasExtra(EXTRA_FINISH))
+                super.finish();
+            else
+                startActivity(ActivityFuelingRecordChange.getIntentForStart(this, null)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                                Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                        .putExtra(EXTRA_FINISH, true));
+        }
     }
 
     @Override

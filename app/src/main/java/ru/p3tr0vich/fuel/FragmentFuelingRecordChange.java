@@ -148,16 +148,17 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                     }
                 }
 
-                Activity activity = getActivity();
-
                 PreferencesHelper.putLastTotal(mFuelingRecord.getTotal());
 
-                activity.setResult(Activity.RESULT_OK, mFuelingRecord.toIntent());
+                Activity activity = getActivity();
+
+                activity.setResult(Activity.RESULT_OK);
 
                 activity.finish();
 
                 return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 

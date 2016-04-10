@@ -27,13 +27,17 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
     private OnPreferenceScreenChangeListener mOnPreferenceScreenChangeListener;
     private OnPreferenceSyncEnabledChangeListener mOnPreferenceSyncEnabledChangeListener;
-    private OnPreferenceMapCenterClickListener mOnPreferenceMapCenterClickListener;
+    private OnPreferenceClickListener mOnPreferenceClickListener;
 
     private boolean mIsInRoot;
     private PreferenceScreen mRootPreferenceScreen;
 
-    public interface OnPreferenceMapCenterClickListener {
+    public interface OnPreferenceClickListener {
         void onPreferenceMapCenterClick();
+
+        void onPreferenceSyncYandexDiskClick();
+
+        void onPreferenceSMSAddressClick();
     }
 
     public interface OnPreferenceScreenChangeListener {
@@ -67,30 +71,37 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
         switch (key) {
             case PreferencesHelper.PREF_SYNC_ENABLED:
-                updatePreferenceSummary(PreferencesHelper.PREF_SYNC_KEY);
+                updatePreferenceSummary(PreferencesHelper.PREF_SYNC);
                 mOnPreferenceSyncEnabledChangeListener.onPreferenceSyncEnabledChanged(
                         PreferencesHelper.isSyncEnabled());
                 break;
             case PreferencesHelper.PREF_SMS_ENABLED:
-                updatePreferenceSummary(PreferencesHelper.PREF_SMS_KEY);
+                updatePreferenceSummary(PreferencesHelper.PREF_SMS);
         }
     }
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
+        // add in onCreatePreferences
+
         String key = preference.getKey();
 
-        if (key.equals(PreferencesHelper.PREF_MAP_CENTER_TEXT)) {
-            mOnPreferenceMapCenterClickListener.onPreferenceMapCenterClick();
+        switch (key) {
+            case PreferencesHelper.PREF_MAP_CENTER_TEXT:
+                mOnPreferenceClickListener.onPreferenceMapCenterClick();
 
-            return true;
-        } else if (key.equals(getString(R.string.pref_sync_yandex_disk_key))) {
-            Utils.openUrl(getContext(), SyncYandexDisk.WWW_URL,
-                    getString(R.string.message_error_yandex_disk_browser_open));
+                return true;
+            case PreferencesHelper.PREF_SYNC_YANDEX_DISK:
+                mOnPreferenceClickListener.onPreferenceSyncYandexDiskClick();
 
-            return true;
-        } else
-            return false;
+                return true;
+            case PreferencesHelper.PREF_SMS_ADDRESS:
+                mOnPreferenceClickListener.onPreferenceSMSAddressClick();
+
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -101,8 +112,8 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
         init(mRootPreferenceScreen);
 
         findPreference(PreferencesHelper.PREF_MAP_CENTER_TEXT).setOnPreferenceClickListener(this);
-
-        findPreference(getString(R.string.pref_sync_yandex_disk_key)).setOnPreferenceClickListener(this);
+        findPreference(PreferencesHelper.PREF_SYNC_YANDEX_DISK).setOnPreferenceClickListener(this);
+        findPreference(PreferencesHelper.PREF_SMS_ADDRESS).setOnPreferenceClickListener(this);
 
         String keyPreferenceScreen = null;
 
@@ -168,7 +179,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
     }
 
     public void goToSyncScreen() {
-        navigateToScreen((PreferenceScreen) findPreference(PreferencesHelper.PREF_SYNC_KEY));
+        navigateToScreen((PreferenceScreen) findPreference(PreferencesHelper.PREF_SYNC));
     }
 
     @Override
@@ -182,12 +193,12 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
         try {
             mOnPreferenceScreenChangeListener = (OnPreferenceScreenChangeListener) context;
             mOnPreferenceSyncEnabledChangeListener = (OnPreferenceSyncEnabledChangeListener) context;
-            mOnPreferenceMapCenterClickListener = (OnPreferenceMapCenterClickListener) context;
+            mOnPreferenceClickListener = (OnPreferenceClickListener) context;
         } catch (ClassCastException e) {
             throw new ImplementException(context, new Class[]{
                     OnPreferenceScreenChangeListener.class,
                     OnPreferenceSyncEnabledChangeListener.class,
-                    OnPreferenceMapCenterClickListener.class});
+                    OnPreferenceClickListener.class});
         }
     }
 
@@ -240,15 +251,18 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
                 case PreferencesHelper.PREF_MAP_CENTER_TEXT:
                     text = PreferencesHelper.getMapCenterText();
                     break;
-                case PreferencesHelper.PREF_SYNC_KEY:
+                case PreferencesHelper.PREF_SYNC:
                 case PreferencesHelper.PREF_SYNC_ENABLED:
                     text = getString(PreferencesHelper.isSyncEnabled() ?
                             R.string.pref_sync_summary_on : R.string.pref_sync_summary_off);
                     break;
-                case PreferencesHelper.PREF_SMS_KEY:
+                case PreferencesHelper.PREF_SMS:
                 case PreferencesHelper.PREF_SMS_ENABLED:
                     text = getString(PreferencesHelper.isSMSEnabled() ?
                             R.string.pref_sms_summary_on : R.string.pref_sms_summary_off);
+                    break;
+                case PreferencesHelper.PREF_SMS_ADDRESS:
+                    text = PreferencesHelper.getSMSAddress();
                     break;
                 default:
                     text = null;
@@ -256,8 +270,9 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
             switch (key) {
                 case PreferencesHelper.PREF_MAP_CENTER_TEXT:
-                case PreferencesHelper.PREF_SYNC_KEY:
-                case PreferencesHelper.PREF_SMS_KEY:
+                case PreferencesHelper.PREF_SYNC:
+                case PreferencesHelper.PREF_SMS:
+                case PreferencesHelper.PREF_SMS_ADDRESS:
                     preference.setSummary(text);
                     break;
                 case PreferencesHelper.PREF_SYNC_ENABLED:

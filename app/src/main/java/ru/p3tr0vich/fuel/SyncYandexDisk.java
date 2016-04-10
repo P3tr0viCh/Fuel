@@ -14,11 +14,6 @@ import java.io.IOException;
 
 class SyncYandexDisk {
 
-    public static final String WWW_URL = "https://disk.yandex.ru/client/disk";
-
-    public static final String AUTH_URL = "https://oauth.yandex.ru/authorize?response_type=token&client_id=" +
-            SyncYandexDiskSecret.CLIENT_ID;
-
     public static final String PATTERN_ACCESS_TOKEN = "access_token=(.*?)(&|$)";
 
     private static final String APP_DIR = "app:/";
@@ -30,6 +25,16 @@ class SyncYandexDisk {
     private final SyncFiles mSyncFiles;
 
     private final RestClient mRestClient;
+
+    public static class URL {
+        private URL() {
+        }
+
+        public static final String WWW = "https://disk.yandex.ru/client/disk";
+
+        public static final String AUTH = "https://oauth.yandex.ru/authorize?response_type=token&client_id=" +
+                SyncYandexDiskSecret.CLIENT_ID;
+    }
 
     SyncYandexDisk(@NonNull SyncFiles syncFiles, String token) {
         mSyncFiles = syncFiles;

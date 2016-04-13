@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:cardview="http://schemas.android.com/apk/res-auto"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:wheel="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/primary_light">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:cardview="http://schemas.android.com/apk/res-auto"
+                xmlns:fab="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                xmlns:wheel="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/primary_light">
 
     <include
         android:id="@+id/toolbarDates"
         layout="@layout/toolbar_dates"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height" />
+        android:layout_height="@dimen/toolbar_height"/>
 
     <View
         android:id="@+id/toolbarShadow"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@drawable/toolbar_shadow" />
+        android:background="@drawable/toolbar_shadow"/>
 
     <include
         android:id="@+id/toolbarHeader"
         layout="@layout/toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        android:layout_below="@+id/toolbarDates" />
+        android:layout_below="@+id/toolbarDates"/>
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
@@ -50,12 +50,12 @@
                 android:id="@+id/fuelingListViewHeader"
                 layout="@layout/fueling_listview_header"
                 android:layout_width="match_parent"
-                android:layout_height="48dp" />
+                android:layout_height="48dp"/>
 
             <View
                 android:id="@+id/fuelingListViewHeaderDivider"
                 style="@style/AppTheme.Divider.Horizontal"
-                android:layout_alignBottom="@+id/fuelingListViewHeader" />
+                android:layout_alignBottom="@+id/fuelingListViewHeader"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerViewFueling"
@@ -64,7 +64,7 @@
                 android:layout_above="@+id/layoutTotal"
                 android:layout_below="@+id/fuelingListViewHeader"
                 android:choiceMode="none"
-                tools:listitem="@layout/fueling_list_item" />
+                tools:listitem="@layout/fueling_list_item"/>
 
             <com.pnikosis.materialishprogress.ProgressWheel
                 android:id="@+id/progressWheelFueling"
@@ -73,7 +73,7 @@
                 android:layout_centerInParent="true"
                 android:visibility="gone"
                 wheel:matProg_barColor="@color/primary"
-                wheel:matProg_progressIndeterminate="true" />
+                wheel:matProg_progressIndeterminate="true"/>
 
             <TextView
                 android:id="@+id/tvNoRecords"
@@ -82,7 +82,7 @@
                 android:layout_centerInParent="true"
                 android:text="@string/text_no_data"
                 android:textAppearance="@style/AppTheme.TextAppearance.Medium.Secondary"
-                android:visibility="gone" />
+                android:visibility="gone"/>
 
             <LinearLayout
                 android:id="@+id/layoutTotal"
@@ -91,7 +91,7 @@
                 android:layout_alignParentBottom="true"
                 android:orientation="vertical">
 
-                <View style="@style/AppTheme.Divider.Horizontal" />
+                <View style="@style/AppTheme.Divider.Horizontal"/>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -106,7 +106,7 @@
                         android:layout_centerVertical="true"
                         android:gravity="center_vertical"
                         android:text="@string/text_average_cons"
-                        android:textAppearance="@style/AppTheme.TextAppearance.Texts.Secondary" />
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts.Secondary"/>
 
                     <TextView
                         android:id="@+id/tvAverage"
@@ -117,7 +117,7 @@
                         android:layout_toRightOf="@+id/tvAverageText"
                         android:gravity="center_vertical"
                         android:textAppearance="@style/AppTheme.TextAppearance.Texts"
-                        tools:text="@string/list_item_volume" />
+                        tools:text="@string/list_item_volume"/>
 
                     <TextView
                         android:id="@+id/tvCostSumText"
@@ -128,7 +128,7 @@
                         android:layout_toRightOf="@+id/tvAverage"
                         android:gravity="center_vertical"
                         android:text="@string/text_sum_cost"
-                        android:textAppearance="@style/AppTheme.TextAppearance.Texts.Secondary" />
+                        android:textAppearance="@style/AppTheme.TextAppearance.Texts.Secondary"/>
 
                     <TextView
                         android:id="@+id/tvCostSum"
@@ -139,7 +139,7 @@
                         android:layout_toRightOf="@+id/tvCostSumText"
                         android:gravity="center_vertical"
                         android:textAppearance="@style/AppTheme.TextAppearance.Texts"
-                        tools:text="@string/list_item_cost" />
+                        tools:text="@string/list_item_cost"/>
                 </RelativeLayout>
             </LinearLayout>
 
@@ -152,9 +152,9 @@
                 android:layout_gravity="bottom|end"
                 android:layout_marginBottom="@dimen/fab_margin_bottom"
                 android:layout_marginEnd="16dp"
-                app:srcCompat="@drawable/ic_plus_white"
+                android:src="@drawable/ic_plus_white"
                 fab:fab_colorNormal="@color/primary"
-                fab:fab_colorPressed="@color/primary_dark" />
+                fab:fab_colorPressed="@color/primary_dark"/>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 </RelativeLayout>

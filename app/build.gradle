@@ -36,8 +36,6 @@ android {
         buildConfigField "long", "BUILD_DATE", System.currentTimeMillis() + "l"
 
         multiDexEnabled false
-
-        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {

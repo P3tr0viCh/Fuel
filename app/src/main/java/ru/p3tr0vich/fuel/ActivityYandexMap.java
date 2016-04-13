@@ -203,11 +203,6 @@ public class ActivityYandexMap extends AppCompatActivity implements
         assert mBtnGeolocation != null;
         mBtnGeolocation.setOnClickListener(this);
 
-        // FIXME: app:srcCompat не работает
-        mBtnZoomIn.setImageResource(R.drawable.ic_plus);
-        mBtnZoomOut.setImageResource(R.drawable.ic_minus);
-        mBtnGeolocation.setImageResource(R.drawable.ic_crosshairs_gps);
-
         mWebViewPlaceholder = (FrameLayout) findViewById(R.id.webViewPlaceholder);
 
         if (mWebView == null) {

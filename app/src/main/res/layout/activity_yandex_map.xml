@@ -1,15 +1,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:wheel="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:fab="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              xmlns:wheel="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
     <include
         android:id="@+id/toolbarYandexMap"
-        layout="@layout/toolbar" />
+        layout="@layout/toolbar"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
         <FrameLayout
             android:id="@+id/webViewPlaceholder"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
         <Space
             android:id="@+id/spaceCenter"
@@ -27,7 +27,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"/>
 
         <com.melnykov.fab.FloatingActionButton
             android:id="@+id/btnZoomIn"
@@ -37,12 +37,12 @@
             android:layout_alignParentBottom="false"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="16dp"
+            android:src="@drawable/ic_plus"
             android:visibility="invisible"
-            app:srcCompat="@drawable/ic_plus"
             fab:fab_colorNormal="@color/transparent_button_light"
             fab:fab_colorPressed="@color/transparent_button_light_pressed"
             fab:fab_type="mini"
-            tools:visibility="visible" />
+            tools:visibility="visible"/>
 
         <com.melnykov.fab.FloatingActionButton
             android:id="@+id/btnZoomOut"
@@ -52,12 +52,12 @@
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/spaceCenter"
             android:layout_marginLeft="16dp"
+            android:src="@drawable/ic_minus"
             android:visibility="invisible"
-            app:srcCompat="@drawable/ic_minus"
             fab:fab_colorNormal="@color/transparent_button_light"
             fab:fab_colorPressed="@color/transparent_button_light_pressed"
             fab:fab_type="mini"
-            tools:visibility="visible" />
+            tools:visibility="visible"/>
 
         <com.melnykov.fab.FloatingActionButton
             android:id="@+id/btnGeolocation"
@@ -67,11 +67,11 @@
             android:layout_alignParentLeft="true"
             android:layout_marginBottom="16dp"
             android:layout_marginLeft="16dp"
+            android:src="@drawable/ic_crosshairs_gps"
             android:visibility="invisible"
-            app:srcCompat="@drawable/ic_crosshairs_gps"
             fab:fab_colorNormal="@color/transparent_button_light"
             fab:fab_colorPressed="@color/transparent_button_light_pressed"
-            tools:visibility="visible" />
+            tools:visibility="visible"/>
 
         <com.pnikosis.materialishprogress.ProgressWheel
             android:id="@+id/progressWheelYandexMap"
@@ -80,6 +80,6 @@
             android:layout_centerInParent="true"
             android:visibility="gone"
             wheel:matProg_barColor="@color/primary"
-            wheel:matProg_progressIndeterminate="true" />
+            wheel:matProg_progressIndeterminate="true"/>
     </RelativeLayout>
 </LinearLayout>

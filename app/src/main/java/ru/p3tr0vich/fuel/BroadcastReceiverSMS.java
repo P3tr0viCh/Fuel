@@ -12,9 +12,9 @@ import java.util.Random;
 
 public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
-    private boolean mEnabled;
+    private final boolean mEnabled;
 
-    private String mOriginatingAddress;
+    private final String mOriginatingAddress;
 
     @Override
     public boolean isEnabled() {

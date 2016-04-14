@@ -293,4 +293,9 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
     public void updateMapCenter() {
         updatePreferenceSummary(PreferencesHelper.PREF_MAP_CENTER_TEXT);
     }
+
+
+    public void updateSMSAddress() {
+        updatePreferenceSummary(PreferencesHelper.PREF_SMS_ADDRESS);
+    }
 }

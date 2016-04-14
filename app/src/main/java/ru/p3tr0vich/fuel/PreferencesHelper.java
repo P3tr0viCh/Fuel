@@ -137,8 +137,14 @@ class PreferencesHelper {
 
     @NonNull
     public static String getSMSAddress() {
-        // TODO: remove address
-        return getString(PREF_SMS_ADDRESS, "(650) 555-1212");
+        return getString(PREF_SMS_ADDRESS);
+    }
+
+    public static void putSMSAddress(final String address) {
+        sSharedPreferences
+                .edit()
+                .putString(PREF_SMS_ADDRESS, address)
+                .apply();
     }
 
     private static int getRevision(String keyRevision) {

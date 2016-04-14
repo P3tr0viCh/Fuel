@@ -115,6 +115,7 @@
     <string name="message_error_yandex_disk_browser_open">Не удалось открыть Яндекс.Диск</string>
     <string name="message_error_yandex_map_geolocation">Не удалось определить текущее местоположение</string>
     <string name="message_error_no_internet">Отсутствует подключение к Интернет</string>
+    <string name="message_error_no_contacts_activity">Приложение для выбора контакта не найдено</string>
 
     <string name="message_error_insert_record">Во время добавления записи произошла ошибка</string>
     <string name="message_error_update_record">Во время обновления записи произошла ошибка</string>

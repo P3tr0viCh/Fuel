@@ -4,26 +4,26 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0-alpha5'
+        classpath 'com.android.tools.build:gradle:2.1.0-beta1'
     }
 }
 
 ext {
     compileSdkVersion = 23
-    buildToolsVersion = '24.0.0 rc2'
+    buildToolsVersion = '24.0.0 rc3'
     minSdkVersion = 17
     targetSdkVersion = 23
 
-    support_version = '23.3.0'
+    supportVersion = '23.3.0'
 
-    support_design = 'com.android.support:design:' + support_version
-    support_appcompat = 'com.android.support:appcompat-v7:' + support_version
-    support_preference7 = 'com.android.support:preference-v7:' + support_version
-    support_preference14 = 'com.android.support:preference-v14:' + support_version
-    support_cardview = 'com.android.support:cardview-v7:' + support_version
-    support_recyclerview = 'com.android.support:recyclerview-v7:' + support_version
+    supportDesign = 'com.android.support:design:' + supportVersion
+    supportAppCompat = 'com.android.support:appcompat-v7:' + supportVersion
+    supportPreferenceV7 = 'com.android.support:preference-v7:' + supportVersion
+    supportPreferenceV14 = 'com.android.support:preference-v14:' + supportVersion
+    supportCardView = 'com.android.support:cardview-v7:' + supportVersion
+    supportRecyclerView = 'com.android.support:recyclerview-v7:' + supportVersion
 
-    nineoldandroids_library = 'com.nineoldandroids:library:2.4.0'
+    nineoldandroidsLibrary = 'com.nineoldandroids:library:2.4.0'
 }
 
 allprojects {

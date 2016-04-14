@@ -104,17 +104,17 @@ repositories {
 
 dependencies {
     //noinspection GroovyAssignabilityCheck
-    compile rootProject.ext.support_appcompat
+    compile rootProject.ext.supportAppCompat
     //noinspection GroovyAssignabilityCheck
-    compile rootProject.ext.support_design
+    compile rootProject.ext.supportDesign
     //noinspection GroovyAssignabilityCheck
-    compile rootProject.ext.support_preference7
+    compile rootProject.ext.supportPreferenceV7
     //noinspection GroovyAssignabilityCheck
-    compile rootProject.ext.support_preference14
+    compile rootProject.ext.supportPreferenceV14
     //noinspection GroovyAssignabilityCheck
-    compile rootProject.ext.support_cardview
+    compile rootProject.ext.supportCardView
     //noinspection GroovyAssignabilityCheck
-    compile rootProject.ext.support_recyclerview
+    compile rootProject.ext.supportRecyclerView
 
     compile 'com.google.android.gms:play-services-location:8.4.0'
 

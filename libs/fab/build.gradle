@@ -37,7 +37,7 @@ android {
 
 dependencies {
     //noinspection GroovyAssignabilityCheck
-    compile rootProject.ext.nineoldandroids_library
+    compile rootProject.ext.nineoldandroidsLibrary
     //noinspection GroovyAssignabilityCheck
-    compile rootProject.ext.support_recyclerview
+    compile rootProject.ext.supportRecyclerView
 }

@@ -60,6 +60,8 @@ public class ActivityMain extends AppCompatActivity implements
 
     private static final int REQUEST_CODE_DIALOG_YANDEX_AUTH = 200;
 
+    private static final int REQUEST_CODE_ACTIVITY_CONTACTS = 300;
+
     private Toolbar mToolbarMain;
     private Spinner mToolbarSpinner;
 
@@ -615,12 +617,14 @@ public class ActivityMain extends AppCompatActivity implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) return;
 
+        Fragment fragment;
+
         switch (requestCode) {
             case REQUEST_CODE_ACTIVITY_MAP_CENTER:
-                FragmentCalc fragmentCalc = (FragmentCalc) findFragmentByTag(FragmentCalc.TAG);
+                fragment = findFragmentByTag(FragmentCalc.TAG);
 
-                if (fragmentCalc != null)
-                    fragmentCalc.setDistance(ActivityYandexMap.getDistance(data));
+                if (fragment != null)
+                    ((FragmentCalc) fragment).setDistance(ActivityYandexMap.getDistance(data));
 
                 break;
             case REQUEST_CODE_ACTIVITY_MAP_DISTANCE:
@@ -629,12 +633,23 @@ public class ActivityMain extends AppCompatActivity implements
                 PreferencesHelper.putMapCenter(mapCenter.text,
                         mapCenter.latitude, mapCenter.longitude);
 
-                FragmentPreferences fragmentPreferences = getFragmentPreferences();
-                if (fragmentPreferences != null) fragmentPreferences.updateMapCenter();
+                fragment = getFragmentPreferences();
+                if (fragment != null) ((FragmentPreferences) fragment).updateMapCenter();
 
                 break;
             case REQUEST_CODE_DIALOG_YANDEX_AUTH:
                 Utils.openUrl(this, SyncYandexDisk.URL.AUTH, null);
+
+                break;
+            case REQUEST_CODE_ACTIVITY_CONTACTS:
+                String SMSAddress = ContactsHelper.getPhoneNumber(this, data);
+
+                if (SMSAddress != null) {
+                    PreferencesHelper.putSMSAddress(SMSAddress);
+
+                    fragment = getFragmentPreferences();
+                    if (fragment != null) ((FragmentPreferences) fragment).updateSMSAddress();
+                }
         }
     }
 
@@ -966,6 +981,11 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onPreferenceSMSAddressClick() {
-        Utils.toast(PreferencesHelper.PREF_SMS_ADDRESS + " click!");
+        Intent intent = ContactsHelper.getIntent();
+
+        if (intent.resolveActivity(getPackageManager()) != null)
+            startActivityForResult(intent, REQUEST_CODE_ACTIVITY_CONTACTS);
+        else
+            Utils.toast(R.string.message_error_no_contacts_activity);
     }
 }

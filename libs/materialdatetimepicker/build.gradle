@@ -34,5 +34,5 @@ android {
 
 dependencies {
     //noinspection GroovyAssignabilityCheck
-    compile rootProject.ext.support_appcompat
+    compile rootProject.ext.supportAppCompat
 }

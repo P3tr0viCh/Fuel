@@ -15,13 +15,13 @@
         <item name="android:layout_width">1dp</item>
     </style>
 
-    <style name="AppTheme.PopupMenu" parent="Widget.AppCompat.PopupMenu" />
+    <style name="AppTheme.PopupMenu" parent="Widget.AppCompat.PopupMenu"/>
 
-    <style name="AppTheme.Button" parent="Widget.AppCompat.Button" />
+    <style name="AppTheme.Button" parent="Widget.AppCompat.Button"/>
 
-    <style name="AppTheme.Button.Colored" parent="Widget.AppCompat.Button.Colored" />
+    <style name="AppTheme.Button.Colored" parent="Widget.AppCompat.Button.Colored"/>
 
-    <style name="AppTheme.Spinner.Underlined" parent="Widget.AppCompat.Spinner.Underlined" />
+    <style name="AppTheme.Spinner.Underlined" parent="Widget.AppCompat.Spinner.Underlined"/>
 
     <style name="AppTheme.DatePickerButton" parent="AppTheme.Spinner.Underlined">
         <item name="android:paddingRight">24dp</item>
@@ -31,23 +31,23 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Lists" parent="AppTheme.TextAppearance.Body" />
+    <style name="AppTheme.TextAppearance.Lists" parent="AppTheme.TextAppearance.Body"/>
 
-    <style name="AppTheme.TextAppearance.Texts" parent="AppTheme.TextAppearance.Body" />
+    <style name="AppTheme.TextAppearance.Texts" parent="AppTheme.TextAppearance.Body"/>
 
     <style name="AppTheme.TextAppearance.Texts.Secondary">
         <item name="android:textColor">@color/secondary_text</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Caption" parent="TextAppearance.AppCompat.Caption" />
+    <style name="AppTheme.TextAppearance.Caption" parent="TextAppearance.AppCompat.Caption"/>
 
     <style name="AppTheme.TextAppearance.Display" parent="TextAppearance.AppCompat.Display1">
         <item name="android:textColor">@color/accent</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Headline" parent="TextAppearance.AppCompat.Headline" />
+    <style name="AppTheme.TextAppearance.Headline" parent="TextAppearance.AppCompat.Headline"/>
 
-    <style name="AppTheme.TextAppearance.Subhead" parent="TextAppearance.AppCompat.Subhead" />
+    <style name="AppTheme.TextAppearance.Subhead" parent="TextAppearance.AppCompat.Subhead"/>
 
     <style name="AppTheme.TextAppearance.Subhead.Secondary">
         <item name="android:textColor">@color/secondary_text</item>
@@ -142,6 +142,17 @@
 
     <style name="AppTheme.Preference.DialogPreference" parent="Preference.DialogPreference.Material">
         <item name="layout">@layout/apptheme_preference</item>
+    </style>
+
+    <style name="AppTheme.Preference.EditText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">20dp</item>
+        <item name="android:layout_marginStart">20dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:ems">10</item>
+        <item name="android:imeOptions">flagNoExtractUi</item>
     </style>
 
     <style name="AppTheme.ActionMode" parent="Widget.AppCompat.ActionMode">

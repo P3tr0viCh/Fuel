@@ -206,7 +206,8 @@
     <string name="pref_sms_enabled_on">Включено</string>
     <string name="pref_sms_enabled_off">Выключено</string>
 
-    <string name="pref_sms_address_title">Номер</string>
+    <string name="pref_sms_address_title">Номер отправителя</string>
+    <string name="pref_sms_text_title">Текст сообщения</string>
 
     <string name="sync_authority" translatable="false">ru.p3tr0vich.fuel.provider</string>
     <string name="sync_account_name" translatable="false">Sync</string>

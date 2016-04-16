@@ -235,15 +235,23 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
             editPref.setText(text);
 
-            String summary = (String) editPref.getSummary();
+            String summary;
 
-            if (TextUtils.isEmpty(text)) text = "0";
+            if (key.equals(PreferencesHelper.PREF_SMS_TEXT)) {
+                summary = PreferencesHelper.getSMSText();
 
-            int i = summary.lastIndexOf(" (");
-            if (i != -1) summary = summary.substring(0, i);
-            summary += " (" + text + ")";
+                editPref.setSummary(summary.replace('\n', ' '));
+            } else {
+                summary = (String) editPref.getSummary();
 
-            editPref.setSummary(summary);
+                if (TextUtils.isEmpty(text)) text = "0";
+
+                int i = summary.lastIndexOf(" (");
+                if (i != -1) summary = summary.substring(0, i);
+                summary += " (" + text + ")";
+
+                editPref.setSummary(summary);
+            }
         } else {
             String text;
 

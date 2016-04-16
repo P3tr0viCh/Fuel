@@ -19,6 +19,8 @@
     <color name="primary_text">#DE000000</color>
     <!-- 54% black -->
     <color name="secondary_text">#8A000000</color>
+    <!-- 38% black -->
+    <color name="disabled_text">#61000000</color>
 
     <color name="toolbar_icon">#FFFFFFFF</color>
     <color name="toolbar_title_text">#FFFFFFFF</color>

@@ -8,6 +8,6 @@
     <EditText
         android:id="@android:id/edit"
         style="@style/AppTheme.Preference.EditText"
-        android:inputType="numberDecimal"
+        android:inputType="textMultiLine"
         tools:ignore="LabelFor"/>
 </LinearLayout>

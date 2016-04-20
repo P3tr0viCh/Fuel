@@ -338,12 +338,14 @@ class PreferencesHelper {
         if (TextUtils.isEmpty(preference)) {
             Map<String, ?> map = sSharedPreferences.getAll();
 
+            String key;
             Object value;
 
-            for (String key : map.keySet())
-                if (isSyncKey(key)) {
+            for (Map.Entry<String, ?> entry : map.entrySet()) {
+                key = entry.getKey();
 
-                    value = map.get(key);
+                if (isSyncKey(key)) {
+                    value = entry.getValue();
 
                     if (value instanceof String) result.put(key, (String) value);
                     else if (value instanceof Long) result.put(key, (Long) value);
@@ -354,6 +356,7 @@ class PreferencesHelper {
                         UtilsLog.d(TAG, "getPreferences",
                                 "unhandled class == " + value.getClass().getSimpleName());
                 }
+            }
         } else
             switch (preference) {
                 case PREF_CHANGED:

@@ -7,7 +7,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-public class ContactsHelper {
+class ContactsHelper {
 
     @NonNull
     public static Intent getIntent() {

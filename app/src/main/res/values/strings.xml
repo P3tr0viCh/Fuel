@@ -68,6 +68,9 @@
 
     <string name="text_error_webview">Ошибка: %s</string>
 
+    <string name="text_sms_title">Оплата топлива</string>
+    <string name="text_sms_text">Стоимость %1$s, объём %2$s</string>
+
     <string name="dialog_caption_add">Новая запись</string>
     <string name="dialog_caption_update">Изменение записи</string>
     <string name="dialog_caption_load_from_xml">Загрузить данные из файла?</string>

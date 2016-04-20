@@ -5,16 +5,19 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.telephony.PhoneNumberUtils;
+import android.text.TextUtils;
 
 import java.util.Map;
-import java.util.Random;
 
 public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
     private final boolean mEnabled;
 
-    private final String mOriginatingAddress;
+    private final String mAddress;
+
+    private final String mMessage;
 
     @Override
     public boolean isEnabled() {
@@ -23,37 +26,71 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
     @Override
     public boolean isCheckAddress(String originatingAddress) {
-        return PhoneNumberUtils.compare(originatingAddress, mOriginatingAddress);
+        return PhoneNumberUtils.compare(originatingAddress, mAddress);
     }
 
     public BroadcastReceiverSMS() {
-        mEnabled = PreferencesHelper.isSMSEnabled();
-        mOriginatingAddress = PreferencesHelper.getSMSAddress();
+        mAddress = PreferencesHelper.getSMSAddress();
+        mMessage = PreferencesHelper.getSMSText();
+
+        mEnabled = !(TextUtils.isEmpty(mAddress) || TextUtils.isEmpty(mMessage)) &&
+                PreferencesHelper.isSMSEnabled();
+    }
+
+    @Nullable
+    private Float getCostFromMessage(String message) {
+        try {
+            return Float.valueOf(message);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     @Override
     public void onReceive(Context context, @NonNull Map<String, Message> messages) {
-        for (String address : messages.keySet()) {
-            Message message = messages.get(address);
+        Message message;
+        Float cost;
 
-            showNotification(context, message.id, address, message.message);
+        for (Map.Entry<String, Message> entry : messages.entrySet()) {
+            message = entry.getValue();
+
+            cost = getCostFromMessage(message.message);
+
+            if (cost != null)
+                showNotification(context, message.id, cost);
         }
     }
 
-    private void showNotification(Context context, int id, String address, String message) {
-        // TODO:
-        FuelingRecord fuelingRecord = new FuelingRecord(
-                new Random().nextInt(1000),
-                new Random().nextInt(100),
+    private void showNotification(Context context, int id, float cost) {
+        final float volume;
+
+        final float defaultCost = PreferencesHelper.getDefaultCost();
+        final float defaultVolume = PreferencesHelper.getDefaultVolume();
+
+        if (cost != 0 && defaultCost != 0 && defaultVolume != 0) {
+            if (cost == defaultCost)
+                volume = defaultVolume;
+            else
+                volume = cost / (defaultCost / defaultVolume);
+        } else
+            volume = 0;
+
+        FuelingRecord fuelingRecord = new FuelingRecord(cost, volume,
                 PreferencesHelper.getLastTotal());
 
         PendingIntent contentIntent = PendingIntent.getActivity(context, id,
                 ActivityFuelingRecordChange.getIntentForStart(context, fuelingRecord),
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
+        String title = context.getString(R.string.text_sms_title);
+        String text = context.getString(R.string.text_sms_text,
+                UtilsFormat.floatToString(cost),
+                UtilsFormat.floatToString(volume));
+
         Notification.Builder builder = new Notification.Builder(context)
-                .setContentTitle(address)
-                .setContentText(message)
+                .setTicker(title)
+                .setContentTitle(title)
+                .setContentText(text)
                 .setContentIntent(contentIntent)
                 .setSmallIcon(R.drawable.ic_stat_maps_local_gas_station)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))

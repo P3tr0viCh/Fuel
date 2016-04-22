@@ -60,23 +60,31 @@ abstract class BroadcastReceiverSMSBase extends BroadcastReceiver {
 
         if (smsMessages == null || smsMessages.length == 0) return;
 
-        Map<String, Message> messages = new HashMap<>(smsMessages.length);
+        Map<String, Message> messages = new HashMap<>();
+
+        String originatingAddress;
+        int id;
+        String messageBody;
+        Message message;
 
         for (SmsMessage smsMessage : smsMessages) {
-            String originatingAddress = smsMessage.getOriginatingAddress();
+            if (smsMessage.isEmail()) continue;
+
+            originatingAddress = smsMessage.getOriginatingAddress();
 
             if (!isCheckAddress(originatingAddress)) continue;
 
-            int id = smsMessage.hashCode();
-            String messageBody = smsMessage.getMessageBody();
+            id = smsMessage.hashCode();
+            messageBody = smsMessage.getMessageBody();
 
-            if (messages.containsKey(originatingAddress)) {
-                Message message = messages.get(originatingAddress);
+            message = messages.get(originatingAddress);
+
+            if (message != null)
                 message.message += messageBody;
+            else
+                message = new Message(id, messageBody);
 
-                messages.put(originatingAddress, message);
-            } else
-                messages.put(originatingAddress, new Message(id, messageBody));
+            messages.put(originatingAddress, message);
         }
 
         if (!messages.isEmpty()) onReceive(context, messages);

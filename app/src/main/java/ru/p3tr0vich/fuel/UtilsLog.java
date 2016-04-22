@@ -21,7 +21,11 @@ class UtilsLog {
         d(aClass, msg, null);
     }
 
+    public static void d(@NonNull Object o, @NonNull String msg, @Nullable String extMsg) {
+        d(o.getClass().getSimpleName(), msg, extMsg);
+    }
+
     public static void d(@NonNull Object o, @NonNull String msg) {
-        d(o.getClass().getSimpleName(), msg, null);
+        d(o, msg, null);
     }
 }

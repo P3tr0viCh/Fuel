@@ -17,7 +17,7 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
     private final String mAddress;
 
-    private final String mMessage;
+    private String mMessage;
 
     @Override
     public boolean isEnabled() {
@@ -33,12 +33,25 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
         mAddress = PreferencesHelper.getSMSAddress();
         mMessage = PreferencesHelper.getSMSText();
 
+        UtilsLog.d(this, "BroadcastReceiverSMS", "mMessage == " + mMessage);
+
         mEnabled = !(TextUtils.isEmpty(mAddress) || TextUtils.isEmpty(mMessage)) &&
                 PreferencesHelper.isSMSEnabled();
+
+        if (mEnabled) {
+            mMessage = mMessage.replaceAll("[\\s]+", "-");
+
+            mMessage = mMessage.replaceAll("[/][@]", "\0");
+//            mMessage = mMessage.replaceAll("[@]", "([-]?\\d*[.,]?\\d+)");
+//            mMessage = mMessage.replaceAll("[\0]", "@");
+        }
     }
 
     @Nullable
     private Float getCostFromMessage(String message) {
+        UtilsLog.d(this, "getCostFromMessage", "pattern == " + mMessage);
+        UtilsLog.d(this, "getCostFromMessage", "message == " + message);
+
         try {
             return Float.valueOf(message);
         } catch (NumberFormatException e) {

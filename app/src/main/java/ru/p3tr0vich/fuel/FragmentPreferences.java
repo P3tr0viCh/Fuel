@@ -237,8 +237,8 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
             String summary;
 
-            if (key.equals(PreferencesHelper.PREF_SMS_TEXT)) {
-                summary = PreferencesHelper.getSMSText();
+            if (key.equals(PreferencesHelper.PREF_SMS_TEXT_PATTERN)) {
+                summary = PreferencesHelper.getSMSTextPattern();
 
                 editPref.setSummary(summary.replace('\n', ' '));
             } else {

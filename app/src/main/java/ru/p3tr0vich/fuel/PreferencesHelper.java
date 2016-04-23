@@ -59,11 +59,11 @@ class PreferencesHelper {
     public static final String PREF_SMS = "key_sms";
     public static final String PREF_SMS_ENABLED = "sms enabled";
     public static final String PREF_SMS_ADDRESS = "sms address";
-    public static final String PREF_SMS_TEXT = "sms text";
+    public static final String PREF_SMS_TEXT_PATTERN = "sms text";
 
     @SuppressWarnings("WeakerAccess")
     // private - поле удаляется сборщиком мусора
-    static SharedPreferences.OnSharedPreferenceChangeListener sPreferenceChangeListener; // TODO: this
+    static SharedPreferences.OnSharedPreferenceChangeListener sPreferenceChangeListener;
     private static Context sContext;
     private static SharedPreferences sSharedPreferences;
 
@@ -153,8 +153,8 @@ class PreferencesHelper {
     }
 
     @NonNull
-    public static String getSMSText() {
-        return getString(PREF_SMS_TEXT);
+    public static String getSMSTextPattern() {
+        return getString(PREF_SMS_TEXT_PATTERN);
     }
 
     private static int getRevision(String keyRevision) {

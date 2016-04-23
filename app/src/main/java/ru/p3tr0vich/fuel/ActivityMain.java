@@ -40,6 +40,8 @@ import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ActivityMain extends AppCompatActivity implements
         SyncStatusObserver,
@@ -148,9 +150,47 @@ public class ActivityMain extends AppCompatActivity implements
         return (FragmentPreferences) getSupportFragmentManager().findFragmentByTag(FragmentPreferences.TAG);
     }
 
+    void checkMessage(String message, Pattern pattern) {
+        Matcher matcher = pattern.matcher(message);
+        boolean find = matcher.find();
+        String value = find ? matcher.group(1) : null;
+        UtilsLog.d(TAG, "temp", "message == " + message + ", find == " + find +
+                ", value == " + value);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         UtilsLog.d(TAG, "**************** onCreate ****************");
+
+        String patternStr = "\\яяя /@ (xxx) @yyy zz[z]+";
+        UtilsLog.d(TAG, "temp", "patternStr == " + patternStr);
+
+        patternStr = patternStr.replaceAll("([^\\w\\s@])", "\\\\$1");
+
+        patternStr = patternStr.replaceAll("[\\s]+", ".*?");
+
+        patternStr = patternStr.replaceAll("[/][@]", "\0")
+                .replaceAll("[@]", "([-]?\\\\d*[.,]?\\\\d+)")
+                .replaceAll("[\0]", "@");
+
+        UtilsLog.d(TAG, "temp", "pattern == " + patternStr);
+        UtilsLog.d(TAG, "temp");
+
+        Pattern pattern = Pattern.compile(patternStr, Pattern.CASE_INSENSITIVE);
+
+        checkMessage("\\яяя @ (xxx) 123.3yyy zz[z]+", pattern);
+        checkMessage("\\яяя @ (xxx) yyy zz[z]+", pattern);
+        checkMessage("\\яяя @ (xxx) 123.yyy zz[z]+", pattern);
+        checkMessage("\\яяя1234 @ (xxx) 123.3yyy zz[z]+", pattern);
+        checkMessage("ggg \\яяя @ xxx 123.3yyy zz[z]+", pattern);
+        checkMessage("яяя @ (xxx) 123.3yyy zz[z]+ kkk", pattern);
+        checkMessage("ggg \\яяя @ (xxx) 123.3yyy zz[z]+ jjj", pattern);
+        checkMessage("яяя (xxx) 123.3yyy zz[z]+", pattern);
+        checkMessage("qwq \\яяяe232 @ (xxx)ccc 123.3yyy zz[z]+", pattern);
+        checkMessage("\\яяя @ (xxx) .3yyy zz[z]+", pattern);
+        checkMessage("яяя @ (xxx) 123.3 yyy zz[z]+", pattern);
+        checkMessage(" @ (xxx) 123.3yyy zz[z]+", pattern);
+        checkMessage("яяя @ (xxx) 123.3yyy", pattern);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);

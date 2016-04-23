@@ -22,6 +22,8 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "DatabaseHelper";
 
+    private static final boolean LOG_ENABLED = false;
+
     interface TableFuelingColumns {
         String DATETIME = "datetime";
         String COST = "cost";
@@ -171,13 +173,15 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        UtilsLog.d(TAG, "onCreate", "sql == " + Database.CREATE_STATEMENT);
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, "onCreate", "sql == " + Database.CREATE_STATEMENT);
         db.execSQL(Database.CREATE_STATEMENT);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        UtilsLog.d(TAG, "onUpgrade");
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, "onUpgrade");
     }
 
     @NonNull
@@ -268,19 +272,22 @@ class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getYears() {
-        UtilsLog.d(TAG, "getYears");
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, "getYears");
         return query(TableFueling.COLUMNS_YEARS, Where.RECORD_NOT_DELETED,
                 TableFueling.YEAR, TableFueling.YEAR);
     }
 
     public Cursor getSumByMonthsForYear(int year) {
-        UtilsLog.d(TAG, "getSumByMonthsForYear", "year == " + year);
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, "getSumByMonthsForYear", "year == " + year);
         return query(TableFueling.COLUMNS_SUM_BY_MONTHS, new Filter(year).getSelection(),
                 TableFueling.MONTH, TableFueling.MONTH);
     }
 
     public Cursor getSyncRecords(boolean getChanged) {
-        UtilsLog.d(TAG, "getSyncRecords", "getChanged == " + getChanged);
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, "getSyncRecords", "getChanged == " + getChanged);
         return query(TableFueling.COLUMNS_WITH_DELETED,
                 getChanged ? TableFueling.CHANGED + EQUAL + TRUE : null, null, null);
     }
@@ -297,8 +304,9 @@ class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private Cursor query(String[] columns, String selection, String groupBy, String orderBy) {
-        UtilsLog.d(TAG, "query", "columns == " + Arrays.toString(columns) +
-                ", selection == " + selection + ", groupBy == " + groupBy + ", orderBy == " + orderBy);
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, "query", "columns == " + Arrays.toString(columns) +
+                    ", selection == " + selection + ", groupBy == " + groupBy + ", orderBy == " + orderBy);
 
 //        for (int i = 0, waitSeconds = 3; i < waitSeconds; i++) {
 //            try {

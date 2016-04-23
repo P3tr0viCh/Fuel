@@ -42,6 +42,8 @@ public class FragmentFueling extends FragmentBase implements
 
     public static final String TAG = "FragmentFueling";
 
+    private static final boolean LOG_ENABLED = false;
+
     private static final String KEY_FILTER_MODE = "KEY_FILTER_MODE";
     private static final String KEY_FILTER_DATE_FROM = "KEY_FILTER_DATE_FROM";
     private static final String KEY_FILTER_DATE_TO = "KEY_FILTER_DATE_TO";
@@ -117,14 +119,16 @@ public class FragmentFueling extends FragmentBase implements
         mFilter = new DatabaseHelper.Filter();
 
         if (savedInstanceState == null) {
-            UtilsLog.d(TAG, "onCreate", "savedInstanceState == null");
+            if (LOG_ENABLED)
+                UtilsLog.d(TAG, "onCreate", "savedInstanceState == null");
 
             mFilter.mode = DatabaseHelper.Filter.MODE_CURRENT_YEAR;
 
             mFilter.dateFrom = PreferencesHelper.getFilterDateFrom();
             mFilter.dateTo = PreferencesHelper.getFilterDateTo();
         } else {
-            UtilsLog.d(TAG, "onCreate", "savedInstanceState != null");
+            if (LOG_ENABLED)
+                UtilsLog.d(TAG, "onCreate", "savedInstanceState != null");
 
             switch (savedInstanceState.getInt(KEY_FILTER_MODE, DatabaseHelper.Filter.MODE_ALL)) {
                 case DatabaseHelper.Filter.MODE_CURRENT_YEAR:
@@ -148,7 +152,8 @@ public class FragmentFueling extends FragmentBase implements
     @SuppressLint("InflateParams")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        UtilsLog.d(TAG, "onCreateView");
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, "onCreateView");
 
         final boolean isPhone = Utils.isPhone();
 
@@ -252,7 +257,8 @@ public class FragmentFueling extends FragmentBase implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        UtilsLog.d(TAG, "onActivityCreated", "savedInstanceState " +
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, "onActivityCreated", "savedInstanceState " +
                 (savedInstanceState == null ? "=" : "!") + "= null");
 
         doSetFilterMode(mFilter.mode);
@@ -415,7 +421,8 @@ public class FragmentFueling extends FragmentBase implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        UtilsLog.d(TAG, "onLoadFinished");
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, "onLoadFinished");
 
         mFuelingAdapter.setShowYear(mFilter.mode != DatabaseHelper.Filter.MODE_CURRENT_YEAR);
 
@@ -815,7 +822,8 @@ public class FragmentFueling extends FragmentBase implements
 
         @Override
         public Cursor loadInBackground() {
-            UtilsLog.d(TAG, "FuelingCursorLoader", "loadInBackground");
+            if (LOG_ENABLED)
+                UtilsLog.d(TAG, "FuelingCursorLoader", "loadInBackground");
 
             BroadcastReceiverLoading.send(getContext(), true);
 

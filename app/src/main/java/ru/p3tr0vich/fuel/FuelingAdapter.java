@@ -85,8 +85,8 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void swapCursor(@Nullable Cursor data) {
-        UtilsLog.d("FuelingAdapter", "swapCursor",
-                data == null ? "data == null" : "data count == " + data.getCount());
+//        UtilsLog.d("FuelingAdapter", "swapCursor",
+//                data == null ? "data == null" : "data count == " + data.getCount());
 
         mFuelingRecords.clear();
 

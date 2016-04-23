@@ -17,7 +17,7 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
     private final String mAddress;
 
-    private String mMessage;
+    private String mPattern;
 
     @Override
     public boolean isEnabled() {
@@ -31,25 +31,25 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
     public BroadcastReceiverSMS() {
         mAddress = PreferencesHelper.getSMSAddress();
-        mMessage = PreferencesHelper.getSMSText();
+        mPattern = PreferencesHelper.getSMSTextPattern();
 
-        UtilsLog.d(this, "BroadcastReceiverSMS", "mMessage == " + mMessage);
+        UtilsLog.d(this, "BroadcastReceiverSMS", "mPattern == " + mPattern);
 
-        mEnabled = !(TextUtils.isEmpty(mAddress) || TextUtils.isEmpty(mMessage)) &&
+        mEnabled = !(TextUtils.isEmpty(mAddress) || TextUtils.isEmpty(mPattern)) &&
                 PreferencesHelper.isSMSEnabled();
 
         if (mEnabled) {
-            mMessage = mMessage.replaceAll("[\\s]+", "-");
+            mPattern = mPattern.replaceAll("[\\s]+", "-");
 
-            mMessage = mMessage.replaceAll("[/][@]", "\0");
-//            mMessage = mMessage.replaceAll("[@]", "([-]?\\d*[.,]?\\d+)");
-//            mMessage = mMessage.replaceAll("[\0]", "@");
+            mPattern = mPattern.replaceAll("[/][@]", "\056");
+//            mPattern = mPattern.replaceAll("[@]", "([-]?\\d*[.,]?\\d+)");
+//            mPattern = mPattern.replaceAll("[\0]", "@");
         }
     }
 
     @Nullable
     private Float getCostFromMessage(String message) {
-        UtilsLog.d(this, "getCostFromMessage", "pattern == " + mMessage);
+        UtilsLog.d(this, "getCostFromMessage", "pattern == " + mPattern);
         UtilsLog.d(this, "getCostFromMessage", "message == " + message);
 
         try {

@@ -150,47 +150,72 @@ public class ActivityMain extends AppCompatActivity implements
         return (FragmentPreferences) getSupportFragmentManager().findFragmentByTag(FragmentPreferences.TAG);
     }
 
-    void checkMessage(String message, Pattern pattern) {
+    //TODO: delete
+    void checkMessage(boolean expectedResult, String message, Pattern pattern) {
         Matcher matcher = pattern.matcher(message);
+
         boolean find = matcher.find();
-        String value = find ? matcher.group(1) : null;
-        UtilsLog.d(TAG, "temp", "message == " + message + ", find == " + find +
-                ", value == " + value);
+        String value = find && matcher.groupCount() > 0 ? matcher.group(1) : null;
+
+        UtilsLog.d(TAG, "temp", (expectedResult == find ? "OK" : "FAIL") +
+                " -- message == " + message + ", find == " + find + ", value == " + value);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         UtilsLog.d(TAG, "**************** onCreate ****************");
 
-        String patternStr = "\\яяя /@ (xxx) @yyy zz[z]+";
+        final String PATTERN_FLOAT = "([-]?\\\\d*[.,]?\\\\d+)";
+
+        String patternStr = "\\яяя \\@ (xxx) @yyy zz[z]+";
         UtilsLog.d(TAG, "temp", "patternStr == " + patternStr);
 
-        patternStr = patternStr.replaceAll("([^\\w\\s@])", "\\\\$1");
+        // Экранирование всех символов, кроме буквенно-цифровых и разделителей (пробелов, переводов строки и т.п.).
+        // Пример: "яяя (xxx[zzz]111\/) qqq" -> "яяя \(xxx\[zzz\]111\\\/\) qqq".
+        // RegEx: "([^\w\s])". Replace: "\$1".
+        patternStr = patternStr.replaceAll("([^\\w\\s])", "\\\\$1");
 
+        // Замена групп символов-разделителей.
+        // Пример: "яяя xxx      zzz" -> "яяя.*?xxx.*?zzz".
+        // RegEx: "[\s]+". Replace: ".*?".
         patternStr = patternStr.replaceAll("[\\s]+", ".*?");
 
-        patternStr = patternStr.replaceAll("[/][@]", "\0")
-                .replaceAll("[@]", "([-]?\\\\d*[.,]?\\\\d+)")
-                .replaceAll("[\0]", "@");
+        // Замена символа '@' (собака) на регулярное выражение поиска вещественного числа,
+        // если символ '@' не экранирован, то есть перед ним не стоит символ '\'.
+        // Пример: "@xxx\@yyy@zzz\@\@qqq" -> "PATTERN_FLOATxxx\@yyyPATTERN_FLOATzzz\@\@qqq",
+        // где PATTERN_FLOAT -- регулярное выражение поиска вещественного числа.
+        // Выполняется в два действия:
+        // 1. После первичного экранирования строка "@xxx\@yyy@zzz\@\@qqq"
+        // принимает вид "\@xxx\\\@yyy\@zzz\\\@\\\@qqq".
+        // Проводится замена выражения "\@" на PATTERN_FLOAT, если перед этим выражением не стоит символ '\'.
+        // RegEx: "(?<![\])[\]@". Replace: PATTERN_FLOAT == "([-]?\d*[.,]?\d+)".
+        // Промежуточный результат: "PATTERN_FLOATxxx\\\@yyyPATTERN_FLOATzzz\\\@\\\@qqq"
+        // 2. Выражение из двух символов '\' удаляется из промежуточного результата,
+        // если после него идёт выражение "\@".
+        // RegEx: "\\(?=\@)". Replace: "".
+        patternStr = patternStr.replaceAll("(?<![\\\\])[\\\\]@", PATTERN_FLOAT)
+                .replaceAll("\\\\\\\\(?=\\\\@)", "");
 
         UtilsLog.d(TAG, "temp", "pattern == " + patternStr);
         UtilsLog.d(TAG, "temp");
 
         Pattern pattern = Pattern.compile(patternStr, Pattern.CASE_INSENSITIVE);
 
-        checkMessage("\\яяя @ (xxx) 123.3yyy zz[z]+", pattern);
-        checkMessage("\\яяя @ (xxx) yyy zz[z]+", pattern);
-        checkMessage("\\яяя @ (xxx) 123.yyy zz[z]+", pattern);
-        checkMessage("\\яяя1234 @ (xxx) 123.3yyy zz[z]+", pattern);
-        checkMessage("ggg \\яяя @ xxx 123.3yyy zz[z]+", pattern);
-        checkMessage("яяя @ (xxx) 123.3yyy zz[z]+ kkk", pattern);
-        checkMessage("ggg \\яяя @ (xxx) 123.3yyy zz[z]+ jjj", pattern);
-        checkMessage("яяя (xxx) 123.3yyy zz[z]+", pattern);
-        checkMessage("qwq \\яяяe232 @ (xxx)ccc 123.3yyy zz[z]+", pattern);
-        checkMessage("\\яяя @ (xxx) .3yyy zz[z]+", pattern);
-        checkMessage("яяя @ (xxx) 123.3 yyy zz[z]+", pattern);
-        checkMessage(" @ (xxx) 123.3yyy zz[z]+", pattern);
-        checkMessage("яяя @ (xxx) 123.3yyy", pattern);
+        checkMessage(true, "\\яяя @ (xxx) 123.3yyy zz[z]+", pattern);
+        checkMessage(false, "\\яяя @ (xxx) yyy zz[z]+", pattern);
+        checkMessage(false, "\\яяя @ (xxx) 123.yyy zz[z]+", pattern);
+        checkMessage(true, "\\яяя1234 @ (xxx) 123.3yyy zz[z]+", pattern);
+        checkMessage(false, "ggg \\яяя @ xxx 123.3yyy zz[z]+", pattern);
+        checkMessage(false, "яяя @ (xxx) 123.3yyy zz[z]+ kkk", pattern);
+        checkMessage(true, "ggg \\яяя @ (xxx) 123.3yyy zz[z]+ jjj", pattern);
+        checkMessage(false, "\\яяя (xxx) 123.3yyy zz[z]+", pattern);
+        checkMessage(true, "qwq \\яяяe232 @ (xxx)ccc 123.3yyy zz[z]+", pattern);
+        checkMessage(true, "\\яяя @ (xxx) .3yyy zz[z]+", pattern);
+        checkMessage(false, "яяя @ (xxx) 123.3 yyy zz[z]+", pattern);
+        checkMessage(false, " @ (xxx) 123.3yyy zz[z]+", pattern);
+        checkMessage(false, "яяя @ (xxx) 123.3yyy", pattern);
+
+        UtilsLog.d(TAG, "temp");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);

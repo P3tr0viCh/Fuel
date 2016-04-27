@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 
@@ -33,30 +32,8 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
         mAddress = PreferencesHelper.getSMSAddress();
         mPattern = PreferencesHelper.getSMSTextPattern();
 
-        UtilsLog.d(this, "BroadcastReceiverSMS", "mPattern == " + mPattern);
-
         mEnabled = !(TextUtils.isEmpty(mAddress) || TextUtils.isEmpty(mPattern)) &&
                 PreferencesHelper.isSMSEnabled();
-
-        if (mEnabled) {
-            mPattern = mPattern.replaceAll("[\\s]+", "-");
-
-            mPattern = mPattern.replaceAll("[/][@]", "\056");
-//            mPattern = mPattern.replaceAll("[@]", "([-]?\\d*[.,]?\\d+)");
-//            mPattern = mPattern.replaceAll("[\0]", "@");
-        }
-    }
-
-    @Nullable
-    private Float getCostFromMessage(String message) {
-        UtilsLog.d(this, "getCostFromMessage", "pattern == " + mPattern);
-        UtilsLog.d(this, "getCostFromMessage", "message == " + message);
-
-        try {
-            return Float.valueOf(message);
-        } catch (NumberFormatException e) {
-            return null;
-        }
     }
 
     @Override
@@ -67,7 +44,11 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
         for (Map.Entry<String, Message> entry : messages.entrySet()) {
             message = entry.getValue();
 
-            cost = getCostFromMessage(message.message);
+            try {
+                cost = SMSTextPatternHelper.getValue(mPattern, message.message);
+            } catch (Exception e) {
+                cost = null;
+            }
 
             if (cost != null)
                 showNotification(context, message.id, cost);

@@ -16,6 +16,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
+import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
+import ru.p3tr0vich.fuel.models.FuelingRecord;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
 class SyncProviderDatabase {
 
     private static final String TAG = "SyncProviderDatabase";

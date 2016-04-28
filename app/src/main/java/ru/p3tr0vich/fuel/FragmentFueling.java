@@ -37,6 +37,15 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.List;
 
+import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
+import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
+import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+import ru.p3tr0vich.fuel.models.FuelingRecord;
+import ru.p3tr0vich.fuel.utils.Utils;
+import ru.p3tr0vich.fuel.utils.UtilsDate;
+import ru.p3tr0vich.fuel.utils.UtilsFormat;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
 public class FragmentFueling extends FragmentBase implements
         LoaderManager.LoaderCallbacks<Cursor>, FuelingAdapter.OnFuelingRecordsChangeListener {
 

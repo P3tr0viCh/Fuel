@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.p3tr0vich.fuel.utils.UtilsFileIO;
+
 class SyncLocal {
 
     private final SyncFiles mSyncFiles;

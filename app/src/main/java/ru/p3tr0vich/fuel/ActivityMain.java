@@ -41,6 +41,16 @@ import android.widget.TextView;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import ru.p3tr0vich.fuel.helpers.ConnectivityHelper;
+import ru.p3tr0vich.fuel.helpers.ContactsHelper;
+import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
+import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
+import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+import ru.p3tr0vich.fuel.models.FuelingRecord;
+import ru.p3tr0vich.fuel.utils.Utils;
+import ru.p3tr0vich.fuel.utils.UtilsDate;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
 public class ActivityMain extends AppCompatActivity implements
         SyncStatusObserver,
         FragmentFueling.OnFilterChangeListener,

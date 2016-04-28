@@ -7,6 +7,10 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+import ru.p3tr0vich.fuel.helpers.SystemServicesHelper;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
 class SyncAccount {
 
     private static final String TAG = "SyncAccount";

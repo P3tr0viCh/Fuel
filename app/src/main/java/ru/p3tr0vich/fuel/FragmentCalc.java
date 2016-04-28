@@ -22,6 +22,10 @@ import android.widget.Spinner;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+import ru.p3tr0vich.fuel.utils.Utils;
+import ru.p3tr0vich.fuel.utils.UtilsFormat;
+
 public class FragmentCalc extends FragmentBase implements
         AdapterView.OnItemSelectedListener, View.OnClickListener {
 

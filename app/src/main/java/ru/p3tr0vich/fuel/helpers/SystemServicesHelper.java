@@ -1,4 +1,4 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.helpers;
 
 import android.accounts.AccountManager;
 import android.app.NotificationManager;
@@ -6,7 +6,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.view.inputmethod.InputMethodManager;
 
-class SystemServicesHelper {
+public class SystemServicesHelper {
 
     private SystemServicesHelper() {
     }

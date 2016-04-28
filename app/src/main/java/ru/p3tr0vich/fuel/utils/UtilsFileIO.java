@@ -1,4 +1,4 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.utils;
 
 import android.support.annotation.NonNull;
 
@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
-class UtilsFileIO {
+public class UtilsFileIO {
 
     public static void read(@NonNull File file, @NonNull List<String> strings) throws IOException {
         FileInputStream fileInputStream = new FileInputStream(file);

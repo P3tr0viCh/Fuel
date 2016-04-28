@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+
 public class ApplicationFuel extends Application {
 
     private static Context CONTEXT;

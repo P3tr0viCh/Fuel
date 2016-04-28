@@ -13,6 +13,9 @@ import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
+import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+
 class SyncProviderPreferences {
 
     private static final String TAG = "SyncProviderPreferences";

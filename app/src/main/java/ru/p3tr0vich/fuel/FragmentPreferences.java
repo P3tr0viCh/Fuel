@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+
 public class FragmentPreferences extends FragmentPreferencesBase implements
         SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener {

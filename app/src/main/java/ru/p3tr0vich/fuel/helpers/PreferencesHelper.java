@@ -1,4 +1,4 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.helpers;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
@@ -16,7 +16,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
-class PreferencesHelper {
+import ru.p3tr0vich.fuel.R;
+import ru.p3tr0vich.fuel.utils.UtilsFormat;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
+public class PreferencesHelper {
 
     private static final String TAG = "PreferencesHelper";
 

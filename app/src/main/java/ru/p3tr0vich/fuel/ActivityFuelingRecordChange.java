@@ -10,6 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import ru.p3tr0vich.fuel.models.FuelingRecord;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
 public class ActivityFuelingRecordChange extends AppCompatActivity {
 
     private static final String TAG = "ActivityFuelingRecordChange";

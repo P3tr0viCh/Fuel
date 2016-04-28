@@ -17,6 +17,13 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
 
+import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
+import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+import ru.p3tr0vich.fuel.models.FuelingRecord;
+import ru.p3tr0vich.fuel.utils.Utils;
+import ru.p3tr0vich.fuel.utils.UtilsDate;
+import ru.p3tr0vich.fuel.utils.UtilsFormat;
+
 public class FragmentFuelingRecordChange extends Fragment implements View.OnClickListener {
 
     public static final String TAG = "FragmentFuelingRecordChange";

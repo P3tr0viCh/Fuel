@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.p3tr0vich.fuel.databinding.FuelingListItemBinding;
+import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
+import ru.p3tr0vich.fuel.models.FuelingRecord;
 
 class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

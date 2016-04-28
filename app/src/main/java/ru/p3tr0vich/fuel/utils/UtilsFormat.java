@@ -1,10 +1,12 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.utils;
 
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.widget.EditText;
 
 import java.text.DecimalFormat;
+
+import ru.p3tr0vich.fuel.ApplicationFuel;
 
 public class UtilsFormat {
 

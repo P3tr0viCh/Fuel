@@ -1,4 +1,4 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.helpers;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -16,9 +16,13 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
+import ru.p3tr0vich.fuel.models.FuelingRecord;
+import ru.p3tr0vich.fuel.utils.UtilsDate;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
 @SuppressWarnings("TryFinallyCanBeTryWithResources")
 // Try-with-resources requires API level 19 (current min is 17)
-class DatabaseHelper extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "DatabaseHelper";
 
@@ -123,11 +127,11 @@ class DatabaseHelper extends SQLiteOpenHelper {
         @Mode
         public int mode;
 
-        Filter() {
+        public Filter() {
             mode = MODE_ALL;
         }
 
-        Filter(int year) {
+        public Filter(int year) {
             this.year = year;
             mode = MODE_YEAR;
         }

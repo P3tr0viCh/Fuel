@@ -6,6 +6,11 @@ import android.os.AsyncTask;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
+import ru.p3tr0vich.fuel.helpers.DatabaseBackupXmlHelper;
+import ru.p3tr0vich.fuel.models.FuelingRecord;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
 class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
 
     private static final String TAG = "AsyncTaskOperationXml";

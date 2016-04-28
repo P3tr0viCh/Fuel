@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 
 import java.io.File;
 
+import ru.p3tr0vich.fuel.utils.Utils;
+
 class SyncFiles {
 
     private static final String DIR_SYNC = "sync";

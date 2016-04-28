@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
 class TimerSync extends Timer {
 
     private static final String TAG = "TimerSync";

@@ -1,4 +1,4 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,7 +20,11 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-class Utils {
+import ru.p3tr0vich.fuel.ApplicationFuel;
+import ru.p3tr0vich.fuel.R;
+import ru.p3tr0vich.fuel.helpers.SystemServicesHelper;
+
+public class Utils {
 
     private static final String TAG = "Utils";
 

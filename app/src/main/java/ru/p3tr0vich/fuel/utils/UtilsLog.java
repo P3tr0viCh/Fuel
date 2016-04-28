@@ -1,11 +1,11 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.utils;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-class UtilsLog {
+public class UtilsLog {
 
     private static final String LOG_TAG = "XXX";
 

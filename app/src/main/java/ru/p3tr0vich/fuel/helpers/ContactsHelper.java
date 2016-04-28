@@ -1,4 +1,4 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.helpers;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +7,10 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-class ContactsHelper {
+public class ContactsHelper {
+
+    private ContactsHelper() {
+    }
 
     @NonNull
     public static Intent getIntent() {

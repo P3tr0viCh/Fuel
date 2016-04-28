@@ -1,4 +1,4 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.helpers;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

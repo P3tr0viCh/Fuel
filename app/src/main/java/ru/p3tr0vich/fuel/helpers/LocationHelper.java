@@ -1,4 +1,4 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.helpers;
 
 import android.Manifest;
 import android.content.Context;
@@ -47,7 +47,7 @@ public class LocationHelper {
         void onResolutionRequired(@NonNull Status status);
     }
 
-    LocationHelper(@NonNull Context context) {
+    public LocationHelper(@NonNull Context context) {
         mContext = context;
 
         mHandler = new Handler();

@@ -2,6 +2,7 @@
 -dontnote com.android.vending.licensing.ILicensingService
 
 -keepattributes InnerClasses
+-keepattributes EnclosingMethod
 
 -keep public class com.wdullaer.materialdatetimepicker.R$* {
     public *;

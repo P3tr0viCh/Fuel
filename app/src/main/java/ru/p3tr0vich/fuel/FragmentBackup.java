@@ -10,6 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import ru.p3tr0vich.fuel.helpers.DatabaseBackupXmlHelper;
+import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+import ru.p3tr0vich.fuel.utils.Utils;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
 public class FragmentBackup extends FragmentBase {
 
     public static final String TAG = "FragmentBackup";

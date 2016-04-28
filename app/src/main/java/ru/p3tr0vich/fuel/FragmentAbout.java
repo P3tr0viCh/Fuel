@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import ru.p3tr0vich.fuel.utils.UtilsFormat;
+
 public class FragmentAbout extends FragmentBase {
 
     public static final String TAG = "FragmentAbout";

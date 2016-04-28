@@ -4,11 +4,11 @@
 
     <data>
 
-        <import type="ru.p3tr0vich.fuel.UtilsFormat" />
+        <import type="ru.p3tr0vich.fuel.utils.UtilsFormat" />
 
         <variable
             name="fuelingRecord"
-            type="ru.p3tr0vich.fuel.FuelingRecord" />
+            type="ru.p3tr0vich.fuel.models.FuelingRecord" />
 
         <variable
             name="showYear"

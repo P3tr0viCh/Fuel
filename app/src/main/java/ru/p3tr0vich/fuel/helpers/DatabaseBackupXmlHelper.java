@@ -1,4 +1,4 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.helpers;
 
 import android.os.Environment;
 import android.support.annotation.IntDef;
@@ -26,6 +26,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import ru.p3tr0vich.fuel.BuildConfig;
+import ru.p3tr0vich.fuel.models.FuelingRecord;
+import ru.p3tr0vich.fuel.utils.UtilsFileIO;
+import ru.p3tr0vich.fuel.utils.UtilsFormat;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
 
 public class DatabaseBackupXmlHelper {
 
@@ -118,12 +124,12 @@ public class DatabaseBackupXmlHelper {
         }
     }
 
-    DatabaseBackupXmlHelper() {
+    public DatabaseBackupXmlHelper() {
         setExternalDirectory(null);
         setFileName(null);
     }
 
-    DatabaseBackupXmlHelper(DatabaseBackupXmlHelper databaseBackupXmlHelper) {
+    public DatabaseBackupXmlHelper(@NonNull DatabaseBackupXmlHelper databaseBackupXmlHelper) {
         setExternalDirectory(databaseBackupXmlHelper.getExternalDirectory());
         setFileName(databaseBackupXmlHelper.getFileName());
     }

@@ -1,4 +1,4 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.models;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +25,7 @@ public class FuelingRecord implements Parcelable {
     // Общий пробег.
     private float mTotal;
 
-    FuelingRecord(long id, long dateTime, float cost, float volume, float total) {
+    public FuelingRecord(long id, long dateTime, float cost, float volume, float total) {
         setId(id);
         setDateTime(dateTime);
         setCost(cost);
@@ -37,11 +37,11 @@ public class FuelingRecord implements Parcelable {
         this(in.readLong(), in.readLong(), in.readFloat(), in.readFloat(), in.readFloat());
     }
 
-    FuelingRecord() {
+    public FuelingRecord() {
         this(0, 0, 0, 0, 0);
     }
 
-    FuelingRecord(float cost, float volume, float total) {
+    public FuelingRecord(float cost, float volume, float total) {
         this(0, System.currentTimeMillis(), cost, volume, total);
     }
 
@@ -57,11 +57,11 @@ public class FuelingRecord implements Parcelable {
         }
     }
 
-    FuelingRecord(Intent intent) {
+    public FuelingRecord(Intent intent) {
         this((FuelingRecord) intent.getParcelableExtra(NAME));
     }
 
-    FuelingRecord(@NonNull Bundle bundle) {
+    public FuelingRecord(@NonNull Bundle bundle) {
         this((FuelingRecord) bundle.getParcelable(NAME));
     }
 

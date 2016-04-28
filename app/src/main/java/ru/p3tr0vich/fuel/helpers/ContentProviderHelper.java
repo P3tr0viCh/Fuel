@@ -1,4 +1,4 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.helpers;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;
@@ -14,6 +14,10 @@ import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ru.p3tr0vich.fuel.BuildConfig;
+import ru.p3tr0vich.fuel.models.FuelingRecord;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
 
 @SuppressWarnings("TryFinallyCanBeTryWithResources")
 // Try-with-resources requires API level 19 (current min is 17)

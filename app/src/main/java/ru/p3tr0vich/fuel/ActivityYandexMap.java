@@ -36,6 +36,13 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import ru.p3tr0vich.fuel.helpers.ConnectivityHelper;
+import ru.p3tr0vich.fuel.helpers.LocationHelper;
+import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+import ru.p3tr0vich.fuel.utils.Utils;
+import ru.p3tr0vich.fuel.utils.UtilsFormat;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
 public class ActivityYandexMap extends AppCompatActivity implements
         View.OnClickListener,
         YandexMapJavascriptInterface.YandexMap,

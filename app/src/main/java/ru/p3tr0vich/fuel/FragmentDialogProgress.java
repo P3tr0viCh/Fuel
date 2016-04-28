@@ -12,6 +12,9 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.TextView;
 
+import ru.p3tr0vich.fuel.helpers.DatabaseBackupXmlHelper;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
 public class FragmentDialogProgress extends DialogFragment {
 
     public static final String TAG = "FragmentDialogProgress";

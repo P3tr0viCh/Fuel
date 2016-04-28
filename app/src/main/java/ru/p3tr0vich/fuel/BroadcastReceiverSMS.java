@@ -10,6 +10,12 @@ import android.text.TextUtils;
 
 import java.util.Map;
 
+import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+import ru.p3tr0vich.fuel.helpers.SMSTextPatternHelper;
+import ru.p3tr0vich.fuel.helpers.SystemServicesHelper;
+import ru.p3tr0vich.fuel.models.FuelingRecord;
+import ru.p3tr0vich.fuel.utils.UtilsFormat;
+
 public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
     private final boolean mEnabled;

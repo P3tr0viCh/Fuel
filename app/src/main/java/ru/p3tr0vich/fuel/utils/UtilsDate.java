@@ -1,4 +1,4 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.utils;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -8,7 +8,9 @@ import android.text.format.DateUtils;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-class UtilsDate {
+import ru.p3tr0vich.fuel.R;
+
+public class UtilsDate {
 
     public static int getCurrentYear() {
         return Calendar.getInstance().get(Calendar.YEAR);

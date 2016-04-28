@@ -1,4 +1,4 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.helpers;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,7 +8,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-class SMSTextPatternHelper {
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
+public class SMSTextPatternHelper {
 
     private static final boolean LOG_ENABLED = false;
 

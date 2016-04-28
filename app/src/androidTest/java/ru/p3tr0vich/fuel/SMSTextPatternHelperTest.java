@@ -6,6 +6,8 @@ import android.test.suitebuilder.annotation.SmallTest;
 
 import java.util.regex.PatternSyntaxException;
 
+import ru.p3tr0vich.fuel.helpers.SMSTextPatternHelper;
+
 public class SMSTextPatternHelperTest extends InstrumentationTestCase {
 
     private String pattern;

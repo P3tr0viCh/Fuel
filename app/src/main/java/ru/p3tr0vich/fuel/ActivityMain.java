@@ -630,21 +630,18 @@ public class ActivityMain extends AppCompatActivity implements
         Fragment fragment;
 
         switch (requestCode) {
-            case REQUEST_CODE_ACTIVITY_MAP_CENTER:
+            case REQUEST_CODE_ACTIVITY_MAP_DISTANCE:
                 fragment = findFragmentByTag(FragmentCalc.TAG);
 
                 if (fragment != null)
                     ((FragmentCalc) fragment).setDistance(ActivityYandexMap.getDistance(data));
 
                 break;
-            case REQUEST_CODE_ACTIVITY_MAP_DISTANCE:
+            case REQUEST_CODE_ACTIVITY_MAP_CENTER:
                 ActivityYandexMap.MapCenter mapCenter = ActivityYandexMap.getMapCenter(data);
 
                 PreferencesHelper.putMapCenter(mapCenter.text,
                         mapCenter.latitude, mapCenter.longitude);
-
-                fragment = getFragmentPreferences();
-                if (fragment != null) ((FragmentPreferences) fragment).updateMapCenter();
 
                 break;
             case REQUEST_CODE_DIALOG_YANDEX_AUTH:
@@ -654,12 +651,8 @@ public class ActivityMain extends AppCompatActivity implements
             case REQUEST_CODE_ACTIVITY_CONTACTS:
                 String SMSAddress = ContactsHelper.getPhoneNumber(this, data);
 
-                if (SMSAddress != null) {
+                if (SMSAddress != null)
                     PreferencesHelper.putSMSAddress(SMSAddress);
-
-                    fragment = getFragmentPreferences();
-                    if (fragment != null) ((FragmentPreferences) fragment).updateSMSAddress();
-                }
         }
     }
 
@@ -961,10 +954,10 @@ public class ActivityMain extends AppCompatActivity implements
         int requestCode;
 
         switch (mapType) {
-            case ActivityYandexMap.MAP_TYPE_CENTER:
+            case ActivityYandexMap.MAP_TYPE_DISTANCE:
                 requestCode = REQUEST_CODE_ACTIVITY_MAP_DISTANCE;
                 break;
-            case ActivityYandexMap.MAP_TYPE_DISTANCE:
+            case ActivityYandexMap.MAP_TYPE_CENTER:
                 requestCode = REQUEST_CODE_ACTIVITY_MAP_CENTER;
                 break;
             default:
@@ -997,5 +990,10 @@ public class ActivityMain extends AppCompatActivity implements
             startActivityForResult(intent, REQUEST_CODE_ACTIVITY_CONTACTS);
         else
             Utils.toast(R.string.message_error_no_contacts_activity);
+    }
+
+    @Override
+    public void onPreferenceSMSTextPatternClick() {
+        ActivityDialog.start(this, ActivityDialog.DIALOG_SMS_TEXT_PATTERN);
     }
 }

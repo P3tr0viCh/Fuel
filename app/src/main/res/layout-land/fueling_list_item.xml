@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
-        <import type="ru.p3tr0vich.fuel.utils.UtilsFormat" />
+        <import type="ru.p3tr0vich.fuel.utils.UtilsFormat"/>
 
         <variable
             name="fuelingRecord"
-            type="ru.p3tr0vich.fuel.models.FuelingRecord" />
+            type="ru.p3tr0vich.fuel.models.FuelingRecord"/>
 
         <variable
             name="showYear"
-            type="boolean" />
+            type="boolean"/>
     </data>
 
     <LinearLayout xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:clickable="false"
-        android:descendantFocusability="blocksDescendants"
-        android:orientation="horizontal"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp">
+                  android:layout_width="match_parent"
+                  android:layout_height="48dp"
+                  android:clickable="false"
+                  android:descendantFocusability="blocksDescendants"
+                  android:orientation="horizontal"
+                  android:paddingEnd="16dp"
+                  android:paddingStart="16dp">
 
         <TextView
             android:id="@+id/tvDate"
@@ -32,8 +32,8 @@
             android:clickable="false"
             android:gravity="center_vertical"
             android:text="@{UtilsFormat.dateToString(fuelingRecord.getDateTime, showYear)}"
-            android:textAppearance="@style/AppTheme.TextAppearance.Lists"
-            tools:text="@string/list_item_date" />
+            android:textAppearance="@style/AppTheme.TextAppearance.List"
+            tools:text="@string/list_item_date"/>
 
         <TextView
             android:id="@+id/tvCost"
@@ -42,8 +42,8 @@
             android:layout_weight="5"
             android:gravity="center_vertical"
             android:text="@{UtilsFormat.floatToString(fuelingRecord.getCost)}"
-            android:textAppearance="@style/AppTheme.TextAppearance.Lists"
-            tools:text="@string/list_item_cost" />
+            android:textAppearance="@style/AppTheme.TextAppearance.List"
+            tools:text="@string/list_item_cost"/>
 
         <TextView
             android:id="@+id/tvVolume"
@@ -52,8 +52,8 @@
             android:layout_weight="5"
             android:gravity="center_vertical"
             android:text="@{UtilsFormat.floatToString(fuelingRecord.getVolume)}"
-            android:textAppearance="@style/AppTheme.TextAppearance.Lists"
-            tools:text="@string/list_item_volume" />
+            android:textAppearance="@style/AppTheme.TextAppearance.List"
+            tools:text="@string/list_item_volume"/>
 
         <TextView
             android:id="@+id/tvTotal"
@@ -62,8 +62,8 @@
             android:layout_weight="5"
             android:gravity="center_vertical"
             android:text="@{UtilsFormat.floatToString(fuelingRecord.getTotal)}"
-            android:textAppearance="@style/AppTheme.TextAppearance.Lists"
-            tools:text="@string/list_item_total" />
+            android:textAppearance="@style/AppTheme.TextAppearance.List"
+            tools:text="@string/list_item_total"/>
 
         <ImageButton
             android:id="@+id/ibMenu"
@@ -74,6 +74,6 @@
             android:clickable="true"
             android:scaleType="center"
             app:srcCompat="@drawable/ic_dots_vertical"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"/>
     </LinearLayout>
 </layout>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:cardview="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/primary_light">
+             xmlns:cardview="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="@color/primary_light">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
@@ -28,15 +28,15 @@
                 android:layout_height="48dp"
                 android:layout_gravity="center_horizontal"
                 android:text=""
-                android:textAppearance="@style/AppTheme.TextAppearance.Texts"
+                android:textAppearance="@style/AppTheme.TextAppearance.Text"
                 android:textColor="@color/primary_text"
-                tools:text="@string/list_item_date" />
+                tools:text="@string/list_item_date"/>
 
             <View
                 style="@style/AppTheme.Divider.Horizontal"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp" />
+                android:layout_marginRight="16dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -52,7 +52,7 @@
                     android:gravity="center_vertical"
                     android:labelFor="@+id/editCost"
                     android:text="@string/text_cost"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
 
                 <EditText
                     android:id="@+id/editCost"
@@ -62,7 +62,7 @@
                     android:imeOptions="actionNext|flagNoExtractUi"
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="false"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
             </LinearLayout>
 
             <LinearLayout
@@ -79,7 +79,7 @@
                     android:gravity="center_vertical"
                     android:labelFor="@+id/editVolume"
                     android:text="@string/text_volume"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
 
                 <EditText
                     android:id="@+id/editVolume"
@@ -89,7 +89,7 @@
                     android:imeOptions="actionNext|flagNoExtractUi"
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="false"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
             </LinearLayout>
 
             <LinearLayout
@@ -106,7 +106,7 @@
                     android:gravity="center_vertical"
                     android:labelFor="@+id/editTotal"
                     android:text="@string/text_total"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
 
                 <EditText
                     android:id="@+id/editTotal"
@@ -116,7 +116,7 @@
                     android:imeOptions="actionDone|flagNoExtractUi"
                     android:inputType="number"
                     android:selectAllOnFocus="false"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
             </LinearLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>

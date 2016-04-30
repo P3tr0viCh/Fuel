@@ -68,8 +68,12 @@
 
     <string name="text_error_webview">Ошибка: %s</string>
 
-    <string name="text_sms_title">Оплата топлива</string>
-    <string name="text_sms_text">Стоимость %1$s, объём %2$s</string>
+    <string name="text_notification_sms_title">Оплата топлива</string>
+    <string name="text_notification_sms_text">Стоимость %1$s, объём %2$s</string>
+
+    <string name="text_sms_text">Пример сообщения</string>
+    <string name="text_sms_text_pattern">Шаблон сообщения</string>
+    <string name="text_sms_text_result">Результат</string>
 
     <string name="dialog_caption_add">Новая запись</string>
     <string name="dialog_caption_update">Изменение записи</string>
@@ -210,7 +214,7 @@
     <string name="pref_sms_enabled_off">Выключено</string>
 
     <string name="pref_sms_address_title">Номер отправителя</string>
-    <string name="pref_sms_text_title">Текст сообщения</string>
+    <string name="pref_sms_text_title">Шаблон сообщения</string>
 
     <string name="sync_authority" translatable="false">ru.p3tr0vich.fuel.provider</string>
     <string name="sync_account_name" translatable="false">Sync</string>

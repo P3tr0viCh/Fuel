@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="40dp"
-    android:descendantFocusability="blocksDescendants"
-    android:orientation="horizontal"
-    android:paddingEnd="16dp"
-    android:paddingStart="16dp">
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:descendantFocusability="blocksDescendants"
+                android:orientation="horizontal"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
 
     <TextView
         android:id="@+id/tvDate"
@@ -17,7 +17,7 @@
         android:clickable="false"
         android:gravity="center_vertical"
         android:text="@string/text_date"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/text_cost"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
         <TextView
             android:id="@+id/tvVolume"
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/text_volume"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
         <TextView
             android:id="@+id/tvTotal"
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/text_total"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
     </LinearLayout>
 
     <Space
@@ -60,5 +60,5 @@
         android:layout_width="48dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true" />
+        android:layout_centerVertical="true"/>
 </RelativeLayout>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawerLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+                                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                                        xmlns:tools="http://schemas.android.com/tools"
+                                        android:id="@+id/drawerLayout"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:fitsSystemWindows="true"
+                                        tools:openDrawer="start">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,12 +17,12 @@
             android:id="@+id/toolbarMain"
             layout="@layout/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height" />
+            android:layout_height="@dimen/toolbar_height"/>
 
         <FrameLayout
             android:id="@+id/contentFrame"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
     </LinearLayout>
 
     <android.support.design.widget.NavigationView
@@ -42,7 +42,7 @@
             android:layout_gravity="bottom"
             android:layout_marginBottom="@dimen/drawer_sync_height_minus">
 
-            <View style="@style/AppTheme.Divider.Horizontal" />
+            <View style="@style/AppTheme.Divider.Horizontal"/>
 
             <ImageView
                 android:id="@+id/imgSync"
@@ -52,7 +52,7 @@
                 android:layout_marginEnd="0dp"
                 android:layout_marginStart="@dimen/drawer_sync_padding"
                 android:scaleType="center"
-                tools:ignore="contentDescription" />
+                tools:ignore="contentDescription"/>
 
             <TextView
                 android:id="@+id/btnSync"
@@ -65,7 +65,7 @@
                 android:paddingStart="@dimen/drawer_sync_text_start_padding"
                 android:textColor="@color/primary_text"
                 android:textSize="14sp"
-                tools:text="@string/sync_disabled" />
+                tools:text="@string/sync_disabled"/>
         </RelativeLayout>
     </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:cardview="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/primary_light">
+             xmlns:cardview="http://schemas.android.com/apk/res-auto"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="@color/primary_light">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
@@ -36,7 +36,7 @@
                     android:gravity="center_vertical"
                     android:labelFor="@+id/editDistance"
                     android:text="@string/text_distance"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
 
                 <EditText
                     android:id="@+id/editDistance"
@@ -46,7 +46,7 @@
                     android:imeOptions="actionDone"
                     android:inputType="number"
                     android:selectAllOnFocus="false"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
             </LinearLayout>
 
             <Button
@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
-                android:text="@string/btn_calc_map" />
+                android:text="@string/btn_calc_map"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -72,7 +72,7 @@
                     android:gravity="center_vertical"
                     android:labelFor="@+id/editCost"
                     android:text="@string/text_cost"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
 
                 <EditText
                     android:id="@+id/editCost"
@@ -82,7 +82,7 @@
                     android:imeOptions="actionDone"
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="false"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
             </LinearLayout>
 
             <LinearLayout
@@ -99,7 +99,7 @@
                     android:gravity="center_vertical"
                     android:labelFor="@+id/editVolume"
                     android:text="@string/text_volume"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
 
                 <EditText
                     android:id="@+id/editVolume"
@@ -109,7 +109,7 @@
                     android:imeOptions="actionDone"
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="false"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
             </LinearLayout>
 
             <View
@@ -118,7 +118,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="8dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -134,7 +134,7 @@
                     android:gravity="center_vertical"
                     android:labelFor="@+id/editPrice"
                     android:text="@string/text_price"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
 
                 <EditText
                     android:id="@+id/editPrice"
@@ -144,7 +144,7 @@
                     android:imeOptions="actionDone"
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="false"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
             </LinearLayout>
 
             <LinearLayout
@@ -161,14 +161,14 @@
 
                 <Space
                     android:layout_width="110dp"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
                     android:text="@string/text_empty_price"
-                    android:textAppearance="@style/AppTheme.TextAppearance.ErrorValue" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.ErrorValue"/>
             </LinearLayout>
 
             <View
@@ -177,7 +177,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="8dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -191,14 +191,14 @@
                     style="@style/AppTheme.Spinner.Underlined"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"/>
 
                 <Spinner
                     android:id="@+id/spinnerSeason"
                     style="@style/AppTheme.Spinner.Underlined"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"/>
             </LinearLayout>
 
             <LinearLayout
@@ -216,7 +216,7 @@
                     android:gravity="center_vertical"
                     android:labelFor="@+id/editCons"
                     android:text="@string/text_consumption"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
 
                 <EditText
                     android:id="@+id/editCons"
@@ -226,7 +226,7 @@
                     android:imeOptions="actionDone"
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="false"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Texts" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
             </LinearLayout>
 
             <LinearLayout
@@ -242,14 +242,14 @@
 
                 <Space
                     android:layout_width="110dp"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
                     android:text="@string/text_empty_cons"
-                    android:textAppearance="@style/AppTheme.TextAppearance.ErrorValue" />
+                    android:textAppearance="@style/AppTheme.TextAppearance.ErrorValue"/>
             </LinearLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>

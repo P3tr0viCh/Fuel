@@ -18,12 +18,15 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
 
 public class FragmentPreferences extends FragmentPreferencesBase implements
         SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener {
 
     public static final String TAG = "FragmentPreferences";
+
+    private static final boolean LOG_ENABLED = true;
 
     public static final String KEY_PREFERENCE_SCREEN = "KEY_PREFERENCE_SCREEN";
 
@@ -40,6 +43,8 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
         void onPreferenceSyncYandexDiskClick();
 
         void onPreferenceSMSAddressClick();
+
+        void onPreferenceSMSTextPatternClick();
     }
 
     public interface OnPreferenceScreenChangeListener {
@@ -67,7 +72,8 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-//        UtilsLog.d(TAG, "onSharedPreferenceChanged", "key == " + key);
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, "onSharedPreferenceChanged", "key == " + key);
 
         updatePreferenceSummary(key);
 
@@ -101,6 +107,10 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
                 mOnPreferenceClickListener.onPreferenceSMSAddressClick();
 
                 return true;
+            case PreferencesHelper.PREF_SMS_TEXT_PATTERN:
+                mOnPreferenceClickListener.onPreferenceSMSTextPatternClick();
+
+                return true;
             default:
                 return false;
         }
@@ -108,14 +118,15 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onCreatePreferences");
+
         addPreferencesFromResource(R.xml.preferences);
         mRootPreferenceScreen = getPreferenceScreen();
-
-        init(mRootPreferenceScreen);
 
         findPreference(PreferencesHelper.PREF_MAP_CENTER_TEXT).setOnPreferenceClickListener(this);
         findPreference(PreferencesHelper.PREF_SYNC_YANDEX_DISK).setOnPreferenceClickListener(this);
         findPreference(PreferencesHelper.PREF_SMS_ADDRESS).setOnPreferenceClickListener(this);
+        findPreference(PreferencesHelper.PREF_SMS_TEXT_PATTERN).setOnPreferenceClickListener(this);
 
         String keyPreferenceScreen = null;
 
@@ -141,6 +152,8 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onCreateView");
+
         LinearLayout preferences = (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
 
         assert preferences != null;
@@ -206,13 +219,21 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
     @Override
     public void onStart() {
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onStart");
+
         super.onStart();
+
+        init(mRootPreferenceScreen);
+
         mRootPreferenceScreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onStop() {
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onStop");
+
         mRootPreferenceScreen.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+
         super.onStop();
     }
 
@@ -221,42 +242,35 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
     }
 
     private void updatePreferenceSummary(Preference preference) {
-//        UtilsLog.d(TAG, "updatePreferenceSummary", "preference == " + preference);
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, "updatePreferenceSummary", "preference == " + preference);
 
         if (preference == null) return;
 
         String key = preference.getKey();
         if (key == null) return;
 
+        String text;
+
         if (preference instanceof EditTextPreference) {
-            EditTextPreference editPref = (EditTextPreference) preference;
-//            text = editPref.getText() not updated after sync;
-            String text = PreferencesHelper.getString(key);
+//            text = preference.getText() not updated after sync;
+            text = PreferencesHelper.getString(key);
 
-//            UtilsLog.d(TAG, "updatePreferenceSummary", "text == " + text);
+            if (LOG_ENABLED)
+                UtilsLog.d(TAG, "updatePreferenceSummary", "text == " + text);
 
-            editPref.setText(text);
+            ((EditTextPreference) preference).setText(text);
 
-            String summary;
+            if (TextUtils.isEmpty(text)) text = "0";
 
-            if (key.equals(PreferencesHelper.PREF_SMS_TEXT_PATTERN)) {
-                summary = PreferencesHelper.getSMSTextPattern();
+            String summary = preference.getSummary().toString();
 
-                editPref.setSummary(summary.replace('\n', ' '));
-            } else {
-                summary = (String) editPref.getSummary();
+            int i = summary.lastIndexOf(" (");
+            if (i != -1) summary = summary.substring(0, i);
+            summary += " (" + text + ")";
 
-                if (TextUtils.isEmpty(text)) text = "0";
-
-                int i = summary.lastIndexOf(" (");
-                if (i != -1) summary = summary.substring(0, i);
-                summary += " (" + text + ")";
-
-                editPref.setSummary(summary);
-            }
+            preference.setSummary(summary);
         } else {
-            String text;
-
             switch (key) {
                 case PreferencesHelper.PREF_MAP_CENTER_TEXT:
                     text = PreferencesHelper.getMapCenterText();
@@ -274,15 +288,23 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
                 case PreferencesHelper.PREF_SMS_ADDRESS:
                     text = PreferencesHelper.getSMSAddress();
                     break;
+                case PreferencesHelper.PREF_SMS_TEXT_PATTERN:
+                    text = PreferencesHelper.getSMSTextPattern();
+                    text = text.replaceAll("[\\s]+", " ");
+                    break;
                 default:
                     text = null;
             }
+
+            if (LOG_ENABLED)
+                UtilsLog.d(TAG, "updatePreferenceSummary", "text == " + text);
 
             switch (key) {
                 case PreferencesHelper.PREF_MAP_CENTER_TEXT:
                 case PreferencesHelper.PREF_SYNC:
                 case PreferencesHelper.PREF_SMS:
                 case PreferencesHelper.PREF_SMS_ADDRESS:
+                case PreferencesHelper.PREF_SMS_TEXT_PATTERN:
                     preference.setSummary(text);
                     break;
                 case PreferencesHelper.PREF_SYNC_ENABLED:
@@ -298,14 +320,5 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
             for (int i = 0, count = ((PreferenceGroup) preference).getPreferenceCount(); i < count; i++)
                 init(((PreferenceGroup) preference).getPreference(i));
         }
-    }
-
-    public void updateMapCenter() {
-        updatePreferenceSummary(PreferencesHelper.PREF_MAP_CENTER_TEXT);
-    }
-
-
-    public void updateSMSAddress() {
-        updatePreferenceSummary(PreferencesHelper.PREF_SMS_ADDRESS);
     }
 }

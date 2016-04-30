@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ltMain"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/ltMain"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:padding="16dp">
 
     <RelativeLayout
         android:id="@+id/ltTop"
@@ -20,7 +20,7 @@
             android:layout_marginEnd="16dp"
             android:scaleType="center"
             android:src="@mipmap/ic_launcher_72dp"
-            tools:ignore="contentDescription" />
+            tools:ignore="contentDescription"/>
 
         <TextView
             android:id="@+id/textAboutAppName"
@@ -32,7 +32,7 @@
             android:gravity="start"
             android:text="@string/app_name"
             android:textAppearance="@style/AppTheme.TextAppearance.Headline"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/textAboutVersion"
@@ -41,7 +41,7 @@
             android:layout_alignStart="@+id/textAboutAppName"
             android:layout_below="@+id/textAboutAppName"
             android:text="@string/about_version"
-            android:textAppearance="@style/AppTheme.TextAppearance.Subhead" />
+            android:textAppearance="@style/AppTheme.TextAppearance.Subhead"/>
 
         <TextView
             android:id="@+id/textAboutDate"
@@ -51,7 +51,7 @@
             android:layout_below="@+id/textAboutVersion"
             android:layout_marginTop="4dp"
             android:text="@string/list_item_date"
-            android:textAppearance="@style/AppTheme.TextAppearance.Subhead.Secondary" />
+            android:textAppearance="@style/AppTheme.TextAppearance.Subhead.Secondary"/>
 
         <TextView
             android:id="@+id/textAboutCopyright"
@@ -63,7 +63,7 @@
             android:layout_below="@+id/textAboutDate"
             android:layout_marginTop="8dp"
             android:text="@string/about_copyright"
-            android:textAppearance="@style/AppTheme.TextAppearance.Subhead" />
+            android:textAppearance="@style/AppTheme.TextAppearance.Subhead"/>
     </RelativeLayout>
 
     <LinearLayout
@@ -75,7 +75,7 @@
             android:id="@+id/view"
             style="@style/AppTheme.Divider.Horizontal"
             android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"/>
 
         <TextView
             android:id="@+id/textAboutDisclaimer"
@@ -83,6 +83,6 @@
             android:layout_height="wrap_content"
             android:gravity="fill_horizontal"
             android:text="@string/about_disclaimer"
-            android:textSize="12sp" />
+            android:textSize="12sp"/>
     </LinearLayout>
 </LinearLayout>

@@ -105,7 +105,7 @@
                         android:layout_centerVertical="true"
                         android:gravity="center_vertical"
                         android:text="@string/text_average_cons"
-                        android:textAppearance="@style/AppTheme.TextAppearance.Texts.Secondary"/>
+                        android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
 
                     <TextView
                         android:id="@+id/tvAverage"
@@ -115,7 +115,7 @@
                         android:layout_marginLeft="8dp"
                         android:layout_toRightOf="@+id/tvAverageText"
                         android:gravity="center_vertical"
-                        android:textAppearance="@style/AppTheme.TextAppearance.Texts"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Text"
                         tools:text="@string/list_item_volume"/>
 
                     <TextView
@@ -127,7 +127,7 @@
                         android:layout_toRightOf="@+id/tvAverage"
                         android:gravity="center_vertical"
                         android:text="@string/text_sum_cost"
-                        android:textAppearance="@style/AppTheme.TextAppearance.Texts.Secondary"/>
+                        android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
 
                     <TextView
                         android:id="@+id/tvCostSum"
@@ -137,7 +137,7 @@
                         android:layout_marginLeft="8dp"
                         android:layout_toRightOf="@+id/tvCostSumText"
                         android:gravity="center_vertical"
-                        android:textAppearance="@style/AppTheme.TextAppearance.Texts"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Text"
                         tools:text="@string/list_item_cost"/>
                 </RelativeLayout>
             </LinearLayout>

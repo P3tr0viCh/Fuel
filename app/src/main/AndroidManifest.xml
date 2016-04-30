@@ -56,6 +56,10 @@
             android:label="@string/title_yandex_map"
             android:parentActivityName=".ActivityMain"/>
 
+        <activity
+            android:name=".ActivityDialog"
+            android:parentActivityName=".ActivityMain"/>
+
         <activity android:name=".ActivityTokenReceiver">
 
             <intent-filter>

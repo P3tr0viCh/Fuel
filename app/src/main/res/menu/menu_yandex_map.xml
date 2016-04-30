@@ -1,19 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ActivityYandexMap">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/action_done"
         android:icon="@drawable/ic_check"
         android:title="@string/action_done"
         android:visible="false"
-        app:showAsAction="always|withText" />
+        app:showAsAction="always|withText"/>
 
     <item
         android:id="@+id/action_done_x2"
         android:icon="@drawable/ic_check_all"
         android:title="@string/action_done_all"
         android:visible="false"
-        app:showAsAction="ifRoom|withText" />
+        app:showAsAction="ifRoom|withText"/>
 </menu>

@@ -82,8 +82,8 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
                 ActivityFuelingRecordChange.getIntentForStart(context, fuelingRecord),
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        String title = context.getString(R.string.text_sms_title);
-        String text = context.getString(R.string.text_sms_text,
+        String title = context.getString(R.string.text_notification_sms_title);
+        String text = context.getString(R.string.text_notification_sms_text,
                 UtilsFormat.floatToString(cost),
                 UtilsFormat.floatToString(volume));
 

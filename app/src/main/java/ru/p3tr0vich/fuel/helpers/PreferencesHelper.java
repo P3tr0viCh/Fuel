@@ -63,7 +63,8 @@ public class PreferencesHelper {
     public static final String PREF_SMS = "key_sms";
     public static final String PREF_SMS_ENABLED = "sms enabled";
     public static final String PREF_SMS_ADDRESS = "sms address";
-    public static final String PREF_SMS_TEXT_PATTERN = "sms text";
+    public static final String PREF_SMS_TEXT = "sms text";
+    public static final String PREF_SMS_TEXT_PATTERN = "sms text pattern";
 
     @SuppressWarnings("WeakerAccess")
     // private - поле удаляется сборщиком мусора
@@ -159,6 +160,19 @@ public class PreferencesHelper {
     @NonNull
     public static String getSMSTextPattern() {
         return getString(PREF_SMS_TEXT_PATTERN);
+    }
+
+    @NonNull
+    public static String getSMSText() {
+        return getString(PREF_SMS_TEXT);
+    }
+
+    public static void putSMSTextAndPattern(final String text, final String pattern) {
+        sSharedPreferences
+                .edit()
+                .putString(PREF_SMS_TEXT, text)
+                .putString(PREF_SMS_TEXT_PATTERN, pattern)
+                .apply();
     }
 
     private static int getRevision(String keyRevision) {
@@ -326,7 +340,7 @@ public class PreferencesHelper {
     }
 
     @NonNull
-    private static String getString(final String key, final String defValue) {
+    private static String getString(final String key, @NonNull final String defValue) {
         return sSharedPreferences.getString(key, defValue);
     }
 

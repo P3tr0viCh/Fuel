@@ -132,15 +132,9 @@
             android:key="sms address"
             android:title="@string/pref_sms_address_title"/>
 
-        <EditTextPreference
+        <Preference
             android:dependency="sms enabled"
-            android:dialogLayout="@layout/preference_multi_line"
-            android:imeOptions="flagNoExtractUi"
-            android:inputType="textMultiLine"
-            android:key="sms text"
-            android:negativeButtonText="@string/dialog_btn_cancel"
-            android:positiveButtonText="@string/dialog_btn_done"
-            android:summary=""
+            android:key="sms text pattern"
             android:title="@string/pref_sms_text_title"/>
     </PreferenceScreen>
 </PreferenceScreen>

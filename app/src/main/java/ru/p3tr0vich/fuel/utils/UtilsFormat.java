@@ -36,7 +36,6 @@ public class UtilsFormat {
     }
 
     public static String floatToString(float value, boolean showZero) {
-        // TODO: LOCALE?
         final String strValue = DECIMAL_FORMAT.format(value).replace(',', '.');
         return showZero ? strValue : value == 0 ? "" : strValue;
     }

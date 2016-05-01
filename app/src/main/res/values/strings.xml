@@ -73,7 +73,12 @@
 
     <string name="text_sms_text">Пример сообщения</string>
     <string name="text_sms_text_pattern">Шаблон сообщения</string>
-    <string name="text_sms_text_result">Результат</string>
+    <string name="text_sms_text_result_all_empty">Задайте шаблон сообщения и пример для проверки шаблона</string>
+    <string name="text_sms_text_result_pattern_empty">Задайте шаблон сообщения</string>
+    <string name="text_sms_text_result_message_empty">Задайте пример сообщения</string>
+    <string name="text_sms_text_result_wrong_pattern">Ошибка в шаблоне сообщения</string>
+    <string name="text_sms_text_result_ok">Сообщение соответствует шаблону (%s)</string>
+    <string name="text_sms_text_result_no_value">Сообщение не соответствует шаблону</string>
 
     <string name="dialog_caption_add">Новая запись</string>
     <string name="dialog_caption_update">Изменение записи</string>

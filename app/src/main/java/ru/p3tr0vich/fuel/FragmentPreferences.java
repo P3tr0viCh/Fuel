@@ -26,7 +26,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
     public static final String TAG = "FragmentPreferences";
 
-    private static final boolean LOG_ENABLED = true;
+    private static final boolean LOG_ENABLED = false;
 
     public static final String KEY_PREFERENCE_SCREEN = "KEY_PREFERENCE_SCREEN";
 

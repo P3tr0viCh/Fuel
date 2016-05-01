@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:textAppearance="@style/AppTheme.TextAppearance.Text"
-            android:text="@string/text_sms_text_result"/>
+            android:text="@string/text_sms_text_result_all_empty"
+            android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
     </LinearLayout>
 </ScrollView>

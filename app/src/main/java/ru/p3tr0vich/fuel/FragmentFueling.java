@@ -660,7 +660,7 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     public void setFabVisible(boolean visible) {
-        final float value = visible ? 1.0f : 0.0f; // TODO: Utils.setViewVisibleAnimate?
+        final float value = visible ? 1.0f : 0.0f;
         mFloatingActionButton.animate().scaleX(value).scaleY(value);
     }
 

@@ -21,7 +21,6 @@ public class ActivityDialog extends AppCompatActivity {
 
     private static final String DIALOG = "DIALOG";
 
-
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({DIALOG_SMS_TEXT_PATTERN})
     public @interface Dialog {

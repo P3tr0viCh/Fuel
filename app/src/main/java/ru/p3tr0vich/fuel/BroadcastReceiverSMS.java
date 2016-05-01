@@ -22,7 +22,7 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
     private final String mAddress;
 
-    private String mPattern;
+    private final String mPattern;
 
     @Override
     public boolean isEnabled() {

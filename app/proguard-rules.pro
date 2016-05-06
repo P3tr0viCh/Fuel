@@ -47,6 +47,7 @@
 -keepattributes Signature
 -keepattributes Exceptions
 -keepattributes InnerClasses
+-keepattributes EnclosingMethod
 -keepattributes *Annotation*
 
 -keep class com.squareup.retrofit.** { *; }

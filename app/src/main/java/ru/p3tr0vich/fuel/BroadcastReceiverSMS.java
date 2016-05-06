@@ -68,10 +68,7 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
         final float defaultVolume = PreferencesHelper.getDefaultVolume();
 
         if (cost != 0 && defaultCost != 0 && defaultVolume != 0) {
-            if (cost == defaultCost)
-                volume = defaultVolume;
-            else
-                volume = cost / (defaultCost / defaultVolume);
+            volume = cost == defaultCost ? defaultVolume : cost / (defaultCost / defaultVolume);
         } else
             volume = 0;
 

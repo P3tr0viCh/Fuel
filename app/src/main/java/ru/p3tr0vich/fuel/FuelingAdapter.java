@@ -117,7 +117,7 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public int findPositionById(long id) {
-        for (int i = mShowHeader; i < mFuelingRecords.size() - mShowFooter; i++)
+        for (int i = mShowHeader, count = mFuelingRecords.size() - mShowFooter; i < count; i++)
             if (mFuelingRecords.get(i).getId() == id) return i;
 
         return -1;

@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -237,20 +236,12 @@ public class FragmentCalc extends FragmentBase implements
 
     }
 
-    private class EditTextWatcher implements TextWatcher {
+    private class EditTextWatcher extends AfterTextChangedWatcher {
 
         private final EditText mEditText;
 
         public EditTextWatcher(@NonNull EditText editText) {
             mEditText = editText;
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
         }
 
         @Override

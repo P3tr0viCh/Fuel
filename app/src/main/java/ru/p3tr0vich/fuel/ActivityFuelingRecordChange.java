@@ -86,7 +86,7 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.contentFrame,
-                        FragmentFuelingRecordChange.getInstance(fuelingRecord),
+                        FragmentFuelingRecordChange.newInstance(fuelingRecord),
                         FragmentFuelingRecordChange.TAG)
                 .setTransition(FragmentTransaction.TRANSIT_NONE)
                 .addToBackStack(null)

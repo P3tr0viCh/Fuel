@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,10 +43,12 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
         mEditSMSTextPattern = (EditText) view.findViewById(R.id.editSMSTextPattern);
         mTextResult = (TextView) view.findViewById(R.id.textResult);
 
-        mEditSMSText.setText(PreferencesHelper.getSMSText());
-        mEditSMSTextPattern.setText(PreferencesHelper.getSMSTextPattern());
+        if (savedInstanceState == null) {
+            mEditSMSText.setText(PreferencesHelper.getSMSText());
+            mEditSMSTextPattern.setText(PreferencesHelper.getSMSTextPattern());
 
-        updateResult();
+            updateResult();
+        }
 
         EditTextWatcher textWatcher = new EditTextWatcher();
 
@@ -94,15 +95,7 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
         mTextResult.setText(result);
     }
 
-    private class EditTextWatcher implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
+    private class EditTextWatcher extends AfterTextChangedWatcher {
         @Override
         public void afterTextChanged(Editable s) {
             updateResult();

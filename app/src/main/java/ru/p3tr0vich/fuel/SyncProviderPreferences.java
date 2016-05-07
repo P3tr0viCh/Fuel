@@ -10,6 +10,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +80,22 @@ class SyncProviderPreferences {
                 contentValues, null, null);
     }
 
+    private String encode(String s) throws FormatException {
+        try {
+            return URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new FormatException(e.toString());
+        }
+    }
+
+    private String decode(String s) throws FormatException {
+        try {
+            return URLDecoder.decode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new FormatException(e.toString());
+        }
+    }
+
     @NonNull
     public List<String> getPreferences() throws RemoteException, FormatException {
         ContentValues contentValues = query(null);
@@ -86,7 +105,7 @@ class SyncProviderPreferences {
         for (String key : contentValues.keySet())
             switch (PreferencesHelper.getPreferenceType(key)) {
                 case PreferencesHelper.PREFERENCE_TYPE_STRING:
-                    result.add(key + SEPARATOR + contentValues.getAsString(key));
+                    result.add(key + SEPARATOR + encode(contentValues.getAsString(key)));
                     break;
                 case PreferencesHelper.PREFERENCE_TYPE_INT:
                     result.add(key + SEPARATOR + String.valueOf(contentValues.getAsInteger(key)));
@@ -99,7 +118,8 @@ class SyncProviderPreferences {
         return result;
     }
 
-    public void setPreferences(@NonNull List<String> preferences) throws RemoteException, NumberFormatException {
+    public void setPreferences(@NonNull List<String> preferences)
+            throws RemoteException, NumberFormatException, FormatException {
         ContentValues contentValues = new ContentValues();
 
         int index;
@@ -118,7 +138,7 @@ class SyncProviderPreferences {
 
             switch (PreferencesHelper.getPreferenceType(key)) {
                 case PreferencesHelper.PREFERENCE_TYPE_STRING:
-                    contentValues.put(key, value);
+                    contentValues.put(key, decode(value));
                     break;
                 case PreferencesHelper.PREFERENCE_TYPE_INT:
                     contentValues.put(key, Integer.decode(value));

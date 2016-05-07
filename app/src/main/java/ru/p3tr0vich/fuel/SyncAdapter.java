@@ -212,7 +212,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void syncPreferencesLoad(int revision)
-            throws IOException, RemoteException, ServerException {
+            throws IOException, RemoteException, ServerException, FormatException {
         // 1) Получить файл настроек с сервера и сохранить в папку кэша.
         // 2) Прочитать значения из файла в папке кэша.
         // 3) Сохранить полученные значения в настройках.

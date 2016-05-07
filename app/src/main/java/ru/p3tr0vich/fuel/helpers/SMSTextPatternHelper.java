@@ -75,7 +75,7 @@ public class SMSTextPatternHelper {
 
         final Pattern pattern = Pattern.compile(convert(regularExpression), Pattern.CASE_INSENSITIVE);
 
-        final Matcher matcher = pattern.matcher(message);
+        final Matcher matcher = pattern.matcher(message.replace('\n', ' '));
 
         if (matcher.find() && (matcher.groupCount() > 0))
             try {

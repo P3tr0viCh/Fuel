@@ -42,7 +42,7 @@
     <style name="AppTheme.TextAppearance.Caption" parent="TextAppearance.AppCompat.Caption"/>
 
     <style name="AppTheme.TextAppearance.Display" parent="TextAppearance.AppCompat.Display1">
-        <item name="android:textColor">@color/accent</item>
+        <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
     <style name="AppTheme.TextAppearance.Headline" parent="TextAppearance.AppCompat.Headline"/>
@@ -66,11 +66,11 @@
     </style>
 
     <style name="AppTheme.TextAppearance.ErrorValue" parent="AppTheme.TextAppearance.Small">
-        <item name="android:textColor">@color/edit_error</item>
+        <item name="android:textColor">?attr/textColorError</item>
     </style>
 
     <style name="AppTheme.TextAppearance.PreferenceCategory" parent="AppTheme.TextAppearance.Medium">
-        <item name="android:textColor">@color/primary</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
     <style name="AppTheme.TextAppearance.DialogWindowTitle" parent="TextAppearance.AppCompat.Title">
@@ -88,21 +88,21 @@
         <item name="android:textAppearance">@style/AppTheme.TextAppearance.DialogWindowTitle</item>
     </style>
 
-    <style name="AppTheme.AlertDialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+    <style name="AppTheme.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/accent</item>
     </style>
 
     <style name="AppTheme.Toolbar" parent="Widget.AppCompat.Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/toolbar_height</item>
-        <item name="android:background">@color/primary</item>
+        <item name="android:background">?attr/colorPrimary</item>
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
     <style name="AppTheme.TabLayout" parent="Widget.Design.TabLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dp</item>
-        <item name="android:background">@color/primary</item>
+        <item name="android:background">?attr/colorPrimary</item>
         <item name="tabIndicatorColor">@color/window_background</item>
         <item name="tabMinWidth">@dimen/tab_min_width</item>
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
@@ -156,7 +156,9 @@
     </style>
 
     <style name="AppTheme.ActionMode" parent="Widget.AppCompat.ActionMode">
-        <item name="background">@color/primary</item>
+        <item name="background">?attr/colorPrimary</item>
         <item name="height">@dimen/toolbar_height</item>
     </style>
+
+    <style name="AppTheme.DialogWhenLarge"/>
 </resources>

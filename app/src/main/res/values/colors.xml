@@ -22,6 +22,8 @@
     <!-- 38% black -->
     <color name="disabled_text">#61000000</color>
 
+    <color name="error_text">#DD2C00</color>
+
     <color name="toolbar_icon">#FFFFFFFF</color>
     <color name="toolbar_title_text">#FFFFFFFF</color>
 
@@ -32,8 +34,6 @@
     <color name="divider">#1F000000</color>
 
     <color name="window_background">#FFFFFFFF</color>
-
-    <color name="edit_error">#DD2C00</color>
 
     <color name="menu_item_pressed">#EFEBEF</color>
 

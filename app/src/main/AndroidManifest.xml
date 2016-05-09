@@ -48,6 +48,7 @@
             android:name=".ActivityFuelingRecordChange"
             android:launchMode="singleTop"
             android:parentActivityName=".ActivityMain"
+            android:theme="@style/AppTheme.DialogWhenLarge"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
 
         <activity
@@ -58,7 +59,8 @@
 
         <activity
             android:name=".ActivityDialog"
-            android:parentActivityName=".ActivityMain"/>
+            android:parentActivityName=".ActivityMain"
+            android:theme="@style/AppTheme.DialogWhenLarge"/>
 
         <activity android:name=".ActivityTokenReceiver">
 

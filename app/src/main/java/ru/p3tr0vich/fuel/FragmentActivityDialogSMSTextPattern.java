@@ -66,7 +66,7 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
         boolean messageEmpty = TextUtils.isEmpty(message);
 
         //noinspection deprecation
-        @ColorInt int color = getResources().getColor(R.color.edit_error);
+        @ColorInt int color = getResources().getColor(R.color.error_text);
 
         String result;
 

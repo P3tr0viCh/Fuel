@@ -79,6 +79,10 @@ android {
         javaMaxHeapSize "2g"
         incremental true
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 @SuppressWarnings("GroovyAssignabilityCheck")
@@ -124,4 +128,6 @@ dependencies {
     compile project(':libs:fab')
     compile project(':libs:materialish-progress')
     compile project(':libs:materialdatetimepicker')
+
+    testCompile 'junit:junit:4.12'
 }

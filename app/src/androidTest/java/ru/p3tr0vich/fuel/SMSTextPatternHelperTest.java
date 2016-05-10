@@ -61,7 +61,7 @@ public class SMSTextPatternHelperTest extends InstrumentationTestCase {
 
         pattern = "xxx(яяя|)@yyy";
 
-        // Между xxx и числом должно быть или эээ или ничего
+        // Между xxx и числом должно быть или яяя или ничего
         assertNull(check("xxxэээ123.456yyy"));
     }
 

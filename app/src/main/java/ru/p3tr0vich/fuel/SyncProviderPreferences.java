@@ -10,14 +10,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+import ru.p3tr0vich.fuel.utils.UtilsString;
 
 class SyncProviderPreferences {
 
@@ -80,22 +78,6 @@ class SyncProviderPreferences {
                 contentValues, null, null);
     }
 
-    private String encode(String s) throws FormatException {
-        try {
-            return URLEncoder.encode(s, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new FormatException(e.toString());
-        }
-    }
-
-    private String decode(String s) throws FormatException {
-        try {
-            return URLDecoder.decode(s, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new FormatException(e.toString());
-        }
-    }
-
     @NonNull
     public List<String> getPreferences() throws RemoteException, FormatException {
         ContentValues contentValues = query(null);
@@ -105,7 +87,7 @@ class SyncProviderPreferences {
         for (String key : contentValues.keySet())
             switch (PreferencesHelper.getPreferenceType(key)) {
                 case PreferencesHelper.PREFERENCE_TYPE_STRING:
-                    result.add(key + SEPARATOR + encode(contentValues.getAsString(key)));
+                    result.add(key + SEPARATOR + UtilsString.encodeLineBreaks(contentValues.getAsString(key)));
                     break;
                 case PreferencesHelper.PREFERENCE_TYPE_INT:
                     result.add(key + SEPARATOR + String.valueOf(contentValues.getAsInteger(key)));
@@ -138,7 +120,7 @@ class SyncProviderPreferences {
 
             switch (PreferencesHelper.getPreferenceType(key)) {
                 case PreferencesHelper.PREFERENCE_TYPE_STRING:
-                    contentValues.put(key, decode(value));
+                    contentValues.put(key, UtilsString.decodeLineBreaks(value));
                     break;
                 case PreferencesHelper.PREFERENCE_TYPE_INT:
                     contentValues.put(key, Integer.decode(value));

@@ -12,8 +12,10 @@ import android.support.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import ru.p3tr0vich.fuel.models.FuelingRecord;
@@ -265,6 +267,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @NonNull
     public static FuelingRecord getFuelingRecord(@NonNull Cursor cursor) {
         return getFuelingRecord(cursor, true);
+    }
+
+    @Nullable
+    public static List<FuelingRecord> getFuelingRecords(@Nullable Cursor cursor) {
+        if (cursor == null) return null;
+
+        List<FuelingRecord> records = new ArrayList<>();
+        if (cursor.moveToFirst())
+            do
+                records.add(getFuelingRecord(cursor));
+            while (cursor.moveToNext());
+
+        return records;
     }
 
     public Cursor getAll(String selection) {

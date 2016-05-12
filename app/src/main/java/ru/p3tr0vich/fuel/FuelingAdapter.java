@@ -1,9 +1,7 @@
 package ru.p3tr0vich.fuel;
 
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.p3tr0vich.fuel.databinding.FuelingListItemBinding;
-import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
 
 class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -46,10 +43,7 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final View.OnClickListener mOnClickListener;
 
-    private final OnFuelingRecordsChangeListener mOnFuelingRecordsChangeListener;
-
     FuelingAdapter(View.OnClickListener onClickListener,
-                   OnFuelingRecordsChangeListener onFuelingRecordsChangeListener,
                    boolean showHeader, boolean showFooter) {
         super();
         setHasStableIds(true);
@@ -62,12 +56,6 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (isShowFooter()) mFuelingRecords.add(null);
 
         mOnClickListener = onClickListener;
-
-        mOnFuelingRecordsChangeListener = onFuelingRecordsChangeListener;
-    }
-
-    public interface OnFuelingRecordsChangeListener {
-        void onFuelingRecordsChange(@NonNull List<FuelingRecord> fuelingRecords);
     }
 
     public boolean isShowHeader() {
@@ -86,7 +74,7 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mShowFooter = showFooter ? HF_SHOW : HF_HIDE;
     }
 
-    public void swapCursor(@Nullable Cursor data) {
+    public void swapRecords(@Nullable List<FuelingRecord> records) {
 //        UtilsLog.d("FuelingAdapter", "swapCursor",
 //                data == null ? "data == null" : "data count == " + data.getCount());
 
@@ -94,26 +82,12 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if (isShowHeader()) mFuelingRecords.add(null);
 
-        if (data != null && data.moveToFirst())
-            do
-                mFuelingRecords.add(DatabaseHelper.getFuelingRecord(data));
-            while (data.moveToNext());
+        if (records != null)
+            mFuelingRecords.addAll(records);
 
         if (isShowFooter()) mFuelingRecords.add(null);
 
         notifyDataSetChanged();
-
-        notifyFuelingRecordsChanged();
-    }
-
-    private void notifyFuelingRecordsChanged() {
-        List<FuelingRecord> tempFuelingRecords = new ArrayList<>(mFuelingRecords);
-        if (tempFuelingRecords.size() != 0) {
-            if (isShowHeader()) tempFuelingRecords.remove(0);
-            if (isShowFooter()) tempFuelingRecords.remove(tempFuelingRecords.size() - 1);
-        }
-
-        mOnFuelingRecordsChangeListener.onFuelingRecordsChange(tempFuelingRecords);
     }
 
     public int findPositionById(long id) {

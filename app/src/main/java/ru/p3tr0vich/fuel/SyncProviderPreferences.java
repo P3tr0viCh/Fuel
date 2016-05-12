@@ -101,7 +101,7 @@ class SyncProviderPreferences {
     }
 
     public void setPreferences(@NonNull List<String> preferences)
-            throws RemoteException, NumberFormatException, FormatException {
+            throws RemoteException {
         ContentValues contentValues = new ContentValues();
 
         int index;

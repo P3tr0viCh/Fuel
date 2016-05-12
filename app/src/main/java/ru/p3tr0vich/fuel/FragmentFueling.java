@@ -47,7 +47,7 @@ import ru.p3tr0vich.fuel.utils.UtilsFormat;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
 
 public class FragmentFueling extends FragmentBase implements
-        LoaderManager.LoaderCallbacks<Cursor>, FuelingAdapter.OnFuelingRecordsChangeListener {
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String TAG = "FragmentFueling";
 
@@ -92,24 +92,24 @@ public class FragmentFueling extends FragmentBase implements
     private long mIdForScroll = -1;
 
     private Snackbar mSnackbar = null;
-    private final Snackbar.Callback snackBarCallback = new Snackbar.Callback() {
-        // Workaround for bug
-
+    private final Snackbar.Callback mSnackBarCallback = new Snackbar.Callback() {
         @Override
         public void onDismissed(Snackbar snackbar, int event) {
+            // Workaround for bug
+
             if (event == DISMISS_EVENT_SWIPE)
                 mFloatingActionButton.toggle(true, true, true);
         }
     };
 
-    private FuelingRecord deletedFuelingRecord = null;
+    private FuelingRecord mDeletedFuelingRecord = null;
 
-    private final View.OnClickListener undoClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mUndoClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ContentProviderHelper.insertRecord(getContext(), deletedFuelingRecord);
+            ContentProviderHelper.insertRecord(getContext(), mDeletedFuelingRecord);
 
-            deletedFuelingRecord = null;
+            mDeletedFuelingRecord = null;
         }
     };
 
@@ -185,7 +185,7 @@ public class FragmentFueling extends FragmentBase implements
             public void onClick(View v) {
                 doPopup(v);
             }
-        }, this, isPhone, !isPhone));
+        }, isPhone, !isPhone));
 
         if (isPhone)
             mRecyclerViewFueling.addOnScrollListener(new OnRecyclerViewScrollListener(
@@ -268,7 +268,7 @@ public class FragmentFueling extends FragmentBase implements
 
         if (LOG_ENABLED)
             UtilsLog.d(TAG, "onActivityCreated", "savedInstanceState " +
-                (savedInstanceState == null ? "=" : "!") + "= null");
+                    (savedInstanceState == null ? "=" : "!") + "= null");
 
         doSetFilterMode(mFilter.mode);
 
@@ -428,51 +428,50 @@ public class FragmentFueling extends FragmentBase implements
         }
     }
 
+    private void calcTotalTaskCancel() {
+        if (mCalcTotalTask != null) mCalcTotalTask.cancel(false);
+    }
+
+    private void swapRecords(@Nullable Cursor data) {
+        calcTotalTaskCancel();
+
+        mHandler.removeCallbacks(mRunnableShowNoRecords);
+
+        List<FuelingRecord> records = DatabaseHelper.getFuelingRecords(data);
+
+        if (records == null || records.isEmpty())
+            mHandler.postDelayed(mRunnableShowNoRecords, Const.DELAYED_TIME_SHOW_NO_RECORDS);
+        else
+            mTextNoRecords.setVisibility(View.GONE);
+
+        mFuelingAdapter.setShowYear(mFilter.mode != DatabaseHelper.Filter.MODE_CURRENT_YEAR);
+        mFuelingAdapter.swapRecords(records);
+
+        if (mIdForScroll != -1) {
+            scrollToPosition(mFuelingAdapter.findPositionById(mIdForScroll));
+            mIdForScroll = -1;
+        }
+
+        mCalcTotalTask = new CalcTotalTask(this, records);
+        mCalcTotalTask.execute();
+    }
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (LOG_ENABLED)
             UtilsLog.d(TAG, "onLoadFinished");
 
-        mFuelingAdapter.setShowYear(mFilter.mode != DatabaseHelper.Filter.MODE_CURRENT_YEAR);
+        swapRecords(data);
 
-        mFuelingAdapter.swapCursor(data);
-
-        setFabVisible(true); // TODO: неудачное место для вызова.
+        setFabVisible(true);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mFuelingAdapter.swapCursor(null);
-    }
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, "onLoaderReset");
 
-    private void scrollToId() {
-        if (mIdForScroll == -1) return;
-
-        scrollToPosition(mFuelingAdapter.findPositionById(mIdForScroll));
-
-        mIdForScroll = -1;
-    }
-
-    private void calcTotalTaskCancel() {
-        if (mCalcTotalTask != null) mCalcTotalTask.cancel(false);
-    }
-
-    @Override
-    public void onFuelingRecordsChange(@NonNull List<FuelingRecord> fuelingRecords) {
-        mHandler.removeCallbacks(mRunnableShowNoRecords);
-
-        calcTotalTaskCancel();
-
-        scrollToId();
-
-        mCalcTotalTask = new CalcTotalTask(this, fuelingRecords);
-
-        mCalcTotalTask.execute();
-
-        if (fuelingRecords.isEmpty())
-            mHandler.postDelayed(mRunnableShowNoRecords, Const.DELAYED_TIME_SHOW_NO_RECORDS);
-        else
-            mTextNoRecords.setVisibility(View.GONE);
+        swapRecords(null);
     }
 
     private final Runnable mRunnableShowNoRecords = new Runnable() {
@@ -517,14 +516,14 @@ public class FragmentFueling extends FragmentBase implements
                                 mOnRecordChangeListener.onRecordChange(fuelingRecord);
                                 return true;
                             case R.id.action_fueling_delete:
-                                deletedFuelingRecord = fuelingRecord;
+                                mDeletedFuelingRecord = fuelingRecord;
 
                                 if (markRecordAsDeleted(fuelingRecord)) {
                                     mSnackbar = Snackbar
                                             .make(mLayoutMain, R.string.message_record_deleted,
                                                     Snackbar.LENGTH_LONG)
-                                            .setAction(R.string.dialog_btn_cancel, undoClickListener)
-                                            .setCallback(snackBarCallback);
+                                            .setAction(R.string.dialog_btn_cancel, mUndoClickListener)
+                                            .setCallback(mSnackBarCallback);
                                     mSnackbar.show();
                                 }
 
@@ -850,13 +849,15 @@ public class FragmentFueling extends FragmentBase implements
 
         private final List<FuelingRecord> mFuelingRecords;
 
-        CalcTotalTask(FragmentFueling fragmentFueling, List<FuelingRecord> fuelingRecords) {
+        CalcTotalTask(FragmentFueling fragmentFueling, @Nullable List<FuelingRecord> fuelingRecords) {
             mFragmentFueling = fragmentFueling;
             mFuelingRecords = fuelingRecords;
         }
 
         @Override
         protected Float[] doInBackground(Void... params) {
+            if (mFuelingRecords == null) return new Float[]{0f, 0f};
+
             float costSum = 0, volumeSum = 0;
             float volume, total, firstTotal = 0, lastTotal = 0;
 
@@ -901,14 +902,16 @@ public class FragmentFueling extends FragmentBase implements
                 average = 0;
                 int averageCount = 0;
 
-                for (int i = 0; i < size - 1; i++) {
+                for (int i = 0, count = size - 1; i < count; i++) {
 
                     if (isCancelled()) return null;
 
                     lastTotal = mFuelingRecords.get(i).getTotal();
                     if (lastTotal != 0) {
-                        volume = mFuelingRecords.get(i + 1).getVolume();
-                        total = mFuelingRecords.get(i + 1).getTotal();
+                        fuelingRecord = mFuelingRecords.get(i + 1);
+
+                        volume = fuelingRecord.getVolume();
+                        total = fuelingRecord.getTotal();
 
                         if (volume != 0 && total != 0) {
                             average += (volume / (lastTotal - total)) * 100;

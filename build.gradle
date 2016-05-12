@@ -14,7 +14,7 @@ ext {
     minSdkVersion = 17
     targetSdkVersion = 23
 
-    supportVersion = '23.3.0'
+    supportVersion = '23.4.0'
 
     supportDesign = 'com.android.support:design:' + supportVersion
     supportAppCompat = 'com.android.support:appcompat-v7:' + supportVersion

@@ -306,7 +306,7 @@ public class ActivityMain extends AppCompatActivity implements
         mAnimationSync = new RotateAnimation(360.0f, 0.0f,
                 Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         mAnimationSync.setInterpolator(new LinearInterpolator());
-        mAnimationSync.setDuration(Const.ANIMATION_DURATION_SYNC);
+        mAnimationSync.setDuration(Utils.getInteger(R.integer.animation_duration_sync));
         mAnimationSync.setRepeatCount(Animation.INFINITE);
     }
 
@@ -766,16 +766,14 @@ public class ActivityMain extends AppCompatActivity implements
 
             @Override
             public void onAnimationCancel(Animator animation) {
-
             }
 
             @Override
             public void onAnimationRepeat(Animator animation) {
-
             }
         });
         anim.setInterpolator(new DecelerateInterpolator());
-        anim.setDuration(Const.ANIMATION_DURATION_DRAWER_TOGGLE);
+        anim.setDuration(Utils.getInteger(R.integer.animation_duration_drawer_toggle));
         anim.start();
     }
 

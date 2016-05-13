@@ -10,20 +10,19 @@ import android.view.View;
 
 // TODO: не тестировалось с orientation != LinearLayoutManager.VERTICAL
 
-class DividerItemDecoration extends RecyclerView.ItemDecoration {
+public abstract class DividerItemDecorationBase extends RecyclerView.ItemDecoration {
 
     private final Drawable mDivider;
 
-    private final int mFooterType;
-
-    public DividerItemDecoration(Context context, int footerType) {
+    DividerItemDecorationBase(Context context) {
         final TypedArray a = context.obtainStyledAttributes(new int[]{android.R.attr.listDivider});
 
         mDivider = a.getDrawable(0);
-        a.recycle();
 
-        mFooterType = footerType;
+        a.recycle();
     }
+
+    public abstract boolean shouldDrawDivider(RecyclerView parent, int childViewIndex);
 
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
@@ -46,14 +45,10 @@ class DividerItemDecoration extends RecyclerView.ItemDecoration {
             bottom = parent.getHeight() - parent.getPaddingBottom();
         }
 
-        for (int i = 0; i < childCount - 1; i++) {
-            View child = parent.getChildAt(i);
+        for (int i = 0, count = childCount - 1; i < count; i++) {
+            if (!shouldDrawDivider(parent, i)) continue;
 
-            if (mFooterType > -1 && i == childCount - 2 &&
-                    parent.getAdapter().getItemViewType(
-                            parent.getChildAdapterPosition(parent.getChildAt(i + 1))) ==
-                            mFooterType)
-                return;
+            View child = parent.getChildAt(i);
 
             RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
 
@@ -64,6 +59,7 @@ class DividerItemDecoration extends RecyclerView.ItemDecoration {
                 left = child.getLeft() - params.leftMargin;
                 right = left + size;
             }
+
             mDivider.setBounds(left, top, right, bottom);
             mDivider.draw(c);
         }
@@ -75,6 +71,6 @@ class DividerItemDecoration extends RecyclerView.ItemDecoration {
             return ((LinearLayoutManager) layoutManager).getOrientation();
         else
             throw new IllegalStateException(
-                    "DividerItemDecoration can only be used with a LinearLayoutManager.");
+                    "DividerItemDecorationBase can only be used with a LinearLayoutManager.");
     }
 }

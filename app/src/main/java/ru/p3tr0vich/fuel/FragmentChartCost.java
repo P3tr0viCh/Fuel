@@ -426,11 +426,12 @@ public class FragmentChartCost extends FragmentBase implements
                 }
             }
 
-            mChart.animateXY(Const.ANIMATION_CHART, Const.ANIMATION_CHART);
+            int duration = Utils.getInteger(R.integer.animation_chart);
+            mChart.animateXY(duration, duration);
         } else {
             mChart.clear();
 
-            mHandler.postDelayed(mRunnableShowNoRecords, Const.DELAYED_TIME_SHOW_NO_RECORDS);
+            mHandler.postDelayed(mRunnableShowNoRecords, Utils.getInteger(R.integer.delayed_time_show_no_records));
         }
     }
 

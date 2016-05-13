@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.view.View;
 
 public abstract class FragmentPreferencesBase extends PreferenceFragmentCompat
         implements FragmentInterface {
@@ -33,6 +34,15 @@ public abstract class FragmentPreferencesBase extends PreferenceFragmentCompat
 
         if (mFragmentId == -1)
             throw new IllegalArgumentException(getString(R.string.exception_fragment_no_id));
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        setDivider(null);
+
+        getListView().addItemDecoration(new DividerItemDecorationPreferences(getContext()));
     }
 
     @Override

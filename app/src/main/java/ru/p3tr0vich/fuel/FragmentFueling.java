@@ -177,8 +177,11 @@ public class FragmentFueling extends FragmentBase implements
         mRecyclerViewFueling = (RecyclerView) view.findViewById(R.id.recyclerViewFueling);
         mRecyclerViewFueling.setHasFixedSize(true);
         mRecyclerViewFueling.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerViewFueling.addItemDecoration(
-                new DividerItemDecoration(getActivity(), isPhone ? -1 : FuelingAdapter.TYPE_FOOTER));
+
+        DividerItemDecorationFueling itemDecoration = new DividerItemDecorationFueling(getContext());
+        if (!isPhone) itemDecoration.setFooterType(FuelingAdapter.TYPE_FOOTER);
+        mRecyclerViewFueling.addItemDecoration(itemDecoration);
+
         mRecyclerViewFueling.setLayoutManager(new LinearLayoutManager(ApplicationFuel.getContext()));
         mRecyclerViewFueling.setAdapter(mFuelingAdapter = new FuelingAdapter(new View.OnClickListener() {
             @Override
@@ -440,7 +443,7 @@ public class FragmentFueling extends FragmentBase implements
         List<FuelingRecord> records = DatabaseHelper.getFuelingRecords(data);
 
         if (records == null || records.isEmpty())
-            mHandler.postDelayed(mRunnableShowNoRecords, Const.DELAYED_TIME_SHOW_NO_RECORDS);
+            mHandler.postDelayed(mRunnableShowNoRecords, Utils.getInteger(R.integer.delayed_time_show_no_records));
         else
             mTextNoRecords.setVisibility(View.GONE);
 
@@ -558,7 +561,7 @@ public class FragmentFueling extends FragmentBase implements
         mHandler.removeCallbacks(mRunnableShowProgressWheelFueling);
         if (loading) {
             mHandler.postDelayed(mRunnableShowProgressWheelFueling,
-                    Const.DELAYED_TIME_SHOW_PROGRESS_WHEEL);
+                    Utils.getInteger(R.integer.delayed_time_show_progress_wheel));
         } else
             Utils.setViewVisibleAnimate(mProgressWheelFueling, false);
     }
@@ -595,7 +598,7 @@ public class FragmentFueling extends FragmentBase implements
         if (animate) {
             final ValueAnimator valueAnimatorShadowShow = ValueAnimator.ofInt(0, toolbarShadowHeight);
             valueAnimatorShadowShow
-                    .setDuration(Const.ANIMATION_DURATION_TOOLBAR_SHADOW)
+                    .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar_shadow))
                     .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         public void onAnimationUpdate(ValueAnimator animation) {
                             Utils.setViewHeight(mToolbarShadow,
@@ -605,7 +608,7 @@ public class FragmentFueling extends FragmentBase implements
 
             final ValueAnimator valueAnimatorShadowHide = ValueAnimator.ofInt(toolbarShadowHeight, 0);
             valueAnimatorShadowHide
-                    .setDuration(Const.ANIMATION_DURATION_TOOLBAR_SHADOW)
+                    .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar_shadow))
                     .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         public void onAnimationUpdate(ValueAnimator animation) {
                             Utils.setViewHeight(mToolbarShadow, (Integer) animation.getAnimatedValue());
@@ -615,7 +618,7 @@ public class FragmentFueling extends FragmentBase implements
             final ValueAnimator valueAnimatorToolbar = ValueAnimator.ofInt(
                     visible ? toolbarDatesTopHidden : 0, visible ? 0 : toolbarDatesTopHidden);
             valueAnimatorToolbar
-                    .setDuration(Const.ANIMATION_DURATION_TOOLBAR)
+                    .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar))
                     .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         public void onAnimationUpdate(ValueAnimator animation) {
                             Utils.setViewTopMargin(mToolbarDates,
@@ -636,12 +639,12 @@ public class FragmentFueling extends FragmentBase implements
 
         mLayoutTotalVisible = visible;
 
-        final ValueAnimator valueAnimator = ValueAnimator.ofInt(
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(
                 (int) mLayoutTotal.getTranslationY(), visible ? 0 : mLayoutTotal.getHeight());
         valueAnimator
-                .setDuration(visible ?
-                        Const.ANIMATION_DURATION_LAYOUT_TOTAL_SHOW :
-                        Const.ANIMATION_DURATION_LAYOUT_TOTAL_HIDE)
+                .setDuration(Utils.getInteger(visible ?
+                        R.integer.animation_duration_layout_total_show :
+                        R.integer.animation_duration_layout_total_hide))
                 .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     public void onAnimationUpdate(ValueAnimator animation) {
                         final int translationY = (Integer) animation.getAnimatedValue();

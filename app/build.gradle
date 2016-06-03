@@ -19,30 +19,26 @@ android {
         }
     }
 
-    //noinspection GroovyAssignabilityCheck
     compileSdkVersion rootProject.ext.compileSdkVersion
-    //noinspection GroovyAssignabilityCheck
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         applicationId "ru.p3tr0vich.fuel"
-        //noinspection GroovyAssignabilityCheck
+
         minSdkVersion rootProject.ext.minSdkVersion
-        //noinspection GroovyAssignabilityCheck
         targetSdkVersion rootProject.ext.targetSdkVersion
+
         versionCode 1
         versionName "1.0"
 
         buildConfigField "long", "BUILD_DATE", System.currentTimeMillis() + "l"
-
-        multiDexEnabled false
     }
 
     buildTypes {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            //noinspection GroovyAssignabilityCheck
+
             signingConfig signingConfigs.debug
 
             ext.enableCrashlytics = false
@@ -50,7 +46,7 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            //noinspection GroovyAssignabilityCheck
+
             signingConfig signingConfigs.release
 
             applicationVariants.all { variant ->
@@ -74,18 +70,11 @@ android {
         enabled = true
     }
 
-    dexOptions {
-        preDexLibraries true
-        javaMaxHeapSize "2g"
-        incremental true
-    }
-
     testOptions {
         unitTests.returnDefaultValues = true
     }
 }
 
-@SuppressWarnings("GroovyAssignabilityCheck")
 def appendVersionName(variant, defaultConfig) {
     variant.outputs.each { output ->
         if (output.zipAlign) {
@@ -107,17 +96,11 @@ repositories {
 }
 
 dependencies {
-    //noinspection GroovyAssignabilityCheck
     compile rootProject.ext.supportAppCompat
-    //noinspection GroovyAssignabilityCheck
     compile rootProject.ext.supportDesign
-    //noinspection GroovyAssignabilityCheck
     compile rootProject.ext.supportPreferenceV7
-    //noinspection GroovyAssignabilityCheck
     compile rootProject.ext.supportPreferenceV14
-    //noinspection GroovyAssignabilityCheck
     compile rootProject.ext.supportCardView
-    //noinspection GroovyAssignabilityCheck
     compile rootProject.ext.supportRecyclerView
 
     compile 'com.google.android.gms:play-services-location:8.4.0'

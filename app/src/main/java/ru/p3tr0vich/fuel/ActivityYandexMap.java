@@ -167,7 +167,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
     private void initUI() {
         mMenu = null;
 
-        mToolbarYandexMap = (Toolbar) findViewById(R.id.toolbarYandexMap);
+        mToolbarYandexMap = (Toolbar) findViewById(R.id.toolbar_yandex_map);
         setSupportActionBar(mToolbarYandexMap);
 
         mToolbarYandexMap.setNavigationIcon(R.drawable.ic_close);
@@ -196,21 +196,21 @@ public class ActivityYandexMap extends AppCompatActivity implements
                 break;
         }
 
-        mProgressWheelYandexMap = (ProgressWheel) findViewById(R.id.progressWheelYandexMap);
+        mProgressWheelYandexMap = (ProgressWheel) findViewById(R.id.progress_wheel_yandex_map);
 
-        mBtnZoomIn = (FloatingActionButton) findViewById(R.id.btnZoomIn);
+        mBtnZoomIn = (FloatingActionButton) findViewById(R.id.btn_zoom_in);
         assert mBtnZoomIn != null;
         mBtnZoomIn.setOnClickListener(this);
 
-        mBtnZoomOut = (FloatingActionButton) findViewById(R.id.btnZoomOut);
+        mBtnZoomOut = (FloatingActionButton) findViewById(R.id.btn_zoom_out);
         assert mBtnZoomOut != null;
         mBtnZoomOut.setOnClickListener(this);
 
-        mBtnGeolocation = (FloatingActionButton) findViewById(R.id.btnGeolocation);
+        mBtnGeolocation = (FloatingActionButton) findViewById(R.id.btn_geolocation);
         assert mBtnGeolocation != null;
         mBtnGeolocation.setOnClickListener(this);
 
-        mWebViewPlaceholder = (FrameLayout) findViewById(R.id.webViewPlaceholder);
+        mWebViewPlaceholder = (FrameLayout) findViewById(R.id.web_view_placeholder);
 
         if (mWebView == null) {
             mWebView = new WebView(this);
@@ -363,13 +363,13 @@ public class ActivityYandexMap extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnZoomIn:
+            case R.id.btn_zoom_in:
                 mYandexMapJavascriptInterface.setZoom(true);
                 break;
-            case R.id.btnZoomOut:
+            case R.id.btn_zoom_out:
                 mYandexMapJavascriptInterface.setZoom(false);
                 break;
-            case R.id.btnGeolocation:
+            case R.id.btn_geolocation:
                 final int googlePlayServicesAvailable = mLocationHelper.isGooglePlayServicesAvailable();
 
                 if (googlePlayServicesAvailable == ConnectionResult.SUCCESS) {

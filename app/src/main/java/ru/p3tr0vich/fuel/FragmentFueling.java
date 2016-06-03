@@ -168,13 +168,13 @@ public class FragmentFueling extends FragmentBase implements
 
         View view = inflater.inflate(R.layout.fragment_fueling, container, false);
 
-        mToolbarDates = (Toolbar) view.findViewById(R.id.toolbarDates);
-        mToolbarShadow = view.findViewById(R.id.toolbarShadow);
+        mToolbarDates = (Toolbar) view.findViewById(R.id.toolbar_dates);
+        mToolbarShadow = view.findViewById(R.id.view_toolbar_shadow);
 
-        mLayoutMain = (RelativeLayout) view.findViewById(R.id.layoutMain);
-        mLayoutTotal = (LinearLayout) view.findViewById(R.id.layoutTotal);
+        mLayoutMain = (RelativeLayout) view.findViewById(R.id.layout_main);
+        mLayoutTotal = (LinearLayout) view.findViewById(R.id.layout_total);
 
-        mRecyclerViewFueling = (RecyclerView) view.findViewById(R.id.recyclerViewFueling);
+        mRecyclerViewFueling = (RecyclerView) view.findViewById(R.id.recycler_view);
         mRecyclerViewFueling.setHasFixedSize(true);
         mRecyclerViewFueling.setItemAnimator(new DefaultItemAnimator());
 
@@ -205,13 +205,13 @@ public class FragmentFueling extends FragmentBase implements
                 }
             });
 
-        mProgressWheelFueling = (ProgressWheel) view.findViewById(R.id.progressWheelFueling);
-        mTextNoRecords = (TextView) view.findViewById(R.id.tvNoRecords);
+        mProgressWheelFueling = (ProgressWheel) view.findViewById(R.id.progress_wheel);
+        mTextNoRecords = (TextView) view.findViewById(R.id.text_no_records);
 
-        mTextAverage = (TextView) view.findViewById(R.id.tvAverage);
-        mTextCostSum = (TextView) view.findViewById(R.id.tvCostSum);
+        mTextAverage = (TextView) view.findViewById(R.id.text_average);
+        mTextCostSum = (TextView) view.findViewById(R.id.text_cost_sum);
 
-        mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.floatingActionButton);
+        mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -221,7 +221,7 @@ public class FragmentFueling extends FragmentBase implements
         mFloatingActionButton.setScaleX(0.0f);
         mFloatingActionButton.setScaleY(0.0f);
 
-        mBtnDateFrom = (Button) view.findViewById(R.id.btnDateFrom);
+        mBtnDateFrom = (Button) view.findViewById(R.id.btn_date_from);
         mBtnDateFrom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -236,7 +236,7 @@ public class FragmentFueling extends FragmentBase implements
             }
         });
 
-        mBtnDateTo = (Button) view.findViewById(R.id.btnDateTo);
+        mBtnDateTo = (Button) view.findViewById(R.id.btn_date_to);
         mBtnDateTo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

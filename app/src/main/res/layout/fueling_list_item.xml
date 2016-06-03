@@ -25,12 +25,12 @@
                     android:paddingStart="16dp">
 
         <TextView
-            android:id="@+id/tvDate"
+            android:id="@+id/text_date"
             android:layout_width="match_parent"
             android:layout_height="34dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/ibMenu"
+            android:layout_toLeftOf="@+id/btn_menu"
             android:clickable="false"
             android:gravity="bottom"
             android:text="@{UtilsFormat.dateToString(fuelingRecord.getDateTime, showYear)}"
@@ -43,12 +43,12 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="16dp"
-            android:layout_toLeftOf="@+id/ibMenu"
+            android:layout_toLeftOf="@+id/btn_menu"
             android:gravity="top"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tvCost"
+                android:id="@+id/text_cost"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -58,7 +58,7 @@
                 tools:text="@string/list_item_cost"/>
 
             <TextView
-                android:id="@+id/tvVolume"
+                android:id="@+id/text_volume"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -68,7 +68,7 @@
                 tools:text="@string/list_item_volume"/>
 
             <TextView
-                android:id="@+id/tvTotal"
+                android:id="@+id/text_total"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -79,7 +79,7 @@
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/ibMenu"
+            android:id="@+id/btn_menu"
             android:layout_width="48dp"
             android:layout_height="47dp"
             android:layout_alignParentEnd="false"

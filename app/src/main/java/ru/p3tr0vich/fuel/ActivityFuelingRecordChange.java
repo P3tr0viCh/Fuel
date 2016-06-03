@@ -36,7 +36,7 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fueling_record_change);
 
-        Toolbar toolbarRecord = (Toolbar) findViewById(R.id.toolbarRecord);
+        Toolbar toolbarRecord = (Toolbar) findViewById(R.id.toolbar_record);
         setSupportActionBar(toolbarRecord);
 
         assert toolbarRecord != null;
@@ -85,7 +85,7 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
                 intent.hasExtra(FuelingRecord.NAME) ? new FuelingRecord(intent) : null;
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.contentFrame,
+                .replace(R.id.content_frame,
                         FragmentFuelingRecordChange.newInstance(fuelingRecord),
                         FragmentFuelingRecordChange.TAG)
                 .setTransition(FragmentTransaction.TRANSIT_NONE)

@@ -65,10 +65,10 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
         setHasOptionsMenu(true);
 
-        mButtonDate = (Button) view.findViewById(R.id.btnDate);
-        mEditCost = (EditText) view.findViewById(R.id.editCost);
-        mEditVolume = (EditText) view.findViewById(R.id.editVolume);
-        mEditTotal = (EditText) view.findViewById(R.id.editTotal);
+        mButtonDate = (Button) view.findViewById(R.id.btn_date);
+        mEditCost = (EditText) view.findViewById(R.id.edit_cost);
+        mEditVolume = (EditText) view.findViewById(R.id.edit_volume);
+        mEditTotal = (EditText) view.findViewById(R.id.edit_total);
 
         Bundle bundle = getArguments();
 
@@ -95,9 +95,9 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
         mButtonDate.setOnClickListener(this);
 
-        view.findViewById(R.id.textCost).setOnClickListener(this);
-        view.findViewById(R.id.textVolume).setOnClickListener(this);
-        view.findViewById(R.id.textTotal).setOnClickListener(this);
+        view.findViewById(R.id.text_cost).setOnClickListener(this);
+        view.findViewById(R.id.text_volume).setOnClickListener(this);
+        view.findViewById(R.id.text_total).setOnClickListener(this);
 
         mCalcEnabled = mFuelingRecord.getId() == 0 &&
                 (savedInstanceState == null ||
@@ -236,13 +236,13 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         } else {
             final EditText edit;
             switch (v.getId()) {
-                case R.id.textCost:
+                case R.id.text_cost:
                     edit = mEditCost;
                     break;
-                case R.id.textVolume:
+                case R.id.text_volume:
                     edit = mEditVolume;
                     break;
-                case R.id.textTotal:
+                case R.id.text_total:
                     edit = mEditTotal;
                     break;
                 default:

@@ -59,19 +59,19 @@ public class FragmentBackup extends FragmentBase {
 
         View view = inflater.inflate(R.layout.fragment_backup, container, false);
 
-        ((TextView) view.findViewById(R.id.textDirectory)).setText(
+        ((TextView) view.findViewById(R.id.text_directory)).setText(
                 mDatabaseBackupXmlHelper.getExternalDirectory().toString());
-        ((TextView) view.findViewById(R.id.textFile)).setText(
+        ((TextView) view.findViewById(R.id.text_file)).setText(
                 mDatabaseBackupXmlHelper.getFileName().toString());
 
-        view.findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btn_save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveToXml();
             }
         });
 
-        view.findViewById(R.id.btnLoad).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btn_load).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadFromXml();

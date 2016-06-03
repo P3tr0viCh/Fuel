@@ -43,7 +43,7 @@ public class ActivityDialog extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dialog);
 
-        Toolbar toolbarDialog = (Toolbar) findViewById(R.id.toolbarDialog);
+        Toolbar toolbarDialog = (Toolbar) findViewById(R.id.toolbar_dialog);
         setSupportActionBar(toolbarDialog);
 
         assert toolbarDialog != null;
@@ -70,7 +70,7 @@ public class ActivityDialog extends AppCompatActivity {
             }
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.contentFrame, fragment, null)
+                    .replace(R.id.content_frame, fragment, null)
                     .setTransition(FragmentTransaction.TRANSIT_NONE)
                     .commit();
         }
@@ -90,7 +90,7 @@ public class ActivityDialog extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         ActivityDialogFragment fragment =
-                (ActivityDialogFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+                (ActivityDialogFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
 
         if (fragment.onSaveClicked()) {
             setResult(Activity.RESULT_OK);

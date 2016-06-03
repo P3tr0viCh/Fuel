@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
-              android:id="@+id/ltMain"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:orientation="vertical"
               android:padding="16dp">
 
     <RelativeLayout
-        android:id="@+id/ltTop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/imageAbout"
+            android:id="@+id/image_app"
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_gravity="start|center"
@@ -23,44 +21,44 @@
             tools:ignore="contentDescription"/>
 
         <TextView
-            android:id="@+id/textAboutAppName"
+            android:id="@+id/text_app_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginBottom="8dp"
-            android:layout_toEndOf="@+id/imageAbout"
+            android:layout_toEndOf="@+id/image_app"
             android:gravity="start"
             android:text="@string/app_name"
             android:textAppearance="@style/AppTheme.TextAppearance.Headline"
             android:textStyle="bold"/>
 
         <TextView
-            android:id="@+id/textAboutVersion"
+            android:id="@+id/text_app_version"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/textAboutAppName"
-            android:layout_below="@+id/textAboutAppName"
+            android:layout_alignStart="@+id/text_app_name"
+            android:layout_below="@+id/text_app_name"
             android:text="@string/about_version"
             android:textAppearance="@style/AppTheme.TextAppearance.Subhead"/>
 
         <TextView
-            android:id="@+id/textAboutDate"
+            android:id="@+id/text_app_build_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/textAboutAppName"
-            android:layout_below="@+id/textAboutVersion"
+            android:layout_alignStart="@+id/text_app_name"
+            android:layout_below="@+id/text_app_version"
             android:layout_marginTop="4dp"
             android:text="@string/list_item_date"
             android:textAppearance="@style/AppTheme.TextAppearance.Subhead.Secondary"/>
 
         <TextView
-            android:id="@+id/textAboutCopyright"
+            android:id="@+id/text_copyright"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="false"
             android:layout_alignParentTop="false"
-            android:layout_alignStart="@+id/textAboutAppName"
-            android:layout_below="@+id/textAboutDate"
+            android:layout_alignStart="@+id/text_app_name"
+            android:layout_below="@+id/text_app_build_date"
             android:layout_marginTop="8dp"
             android:text="@string/about_copyright"
             android:textAppearance="@style/AppTheme.TextAppearance.Subhead"/>
@@ -72,13 +70,12 @@
         android:orientation="vertical">
 
         <View
-            android:id="@+id/view"
             style="@style/AppTheme.Divider.Horizontal"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"/>
 
         <TextView
-            android:id="@+id/textAboutDisclaimer"
+            android:id="@+id/text_disclaimer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="fill_horizontal"

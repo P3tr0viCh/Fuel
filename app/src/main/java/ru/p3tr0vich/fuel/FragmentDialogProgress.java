@@ -110,7 +110,7 @@ public class FragmentDialogProgress extends DialogFragment {
         @SuppressLint("InflateParams")
         View rootView = getActivity().getLayoutInflater().inflate(R.layout.dialog_progress, null, false);
 
-        ((TextView) rootView.findViewById(R.id.textProgressMessage)).setText(getArguments().getString(MESSAGE));
+        ((TextView) rootView.findViewById(R.id.text_message)).setText(getArguments().getString(MESSAGE));
 
         return new AlertDialog.Builder(getActivity()).setView(rootView).create();
     }

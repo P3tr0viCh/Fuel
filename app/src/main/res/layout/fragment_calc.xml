@@ -18,16 +18,16 @@
             android:paddingTop="16dp">
 
             <TextView
-                android:id="@+id/textDistance"
+                android:id="@+id/text_distance"
                 android:layout_width="110dp"
                 android:layout_height="48dp"
                 android:gravity="center_vertical"
-                android:labelFor="@+id/editDistance"
+                android:labelFor="@+id/edit_distance"
                 android:text="@string/text_distance"
                 android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
 
             <EditText
-                android:id="@+id/editDistance"
+                android:id="@+id/edit_distance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -38,7 +38,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btnMaps"
+            android:id="@+id/btn_map"
             style="@style/AppTheme.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -54,16 +54,16 @@
             android:paddingStart="16dp">
 
             <TextView
-                android:id="@+id/textCost"
+                android:id="@+id/text_cost"
                 android:layout_width="110dp"
                 android:layout_height="48dp"
                 android:gravity="center_vertical"
-                android:labelFor="@+id/editCost"
+                android:labelFor="@+id/edit_cost"
                 android:text="@string/text_cost"
                 android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
 
             <EditText
-                android:id="@+id/editCost"
+                android:id="@+id/edit_cost"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -81,16 +81,16 @@
             android:paddingStart="16dp">
 
             <TextView
-                android:id="@+id/textVolume"
+                android:id="@+id/text_volume"
                 android:layout_width="110dp"
                 android:layout_height="48dp"
                 android:gravity="center_vertical"
-                android:labelFor="@+id/editVolume"
+                android:labelFor="@+id/edit_volume"
                 android:text="@string/text_volume"
                 android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
 
             <EditText
-                android:id="@+id/editVolume"
+                android:id="@+id/edit_volume"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -101,7 +101,6 @@
         </LinearLayout>
 
         <View
-            android:id="@+id/divider1"
             style="@style/AppTheme.Divider.Horizontal"
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="16dp"
@@ -116,16 +115,16 @@
             android:paddingStart="16dp">
 
             <TextView
-                android:id="@+id/textPrice"
+                android:id="@+id/text_price"
                 android:layout_width="110dp"
                 android:layout_height="48dp"
                 android:gravity="center_vertical"
-                android:labelFor="@+id/editPrice"
+                android:labelFor="@+id/edit_price"
                 android:text="@string/text_price"
                 android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
 
             <EditText
-                android:id="@+id/editPrice"
+                android:id="@+id/edit_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -136,7 +135,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/layoutPriceEmpty"
+            android:id="@+id/layout_price_empty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
@@ -160,7 +159,6 @@
         </LinearLayout>
 
         <View
-            android:id="@+id/divider2"
             style="@style/AppTheme.Divider.Horizontal"
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="16dp"
@@ -175,14 +173,14 @@
             android:paddingStart="16dp">
 
             <Spinner
-                android:id="@+id/spinnerCons"
+                android:id="@+id/spinner_cons"
                 style="@style/AppTheme.Spinner.Underlined"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"/>
 
             <Spinner
-                android:id="@+id/spinnerSeason"
+                android:id="@+id/spinner_season"
                 style="@style/AppTheme.Spinner.Underlined"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
@@ -198,16 +196,16 @@
             android:paddingStart="16dp">
 
             <TextView
-                android:id="@+id/textCons"
+                android:id="@+id/text_cons"
                 android:layout_width="110dp"
                 android:layout_height="48dp"
                 android:gravity="center_vertical"
-                android:labelFor="@+id/editCons"
+                android:labelFor="@+id/edit_cons"
                 android:text="@string/text_consumption"
                 android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
 
             <EditText
-                android:id="@+id/editCons"
+                android:id="@+id/edit_cons"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -218,7 +216,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/layoutConsEmpty"
+            android:id="@+id/layout_cons_empty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="-8dp"

@@ -8,30 +8,29 @@
                 android:paddingStart="16dp">
 
     <TextView
-        android:id="@+id/tvDate"
+        android:id="@+id/text_date"
         android:layout_width="match_parent"
         android:layout_height="20dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/spMenu"
+        android:layout_toLeftOf="@+id/space_btn_menu"
         android:clickable="false"
         android:gravity="center_vertical"
         android:text="@string/text_date"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
     <LinearLayout
-        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="20dp"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/tvDate"
+        android:layout_below="@+id/text_date"
         android:layout_marginLeft="16dp"
-        android:layout_toLeftOf="@+id/spMenu"
+        android:layout_toLeftOf="@+id/space_btn_menu"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/tvCost"
+            android:id="@+id/text_cost"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -39,7 +38,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
         <TextView
-            android:id="@+id/tvVolume"
+            android:id="@+id/text_volume"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -47,7 +46,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
         <TextView
-            android:id="@+id/tvTotal"
+            android:id="@+id/text_total"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -56,7 +55,7 @@
     </LinearLayout>
 
     <Space
-        android:id="@+id/spMenu"
+        android:id="@+id/space_btn_menu"
         android:layout_width="48dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"

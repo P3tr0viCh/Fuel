@@ -161,7 +161,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
         FrameLayout listContainer = (FrameLayout) preferences.findViewById(R.id.list_container);
 
         FrameLayout root = (FrameLayout) inflater.inflate(R.layout.fragment_preferences, container, false);
-        LinearLayout prefContainer = (LinearLayout) root.findViewById(R.id.prefContainer);
+        LinearLayout prefContainer = (LinearLayout) root.findViewById(R.id.pref_container);
 
         preferences.removeAllViews();
         prefContainer.addView(listContainer);

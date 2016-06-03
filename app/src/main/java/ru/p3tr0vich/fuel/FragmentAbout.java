@@ -38,9 +38,9 @@ public class FragmentAbout extends FragmentBase {
             versionName = "0.0";
         }
         versionName = getActivity().getString(R.string.about_version) + " " + versionName;
-        ((TextView) view.findViewById(R.id.textAboutVersion)).setText(versionName);
+        ((TextView) view.findViewById(R.id.text_app_version)).setText(versionName);
 
-        ((TextView) view.findViewById(R.id.textAboutDate)).setText(
+        ((TextView) view.findViewById(R.id.text_app_build_date)).setText(
                 UtilsFormat.dateToString(BuildConfig.BUILD_DATE, true));
 
         return view;

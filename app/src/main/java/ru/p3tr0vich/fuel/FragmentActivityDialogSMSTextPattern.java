@@ -39,9 +39,9 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_activity_dialog_sms_text_pattern, container, false);
 
-        mEditSMSText = (EditText) view.findViewById(R.id.editSMSText);
-        mEditSMSTextPattern = (EditText) view.findViewById(R.id.editSMSTextPattern);
-        mTextResult = (TextView) view.findViewById(R.id.textResult);
+        mEditSMSText = (EditText) view.findViewById(R.id.edit_sms_text);
+        mEditSMSTextPattern = (EditText) view.findViewById(R.id.edit_sms_text_pattern);
+        mTextResult = (TextView) view.findViewById(R.id.text_check_result);
 
         if (savedInstanceState == null) {
             mEditSMSText.setText(PreferencesHelper.getSMSText());

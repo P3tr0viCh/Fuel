@@ -6,7 +6,7 @@
                                    android:paddingRight="@dimen/toolbar_dates_padding_right">
 
     <Button
-        android:id="@+id/btnDateFrom"
+        android:id="@+id/btn_date_from"
         style="@style/AppTheme.DatePickerButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
         tools:ignore="HardcodedText"/>
 
     <Button
-        android:id="@+id/btnDateTo"
+        android:id="@+id/btn_date_to"
         style="@style/AppTheme.DatePickerButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

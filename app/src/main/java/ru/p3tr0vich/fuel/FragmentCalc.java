@@ -87,17 +87,17 @@ public class FragmentCalc extends FragmentBase implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calc, container, false);
 
-        mEditDistance = (EditText) view.findViewById(R.id.editDistance);
-        mEditCost = (EditText) view.findViewById(R.id.editCost);
-        mEditVolume = (EditText) view.findViewById(R.id.editVolume);
-        mEditPrice = (EditText) view.findViewById(R.id.editPrice);
-        mEditCons = (EditText) view.findViewById(R.id.editCons);
+        mEditDistance = (EditText) view.findViewById(R.id.edit_distance);
+        mEditCost = (EditText) view.findViewById(R.id.edit_cost);
+        mEditVolume = (EditText) view.findViewById(R.id.edit_volume);
+        mEditPrice = (EditText) view.findViewById(R.id.edit_price);
+        mEditCons = (EditText) view.findViewById(R.id.edit_cons);
 
-        mSpinnerCons = (Spinner) view.findViewById(R.id.spinnerCons);
-        mSpinnerSeason = (Spinner) view.findViewById(R.id.spinnerSeason);
+        mSpinnerCons = (Spinner) view.findViewById(R.id.spinner_cons);
+        mSpinnerSeason = (Spinner) view.findViewById(R.id.spinner_season);
 
-        mLayoutPriceEmpty = (LinearLayout) view.findViewById(R.id.layoutPriceEmpty);
-        mLayoutConsEmpty = (LinearLayout) view.findViewById(R.id.layoutConsEmpty);
+        mLayoutPriceEmpty = (LinearLayout) view.findViewById(R.id.layout_price_empty);
+        mLayoutConsEmpty = (LinearLayout) view.findViewById(R.id.layout_cons_empty);
 
         ArrayAdapter<CharSequence> adapterCons = ArrayAdapter.createFromResource(getActivity(),
                 R.array.spinner_consumption, R.layout.spinner_item);
@@ -109,7 +109,7 @@ public class FragmentCalc extends FragmentBase implements
         adapterSeason.setDropDownViewResource(R.layout.spinner_dropdown_item);
         mSpinnerSeason.setAdapter(adapterSeason);
 
-        view.findViewById(R.id.btnMaps).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btn_map).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mOnCalcDistanceButtonClickListener.onCalcDistanceButtonClick();
@@ -122,11 +122,11 @@ public class FragmentCalc extends FragmentBase implements
 
         checkTextOnEmpty(mEditPrice);
 
-        view.findViewById(R.id.textDistance).setOnClickListener(this);
-        view.findViewById(R.id.textCost).setOnClickListener(this);
-        view.findViewById(R.id.textVolume).setOnClickListener(this);
-        view.findViewById(R.id.textPrice).setOnClickListener(this);
-        view.findViewById(R.id.textCons).setOnClickListener(this);
+        view.findViewById(R.id.text_distance).setOnClickListener(this);
+        view.findViewById(R.id.text_cost).setOnClickListener(this);
+        view.findViewById(R.id.text_volume).setOnClickListener(this);
+        view.findViewById(R.id.text_price).setOnClickListener(this);
+        view.findViewById(R.id.text_cons).setOnClickListener(this);
 
         mSpinnerCons.setOnItemSelectedListener(this);
         mSpinnerSeason.setOnItemSelectedListener(this);
@@ -148,10 +148,10 @@ public class FragmentCalc extends FragmentBase implements
     private void checkTextOnEmpty(EditText editText) {
         LinearLayout linearLayout;
         switch (editText.getId()) {
-            case R.id.editPrice:
+            case R.id.edit_price:
                 linearLayout = mLayoutPriceEmpty;
                 break;
-            case R.id.editCons:
+            case R.id.edit_cons:
                 linearLayout = mLayoutConsEmpty;
                 break;
             default:
@@ -176,19 +176,19 @@ public class FragmentCalc extends FragmentBase implements
     public void onClick(View v) {
         EditText edit;
         switch (v.getId()) {
-            case R.id.textPrice:
+            case R.id.text_price:
                 edit = mEditPrice;
                 break;
-            case R.id.textCons:
+            case R.id.text_cons:
                 edit = mEditCons;
                 break;
-            case R.id.textDistance:
+            case R.id.text_distance:
                 edit = mEditDistance;
                 break;
-            case R.id.textCost:
+            case R.id.text_cost:
                 edit = mEditCost;
                 break;
-            case R.id.textVolume:
+            case R.id.text_volume:
                 edit = mEditVolume;
                 break;
             default:
@@ -247,19 +247,19 @@ public class FragmentCalc extends FragmentBase implements
         @Override
         public void afterTextChanged(Editable s) {
             switch (mEditText.getId()) {
-                case R.id.editPrice:
+                case R.id.edit_price:
                     checkTextOnEmpty(mEditText);
                     doCalculate(CALC_ACTION_DISTANCE);
                     break;
-                case R.id.editCost:
+                case R.id.edit_cost:
                     doCalculate(CALC_ACTION_COST);
                     break;
-                case R.id.editCons:
+                case R.id.edit_cons:
                     checkTextOnEmpty(mEditText);
-                case R.id.editDistance:
+                case R.id.edit_distance:
                     doCalculate(CALC_ACTION_DISTANCE);
                     break;
-                case R.id.editVolume:
+                case R.id.edit_volume:
                     doCalculate(CALC_ACTION_VOLUME);
             }
         }

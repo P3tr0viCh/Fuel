@@ -7,7 +7,7 @@
               android:orientation="vertical">
 
     <include
-        android:id="@+id/toolbarYandexMap"
+        android:id="@+id/toolbar_yandex_map"
         layout="@layout/toolbar"/>
 
     <RelativeLayout
@@ -15,12 +15,12 @@
         android:layout_height="match_parent">
 
         <FrameLayout
-            android:id="@+id/webViewPlaceholder"
+            android:id="@+id/web_view_placeholder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
         <Space
-            android:id="@+id/spaceCenter"
+            android:id="@+id/space_center"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_centerVertical="true"
@@ -29,10 +29,10 @@
             android:layout_marginTop="8dp"/>
 
         <com.melnykov.fab.FloatingActionButton
-            android:id="@+id/btnZoomIn"
+            android:id="@+id/btn_zoom_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/spaceCenter"
+            android:layout_above="@+id/space_center"
             android:layout_alignParentBottom="false"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="16dp"
@@ -44,12 +44,12 @@
             tools:visibility="visible"/>
 
         <com.melnykov.fab.FloatingActionButton
-            android:id="@+id/btnZoomOut"
+            android:id="@+id/btn_zoom_out"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="false"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/spaceCenter"
+            android:layout_below="@+id/space_center"
             android:layout_marginLeft="16dp"
             android:src="@drawable/ic_minus"
             android:visibility="invisible"
@@ -59,7 +59,7 @@
             tools:visibility="visible"/>
 
         <com.melnykov.fab.FloatingActionButton
-            android:id="@+id/btnGeolocation"
+            android:id="@+id/btn_geolocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -73,7 +73,7 @@
             tools:visibility="visible"/>
 
         <com.pnikosis.materialishprogress.ProgressWheel
-            android:id="@+id/progressWheelYandexMap"
+            android:id="@+id/progress_wheel_yandex_map"
             android:layout_width="@dimen/progress_wheel_fueling_size"
             android:layout_height="@dimen/progress_wheel_fueling_size"
             android:layout_centerInParent="true"

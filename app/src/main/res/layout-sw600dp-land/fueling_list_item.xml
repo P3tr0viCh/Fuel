@@ -25,7 +25,7 @@
                   android:paddingStart="16dp">
 
         <TextView
-            android:id="@+id/tvDate"
+            android:id="@+id/text_date"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="4"
@@ -36,7 +36,7 @@
             tools:text="@string/list_item_date"/>
 
         <TextView
-            android:id="@+id/tvCost"
+            android:id="@+id/text_cost"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="5"
@@ -46,7 +46,7 @@
             tools:text="@string/list_item_cost"/>
 
         <TextView
-            android:id="@+id/tvVolume"
+            android:id="@+id/text_volume"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="5"
@@ -56,7 +56,7 @@
             tools:text="@string/list_item_volume"/>
 
         <TextView
-            android:id="@+id/tvTotal"
+            android:id="@+id/text_total"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="5"
@@ -66,7 +66,7 @@
             tools:text="@string/list_item_total"/>
 
         <ImageButton
-            android:id="@+id/ibMenu"
+            android:id="@+id/btn_menu"
             android:layout_width="48dp"
             android:layout_height="47dp"
             android:adjustViewBounds="false"

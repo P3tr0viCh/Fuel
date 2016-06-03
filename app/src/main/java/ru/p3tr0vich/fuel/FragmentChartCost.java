@@ -102,9 +102,9 @@ public class FragmentChartCost extends FragmentBase implements
 
         View view = inflater.inflate(R.layout.fragment_chart_cost, container, false);
 
-        mTabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
+        mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
 
-        mTextNoRecords = (TextView) view.findViewById(R.id.tvNoRecords);
+        mTextNoRecords = (TextView) view.findViewById(R.id.text_no_records);
 
         mChart = (BarChart) view.findViewById(R.id.chart);
 

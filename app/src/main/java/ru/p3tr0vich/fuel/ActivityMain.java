@@ -144,7 +144,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     @NonNull
     private FragmentInterface getCurrentFragment() {
-        return (FragmentInterface) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+        return (FragmentInterface) getSupportFragmentManager().findFragmentById(R.id.content_frame);
 
     }
 
@@ -188,7 +188,7 @@ public class ActivityMain extends AppCompatActivity implements
         if (savedInstanceState == null) {
             mCurrentFragmentId = FRAGMENT_FUELING_ID;
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.contentFrame,
+                    .add(R.id.content_frame,
                             FragmentFueling.newInstance(FRAGMENT_FUELING_ID),
                             FragmentFueling.TAG)
                     .setTransition(FragmentTransaction.TRANSIT_NONE)
@@ -206,7 +206,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void initToolbar() {
-        mToolbarMain = (Toolbar) findViewById(R.id.toolbarMain);
+        mToolbarMain = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(mToolbarMain);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -247,7 +247,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void initDrawer() {
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this,
                 mDrawerLayout, mToolbarMain, R.string.app_name, R.string.app_name) {
 
@@ -284,7 +284,7 @@ public class ActivityMain extends AppCompatActivity implements
             }
         });
 
-        mNavigationView = (NavigationView) findViewById(R.id.drawerNavigationView);
+        mNavigationView = (NavigationView) findViewById(R.id.drawer_navigation_view);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -311,9 +311,9 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void initSyncViews() {
-        mImgSync = (ImageView) findViewById(R.id.imgSync);
+        mImgSync = (ImageView) findViewById(R.id.image_sync);
 
-        mBtnSync = (TextView) findViewById(R.id.btnSync);
+        mBtnSync = (TextView) findViewById(R.id.btn_sync);
         mBtnSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -564,7 +564,7 @@ public class ActivityMain extends AppCompatActivity implements
             }
 
             fragmentManager.beginTransaction()
-                    .replace(R.id.contentFrame, fragment, fragmentTag)
+                    .replace(R.id.content_frame, fragment, fragmentTag)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .addToBackStack(null)
                     .commit();

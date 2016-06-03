@@ -8,33 +8,33 @@
                                                  android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/layoutMain"
+        android:id="@+id/layout_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <include
-            android:id="@+id/toolbarDates"
+            android:id="@+id/toolbar_dates"
             layout="@layout/toolbar_dates"
             android:layout_width="match_parent"
             android:layout_height="@dimen/toolbar_height"/>
 
         <View
-            android:id="@+id/toolbarShadow"
+            android:id="@+id/view_toolbar_shadow"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@drawable/toolbar_shadow"/>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerViewFueling"
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/layoutTotal"
-            android:layout_below="@+id/toolbarDates"
+            android:layout_above="@+id/layout_total"
+            android:layout_below="@+id/toolbar_dates"
             android:choiceMode="none"
             tools:listitem="@layout/fueling_list_item"/>
 
         <com.pnikosis.materialishprogress.ProgressWheel
-            android:id="@+id/progressWheelFueling"
+            android:id="@+id/progress_wheel"
             android:layout_width="@dimen/progress_wheel_fueling_size"
             android:layout_height="@dimen/progress_wheel_fueling_size"
             android:layout_centerInParent="true"
@@ -43,7 +43,7 @@
             wheel:matProg_progressIndeterminate="true"/>
 
         <TextView
-            android:id="@+id/tvNoRecords"
+            android:id="@+id/text_no_records"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -52,7 +52,7 @@
             android:visibility="gone"/>
 
         <LinearLayout
-            android:id="@+id/layoutTotal"
+            android:id="@+id/layout_total"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -74,7 +74,7 @@
                     android:gravity="bottom">
 
                     <TextView
-                        android:id="@+id/tvAverageText"
+                        android:id="@+id/text_average_caption"
                         android:layout_width="wrap_content"
                         android:layout_height="24dp"
                         android:gravity="center_vertical"
@@ -82,7 +82,7 @@
                         android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
 
                     <TextView
-                        android:id="@+id/tvAverage"
+                        android:id="@+id/text_average"
                         android:layout_width="wrap_content"
                         android:layout_height="24dp"
                         android:layout_marginLeft="8dp"
@@ -98,7 +98,7 @@
                     android:gravity="top">
 
                     <TextView
-                        android:id="@+id/tvCostSumText"
+                        android:id="@+id/text_cost_sum_caption"
                         android:layout_width="wrap_content"
                         android:layout_height="24dp"
                         android:gravity="center_vertical"
@@ -106,7 +106,7 @@
                         android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
 
                     <TextView
-                        android:id="@+id/tvCostSum"
+                        android:id="@+id/text_cost_sum"
                         android:layout_width="wrap_content"
                         android:layout_height="24dp"
                         android:layout_marginLeft="8dp"
@@ -120,7 +120,7 @@
     </RelativeLayout>
 
     <com.melnykov.fab.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

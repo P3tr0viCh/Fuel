@@ -8,7 +8,7 @@
               android:paddingStart="16dp">
 
     <TextView
-        android:id="@+id/tvDate"
+        android:id="@+id/text_date"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="4"
@@ -18,7 +18,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
     <TextView
-        android:id="@+id/tvCost"
+        android:id="@+id/text_cost"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="5"
@@ -27,7 +27,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
     <TextView
-        android:id="@+id/tvVolume"
+        android:id="@+id/text_volume"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="5"
@@ -36,7 +36,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
     <TextView
-        android:id="@+id/tvTotal"
+        android:id="@+id/text_total"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="5"
@@ -45,7 +45,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
     <Space
-        android:id="@+id/spMenu"
+        android:id="@+id/space_btn_menu"
         android:layout_width="48dp"
         android:layout_height="match_parent"/>
 </LinearLayout>

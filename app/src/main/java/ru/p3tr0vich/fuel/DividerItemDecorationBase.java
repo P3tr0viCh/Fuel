@@ -22,7 +22,7 @@ public abstract class DividerItemDecorationBase extends RecyclerView.ItemDecorat
         a.recycle();
     }
 
-    public abstract boolean shouldDrawDivider(RecyclerView parent, int childViewIndex);
+    protected abstract boolean shouldDrawDivider(RecyclerView parent, int childViewIndex);
 
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {

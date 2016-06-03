@@ -75,9 +75,9 @@ public class FragmentFueling extends FragmentBase implements
     private Button mBtnDateFrom;
     private Button mBtnDateTo;
 
-    private RecyclerView mRecyclerViewFueling;
+    private RecyclerView mRecyclerView;
 
-    private ProgressWheel mProgressWheelFueling;
+    private ProgressWheel mProgressWheel;
     private TextView mTextNoRecords;
 
     private FloatingActionButton mFloatingActionButton;
@@ -174,16 +174,16 @@ public class FragmentFueling extends FragmentBase implements
         mLayoutMain = (RelativeLayout) view.findViewById(R.id.layout_main);
         mLayoutTotal = (LinearLayout) view.findViewById(R.id.layout_total);
 
-        mRecyclerViewFueling = (RecyclerView) view.findViewById(R.id.recycler_view);
-        mRecyclerViewFueling.setHasFixedSize(true);
-        mRecyclerViewFueling.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         DividerItemDecorationFueling itemDecoration = new DividerItemDecorationFueling(getContext());
         if (!isPhone) itemDecoration.setFooterType(FuelingAdapter.TYPE_FOOTER);
-        mRecyclerViewFueling.addItemDecoration(itemDecoration);
+        mRecyclerView.addItemDecoration(itemDecoration);
 
-        mRecyclerViewFueling.setLayoutManager(new LinearLayoutManager(ApplicationFuel.getContext()));
-        mRecyclerViewFueling.setAdapter(mFuelingAdapter = new FuelingAdapter(new View.OnClickListener() {
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(ApplicationFuel.getContext()));
+        mRecyclerView.setAdapter(mFuelingAdapter = new FuelingAdapter(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doPopup(v);
@@ -191,7 +191,7 @@ public class FragmentFueling extends FragmentBase implements
         }, isPhone, !isPhone));
 
         if (isPhone)
-            mRecyclerViewFueling.addOnScrollListener(new OnRecyclerViewScrollListener(
+            mRecyclerView.addOnScrollListener(new OnRecyclerViewScrollListener(
                     getResources().getDimensionPixelOffset(R.dimen.recycler_view_scroll_threshold)) {
 
                 @Override
@@ -205,7 +205,7 @@ public class FragmentFueling extends FragmentBase implements
                 }
             });
 
-        mProgressWheelFueling = (ProgressWheel) view.findViewById(R.id.progress_wheel);
+        mProgressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTextNoRecords = (TextView) view.findViewById(R.id.text_no_records);
 
         mTextAverage = (TextView) view.findViewById(R.id.text_average);
@@ -383,7 +383,7 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     private LinearLayoutManager getRecyclerViewLayoutManager() {
-        return (LinearLayoutManager) mRecyclerViewFueling.getLayoutManager();
+        return (LinearLayoutManager) mRecyclerView.getLayoutManager();
     }
 
     private boolean isItemVisible(int position) {
@@ -563,13 +563,13 @@ public class FragmentFueling extends FragmentBase implements
             mHandler.postDelayed(mRunnableShowProgressWheelFueling,
                     Utils.getInteger(R.integer.delayed_time_show_progress_wheel));
         } else
-            Utils.setViewVisibleAnimate(mProgressWheelFueling, false);
+            Utils.setViewVisibleAnimate(mProgressWheel, false);
     }
 
     private final Runnable mRunnableShowProgressWheelFueling = new Runnable() {
         @Override
         public void run() {
-            Utils.setViewVisibleAnimate(mProgressWheelFueling, true);
+            Utils.setViewVisibleAnimate(mProgressWheel, true);
         }
     };
 
@@ -822,11 +822,11 @@ public class FragmentFueling extends FragmentBase implements
         void onRecordChange(@Nullable FuelingRecord fuelingRecord);
     }
 
-    static class FuelingCursorLoader extends CursorLoader {
+    private static class FuelingCursorLoader extends CursorLoader {
 
         private final DatabaseHelper.Filter mFilter;
 
-        public FuelingCursorLoader(Context context, DatabaseHelper.Filter filter) {
+        FuelingCursorLoader(Context context, DatabaseHelper.Filter filter) {
             super(context);
             mFilter = filter;
         }
@@ -846,7 +846,7 @@ public class FragmentFueling extends FragmentBase implements
         }
     }
 
-    static class CalcTotalTask extends AsyncTask<Void, Void, Float[]> {
+    private static class CalcTotalTask extends AsyncTask<Void, Void, Float[]> {
 
         private FragmentFueling mFragmentFueling;
 

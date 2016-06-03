@@ -65,7 +65,7 @@ public class FragmentChartCost extends FragmentBase implements
             R.color.chart_autumn, R.color.chart_autumn, R.color.chart_autumn,
             R.color.chart_winter};
 
-    private boolean mIsData = false;
+    private boolean mHasData = false;
     private boolean mUpdateYearsInProcess = true;
 
     @NonNull
@@ -244,7 +244,7 @@ public class FragmentChartCost extends FragmentBase implements
             mYear = savedInstanceState.getInt(KEY_FILTER_YEAR);
             mYears = savedInstanceState.getIntArray(KEY_YEARS);
             mSums = savedInstanceState.getFloatArray(KEY_SUMS);
-            mIsData = savedInstanceState.getBoolean(KEY_IS_DATA);
+            mHasData = savedInstanceState.getBoolean(KEY_IS_DATA);
         }
     }
 
@@ -255,7 +255,7 @@ public class FragmentChartCost extends FragmentBase implements
         outState.putInt(KEY_FILTER_YEAR, mYear);
         outState.putIntArray(KEY_YEARS, mYears);
         outState.putFloatArray(KEY_SUMS, mSums);
-        outState.putBoolean(KEY_IS_DATA, mIsData);
+        outState.putBoolean(KEY_IS_DATA, mHasData);
     }
 
     @Override
@@ -264,11 +264,11 @@ public class FragmentChartCost extends FragmentBase implements
         super.onDestroy();
     }
 
-    static class ChartCursorLoader extends CursorLoader {
+    private static class ChartCursorLoader extends CursorLoader {
 
         private final int mYear;
 
-        public ChartCursorLoader(Context context, int year) {
+        ChartCursorLoader(Context context, int year) {
             super(context);
             mYear = year;
         }
@@ -279,9 +279,9 @@ public class FragmentChartCost extends FragmentBase implements
         }
     }
 
-    static class YearsCursorLoader extends CursorLoader {
+    private static class YearsCursorLoader extends CursorLoader {
 
-        public YearsCursorLoader(Context context) {
+        YearsCursorLoader(Context context) {
             super(context);
         }
 
@@ -312,7 +312,7 @@ public class FragmentChartCost extends FragmentBase implements
 
                 for (int i = 0; i < 12; i++) mSums[i] = 0;
 
-                mIsData = data.getCount() > 0;
+                mHasData = data.getCount() > 0;
 
                 if (data.moveToFirst()) do {
                     sum = data.getFloat(DatabaseHelper.TableFueling.COST_SUM_INDEX);
@@ -341,14 +341,18 @@ public class FragmentChartCost extends FragmentBase implements
                     updateYears();
 
                     getLoaderManager().initLoader(CHART_CURSOR_LOADER_ID, null, this);
-                } else
+                } else {
                     mYears = null;
+
+                    mHasData = false;
+
+                    updateChart();
+                }
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 
     private static final class FloatFormatter implements ValueFormatter {
@@ -370,7 +374,7 @@ public class FragmentChartCost extends FragmentBase implements
     private void updateChart() {
         mHandler.removeCallbacks(mRunnableShowNoRecords);
 
-        if (mIsData) {
+        if (mHasData) {
             mTextNoRecords.setVisibility(View.GONE);
 
             ArrayList<BarEntry> sumsEntries = new ArrayList<>();

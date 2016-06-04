@@ -27,11 +27,11 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 
 import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
 import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
+import ru.p3tr0vich.fuel.models.ChartCostModel;
 import ru.p3tr0vich.fuel.utils.Utils;
 import ru.p3tr0vich.fuel.utils.UtilsDate;
 import ru.p3tr0vich.fuel.utils.UtilsFormat;
@@ -41,23 +41,16 @@ public class FragmentChartCost extends FragmentBase implements
 
     public static final String TAG = "FragmentChartCost";
 
-    private static final String KEY_FILTER_YEAR = "KEY_FILTER_YEAR";
-    private static final String KEY_YEARS = "KEY_YEARS";
-    private static final String KEY_SUMS = "KEY_SUMS";
-    private static final String KEY_IS_DATA = "KEY_IS_DATA";
-
     private static final int YEARS_CURSOR_LOADER_ID = 0;
     private static final int CHART_CURSOR_LOADER_ID = 1;
-
-    private int mYear;
 
     private TabLayout mTabLayout;
     private BarChart mChart;
     private TextView mTextNoRecords;
+    private TextView mTextMedian;
+    private TextView mTextSum;
 
     private final String[] mMonths = new String[12];
-    private int[] mYears;
-    private float[] mSums = new float[12];
 
     private final int[] mColors = new int[]{R.color.chart_winter, R.color.chart_winter,
             R.color.chart_spring, R.color.chart_spring, R.color.chart_spring,
@@ -65,8 +58,9 @@ public class FragmentChartCost extends FragmentBase implements
             R.color.chart_autumn, R.color.chart_autumn, R.color.chart_autumn,
             R.color.chart_winter};
 
-    private boolean mHasData = false;
     private boolean mUpdateYearsInProcess = true;
+
+    private ChartCostModel mChartCostModel;
 
     @NonNull
     public static Fragment newInstance(int id) {
@@ -84,16 +78,40 @@ public class FragmentChartCost extends FragmentBase implements
     }
 
     private int getYearFromPosition(int index) {
-        return mYears != null ? mYears[index] : -1;
+        return mChartCostModel.getYears() != null ? mChartCostModel.getYears()[index] : -1;
     }
 
     private int getPositionForYear(int year) {
-        if (mYears == null) return -1;
+        if (mChartCostModel.getYears() == null) return -1;
 
-        for (int i = 0; i < mYears.length; i++)
-            if (mYears[i] == year)
+        for (int i = 0; i < mChartCostModel.getYears().length; i++)
+            if (mChartCostModel.getYears()[i] == year)
                 return i;
         return -1;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            mChartCostModel = new ChartCostModel();
+
+            getLoaderManager().initLoader(YEARS_CURSOR_LOADER_ID, null, this);
+        } else
+            mChartCostModel = savedInstanceState.getParcelable(ChartCostModel.NAME);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(ChartCostModel.NAME, mChartCostModel);
+    }
+
+    @Override
+    public void onDestroy() {
+        mHandler.removeCallbacks(mRunnableShowNoRecords);
+        super.onDestroy();
     }
 
     @Override
@@ -105,6 +123,8 @@ public class FragmentChartCost extends FragmentBase implements
         mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
 
         mTextNoRecords = (TextView) view.findViewById(R.id.text_no_records);
+        mTextMedian = (TextView) view.findViewById(R.id.text_median);
+        mTextSum = (TextView) view.findViewById(R.id.text_sum);
 
         mChart = (BarChart) view.findViewById(R.id.chart);
 
@@ -149,12 +169,10 @@ public class FragmentChartCost extends FragmentBase implements
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
 
@@ -184,27 +202,26 @@ public class FragmentChartCost extends FragmentBase implements
 
         @Override
         public void onSwipeTop() {
-
         }
 
         @Override
         public void onSwipeBottom() {
-
         }
     };
 
     private void updateYears() {
         mUpdateYearsInProcess = true;
         try {
-            if (mYears == null || mYears.length == 0) return;
+            if (mChartCostModel.getYears() == null || mChartCostModel.getYears().length == 0)
+                return;
 
-            for (int year : mYears)
+            for (int year : mChartCostModel.getYears())
                 mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(year)));
 
-            int position = getPositionForYear(mYear);
+            int position = getPositionForYear(mChartCostModel.getYear());
             if (position == -1) {
-                position = mYears.length - 1;
-                mYear = mYears[position];
+                position = mChartCostModel.getYears().length - 1;
+                mChartCostModel.setYear(mChartCostModel.getYears()[position]);
             }
 
             selectTab(mTabLayout.getTabAt(position));
@@ -223,45 +240,11 @@ public class FragmentChartCost extends FragmentBase implements
     }
 
     private void setYear(int year) {
-        if (year == mYear) return;
+        if (year == mChartCostModel.getYear()) return;
 
-        mYear = year;
+        mChartCostModel.setYear(year);
 
         getLoaderManager().restartLoader(CHART_CURSOR_LOADER_ID, null, this);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            for (int i = 0; i < 12; i++) mSums[i] = 0;
-
-            mYear = UtilsDate.getCurrentYear();
-
-            getLoaderManager().initLoader(YEARS_CURSOR_LOADER_ID, null, this);
-        } else {
-            mYear = savedInstanceState.getInt(KEY_FILTER_YEAR);
-            mYears = savedInstanceState.getIntArray(KEY_YEARS);
-            mSums = savedInstanceState.getFloatArray(KEY_SUMS);
-            mHasData = savedInstanceState.getBoolean(KEY_IS_DATA);
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putInt(KEY_FILTER_YEAR, mYear);
-        outState.putIntArray(KEY_YEARS, mYears);
-        outState.putFloatArray(KEY_SUMS, mSums);
-        outState.putBoolean(KEY_IS_DATA, mHasData);
-    }
-
-    @Override
-    public void onDestroy() {
-        mHandler.removeCallbacks(mRunnableShowNoRecords);
-        super.onDestroy();
     }
 
     private static class ChartCursorLoader extends CursorLoader {
@@ -295,7 +278,7 @@ public class FragmentChartCost extends FragmentBase implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case CHART_CURSOR_LOADER_ID:
-                return new ChartCursorLoader(getContext(), mYear);
+                return new ChartCursorLoader(getContext(), mChartCostModel.getYear());
             case YEARS_CURSOR_LOADER_ID:
                 return new YearsCursorLoader(getContext());
             default:
@@ -310,16 +293,20 @@ public class FragmentChartCost extends FragmentBase implements
                 float sum;
                 String month;
 
-                for (int i = 0; i < 12; i++) mSums[i] = 0;
+                mChartCostModel.setSums(null);
+                float[] sums = mChartCostModel.getSums();
 
-                mHasData = data.getCount() > 0;
+                if (data.getCount() > 0) {
 
-                if (data.moveToFirst()) do {
-                    sum = data.getFloat(DatabaseHelper.TableFueling.COST_SUM_INDEX);
-                    month = data.getString(DatabaseHelper.TableFueling.MONTH_INDEX);
+                    if (data.moveToFirst()) do {
+                        sum = data.getFloat(DatabaseHelper.TableFueling.COST_SUM_INDEX);
+                        month = data.getString(DatabaseHelper.TableFueling.MONTH_INDEX);
 
-                    mSums[Integer.parseInt(month) - 1] = sum;
-                } while (data.moveToNext());
+                        sums[Integer.parseInt(month) - 1] = sum;
+                    } while (data.moveToNext());
+
+                    mChartCostModel.setSums(sums);
+                }
 
                 updateChart();
 
@@ -328,23 +315,23 @@ public class FragmentChartCost extends FragmentBase implements
                 int count = data.getCount();
 
                 if (count > 0) {
-                    mYears = new int[count];
+                    int[] years = new int[count];
 
                     int i = 0;
 
                     if (data.moveToFirst()) do {
-                        mYears[i] = data.getInt(DatabaseHelper.TableFueling.YEAR_INDEX);
+                        years[i] = data.getInt(DatabaseHelper.TableFueling.YEAR_INDEX);
 
                         i++;
                     } while (data.moveToNext());
+
+                    mChartCostModel.setYears(years);
 
                     updateYears();
 
                     getLoaderManager().initLoader(CHART_CURSOR_LOADER_ID, null, this);
                 } else {
-                    mYears = null;
-
-                    mHasData = false;
+                    mChartCostModel.setYears(null);
 
                     updateChart();
                 }
@@ -365,25 +352,20 @@ public class FragmentChartCost extends FragmentBase implements
 
     private final FloatFormatter mFloatFormatter = new FloatFormatter();
 
-    private float median(@NonNull float[] values) {
-        int middle = values.length / 2;
-
-        return values.length % 2 == 1 ? values[middle] : (values[middle - 1] + values[middle]) / 2f;
-    }
-
     private void updateChart() {
         mHandler.removeCallbacks(mRunnableShowNoRecords);
 
-        if (mHasData) {
+        if (mChartCostModel.hasData()) {
             mTextNoRecords.setVisibility(View.GONE);
 
             ArrayList<BarEntry> sumsEntries = new ArrayList<>();
 
-            for (int i = 0; i < 12; i++) sumsEntries.add(new BarEntry(mSums[i], i));
+            for (int i = 0; i < 12; i++)
+                sumsEntries.add(new BarEntry(mChartCostModel.getSums()[i], i));
 
             BarDataSet sumsSet = new BarDataSet(sumsEntries, "");
             sumsSet.setBarSpacePercent(35f);
-            sumsSet.setColors(mColors, getActivity());
+            sumsSet.setColors(mColors, getContext());
 
             BarData sumsData = new BarData(mMonths);
             sumsData.addDataSet(sumsSet);
@@ -394,40 +376,13 @@ public class FragmentChartCost extends FragmentBase implements
 
             mChart.getAxisLeft().removeAllLimitLines();
 
-            int aboveZeroCount = 0;
-            for (float value : mSums) if (value > 0) aboveZeroCount++;
+            if (mChartCostModel.getMedian() > 0 && mChartCostModel.isSumsNotEquals()) {
+                LimitLine medianLine = new LimitLine(mChartCostModel.getMedian());
+                medianLine.setLineColor(Utils.getColor(R.color.chart_median));
+                medianLine.setLineWidth(Utils.isPhone() ? 0.2f : 0.5f);
+                medianLine.enableDashedLine(8f, 2f, 0f);
 
-            if (aboveZeroCount > 1) {
-                float[] sortedSums = new float[aboveZeroCount];
-
-                int i = 0;
-                for (float value : mSums)
-                    if (value > 0) {
-                        sortedSums[i] = value;
-                        i++;
-                    }
-
-                boolean valuesNotEquals = false;
-                float value = sortedSums[0];
-                for (int j = 1; j < sortedSums.length; j++)
-                    if (sortedSums[j] != value) {
-                        valuesNotEquals = true;
-                        break;
-                    }
-
-                if (valuesNotEquals) {
-                    Arrays.sort(sortedSums);
-
-                    float median = median(sortedSums);
-
-                    LimitLine medianLine = new LimitLine(median);
-                    //noinspection deprecation
-                    medianLine.setLineColor(getResources().getColor(R.color.chart_median));
-                    medianLine.setLineWidth(0.5f); // 0.2 не выводится на планшете с апи 17
-                    medianLine.enableDashedLine(8f, 2f, 0f);
-
-                    mChart.getAxisLeft().addLimitLine(medianLine);
-                }
+                mChart.getAxisLeft().addLimitLine(medianLine);
             }
 
             int duration = Utils.getInteger(R.integer.animation_chart);
@@ -437,6 +392,13 @@ public class FragmentChartCost extends FragmentBase implements
 
             mHandler.postDelayed(mRunnableShowNoRecords, Utils.getInteger(R.integer.delayed_time_show_no_records));
         }
+
+        updateTotal();
+    }
+
+    private void updateTotal() {
+        UtilsFormat.floatToTextView(mTextMedian, mChartCostModel.getMedian(), true);
+        UtilsFormat.floatToTextView(mTextSum, mChartCostModel.getSum(), true);
     }
 
     private final Handler mHandler = new Handler();

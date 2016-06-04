@@ -7,7 +7,7 @@
     <integer name="animation_duration_sync">400</integer>
     <integer name="animation_duration_drawer_toggle">300</integer>
 
-    <integer name="animation_chart">1000</integer>
+    <integer name="animation_chart">600</integer>
 
     <integer name="delayed_time_show_no_records">400</integer>
     <integer name="delayed_time_show_progress_wheel">1000</integer>

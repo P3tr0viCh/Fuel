@@ -11,10 +11,11 @@
     <dimen name="drawer_sync_padding">16dp</dimen>
     <dimen name="drawer_sync_text_start_padding">72dp</dimen>
 
-    <dimen name="toolbar_height">56dp</dimen>
     <dimen name="toolbar_shadow_height">4dp</dimen>
     <dimen name="toolbar_dates_padding_left">0dp</dimen>
     <dimen name="toolbar_dates_padding_right">0dp</dimen>
+
+    <dimen name="chart_bottom_panel_height">48dp</dimen>
 
     <dimen name="recycler_view_footer_height">28dp</dimen>
 
@@ -29,9 +30,6 @@
     <dimen name="menu_item_margin">16dp</dimen>
 
     <dimen name="recycler_view_scroll_threshold">72dp</dimen>
-
-    <dimen name="is_phone">1dp</dimen>
-    <dimen name="is_portrait">1dp</dimen>
 
     <dimen name="abc_text_size_large_material" tools:override="true">16sp</dimen>
     <dimen name="abc_text_size_medium_material" tools:override="true">14sp</dimen>

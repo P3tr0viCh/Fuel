@@ -56,6 +56,9 @@
     <string name="text_average_cons">Средний расход</string>
     <string name="text_sum_cost">Сумма стоимости</string>
 
+    <string name="text_sum">Сумма</string>
+    <string name="text_median">Медиана</string>
+
     <string name="text_backup_directory">Расположение файла</string>
     <string name="text_backup_file">Имя файла</string>
 

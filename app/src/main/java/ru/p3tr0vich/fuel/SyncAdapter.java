@@ -32,6 +32,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     private SyncProviderDatabase mSyncProviderDatabase;
     private SyncProviderPreferences mSyncProviderPreferences;
 
+    private SyncAccount mSyncAccount;
+
     private SyncLocal mSyncLocal;
     private SyncYandexDisk mSyncYandexDisk;
 
@@ -51,7 +53,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             mSyncProviderDatabase = new SyncProviderDatabase(provider);
             mSyncProviderPreferences = new SyncProviderPreferences(provider);
 
-            SyncAccount mSyncAccount = new SyncAccount(getContext());
+            mSyncAccount = new SyncAccount(getContext());
 
             String yandexDiskToken = mSyncAccount.getYandexDiskToken();
 
@@ -79,29 +81,20 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     if (extras.getBoolean(SYNC_PREFERENCES, true))
                         syncPreferences();
                 } finally {
-                    mSyncLocal.deleteFiles();
+                    try {
+                        mSyncLocal.deleteFiles();
+                    } catch (IOException e) {
+                        handleException(e, syncResult);
+                    }
                 }
             } catch (Exception e) {
-                if (e instanceof RemoteException) syncResult.databaseError = true;
-                else if (e instanceof IOException) syncResult.stats.numIoExceptions++;
-                else if (e instanceof FormatException) syncResult.stats.numParseExceptions++;
-                else if (e instanceof HttpCodeException) {
-                    if (((HttpCodeException) e).getCode() == SyncYandexDisk.HTTP_CODE_UNAUTHORIZED) {
-                        syncResult.stats.numAuthExceptions++;
-                        mSyncAccount.setYandexDiskToken(null);
-                    } else
-                        syncResult.stats.numIoExceptions++;
-                } else if (e instanceof ServerIOException) syncResult.stats.numIoExceptions++;
-                else if (e instanceof ServerException) syncResult.stats.numIoExceptions++;
-                else syncResult.databaseError = true;
-
-                UtilsLog.d(TAG, TAG2, "error  == " + e.toString());
+                handleException(e, syncResult);
             }
         } finally {
             try {
                 mSyncProviderPreferences.putLastSync(System.currentTimeMillis(), syncResult.hasError());
             } catch (RemoteException e) {
-                syncResult.databaseError = true;
+                handleException(e, syncResult);
             }
 
             UtilsLog.d(TAG, TAG2, "finish" +
@@ -111,9 +104,27 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             mSyncYandexDisk = null;
             mSyncLocal = null;
+            mSyncAccount = null;
             mSyncProviderPreferences = null;
             mSyncProviderDatabase = null;
         }
+    }
+
+    private void handleException(Exception e, SyncResult syncResult) {
+        if (e instanceof RemoteException) syncResult.databaseError = true;
+        else if (e instanceof IOException) syncResult.stats.numIoExceptions++;
+        else if (e instanceof FormatException) syncResult.stats.numParseExceptions++;
+        else if (e instanceof HttpCodeException) {
+            if (((HttpCodeException) e).getCode() == SyncYandexDisk.HTTP_CODE_UNAUTHORIZED) {
+                syncResult.stats.numAuthExceptions++;
+                mSyncAccount.setYandexDiskToken(null);
+            } else
+                syncResult.stats.numIoExceptions++;
+        } else if (e instanceof ServerIOException) syncResult.stats.numIoExceptions++;
+        else if (e instanceof ServerException) syncResult.stats.numIoExceptions++;
+        else syncResult.databaseError = true;
+
+        UtilsLog.d(TAG, "handleException", "error  == " + e.toString());
     }
 
     private void syncPreferences() throws

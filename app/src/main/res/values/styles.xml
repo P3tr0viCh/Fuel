@@ -94,7 +94,7 @@
 
     <style name="AppTheme.Toolbar" parent="Widget.AppCompat.Toolbar">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/toolbar_height</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
@@ -106,6 +106,14 @@
         <item name="tabIndicatorColor">@color/window_background</item>
         <item name="tabMinWidth">@dimen/tab_min_width</item>
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+    </style>
+
+    <style name="AppTheme.CardView" parent="CardView.Light">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="cardElevation">4dp</item>
+        <item name="android:layout_marginBottom">@dimen/activity_vertical_margin</item>
+        <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
     </style>
 
     <style name="AppTheme.PreferenceThemeOverlay" parent="PreferenceThemeOverlay.v14.Material">
@@ -157,7 +165,7 @@
 
     <style name="AppTheme.ActionMode" parent="Widget.AppCompat.ActionMode">
         <item name="background">?attr/colorPrimary</item>
-        <item name="height">@dimen/toolbar_height</item>
+        <item name="height">?attr/actionBarSize</item>
     </style>
 
     <style name="AppTheme.DialogWhenLarge"/>

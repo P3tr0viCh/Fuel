@@ -107,7 +107,7 @@ public class ActivityMain extends AppCompatActivity implements
             FRAGMENT_BACKUP_ID,
             FRAGMENT_PREFERENCES_ID,
             FRAGMENT_ABOUT_ID})
-    public @interface FragmentId {
+    private @interface FragmentId {
     }
 
     private static final int FRAGMENT_FUELING_ID = 0;
@@ -125,7 +125,7 @@ public class ActivityMain extends AppCompatActivity implements
             START_SYNC_DATABASE_CHANGED,
             START_SYNC_CHANGED,
             START_SYNC_ACTIVITY_DESTROY})
-    public @interface StartSync {
+    private @interface StartSync {
     }
 
     private static final int START_SYNC_APP_STARTED = 0;
@@ -227,7 +227,7 @@ public class ActivityMain extends AppCompatActivity implements
 
         mToolbarSpinner.setAdapter(adapter);
 
-        mToolbarSpinner.setDropDownVerticalOffset(-getResources().getDimensionPixelOffset(R.dimen.toolbar_height)); // minus
+        mToolbarSpinner.setDropDownVerticalOffset(-Utils.getSupportActionBarSize(this)); // minus!
 
         mToolbarMain.addView(mToolbarSpinner);
 
@@ -241,7 +241,6 @@ public class ActivityMain extends AppCompatActivity implements
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
     }
@@ -367,7 +366,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private class PreferencesObserver extends ContentObserver {
-        public PreferencesObserver(Handler handler) {
+        PreferencesObserver(Handler handler) {
             super(handler);
         }
 
@@ -393,7 +392,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private class DatabaseObserver extends ContentObserver {
-        public DatabaseObserver(Handler handler) {
+        DatabaseObserver(Handler handler) {
             super(handler);
         }
 

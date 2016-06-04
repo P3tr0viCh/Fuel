@@ -16,7 +16,7 @@
             android:id="@+id/toolbar_dates"
             layout="@layout/toolbar_dates"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height"/>
+            android:layout_height="?attr/actionBarSize"/>
 
         <View
             android:id="@+id/view_toolbar_shadow"

@@ -3,6 +3,7 @@ package ru.p3tr0vich.fuel.utils;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.text.DecimalFormat;
 
@@ -50,5 +51,9 @@ public class UtilsFormat {
 
     public static void floatToEditText(EditText edit, float value, boolean showZero) {
         edit.setText(floatToString(value, showZero));
+    }
+
+    public static void floatToTextView(TextView text, float value, boolean showZero) {
+        text.setText(floatToString(value, showZero));
     }
 }

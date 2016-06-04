@@ -1,5 +1,6 @@
 package ru.p3tr0vich.fuel;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -8,6 +9,7 @@ import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 
 public class ApplicationFuel extends Application {
 
+    @SuppressLint("StaticFieldLeak")
     private static Context CONTEXT;
 
     @Override

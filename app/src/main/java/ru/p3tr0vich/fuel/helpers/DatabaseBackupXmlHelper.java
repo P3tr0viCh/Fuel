@@ -375,11 +375,8 @@ public class DatabaseBackupXmlHelper {
         }
 
         try {
-            try {
-                fileChannel.write(buff);
-            } finally {
-                fileChannel.close();
-            }
+            fileChannel.write(buff);
+            fileChannel.close();
         } catch (IOException e) {
             UtilsLog.d(TAG, "save", "write exception == " + e.toString());
             return RESULT_ERROR_SAVE_FILE;

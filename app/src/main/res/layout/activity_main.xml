@@ -17,7 +17,7 @@
             android:id="@+id/toolbar_main"
             layout="@layout/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height"/>
+            android:layout_height="?attr/actionBarSize"/>
 
         <FrameLayout
             android:id="@+id/content_frame"

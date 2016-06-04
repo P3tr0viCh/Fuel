@@ -10,12 +10,10 @@
     <dimen name="drawer_sync_padding">24dp</dimen>
     <dimen name="drawer_sync_text_start_padding">80dp</dimen>
 
-    <dimen name="toolbar_height">64dp</dimen>
     <dimen name="toolbar_dates_padding_left">64dp</dimen>
     <dimen name="toolbar_dates_padding_right">8dp</dimen>
 
-    <dimen name="fab_margin_bottom">22dp</dimen>
+    <dimen name="chart_bottom_panel_height">64dp</dimen>
 
-    <dimen name="is_phone">0dp</dimen>
-    <dimen name="is_portrait">0dp</dimen>
+    <dimen name="fab_margin_bottom">22dp</dimen>
 </resources>

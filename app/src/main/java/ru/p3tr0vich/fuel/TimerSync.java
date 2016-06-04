@@ -37,12 +37,12 @@ class TimerSync extends Timer {
         super.cancel();
     }
 
-    static class TimerTaskSync extends TimerTask {
+    private static class TimerTaskSync extends TimerTask {
 
         private final boolean mDatabaseChanged;
         private final boolean mPreferencesChanged;
 
-        public TimerTaskSync(final boolean databaseChanged, final boolean preferencesChanged) {
+        TimerTaskSync(final boolean databaseChanged, final boolean preferencesChanged) {
             super();
             mDatabaseChanged = databaseChanged;
             mPreferencesChanged = preferencesChanged;

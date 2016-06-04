@@ -182,7 +182,7 @@ public class FragmentFueling extends FragmentBase implements
         if (!isPhone) itemDecoration.setFooterType(FuelingAdapter.TYPE_FOOTER);
         mRecyclerView.addItemDecoration(itemDecoration);
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(ApplicationFuel.getContext()));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mFuelingAdapter = new FuelingAdapter(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -590,8 +590,7 @@ public class FragmentFueling extends FragmentBase implements
 
         mToolbarDatesVisible = visible;
 
-        final int toolbarDatesTopHidden =
-                -getResources().getDimensionPixelSize(R.dimen.toolbar_height); // minus!
+        final int toolbarDatesTopHidden = -Utils.getSupportActionBarSize(getContext()); // minus!
         final int toolbarShadowHeight =
                 getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height);
 
@@ -601,8 +600,7 @@ public class FragmentFueling extends FragmentBase implements
                     .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar_shadow))
                     .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         public void onAnimationUpdate(ValueAnimator animation) {
-                            Utils.setViewHeight(mToolbarShadow,
-                                    (Integer) animation.getAnimatedValue());
+                            Utils.setViewHeight(mToolbarShadow, (int) animation.getAnimatedValue());
                         }
                     });
 
@@ -611,7 +609,7 @@ public class FragmentFueling extends FragmentBase implements
                     .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar_shadow))
                     .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         public void onAnimationUpdate(ValueAnimator animation) {
-                            Utils.setViewHeight(mToolbarShadow, (Integer) animation.getAnimatedValue());
+                            Utils.setViewHeight(mToolbarShadow, (int) animation.getAnimatedValue());
                         }
                     });
 
@@ -621,8 +619,7 @@ public class FragmentFueling extends FragmentBase implements
                     .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar))
                     .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         public void onAnimationUpdate(ValueAnimator animation) {
-                            Utils.setViewTopMargin(mToolbarDates,
-                                    (Integer) animation.getAnimatedValue());
+                            Utils.setViewTopMargin(mToolbarDates, (int) animation.getAnimatedValue());
                         }
                     });
 
@@ -647,7 +644,7 @@ public class FragmentFueling extends FragmentBase implements
                         R.integer.animation_duration_layout_total_hide))
                 .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     public void onAnimationUpdate(ValueAnimator animation) {
-                        final int translationY = (Integer) animation.getAnimatedValue();
+                        final int translationY = (int) animation.getAnimatedValue();
 
                         mLayoutTotal.setTranslationY(translationY);
                         Utils.setViewTopMargin(mLayoutTotal, -translationY);

@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="toolbar_height">48dp</dimen>
     <dimen name="toolbar_dates_padding_left">56dp</dimen>
     <dimen name="toolbar_dates_padding_right">0dp</dimen>
 
-    <dimen name="recycler_view_scroll_threshold">48dp</dimen>
+    <dimen name="chart_bottom_panel_height">40dp</dimen>
 
-    <dimen name="is_phone">1dp</dimen>
-    <dimen name="is_portrait">0dp</dimen>
+    <dimen name="recycler_view_scroll_threshold">48dp</dimen>
 
     <dimen name="fab_margin_bottom">22dp</dimen>
 </resources>

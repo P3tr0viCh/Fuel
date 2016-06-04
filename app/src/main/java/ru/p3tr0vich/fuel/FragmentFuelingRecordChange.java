@@ -45,8 +45,8 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     private float mOneCUVolumeCost; // Стоимость одного литра
     private boolean mCalcEnabled;
 
-    private CostTextWatcher mCostTextWatcher = null;
-    private VolumeTextWatcher mVolumeTextWatcher = null;
+    private CostTextWatcherAdapter mCostTextWatcher = null;
+    private VolumeTextWatcherAdapter mVolumeTextWatcher = null;
 
     @NonNull
     public static Fragment newInstance(@Nullable FuelingRecord fuelingRecord) {
@@ -123,17 +123,17 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
         if (mCalcEnabled) {
             if (mCostTextWatcher == null) {
-                mCostTextWatcher = new CostTextWatcher();
+                mCostTextWatcher = new CostTextWatcherAdapter();
                 mEditCost.addTextChangedListener(mCostTextWatcher);
             }
             if (mVolumeTextWatcher == null) {
-                mVolumeTextWatcher = new VolumeTextWatcher();
+                mVolumeTextWatcher = new VolumeTextWatcherAdapter();
                 mEditVolume.addTextChangedListener(mVolumeTextWatcher);
             }
         }
     }
 
-    private class CostTextWatcher extends AfterTextChangedWatcher {
+    private class CostTextWatcherAdapter extends TextWatcherAdapter {
         @Override
         public void afterTextChanged(Editable s) {
             final float cost = UtilsFormat.editTextToFloat(mEditCost);
@@ -147,7 +147,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         }
     }
 
-    private class VolumeTextWatcher extends AfterTextChangedWatcher {
+    private class VolumeTextWatcherAdapter extends TextWatcherAdapter {
         @Override
         public void afterTextChanged(Editable s) {
             if (mCalcEnabled) {

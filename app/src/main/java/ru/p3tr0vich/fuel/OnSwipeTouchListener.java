@@ -12,7 +12,7 @@ abstract class OnSwipeTouchListener implements OnTouchListener {
 
     private final GestureDetector mGestureDetector;
 
-    public OnSwipeTouchListener(Context context) {
+    OnSwipeTouchListener(Context context) {
         mGestureDetector = new GestureDetector(context, new GestureListener());
     }
 
@@ -63,11 +63,11 @@ abstract class OnSwipeTouchListener implements OnTouchListener {
         }
     }
 
-    abstract public void onSwipeRight();
+    public abstract void onSwipeRight();
 
-    abstract public void onSwipeLeft();
+    public abstract void onSwipeLeft();
 
-    abstract public void onSwipeTop();
+    public abstract void onSwipeTop();
 
-    abstract public void onSwipeBottom();
+    public abstract void onSwipeBottom();
 }

@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.helpers.SMSTextPatternHelper;
+import ru.p3tr0vich.fuel.utils.Utils;
 import ru.p3tr0vich.fuel.utils.UtilsFormat;
 
 public class FragmentActivityDialogSMSTextPattern extends Fragment
@@ -50,7 +51,7 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
             updateResult();
         }
 
-        EditTextWatcher textWatcher = new EditTextWatcher();
+        EditTextWatcherAdapter textWatcher = new EditTextWatcherAdapter();
 
         mEditSMSText.addTextChangedListener(textWatcher);
         mEditSMSTextPattern.addTextChangedListener(textWatcher);
@@ -65,8 +66,7 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
         boolean patternEmpty = TextUtils.isEmpty(pattern);
         boolean messageEmpty = TextUtils.isEmpty(message);
 
-        //noinspection deprecation
-        @ColorInt int color = getResources().getColor(R.color.error_text);
+        @ColorInt int color = Utils.getColor(R.color.error_text);
 
         String result;
 
@@ -83,8 +83,7 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
                 else if (value != null) {
                     result = getString(R.string.text_sms_text_result_ok, UtilsFormat.floatToString(value));
 
-                    //noinspection deprecation
-                    color = getResources().getColor(R.color.text_primary);
+                    color = Utils.getColor(R.color.text_primary);
                 } else
                     result = getString(R.string.text_sms_text_result_no_value);
             } catch (Exception e) {
@@ -95,7 +94,7 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
         mTextResult.setText(result);
     }
 
-    private class EditTextWatcher extends AfterTextChangedWatcher {
+    private class EditTextWatcherAdapter extends TextWatcherAdapter {
         @Override
         public void afterTextChanged(Editable s) {
             updateResult();

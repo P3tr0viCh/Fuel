@@ -131,12 +131,12 @@ public class FragmentCalc extends FragmentBase implements
         mSpinnerCons.setOnItemSelectedListener(this);
         mSpinnerSeason.setOnItemSelectedListener(this);
 
-        mEditDistance.addTextChangedListener(new EditTextWatcher(mEditDistance));
-        mEditCost.addTextChangedListener(new EditTextWatcher(mEditCost));
-        mEditVolume.addTextChangedListener(new EditTextWatcher(mEditVolume));
+        mEditDistance.addTextChangedListener(new EditTextWatcherAdapter(mEditDistance));
+        mEditCost.addTextChangedListener(new EditTextWatcherAdapter(mEditCost));
+        mEditVolume.addTextChangedListener(new EditTextWatcherAdapter(mEditVolume));
 
-        mEditPrice.addTextChangedListener(new EditTextWatcher(mEditPrice));
-        mEditCons.addTextChangedListener(new EditTextWatcher(mEditCons));
+        mEditPrice.addTextChangedListener(new EditTextWatcherAdapter(mEditPrice));
+        mEditCons.addTextChangedListener(new EditTextWatcherAdapter(mEditCons));
 
         return view;
     }
@@ -236,11 +236,11 @@ public class FragmentCalc extends FragmentBase implements
 
     }
 
-    private class EditTextWatcher extends AfterTextChangedWatcher {
+    private class EditTextWatcherAdapter extends TextWatcherAdapter {
 
         private final EditText mEditText;
 
-        public EditTextWatcher(@NonNull EditText editText) {
+        EditTextWatcherAdapter(@NonNull EditText editText) {
             mEditText = editText;
         }
 

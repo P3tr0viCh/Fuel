@@ -53,8 +53,11 @@
     <string name="text_price">Цена за литр</string>
     <string name="text_distance">Расстояние</string>
     <string name="text_consumption">Расход</string>
-    <string name="text_average_cons">Средний расход</string>
-    <string name="text_sum_cost">Сумма стоимости</string>
+
+    <string name="text_average_small">Расход</string>
+    <string name="text_average_large">Средний расход</string>
+    <string name="text_sum_cost_small">Сумма</string>
+    <string name="text_sum_cost_large">Сумма стоимости</string>
 
     <string name="text_sum">Сумма</string>
     <string name="text_median">Медиана</string>

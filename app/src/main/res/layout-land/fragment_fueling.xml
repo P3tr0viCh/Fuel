@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                 xmlns:fab="http://schemas.android.com/apk/res-auto"
                                                  xmlns:tools="http://schemas.android.com/tools"
                                                  xmlns:wheel="http://schemas.android.com/apk/res-auto"
                                                  android:layout_width="match_parent"
@@ -14,9 +12,7 @@
 
         <include
             android:id="@+id/toolbar_dates"
-            layout="@layout/toolbar_dates"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"/>
+            layout="@layout/partial_toolbar_dates"/>
 
         <View
             android:id="@+id/view_toolbar_shadow"
@@ -28,7 +24,7 @@
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/layout_total"
+            android:layout_above="@+id/total_panel"
             android:layout_below="@+id/toolbar_dates"
             android:choiceMode="none"
             tools:listitem="@layout/fueling_list_item"/>
@@ -39,7 +35,7 @@
             android:layout_height="@dimen/progress_wheel_fueling_size"
             android:layout_centerInParent="true"
             android:visibility="gone"
-            wheel:matProg_barColor="@color/primary"
+            wheel:matProg_barColor="?attr/colorPrimary"
             wheel:matProg_progressIndeterminate="true"/>
 
         <TextView
@@ -51,77 +47,23 @@
             android:textAppearance="@style/AppTheme.TextAppearance.Medium.Secondary"
             android:visibility="gone"/>
 
-        <LinearLayout
-            android:id="@+id/layout_total"
+        <FrameLayout
+            android:id="@+id/total_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical">
+            android:layout_alignParentBottom="true">
 
             <View style="@style/AppTheme.Divider.Horizontal"/>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp">
+            <include layout="@layout/partial_fueling_total"/>
+        </FrameLayout>
 
-                <TextView
-                    android:id="@+id/text_average_caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:layout_centerVertical="true"
-                    android:gravity="center_vertical"
-                    android:text="@string/text_average_cons"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
-
-                <TextView
-                    android:id="@+id/text_average"
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"
-                    android:layout_toRightOf="@+id/text_average_caption"
-                    android:gravity="center_vertical"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Text"
-                    tools:text="@string/list_item_volume"/>
-
-                <TextView
-                    android:id="@+id/text_cost_sum_caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="32dp"
-                    android:layout_toRightOf="@+id/text_average"
-                    android:gravity="center_vertical"
-                    android:text="@string/text_sum_cost"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
-
-                <TextView
-                    android:id="@+id/text_cost_sum"
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"
-                    android:layout_toRightOf="@+id/text_cost_sum_caption"
-                    android:gravity="center_vertical"
-                    android:textAppearance="@style/AppTheme.TextAppearance.Text"
-                    tools:text="@string/list_item_cost"/>
-            </RelativeLayout>
-        </LinearLayout>
+        <include
+            android:id="@+id/fab"
+            style="@style/AppTheme.FloatingActionButton.NoAlignParentBottom"
+            layout="@layout/partial_floating_action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/total_panel"/>
     </RelativeLayout>
-
-    <com.melnykov.fab.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/fab_margin_bottom"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_plus_white"
-        app:layout_behavior=".FloatingActionButtonBehavior"
-        fab:behavior_marginBottom="@dimen/fab_margin_bottom"
-        fab:behavior_minDistance="@dimen/fab_and_snackbar_min_distance"
-        fab:fab_colorNormal="@color/primary"
-        fab:fab_colorPressed="@color/primary_dark"/>
 </android.support.design.widget.CoordinatorLayout>

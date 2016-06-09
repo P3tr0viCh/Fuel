@@ -15,9 +15,7 @@
 
         <include
             android:id="@+id/toolbar_main"
-            layout="@layout/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"/>
+            layout="@layout/partial_toolbar"/>
 
         <FrameLayout
             android:id="@+id/content_frame"
@@ -33,7 +31,7 @@
         android:clipToPadding="false"
         android:maxWidth="@dimen/drawer_max_width"
         android:paddingBottom="@dimen/drawer_sync_height"
-        app:headerLayout="@layout/drawer_header"
+        app:headerLayout="@layout/partial_drawer_header"
         app:menu="@menu/menu_drawer">
 
         <RelativeLayout

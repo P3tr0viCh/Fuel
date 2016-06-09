@@ -6,7 +6,7 @@
 
     <include
         android:id="@+id/toolbar_record"
-        layout="@layout/toolbar"/>
+        layout="@layout/partial_toolbar"/>
 
     <FrameLayout
         android:id="@+id/content_frame"

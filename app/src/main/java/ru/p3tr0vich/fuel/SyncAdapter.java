@@ -26,6 +26,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private static final String TAG = "SyncAdapter";
 
+    private static final boolean LOG_ENABLED = false;
+
     public static final String SYNC_DATABASE = "SYNC_DATABASE";
     public static final String SYNC_PREFERENCES = "SYNC_PREFERENCES";
 
@@ -46,7 +48,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                               ContentProviderClient provider, SyncResult syncResult) {
         final String TAG2 = "onPerformSync";
 
-        UtilsLog.d(TAG, TAG2, "start");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "start");
 
         try { // finally
 
@@ -60,7 +62,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             if (TextUtils.isEmpty(yandexDiskToken)) {
                 syncResult.stats.numAuthExceptions++;
 
-                UtilsLog.d(TAG, TAG2, "error  == empty Yandex.Disk token");
+                if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "error  == empty Yandex.Disk token");
 
                 return;
             }
@@ -97,7 +99,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 handleException(e, syncResult);
             }
 
-            UtilsLog.d(TAG, TAG2, "finish" +
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "finish" +
                     (syncResult.hasError() ? ", errors == " + syncResult.toString() : ", all ok"));
 
             if (extras.getBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, false)) syncResult.clear();
@@ -124,14 +126,14 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         else if (e instanceof ServerException) syncResult.stats.numIoExceptions++;
         else syncResult.databaseError = true;
 
-        UtilsLog.d(TAG, "handleException", "error  == " + e.toString());
+        if (LOG_ENABLED) UtilsLog.d(TAG, "handleException", "error  == " + e.toString());
     }
 
     private void syncPreferences() throws
             IOException, ServerException, RemoteException, FormatException {
         final String TAG2 = "syncPreferences";
 
-        UtilsLog.d(TAG, TAG2, "start");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "start");
 
         try {
             // Получить файл с номером ревизии с сервера и сохранить в папку кэша.
@@ -139,7 +141,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             mSyncYandexDisk.loadPreferencesRevision();
 
-            UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.loadPreferencesRevision() OK");
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.loadPreferencesRevision() OK");
 
             int serverRevision = mSyncLocal.getPreferencesRevision();
             // serverRevision == -1, если синхронизация не производилась
@@ -150,7 +152,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             boolean isChanged = mSyncProviderPreferences.isChanged();
 
-            UtilsLog.d(TAG, TAG2,
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2,
                     "serverRevision == " + serverRevision + ", localRevision == " + localRevision +
                             ", preference changed == " + isChanged);
 
@@ -158,14 +160,14 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // Синхронизация уже выполнялась на другом устройстве.
                 // Текущие изменения теряются.
 
-                UtilsLog.d(TAG, TAG2, "localRevision < serverRevision");
+                if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "localRevision < serverRevision");
 
                 syncPreferencesLoad(serverRevision);
             } else if (localRevision > serverRevision) {
                 // Файлы синхронизации были удалены
                 // (localRevision > -1 > serverRevision == -1).
 
-                UtilsLog.d(TAG, TAG2, "localRevision > serverRevision");
+                if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "localRevision > serverRevision");
 
                 syncPreferencesSave(localRevision);
             } else /* localRevision == serverRevision */ {
@@ -174,7 +176,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // 2. Настройки синхронизированы.
                 // Если настройки были изменены, сохранить их на сервер.
 
-                UtilsLog.d(TAG, TAG2, "localRevision == serverRevision");
+                if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "localRevision == serverRevision");
 
                 if (isChanged) {
                     localRevision++;
@@ -182,7 +184,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             }
         } finally {
-            UtilsLog.d(TAG, TAG2, "finish");
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "finish");
         }
     }
 
@@ -196,30 +198,31 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         final String TAG2 = "syncPreferencesSave";
 
-        UtilsLog.d(TAG, TAG2, "start");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "start");
 
         List<String> preferences = mSyncProviderPreferences.getPreferences();
-        UtilsLog.d(TAG, TAG2, "mSyncProviderPreferences.getPreferences() OK");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncProviderPreferences.getPreferences() OK");
 
         mSyncLocal.savePreferences(preferences);
-        UtilsLog.d(TAG, TAG2, "mSyncLocal.savePreferences() OK");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncLocal.savePreferences() OK");
 
         mSyncLocal.savePreferencesRevision(revision);
-        UtilsLog.d(TAG, "syncPreferencesSave", "mSyncLocal.savePreferencesRevision() OK");
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, "syncPreferencesSave", "mSyncLocal.savePreferencesRevision() OK");
 
         mSyncYandexDisk.makeDirs();
-        UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.makeDirs() OK");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.makeDirs() OK");
 
         mSyncYandexDisk.savePreferences();
-        UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.savePreferences() OK");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.savePreferences() OK");
 
         mSyncYandexDisk.savePreferencesRevision();
-        UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.savePreferencesRevision() OK");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.savePreferencesRevision() OK");
 
         mSyncProviderPreferences.putChangedFalse();
         mSyncProviderPreferences.putPreferencesRevision(revision);
 
-        UtilsLog.d(TAG, TAG2, "finish");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "finish");
     }
 
     private void syncPreferencesLoad(int revision)
@@ -231,30 +234,30 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         final String TAG2 = "syncPreferencesLoad";
 
-        UtilsLog.d(TAG, TAG2, "start");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "start");
 
         mSyncYandexDisk.loadPreferences();
-        UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.loadPreferences() OK");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.loadPreferences() OK");
 
         List<String> preferences = new ArrayList<>();
 
         mSyncLocal.loadPreferences(preferences);
-        UtilsLog.d(TAG, TAG2, "mSyncLocal.loadPreferences() OK");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncLocal.loadPreferences() OK");
 
         mSyncProviderPreferences.setPreferences(preferences);
-        UtilsLog.d(TAG, TAG2, "mSyncProviderPreferences.setPreferences() OK");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncProviderPreferences.setPreferences() OK");
 
         mSyncProviderPreferences.putChangedFalse();
         mSyncProviderPreferences.putPreferencesRevision(revision);
 
-        UtilsLog.d(TAG, TAG2, "finish");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "finish");
     }
 
     private void syncDatabase() throws
             IOException, ServerException, RemoteException, FormatException {
         final String TAG2 = "syncDatabase";
 
-        UtilsLog.d(TAG, TAG2, "start");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "start");
 
         try {
             int localRevision = mSyncProviderPreferences.getDatabaseRevision();
@@ -263,13 +266,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             // Получить файл с номером ревизии с сервера и сохранить в папку кэша.
             // Если файла нет, игнорировать.
             mSyncYandexDisk.loadDatabaseRevision();
-            UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.loadDatabaseRevision() OK");
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.loadDatabaseRevision() OK");
 
             int serverRevision = mSyncLocal.getDatabaseRevision();
             // serverRevision == -1, если синхронизация не производилась
             // или файлы синхронизации отсутствуют на сервере.
 
-            UtilsLog.d(TAG, TAG2,
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2,
                     "serverRevision == " + serverRevision + ", localRevision == " + localRevision);
 
             // Проверить, что данные на этом устройстве были загружены из резервной копии.
@@ -279,7 +282,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 //            syncDatabaseLoad(-1, serverRevision);
 
             if (isFullSyncToServer) {
-                UtilsLog.d(TAG, TAG2, "isFullSyncToServer == true");
+                if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "isFullSyncToServer == true");
 
                 syncDatabaseFullSave(serverRevision);
             } else if (localRevision < serverRevision) {
@@ -287,7 +290,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // Загрузить записи с сервера.
                 // Если есть изменённые или удалённые записи, сохранить их на сервер.
 
-                UtilsLog.d(TAG, TAG2, "localRevision < serverRevision");
+                if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "localRevision < serverRevision");
 
                 syncDatabaseLoad(localRevision, serverRevision);
 
@@ -296,7 +299,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // Файлы синхронизации были удалены (localRevision > -1 > serverRevision == -1).
                 // Сохранить все записи на сервер.
 
-                UtilsLog.d(TAG, TAG2, "localRevision > serverRevision");
+                if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "localRevision > serverRevision");
 
                 syncDatabaseSave(localRevision, true, false);
             } else /* localRevision == serverRevision */ {
@@ -306,12 +309,12 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // 2. БД синхронизирована.
                 // Если есть изменённые или удалённые записи, сохранить их на сервер.
 
-                UtilsLog.d(TAG, TAG2, "localRevision == serverRevision");
+                if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "localRevision == serverRevision");
 
                 syncDatabaseSave(localRevision, serverRevision == -1, false);
             }
         } finally {
-            UtilsLog.d(TAG, TAG2, "finish");
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "finish");
         }
     }
 
@@ -323,16 +326,16 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         final String TAG2 = "syncDatabaseFullSave";
 
-        UtilsLog.d(TAG, TAG2, "start");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "start");
 
         mSyncYandexDisk.deleteDirDatabase();
-        UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.deleteDirDatabase() OK");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.deleteDirDatabase() OK");
 
         syncDatabaseSave(revision, true, true);
 
         mSyncProviderPreferences.putDatabaseFullSyncFalse();
 
-        UtilsLog.d(TAG, TAG2, "finish");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "finish");
     }
 
     private void syncDatabaseSave(int revision, boolean saveAllRecords, boolean addDeleteAll)
@@ -350,47 +353,48 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         final String TAG2 = "syncDatabaseSave";
 
-        UtilsLog.d(TAG, TAG2, "start");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "start");
 
         List<String> syncRecords = mSyncProviderDatabase.getSyncRecords(saveAllRecords, addDeleteAll);
-        UtilsLog.d(TAG, TAG2, "mSyncProviderDatabase.getSyncRecords(saveAllRecords == " + saveAllRecords +
-                ", addDeleteAll == " + addDeleteAll + ") OK");
+        if (LOG_ENABLED)
+            UtilsLog.d(TAG, TAG2, "mSyncProviderDatabase.getSyncRecords(saveAllRecords == " + saveAllRecords +
+                    ", addDeleteAll == " + addDeleteAll + ") OK");
 
         final int size = syncRecords.size();
 
-        UtilsLog.d(TAG, TAG2, "records count == " + size);
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "records count == " + size);
 
-//        for (String record : syncRecords) UtilsLog.d(TAG, record);
+//        for (String record : syncRecords) if (LOG_ENABLED) UtilsLog.d(TAG, record);
 
         if (size != 0) {
 
             revision++;
 
             mSyncLocal.saveDatabase(syncRecords);
-            UtilsLog.d(TAG, TAG2, "mSyncLocal.saveDatabase() OK");
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncLocal.saveDatabase() OK");
 
             mSyncLocal.saveDatabaseRevision(revision);
-            UtilsLog.d(TAG, TAG2, "mSyncLocal.saveDatabaseRevision() OK");
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncLocal.saveDatabaseRevision() OK");
 
             mSyncYandexDisk.makeDirs();
-            UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.makeDirs() OK");
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.makeDirs() OK");
 
             mSyncYandexDisk.saveDatabase(revision);
-            UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.saveDatabase() OK");
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.saveDatabase() OK");
 
             mSyncYandexDisk.saveDatabaseRevision();
-            UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.saveDatabaseRevision() OK");
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.saveDatabaseRevision() OK");
 
             mSyncProviderDatabase.syncDeletedRecords();
-            UtilsLog.d(TAG, TAG2, "mSyncProviderDatabase.syncDeletedRecords() OK");
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncProviderDatabase.syncDeletedRecords() OK");
 
             mSyncProviderDatabase.syncChangedRecords();
-            UtilsLog.d(TAG, TAG2, "mSyncProviderDatabase.syncChangedRecords() OK");
+            if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncProviderDatabase.syncChangedRecords() OK");
 
             mSyncProviderPreferences.putDatabaseRevision(revision);
         }
 
-        UtilsLog.d(TAG, TAG2, "finish");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "finish");
     }
 
     private void syncDatabaseLoad(int localRevision, int serverRevision)
@@ -402,7 +406,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         final String TAG2 = "syncDatabaseLoad";
 
-        UtilsLog.d(TAG, TAG2, "start");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "start");
 
         List<String> syncRecords = new ArrayList<>();
 
@@ -411,24 +415,25 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         for (int revision = localRevision + 1; revision <= serverRevision; revision++) {
 
             loadResult = mSyncYandexDisk.loadDatabase(revision);
-            UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.loadDatabase(revision == " + revision +
-                    ", loadResult == " + loadResult + ") OK");
+            if (LOG_ENABLED)
+                UtilsLog.d(TAG, TAG2, "mSyncYandexDisk.loadDatabase(revision == " + revision +
+                        ", loadResult == " + loadResult + ") OK");
 
             if (loadResult) {
                 mSyncLocal.loadDatabase(syncRecords);
-                UtilsLog.d(TAG, TAG2, "mSyncLocal.loadDatabase() OK");
+                if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncLocal.loadDatabase() OK");
             }
         }
 
-//        for (String record : syncRecords) UtilsLog.d(TAG, record);
+//        for (String record : syncRecords) if (LOG_ENABLED) UtilsLog.d(TAG, record);
 
         mSyncProviderDatabase.updateDatabase(syncRecords);
-        UtilsLog.d(TAG, TAG2, "mSyncProviderDatabase.updateDatabase() OK");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "mSyncProviderDatabase.updateDatabase() OK");
 
         mSyncProviderPreferences.putDatabaseRevision(serverRevision);
 
         ContentProviderHelper.notifyChangeAfterSync(getContext());
 
-        UtilsLog.d(TAG, TAG2, "finish");
+        if (LOG_ENABLED) UtilsLog.d(TAG, TAG2, "finish");
     }
 }

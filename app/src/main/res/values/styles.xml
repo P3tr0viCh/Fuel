@@ -17,6 +17,18 @@
 
     <style name="AppTheme.PopupMenu" parent="Widget.AppCompat.PopupMenu"/>
 
+    <style name="AppTheme.FloatingActionButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+    </style>
+
+    <style name="AppTheme.FloatingActionButton.NoAlignParentBottom">
+        <item name="android:layout_alignParentBottom">false</item>
+    </style>
+
     <style name="AppTheme.Button" parent="Widget.AppCompat.Button"/>
 
     <style name="AppTheme.Button.Colored" parent="Widget.AppCompat.Button.Colored"/>
@@ -36,7 +48,7 @@
     <style name="AppTheme.TextAppearance.Text" parent="AppTheme.TextAppearance.Body"/>
 
     <style name="AppTheme.TextAppearance.Text.Secondary">
-        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
     <style name="AppTheme.TextAppearance.Caption" parent="TextAppearance.AppCompat.Caption"/>
@@ -50,20 +62,16 @@
     <style name="AppTheme.TextAppearance.Subhead" parent="TextAppearance.AppCompat.Subhead"/>
 
     <style name="AppTheme.TextAppearance.Subhead.Secondary">
-        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Medium" parent="TextAppearance.AppCompat.Medium">
-        <item name="android:textSize">14sp</item>
-    </style>
+    <style name="AppTheme.TextAppearance.Medium" parent="TextAppearance.AppCompat.Medium"/>
 
     <style name="AppTheme.TextAppearance.Medium.Secondary">
-        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Small" parent="TextAppearance.AppCompat.Small">
-        <item name="android:textSize">12sp</item>
-    </style>
+    <style name="AppTheme.TextAppearance.Small" parent="TextAppearance.AppCompat.Small"/>
 
     <style name="AppTheme.TextAppearance.ErrorValue" parent="AppTheme.TextAppearance.Small">
         <item name="android:textColor">?attr/textColorError</item>
@@ -75,7 +83,7 @@
 
     <style name="AppTheme.TextAppearance.DialogWindowTitle" parent="TextAppearance.AppCompat.Title">
         <item name="android:textSize">20sp</item>
-        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:textStyle">bold</item>
     </style>
 

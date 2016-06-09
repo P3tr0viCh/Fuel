@@ -8,7 +8,7 @@
 
     <include
         android:id="@+id/toolbar_yandex_map"
-        layout="@layout/toolbar"/>
+        layout="@layout/partial_toolbar"/>
 
     <RelativeLayout
         android:layout_width="match_parent"

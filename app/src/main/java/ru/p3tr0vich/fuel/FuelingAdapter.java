@@ -116,11 +116,11 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case TYPE_HEADER:
                 return new HeaderViewHolder(
                         LayoutInflater.from(parent.getContext()).
-                                inflate(R.layout.fueling_recycler_view_header, parent, false));
+                                inflate(R.layout.partial_fueling_recycler_view_header, parent, false));
             case TYPE_FOOTER:
                 return new HeaderViewHolder(
                         LayoutInflater.from(parent.getContext()).
-                                inflate(R.layout.fueling_recycler_view_footer, parent, false));
+                                inflate(R.layout.partial_fueling_recycler_view_footer, parent, false));
             default:
                 throw new RuntimeException("onCreateViewHolder: wrong viewType == " + viewType);
         }

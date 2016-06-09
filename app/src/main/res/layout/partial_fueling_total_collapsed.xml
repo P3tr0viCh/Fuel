@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:paddingEnd="@dimen/expansion_panel_padding_end"
+              android:paddingStart="@dimen/expansion_panel_padding_start">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:text="@string/text_average_small"
+        android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
+
+    <TextView
+        android:id="@+id/text_average_collapsed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:textAppearance="@style/AppTheme.TextAppearance.Text"
+        tools:text="@string/list_item_volume"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:text="@string/text_sum_cost_small"
+        android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
+
+    <TextView
+        android:id="@+id/text_cost_sum_collapsed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:textAppearance="@style/AppTheme.TextAppearance.Text"
+        tools:text="@string/list_item_cost"/>
+</LinearLayout>

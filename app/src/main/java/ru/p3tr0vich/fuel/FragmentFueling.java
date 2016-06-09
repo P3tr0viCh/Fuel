@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -25,7 +24,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -45,6 +43,8 @@ import ru.p3tr0vich.fuel.utils.Utils;
 import ru.p3tr0vich.fuel.utils.UtilsDate;
 import ru.p3tr0vich.fuel.utils.UtilsFormat;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
+import ru.p3tr0vich.fuel.views.FuelingTotalView;
+import ru.p3tr0vich.fuel.views.FuelingTotalViewImpl;
 
 public class FragmentFueling extends FragmentBase implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -63,10 +63,10 @@ public class FragmentFueling extends FragmentBase implements
     private View mToolbarShadow;
 
     private RelativeLayout mLayoutMain;
-    private LinearLayout mLayoutTotal;
+    private ViewGroup mTotalPanel;
 
     private boolean mToolbarDatesVisible;
-    private boolean mLayoutTotalVisible;
+    private boolean mTotalPanelVisible;
 
     private DatabaseHelper.Filter mFilter;
 
@@ -82,12 +82,9 @@ public class FragmentFueling extends FragmentBase implements
 
     private FloatingActionButton mFloatingActionButton;
 
-    private CalcTotalTask mCalcTotalTask;
-
     private final Handler mHandler = new Handler();
 
-    private TextView mTextAverage;
-    private TextView mTextCostSum;
+    private FuelingTotalView mFuelingTotalView;
 
     private long mIdForScroll = -1;
 
@@ -128,16 +125,14 @@ public class FragmentFueling extends FragmentBase implements
         mFilter = new DatabaseHelper.Filter();
 
         if (savedInstanceState == null) {
-            if (LOG_ENABLED)
-                UtilsLog.d(TAG, "onCreate", "savedInstanceState == null");
+            if (LOG_ENABLED) UtilsLog.d(TAG, "onCreate", "savedInstanceState == null");
 
             mFilter.mode = DatabaseHelper.Filter.MODE_CURRENT_YEAR;
 
             mFilter.dateFrom = PreferencesHelper.getFilterDateFrom();
             mFilter.dateTo = PreferencesHelper.getFilterDateTo();
         } else {
-            if (LOG_ENABLED)
-                UtilsLog.d(TAG, "onCreate", "savedInstanceState != null");
+            if (LOG_ENABLED) UtilsLog.d(TAG, "onCreate", "savedInstanceState != null");
 
             switch (savedInstanceState.getInt(KEY_FILTER_MODE, DatabaseHelper.Filter.MODE_ALL)) {
                 case DatabaseHelper.Filter.MODE_CURRENT_YEAR:
@@ -161,18 +156,29 @@ public class FragmentFueling extends FragmentBase implements
     @SuppressLint("InflateParams")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (LOG_ENABLED)
-            UtilsLog.d(TAG, "onCreateView");
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onCreateView");
 
         final boolean isPhone = Utils.isPhone();
 
         View view = inflater.inflate(R.layout.fragment_fueling, container, false);
 
+        final int[] averageIds;
+        final int[] costSumIds;
+        if (Utils.isPhoneInPortrait()) {
+            averageIds = new int[]{R.id.text_average_collapsed, R.id.text_average_expanded};
+            costSumIds = new int[]{R.id.text_cost_sum_collapsed, R.id.text_cost_sum_expanded};
+        } else {
+            averageIds = new int[]{R.id.text_average};
+            costSumIds = new int[]{R.id.text_cost_sum};
+        }
+        mFuelingTotalView = new FuelingTotalViewImpl(view, averageIds, costSumIds);
+
         mToolbarDates = (Toolbar) view.findViewById(R.id.toolbar_dates);
         mToolbarShadow = view.findViewById(R.id.view_toolbar_shadow);
 
         mLayoutMain = (RelativeLayout) view.findViewById(R.id.layout_main);
-        mLayoutTotal = (LinearLayout) view.findViewById(R.id.layout_total);
+
+        mTotalPanel = isPhone ? (ViewGroup) view.findViewById(R.id.total_panel) : null;
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
@@ -207,9 +213,6 @@ public class FragmentFueling extends FragmentBase implements
 
         mProgressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTextNoRecords = (TextView) view.findViewById(R.id.text_no_records);
-
-        mTextAverage = (TextView) view.findViewById(R.id.text_average);
-        mTextCostSum = (TextView) view.findViewById(R.id.text_cost_sum);
 
         mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -257,7 +260,7 @@ public class FragmentFueling extends FragmentBase implements
         mToolbarDatesVisible = true;
         setToolbarDatesVisible(mFilter.mode == DatabaseHelper.Filter.MODE_DATES, false);
 
-        mLayoutTotalVisible = true;
+        mTotalPanelVisible = true;
 
         updateFilterDateButtons(true, mFilter.dateFrom);
         updateFilterDateButtons(false, mFilter.dateTo);
@@ -269,9 +272,8 @@ public class FragmentFueling extends FragmentBase implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (LOG_ENABLED)
-            UtilsLog.d(TAG, "onActivityCreated", "savedInstanceState " +
-                    (savedInstanceState == null ? "=" : "!") + "= null");
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onActivityCreated", "savedInstanceState " +
+                (savedInstanceState == null ? "=" : "!") + "= null");
 
         doSetFilterMode(mFilter.mode);
 
@@ -292,7 +294,7 @@ public class FragmentFueling extends FragmentBase implements
         mHandler.removeCallbacks(mRunnableShowNoRecords);
         mHandler.removeCallbacks(mRunnableShowProgressWheelFueling);
 
-        calcTotalTaskCancel();
+        mFuelingTotalView.destroy();
 
         PreferencesHelper.putFilterDate(mFilter.dateFrom, mFilter.dateTo);
 
@@ -431,13 +433,7 @@ public class FragmentFueling extends FragmentBase implements
         }
     }
 
-    private void calcTotalTaskCancel() {
-        if (mCalcTotalTask != null) mCalcTotalTask.cancel(false);
-    }
-
     private void swapRecords(@Nullable Cursor data) {
-        calcTotalTaskCancel();
-
         mHandler.removeCallbacks(mRunnableShowNoRecords);
 
         List<FuelingRecord> records = DatabaseHelper.getFuelingRecords(data);
@@ -455,14 +451,12 @@ public class FragmentFueling extends FragmentBase implements
             mIdForScroll = -1;
         }
 
-        mCalcTotalTask = new CalcTotalTask(this, records);
-        mCalcTotalTask.execute();
+        mFuelingTotalView.onFuelingRecordsChanged(records);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (LOG_ENABLED)
-            UtilsLog.d(TAG, "onLoadFinished");
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onLoadFinished");
 
         swapRecords(data);
 
@@ -471,8 +465,7 @@ public class FragmentFueling extends FragmentBase implements
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        if (LOG_ENABLED)
-            UtilsLog.d(TAG, "onLoaderReset");
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onLoaderReset");
 
         swapRecords(null);
     }
@@ -631,23 +624,25 @@ public class FragmentFueling extends FragmentBase implements
             Utils.setViewTopMargin(mToolbarDates, visible ? 0 : toolbarDatesTopHidden);
     }
 
-    private void setLayoutTotalVisible(final boolean visible) {
-        if (mLayoutTotalVisible == visible) return;
+    private void setTotalPanelVisible(final boolean visible) {
+        if (mTotalPanelVisible == visible) return;
 
-        mLayoutTotalVisible = visible;
+        mTotalPanelVisible = visible;
 
         ValueAnimator valueAnimator = ValueAnimator.ofInt(
-                (int) mLayoutTotal.getTranslationY(), visible ? 0 : mLayoutTotal.getHeight());
+                (int) mTotalPanel.getTranslationY(), visible ? 0 : mTotalPanel.getHeight());
         valueAnimator
                 .setDuration(Utils.getInteger(visible ?
                         R.integer.animation_duration_layout_total_show :
                         R.integer.animation_duration_layout_total_hide))
                 .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        final int translationY = (int) animation.getAnimatedValue();
+                    int translationY;
 
-                        mLayoutTotal.setTranslationY(translationY);
-                        Utils.setViewTopMargin(mLayoutTotal, -translationY);
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        translationY = (int) animation.getAnimatedValue();
+
+                        mTotalPanel.setTranslationY(translationY);
+                        Utils.setViewTopMargin(mTotalPanel, -translationY);
                     }
                 });
         valueAnimator.start();
@@ -655,7 +650,7 @@ public class FragmentFueling extends FragmentBase implements
 
     private void setTotalAndFabVisible(boolean visible) {
         mFloatingActionButton.toggle(visible, true);
-        setLayoutTotalVisible(visible);
+        setTotalPanelVisible(visible);
     }
 
     public void setFabVisible(boolean visible) {
@@ -830,8 +825,7 @@ public class FragmentFueling extends FragmentBase implements
 
         @Override
         public Cursor loadInBackground() {
-            if (LOG_ENABLED)
-                UtilsLog.d(TAG, "FuelingCursorLoader", "loadInBackground");
+            if (LOG_ENABLED) UtilsLog.d(TAG, "FuelingCursorLoader", "loadInBackground");
 
             BroadcastReceiverLoading.send(getContext(), true);
 
@@ -840,100 +834,6 @@ public class FragmentFueling extends FragmentBase implements
             } finally {
                 BroadcastReceiverLoading.send(getContext(), false);
             }
-        }
-    }
-
-    private static class CalcTotalTask extends AsyncTask<Void, Void, Float[]> {
-
-        private FragmentFueling mFragmentFueling;
-
-        private final List<FuelingRecord> mFuelingRecords;
-
-        CalcTotalTask(FragmentFueling fragmentFueling, @Nullable List<FuelingRecord> fuelingRecords) {
-            mFragmentFueling = fragmentFueling;
-            mFuelingRecords = fuelingRecords;
-        }
-
-        @Override
-        protected Float[] doInBackground(Void... params) {
-            if (mFuelingRecords == null) return new Float[]{0f, 0f};
-
-            float costSum = 0, volumeSum = 0;
-            float volume, total, firstTotal = 0, lastTotal = 0;
-
-            FuelingRecord fuelingRecord;
-
-            boolean completeData = true; // Во всех записях указаны объём заправки и текущий пробег
-
-            final int size = mFuelingRecords.size();
-
-            for (int i = 0; i < size; i++) {
-
-                if (isCancelled()) return null;
-
-                fuelingRecord = mFuelingRecords.get(i);
-
-                costSum += fuelingRecord.getCost();
-
-                if (completeData) {
-                    volume = fuelingRecord.getVolume();
-                    total = fuelingRecord.getTotal();
-
-                    if (volume == 0 || total == 0) completeData = false;
-                    else {
-                        // Сортировка записей по дате в обратном порядке
-                        // 0 -- последняя заправка
-                        // Последний (i == 0) объём заправки не нужен -- неизвестно, сколько на ней будет пробег,
-                        // в volumeSum не включается
-                        if (i == 0) lastTotal = total;
-                        else {
-                            volumeSum += volume;
-                            if (i == size - 1) firstTotal = total;
-                        }
-                    }
-                }
-            }
-
-            float average;
-
-            if (completeData)
-                average = volumeSum != 0 ? (volumeSum / (lastTotal - firstTotal)) * 100 : 0;
-            else {
-                average = 0;
-                int averageCount = 0;
-
-                for (int i = 0, count = size - 1; i < count; i++) {
-
-                    if (isCancelled()) return null;
-
-                    lastTotal = mFuelingRecords.get(i).getTotal();
-                    if (lastTotal != 0) {
-                        fuelingRecord = mFuelingRecords.get(i + 1);
-
-                        volume = fuelingRecord.getVolume();
-                        total = fuelingRecord.getTotal();
-
-                        if (volume != 0 && total != 0) {
-                            average += (volume / (lastTotal - total)) * 100;
-                            averageCount++;
-                        }
-                    }
-                }
-
-                average = averageCount != 0 ? average / averageCount : 0;
-            }
-
-            return new Float[]{average, costSum};
-        }
-
-        @Override
-        protected void onPostExecute(Float[] result) {
-            if (result != null) {
-                mFragmentFueling.mTextAverage.setText(UtilsFormat.floatToString(result[0]));
-                mFragmentFueling.mTextCostSum.setText(UtilsFormat.floatToString(result[1]));
-            }
-
-            mFragmentFueling = null;
         }
     }
 }

@@ -1,7 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:fab="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
-              xmlns:wheel="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
@@ -72,13 +71,6 @@
             fab:fab_colorPressed="@color/transparent_button_light_pressed"
             tools:visibility="visible"/>
 
-        <com.pnikosis.materialishprogress.ProgressWheel
-            android:id="@+id/progress_wheel_yandex_map"
-            android:layout_width="@dimen/progress_wheel_fueling_size"
-            android:layout_height="@dimen/progress_wheel_fueling_size"
-            android:layout_centerInParent="true"
-            android:visibility="gone"
-            wheel:matProg_barColor="@color/primary"
-            wheel:matProg_progressIndeterminate="true"/>
+        <include layout="@layout/partial_progress_wheel"/>
     </RelativeLayout>
 </LinearLayout>

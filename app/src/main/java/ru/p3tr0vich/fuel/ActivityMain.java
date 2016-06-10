@@ -562,9 +562,10 @@ public class ActivityMain extends AppCompatActivity implements
                 mOpenPreferenceSync = false;
             }
 
+            //noinspection WrongConstant
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, fragment, fragmentTag)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .addToBackStack(null)
                     .commit();
         }

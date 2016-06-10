@@ -201,18 +201,20 @@ public class FragmentFueling extends FragmentBase implements
                     getResources().getDimensionPixelOffset(R.dimen.recycler_view_scroll_threshold)) {
 
                 @Override
-                void onScrollUp() {
+                public void onScrollUp() {
                     setTotalAndFabVisible(false);
                 }
 
                 @Override
-                void onScrollDown() {
+                public void onScrollDown() {
                     if (mSnackbar == null || !mSnackbar.isShown()) setTotalAndFabVisible(true);
                 }
             });
 
         mProgressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
+        mProgressWheel.setVisibility(View.GONE);
         mTextNoRecords = (TextView) view.findViewById(R.id.text_no_records);
+        mTextNoRecords.setVisibility(View.GONE);
 
         mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -290,15 +292,32 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     @Override
+    public void onDestroyView() {
+        mFuelingTotalView.destroy();
+
+        super.onDestroyView();
+    }
+
+    @Override
     public void onDestroy() {
         mHandler.removeCallbacks(mRunnableShowNoRecords);
         mHandler.removeCallbacks(mRunnableShowProgressWheelFueling);
 
-        mFuelingTotalView.destroy();
-
         PreferencesHelper.putFilterDate(mFilter.dateFrom, mFilter.dateTo);
 
         super.onDestroy();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setFabVisible(true);
+    }
+
+    @Override
+    public void onPause() {
+        setFabVisible(false);
+        super.onPause();
     }
 
     private void doSetFilterMode(@DatabaseHelper.Filter.Mode int filterMode) {
@@ -460,7 +479,7 @@ public class FragmentFueling extends FragmentBase implements
 
         swapRecords(data);
 
-        setFabVisible(true);
+        setFabVisible(true); // TODO: remove?
     }
 
     @Override

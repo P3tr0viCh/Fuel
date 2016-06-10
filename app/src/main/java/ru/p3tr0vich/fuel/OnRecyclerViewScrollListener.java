@@ -9,9 +9,9 @@ abstract class OnRecyclerViewScrollListener extends RecyclerView.OnScrollListene
 
     private int mOffset = 0;
 
-    abstract void onScrollUp();
+    public abstract void onScrollUp();
 
-    abstract void onScrollDown();
+    public abstract void onScrollDown();
 
     OnRecyclerViewScrollListener(int scrollThreshold) {
         mScrollThreshold = scrollThreshold;

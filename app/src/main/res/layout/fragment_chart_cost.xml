@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -13,17 +12,7 @@
         app:layout_scrollFlags="scroll|enterAlways"
         app:tabMode="scrollable"/>
 
-    <TextView
-        android:id="@+id/text_no_records"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/layout_total"
-        android:layout_below="@+id/tab_layout"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:text="@string/text_no_data"
-        android:textAppearance="@style/AppTheme.TextAppearance.Medium.Secondary"
-        android:visibility="visible"/>
+    <include layout="@layout/partial_text_no_records"/>
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/chart"
@@ -37,43 +26,10 @@
         style="@style/AppTheme.Divider.Horizontal"
         android:layout_above="@+id/layout_total"/>
 
-    <LinearLayout
+    <include
         android:id="@+id/layout_total"
+        layout="@layout/partial_chart_cost_total"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/chart_bottom_panel_height"
-        android:layout_alignParentBottom="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/text_median"
-            android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
-
-        <TextView
-            android:id="@+id/text_median"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:textAppearance="@style/AppTheme.TextAppearance.Text"
-            tools:text="2000"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:text="@string/text_sum"
-            android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
-
-        <TextView
-            android:id="@+id/text_sum"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:textAppearance="@style/AppTheme.TextAppearance.Text"
-            tools:text="4000"/>
-    </LinearLayout>
+        android:layout_height="@dimen/expansion_panel_collapsed_min_height"
+        android:layout_alignParentBottom="true"/>
 </RelativeLayout>

@@ -123,6 +123,8 @@ public class FragmentChartCost extends FragmentBase implements
         mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
 
         mTextNoRecords = (TextView) view.findViewById(R.id.text_no_records);
+        mTextNoRecords.setVisibility(View.GONE);
+
         mTextMedian = (TextView) view.findViewById(R.id.text_median);
         mTextSum = (TextView) view.findViewById(R.id.text_sum);
 

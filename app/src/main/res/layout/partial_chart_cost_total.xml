@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/expansion_panel_collapsed_min_height"
+              android:gravity="center_vertical"
+              android:orientation="horizontal"
+              android:paddingEnd="@dimen/expansion_panel_padding_end"
+              android:paddingStart="@dimen/expansion_panel_padding_start">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:text="@string/text_median"
+        android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
+
+    <TextView
+        android:id="@+id/text_median"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:maxLines="1"
+        android:textAppearance="@style/AppTheme.TextAppearance.Text"
+        tools:text="2000"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:maxLines="1"
+        android:text="@string/text_sum"
+        android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
+
+    <TextView
+        android:id="@+id/text_sum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:maxLines="1"
+        android:textAppearance="@style/AppTheme.TextAppearance.Text"
+        tools:text="4000"/>
+</LinearLayout>

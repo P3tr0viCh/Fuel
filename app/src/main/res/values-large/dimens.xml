@@ -4,5 +4,5 @@
 
     <dimen name="fab_margin">24dp</dimen>
 
-    <dimen name="chart_bottom_panel_height">64dp</dimen>
+    <dimen name="recycler_view_header_height">48dp</dimen>
 </resources>

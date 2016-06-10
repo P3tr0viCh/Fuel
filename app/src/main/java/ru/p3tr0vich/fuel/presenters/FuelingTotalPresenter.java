@@ -10,7 +10,7 @@ import ru.p3tr0vich.fuel.models.FuelingTotalModel;
 import ru.p3tr0vich.fuel.views.FuelingTotalView;
 
 public class FuelingTotalPresenter {
-    private FuelingTotalView mFuelingTotalView;
+    private final FuelingTotalView mFuelingTotalView;
     private final FuelingTotalModel mFuelingTotalModel;
 
     public FuelingTotalPresenter(@NonNull FuelingTotalView fuelingTotalView) {

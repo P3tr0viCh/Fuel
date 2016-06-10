@@ -74,7 +74,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
     private MapCenter mMapCenter;
 
     private Toolbar mToolbarYandexMap;
-    private ProgressWheel mProgressWheelYandexMap;
+    private ProgressWheel mProgressWheel;
     private FrameLayout mWebViewPlaceholder;
     private Menu mMenu;
 
@@ -196,7 +196,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
                 break;
         }
 
-        mProgressWheelYandexMap = (ProgressWheel) findViewById(R.id.progress_wheel_yandex_map);
+        mProgressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
 
         mBtnZoomIn = (FloatingActionButton) findViewById(R.id.btn_zoom_in);
         assert mBtnZoomIn != null;
@@ -285,9 +285,11 @@ public class ActivityYandexMap extends AppCompatActivity implements
         }
 
         if (mLoading)
-            mProgressWheelYandexMap.setVisibility(View.VISIBLE);
-        else
+            mProgressWheel.setVisibility(View.VISIBLE);
+        else {
+            mProgressWheel.setVisibility(View.GONE);
             setButtonsVisible();
+        }
 
         mWebViewPlaceholder.addView(mWebView);
     }
@@ -525,7 +527,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
         mLoading = false;
 
-        mProgressWheelYandexMap.setVisibility(View.GONE);
+        mProgressWheel.setVisibility(View.GONE);
 
         if (!hasError) {
             setButtonsVisible();

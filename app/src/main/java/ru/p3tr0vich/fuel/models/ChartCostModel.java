@@ -20,7 +20,7 @@ public class ChartCostModel implements Parcelable {
     private boolean mHasData;
     private float mMedian;
     private float mSum;
-    boolean mSumsNotEquals;
+    private boolean mSumsNotEquals;
 
     public ChartCostModel() {
         setYears(null);

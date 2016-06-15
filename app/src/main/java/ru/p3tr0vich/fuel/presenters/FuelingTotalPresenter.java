@@ -29,6 +29,14 @@ public class FuelingTotalPresenter {
         mFuelingTotalModel.setFuelingRecords(fuelingRecords);
     }
 
+    public void onLastFuelingRecordsChanged(@Nullable List<FuelingRecord> fuelingRecords) {
+        mFuelingTotalModel.setLastRecords(fuelingRecords);
+
+        mFuelingTotalView.setLastConsumption(mFuelingTotalModel.getLastConsumption());
+        mFuelingTotalView.setEstimatedMileage(mFuelingTotalModel.getEstimatedMileage());
+        mFuelingTotalView.setEstimatedTotal(mFuelingTotalModel.getEstimatedTotal());
+    }
+
     public void onDestroy() {
         mFuelingTotalModel.destroy();
     }

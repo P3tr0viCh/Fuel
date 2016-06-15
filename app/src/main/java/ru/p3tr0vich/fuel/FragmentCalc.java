@@ -283,7 +283,7 @@ public class FragmentCalc extends FragmentBase implements
 
             if (price == 0 || cons == 0)  return;
 
-            distancePerOneFuel = (float) (100.0 / cons);
+            distancePerOneFuel = (float) (100.0 / cons); // TODO: check
 
             switch (calcAction) {
                 case CALC_ACTION_DISTANCE:

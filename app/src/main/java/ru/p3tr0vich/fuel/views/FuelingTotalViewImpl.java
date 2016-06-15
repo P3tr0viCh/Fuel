@@ -12,6 +12,7 @@ import java.util.List;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
 import ru.p3tr0vich.fuel.presenters.FuelingTotalPresenter;
 import ru.p3tr0vich.fuel.utils.UtilsFormat;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
 
 public class FuelingTotalViewImpl implements FuelingTotalView {
     private final TextView[] mAverageTextViews;
@@ -45,8 +46,28 @@ public class FuelingTotalViewImpl implements FuelingTotalView {
         for (TextView textView : mCostSumTextViews) textView.setText(text);
     }
 
+    @Override
+    public void setLastConsumption(float lastConsumption) {
+        UtilsLog.d(this, "lastConsumption == " + lastConsumption);
+    }
+
+    @Override
+    public void setEstimatedMileage(float estimatedMileage) {
+        UtilsLog.d(this, "estimatedMileage == " + estimatedMileage);
+    }
+
+    @Override
+    public void setEstimatedTotal(float estimatedTotal) {
+        UtilsLog.d(this, "estimatedTotal == " + estimatedTotal);
+    }
+
     public void onFuelingRecordsChanged(@Nullable List<FuelingRecord> fuelingRecords) {
         mFuelingTotalPresenter.onFuelingRecordsChanged(fuelingRecords);
+    }
+
+    @Override
+    public void onLastFuelingRecordsChanged(@Nullable List<FuelingRecord> fuelingRecords) {
+        mFuelingTotalPresenter.onLastFuelingRecordsChanged(fuelingRecords);
     }
 
     public void destroy() {

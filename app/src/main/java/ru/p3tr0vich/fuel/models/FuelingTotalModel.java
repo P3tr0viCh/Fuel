@@ -6,8 +6,16 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 public class FuelingTotalModel {
-    private float mAverage;
+    // Средний расход в заданном периоде.
+    private float mAverageConsumption;
+    // Сумма стоимости для заданного периода.
     private float mCostSum;
+    // Расход перед последней записью.
+    private float mLastConsumption;
+    // Предполагаемый пробег после последней заправки.
+    private float mEstimatedMileage;
+    // Предполагаемый общий пробег после последней заправки.
+    private float mEstimatedTotal;
 
     private CalcTotalTask mCalcTotalTask;
 
@@ -18,6 +26,11 @@ public class FuelingTotalModel {
     }
 
     public FuelingTotalModel() {
+        mAverageConsumption = 0;
+        mCostSum = 0;
+        mLastConsumption = 0;
+        mEstimatedMileage = 0;
+        mEstimatedTotal = 0;
     }
 
     public void destroy() {
@@ -29,11 +42,69 @@ public class FuelingTotalModel {
     }
 
     public float getAverage() {
-        return mAverage;
+        return mAverageConsumption;
     }
 
     public float getCostSum() {
         return mCostSum;
+    }
+
+    public float getLastConsumption() {
+        return mLastConsumption;
+    }
+
+    public float getEstimatedMileage() {
+        return mEstimatedMileage;
+    }
+
+    public float getEstimatedTotal() {
+        return mEstimatedTotal;
+    }
+
+    /**
+     * Вычисляет по содержимому двух последних записей в БД
+     * последний расход и берёт из последней записи объём залитого топлива и общий пробег.
+     * На основании этих данных вычисляет предполагаемый пробег
+     * на объёме последней заправки и предполагемый общий пробег.
+     *
+     * @param fuelingRecords Последняя и предпоследняя записи в БД.
+     */
+    public void setLastRecords(@Nullable List<FuelingRecord> fuelingRecords) {
+        mLastConsumption = 0;
+        mEstimatedMileage = 0;
+        mEstimatedTotal = 0;
+
+        if (fuelingRecords == null || fuelingRecords.size() < 2) return;
+
+        FuelingRecord lastRecord = fuelingRecords.get(0);
+        // Объём последней заправки.
+        float lastVolume = lastRecord.getVolume();
+        // Общий пробег в последней записи.
+        float lastTotal = lastRecord.getTotal();
+
+        if (lastVolume <= 0 || lastTotal <= 0) return;
+
+        FuelingRecord penultimateRecord = fuelingRecords.get(1);
+
+        float penultimateVolume = penultimateRecord.getVolume();
+
+        if (penultimateVolume <= 0) return;
+
+        float penultimateTotal = penultimateRecord.getTotal();
+
+        // Единственное, что может равняться нулю.
+        if (penultimateTotal < 0 || penultimateTotal >= lastTotal) return;
+
+        // Все необходимые значения в записях указаны корректно.
+
+        mLastConsumption = (penultimateVolume / (lastTotal - penultimateTotal)) * 100;
+
+        // Пробег на одной единице объёма (литр, галлон).
+        float distancePerOneFuel = 100.0f / mLastConsumption;
+
+        mEstimatedMileage = distancePerOneFuel * lastVolume;
+
+        mEstimatedTotal = lastTotal + mEstimatedMileage;
     }
 
     private void cancel() {
@@ -130,7 +201,7 @@ public class FuelingTotalModel {
         @Override
         protected void onPostExecute(Float[] result) {
             if (result != null) {
-                mAverage = result[0];
+                mAverageConsumption = result[0];
                 mCostSum = result[1];
 
                 if (mOnChangeListener != null) mOnChangeListener.onChange();

@@ -43,12 +43,12 @@ public class ContentProviderHelper extends ContentProvider {
     }
 
     private static class UriPath {
-
         private static final String DATABASE = "database";
         private static final String DATABASE_ITEM = DATABASE + "/#";
         private static final String DATABASE_YEARS = DATABASE + "/years";
         private static final String DATABASE_SUM_BY_MONTHS = DATABASE + "/sum_by_months";
         private static final String DATABASE_SUM_BY_MONTHS_ITEM = DATABASE_SUM_BY_MONTHS + "/#";
+        private static final String DATABASE_TWO_LAST_RECORDS = DATABASE + "/two_last_records";
 
         private static final String DATABASE_SYNC = DATABASE + "/sync";
         private static final String DATABASE_SYNC_ALL = DATABASE + "/sync_get_all";
@@ -61,6 +61,7 @@ public class ContentProviderHelper extends ContentProvider {
     public static final Uri URI_DATABASE = BaseUri.getUri(UriPath.DATABASE);
     private static final Uri URI_DATABASE_YEARS = BaseUri.getUri(UriPath.DATABASE_YEARS);
     private static final Uri URI_DATABASE_SUM_BY_MONTHS = BaseUri.getUri(UriPath.DATABASE_SUM_BY_MONTHS);
+    private static final Uri URI_DATABASE_TWO_LAST_RECORDS = BaseUri.getUri(UriPath.DATABASE_TWO_LAST_RECORDS);
 
     public static final Uri URI_DATABASE_SYNC = BaseUri.getUri(UriPath.DATABASE_SYNC);
     public static final Uri URI_DATABASE_SYNC_ALL = BaseUri.getUri(UriPath.DATABASE_SYNC_ALL);
@@ -72,6 +73,7 @@ public class ContentProviderHelper extends ContentProvider {
     public static final int DATABASE_ITEM = 11;
     private static final int DATABASE_YEARS = 13;
     private static final int DATABASE_SUM_BY_MONTHS = 14;
+    private static final int DATABASE_TWO_LAST_RECORDS = 15;
 
     public static final int DATABASE_SYNC = 20;
     private static final int DATABASE_SYNC_ALL = 21;
@@ -87,6 +89,7 @@ public class ContentProviderHelper extends ContentProvider {
         sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_ITEM, DATABASE_ITEM);
         sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_YEARS, DATABASE_YEARS);
         sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SUM_BY_MONTHS_ITEM, DATABASE_SUM_BY_MONTHS);
+        sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_TWO_LAST_RECORDS, DATABASE_TWO_LAST_RECORDS);
 
         sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SYNC, DATABASE_SYNC);
         sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SYNC_ALL, DATABASE_SYNC_ALL);
@@ -129,6 +132,7 @@ public class ContentProviderHelper extends ContentProvider {
             case DATABASE:
             case DATABASE_YEARS:
             case DATABASE_SUM_BY_MONTHS:
+            case DATABASE_TWO_LAST_RECORDS:
             case DATABASE_SYNC:
             case DATABASE_SYNC_ALL:
             case DATABASE_SYNC_CHANGED:
@@ -160,6 +164,8 @@ public class ContentProviderHelper extends ContentProvider {
                 return mDatabaseHelper.getYears();
             case DATABASE_SUM_BY_MONTHS:
                 return mDatabaseHelper.getSumByMonthsForYear((int) ContentUris.parseId(uri));
+            case DATABASE_TWO_LAST_RECORDS:
+                return mDatabaseHelper.getTwoLastRecords();
 
             case DATABASE_SYNC_ALL:
                 return mDatabaseHelper.getSyncRecords(false);
@@ -394,5 +400,9 @@ public class ContentProviderHelper extends ContentProvider {
     public static Cursor getSumByMonthsForYear(@NonNull Context context, int year) {
         return context.getContentResolver().query(
                 ContentUris.withAppendedId(URI_DATABASE_SUM_BY_MONTHS, year), null, null, null, null);
+    }
+
+    public static Cursor getTwoLastRecords(@NonNull Context context) {
+        return context.getContentResolver().query(URI_DATABASE_TWO_LAST_RECORDS, null, null, null, null, null);
     }
 }

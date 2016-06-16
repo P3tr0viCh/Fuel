@@ -28,7 +28,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "DatabaseHelper";
 
-    private static final boolean LOG_ENABLED = false;
+    private static final boolean LOG_ENABLED = true;
 
     interface TableFuelingColumns {
         String DATETIME = "datetime";
@@ -47,16 +47,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         private TableFueling() {
         }
 
-        public static final String NAME = "fueling";
+        private static final String NAME = "fueling";
 
         private static final String[] COLUMNS = new String[]{
                 _ID, DATETIME, COST, VOLUME, TOTAL
         };
-        public static final int _ID_INDEX = 0;
-        public static final int DATETIME_INDEX = 1;
-        public static final int COST_INDEX = 2;
-        public static final int VOLUME_INDEX = 3;
-        public static final int TOTAL_INDEX = 4;
+        private static final int _ID_INDEX = 0;
+        private static final int DATETIME_INDEX = 1;
+        private static final int COST_INDEX = 2;
+        private static final int VOLUME_INDEX = 3;
+        private static final int TOTAL_INDEX = 4;
 
         private static final String[] COLUMNS_WITH_DELETED = new String[]{
                 _ID, DATETIME, COST, VOLUME, TOTAL, DELETED
@@ -84,7 +84,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ");";
     }
 
-    public static class Database {
+    private static class Database {
         private static final int VERSION = 1;
 
         private static final String NAME = "fuel.db";
@@ -106,6 +106,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static class Where {
         public static final String RECORD_NOT_DELETED = TableFueling.DELETED + EQUAL + FALSE;
         private static final String BETWEEN = " BETWEEN %1$d AND %2$d";
+        private static final String LESS_OR_EQUAL = " <= %d";
 
         private Where() {
         }
@@ -114,7 +115,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static class Filter {
 
         @Retention(RetentionPolicy.SOURCE)
-        @IntDef({MODE_ALL, MODE_CURRENT_YEAR, MODE_YEAR, MODE_DATES})
+        @IntDef({MODE_ALL, MODE_CURRENT_YEAR, MODE_YEAR, MODE_DATES, MODE_TWO_LAST_RECORDS})
         public @interface Mode {
         }
 
@@ -122,6 +123,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         public static final int MODE_CURRENT_YEAR = 1;
         public static final int MODE_YEAR = 2;
         public static final int MODE_DATES = 3;
+        public static final int MODE_TWO_LAST_RECORDS = 4;
 
         public long dateFrom;
         public long dateTo;
@@ -142,7 +144,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         public String getSelection() {
             if (mode == MODE_ALL)
                 return Where.RECORD_NOT_DELETED;
-            else {
+            else if (mode == MODE_TWO_LAST_RECORDS) {
+                final Calendar calendar = Calendar.getInstance();
+
+                return TableFueling.DATETIME +
+                        String.format(Locale.US, Where.LESS_OR_EQUAL,
+                                UtilsDate.utcToLocal(calendar.getTimeInMillis())) +
+                        AND + Where.RECORD_NOT_DELETED;
+            } else {
                 final Calendar calendarFrom = Calendar.getInstance();
                 final Calendar calendarTo = Calendar.getInstance();
 
@@ -198,7 +207,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                            float total,
                                            boolean changed,
                                            @SuppressWarnings("SameParameterValue")
-                                           boolean deleted,
+                                                   boolean deleted,
                                            boolean convertDate) {
         ContentValues values = new ContentValues();
 
@@ -274,6 +283,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor == null) return null;
 
         List<FuelingRecord> records = new ArrayList<>();
+
         if (cursor.moveToFirst())
             do
                 records.add(getFuelingRecord(cursor));
@@ -284,6 +294,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getAll(String selection) {
         return query(TableFueling.COLUMNS, selection, null, TableFueling.DATETIME + DESC);
+    }
+
+    public Cursor getTwoLastRecords() {
+        Filter filter = new Filter();
+        filter.mode = Filter.MODE_TWO_LAST_RECORDS;
+        return query(TableFueling.COLUMNS, filter.getSelection(), null, TableFueling.DATETIME + DESC, "2");
     }
 
     public Cursor getRecord(long id) {
@@ -322,10 +338,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return update(values, TableFueling.CHANGED + EQUAL + TRUE);
     }
 
-    private Cursor query(String[] columns, String selection, String groupBy, String orderBy) {
+    private Cursor query(String[] columns, String selection, String groupBy, String orderBy, String limit) {
         if (LOG_ENABLED)
             UtilsLog.d(TAG, "query", "columns == " + Arrays.toString(columns) +
-                    ", selection == " + selection + ", groupBy == " + groupBy + ", orderBy == " + orderBy);
+                    ", selection == " + selection + ", groupBy == " + groupBy +
+                    ", orderBy == " + orderBy + ", limit == " + limit);
 
 //        for (int i = 0, waitSeconds = 3; i < waitSeconds; i++) {
 //            try {
@@ -337,7 +354,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        }
 
         return getReadableDatabase().query(TableFueling.NAME, columns, selection,
-                null, groupBy, null, orderBy);
+                null, groupBy, null, orderBy, limit);
+    }
+
+    private Cursor query(String[] columns, String selection, String groupBy, String orderBy) {
+        return query(columns, selection, groupBy, orderBy, null);
     }
 
     public long insert(@NonNull SQLiteDatabase db, @NonNull ContentValues values) {

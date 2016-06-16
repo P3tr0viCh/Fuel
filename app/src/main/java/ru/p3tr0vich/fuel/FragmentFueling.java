@@ -51,13 +51,14 @@ public class FragmentFueling extends FragmentBase implements
 
     public static final String TAG = "FragmentFueling";
 
-    private static final boolean LOG_ENABLED = false;
+    private static final boolean LOG_ENABLED = true;
 
     private static final String KEY_FILTER_MODE = "KEY_FILTER_MODE";
     private static final String KEY_FILTER_DATE_FROM = "KEY_FILTER_DATE_FROM";
     private static final String KEY_FILTER_DATE_TO = "KEY_FILTER_DATE_TO";
 
     private static final int FUELING_CURSOR_LOADER_ID = 0;
+    private static final int FUELING_TOTAL_CURSOR_LOADER_ID = 1;
 
     private Toolbar mToolbarDates;
     private View mToolbarShadow;
@@ -280,6 +281,7 @@ public class FragmentFueling extends FragmentBase implements
         doSetFilterMode(mFilter.mode);
 
         getLoaderManager().initLoader(FUELING_CURSOR_LOADER_ID, null, this);
+        getLoaderManager().initLoader(FUELING_TOTAL_CURSOR_LOADER_ID, null, this);
     }
 
     @Override
@@ -370,6 +372,7 @@ public class FragmentFueling extends FragmentBase implements
                     return !setFilterMode(DatabaseHelper.Filter.MODE_CURRENT_YEAR);
 
             case DatabaseHelper.Filter.MODE_YEAR:
+            case DatabaseHelper.Filter.MODE_TWO_LAST_RECORDS:
         }
 
         return !setFilterMode(DatabaseHelper.Filter.MODE_ALL); // not
@@ -389,6 +392,8 @@ public class FragmentFueling extends FragmentBase implements
 
         if (forceLoad)
             getLoaderManager().getLoader(FUELING_CURSOR_LOADER_ID).forceLoad();
+
+        getLoaderManager().getLoader(FUELING_TOTAL_CURSOR_LOADER_ID).forceLoad();
     }
 
     private boolean markRecordAsDeleted(@NonNull FuelingRecord fuelingRecord) {
@@ -447,6 +452,8 @@ public class FragmentFueling extends FragmentBase implements
         switch (id) {
             case FUELING_CURSOR_LOADER_ID:
                 return new FuelingCursorLoader(getContext(), mFilter);
+            case FUELING_TOTAL_CURSOR_LOADER_ID:
+                return new FuelingTotalCursorLoader(getContext());
             default:
                 return null;
         }
@@ -473,20 +480,39 @@ public class FragmentFueling extends FragmentBase implements
         mFuelingTotalView.onFuelingRecordsChanged(records);
     }
 
+    private void updateTotal(@Nullable Cursor data) {
+        List<FuelingRecord> records = DatabaseHelper.getFuelingRecords(data);
+        mFuelingTotalView.onLastFuelingRecordsChanged(records);
+    }
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (LOG_ENABLED) UtilsLog.d(TAG, "onLoadFinished");
 
-        swapRecords(data);
+        switch (loader.getId()) {
+            case FUELING_CURSOR_LOADER_ID:
+                swapRecords(data);
+//                setFabVisible(true); // TODO: remove?
+                break;
+            case FUELING_TOTAL_CURSOR_LOADER_ID:
+                updateTotal(data);
+                break;
+        }
 
-        setFabVisible(true); // TODO: remove?
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         if (LOG_ENABLED) UtilsLog.d(TAG, "onLoaderReset");
 
-        swapRecords(null);
+        switch (loader.getId()) {
+            case FUELING_CURSOR_LOADER_ID:
+                swapRecords(null);
+                break;
+            case FUELING_TOTAL_CURSOR_LOADER_ID:
+                updateTotal(null);
+                break;
+        }
     }
 
     private final Runnable mRunnableShowNoRecords = new Runnable() {
@@ -853,6 +879,20 @@ public class FragmentFueling extends FragmentBase implements
             } finally {
                 BroadcastReceiverLoading.send(getContext(), false);
             }
+        }
+    }
+
+    private static class FuelingTotalCursorLoader extends CursorLoader {
+
+        FuelingTotalCursorLoader(Context context) {
+            super(context);
+        }
+
+        @Override
+        public Cursor loadInBackground() {
+            if (LOG_ENABLED) UtilsLog.d(TAG, "FuelingTotalCursorLoader", "loadInBackground");
+
+            return ContentProviderHelper.getTwoLastRecords(getContext());
         }
     }
 }

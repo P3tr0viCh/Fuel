@@ -670,13 +670,13 @@ public class ActivityMain extends AppCompatActivity implements
 
     private static int filterModeToPosition(@DatabaseHelper.Filter.Mode int filterMode) {
         switch (filterMode) {
-            case DatabaseHelper.Filter.MODE_CURRENT_YEAR:
-                return 0;
             case DatabaseHelper.Filter.MODE_YEAR:
             case DatabaseHelper.Filter.MODE_DATES:
                 return 1;
             case DatabaseHelper.Filter.MODE_ALL:
                 return 2;
+            case DatabaseHelper.Filter.MODE_CURRENT_YEAR:
+            case DatabaseHelper.Filter.MODE_TWO_LAST_RECORDS:
             default:
                 return 0;
         }

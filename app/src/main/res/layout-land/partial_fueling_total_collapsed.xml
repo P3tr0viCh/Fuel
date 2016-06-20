@@ -38,4 +38,20 @@
         android:maxLines="1"
         android:textAppearance="@style/AppTheme.TextAppearance.Text"
         tools:text="123/45678"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/row_item_space_between"
+        android:contentDescription="@string/text_total_estimated_mileage"
+        android:src="@drawable/ic_cash_100"/>
+
+    <TextView
+        android:id="@+id/text_cost_sum_collapsed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:maxLines="1"
+        android:textAppearance="@style/AppTheme.TextAppearance.Text"
+        tools:text="@string/list_item_cost"/>
 </LinearLayout>

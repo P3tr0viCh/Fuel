@@ -26,6 +26,11 @@
     <dimen name="recycler_view_footer_height">88dp</dimen>
     <dimen name="recycler_view_scroll_threshold">72dp</dimen>
 
+    <dimen name="row_padding_top">4dp</dimen>
+    <dimen name="row_padding_bottom">4dp</dimen>
+
+    <dimen name="row_item_space_between">24dp</dimen>
+
     <dimen name="tab_min_width">72dp</dimen>
 
     <dimen name="abc_text_size_large_material" tools:override="true">16sp</dimen>

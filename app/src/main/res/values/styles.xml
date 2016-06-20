@@ -124,6 +124,19 @@
         <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
     </style>
 
+    <style name="AppTheme.TableRow">
+        <item name="android:paddingTop">@dimen/row_padding_top</item>
+        <item name="android:paddingBottom">@dimen/row_padding_bottom</item>
+    </style>
+
+    <style name="AppTheme.TableRow.First">
+        <item name="android:paddingTop">0dp</item>
+    </style>
+
+    <style name="AppTheme.TableRow.Last">
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
     <style name="AppTheme.PreferenceThemeOverlay" parent="PreferenceThemeOverlay.v14.Material">
         <item name="preferenceScreenStyle">@style/AppTheme.Preference.PreferenceScreen</item>
         <item name="preferenceCategoryStyle">@style/AppTheme.Preference.Category</item>

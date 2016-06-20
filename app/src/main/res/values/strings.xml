@@ -54,10 +54,11 @@
     <string name="text_distance">Расстояние</string>
     <string name="text_consumption">Расход</string>
 
-    <string name="text_average_small">Расход</string>
-    <string name="text_average_large">Средний расход</string>
-    <string name="text_sum_cost_small">Сумма</string>
-    <string name="text_sum_cost_large">Сумма стоимости</string>
+    <string name="text_total_average">Средний расход</string>
+    <string name="text_total_sum_cost">Сумма стоимости</string>
+    <string name="text_total_last_cons">Расход за посл. поездку</string>
+    <string name="text_total_estimated_mileage">Предп. пробег</string>
+    <string name="text_total_estimated_total">Предп. общий пробег</string>
 
     <string name="text_sum">Сумма</string>
     <string name="text_median">Медиана</string>

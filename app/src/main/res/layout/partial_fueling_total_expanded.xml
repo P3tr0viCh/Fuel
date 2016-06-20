@@ -1,40 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:paddingEnd="@dimen/expansion_panel_padding_end"
-             android:paddingStart="@dimen/expansion_panel_padding_start">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:paddingEnd="@dimen/expansion_panel_padding_end"
+              android:paddingStart="@dimen/expansion_panel_padding_start">
 
-    <TableRow
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="8dp">
+        android:paddingBottom="@dimen/expansion_panel_expanded_padding_top">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_average_large"
-            android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
-
-        <TextView
-            android:id="@+id/text_average_expanded"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:textAppearance="@style/AppTheme.TextAppearance.Text"
-            tools:text="@string/list_item_volume"/>
-    </TableRow>
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/text_sum_cost_large"
+            android:maxLines="1"
+            android:text="@string/text_total_sum_cost"
             android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
 
         <TextView
@@ -42,7 +24,89 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
+            android:maxLines="1"
             android:textAppearance="@style/AppTheme.TextAppearance.Text"
             tools:text="@string/list_item_cost"/>
-    </TableRow>
-</TableLayout>
+    </LinearLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow style="@style/AppTheme.TableRow.First">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/text_total_last_cons"
+                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
+
+            <TextView
+                android:id="@+id/text_last_cons_expanded"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:maxLines="1"
+                android:textAppearance="@style/AppTheme.TextAppearance.Text"
+                tools:text="@string/list_item_volume"/>
+        </TableRow>
+
+        <TableRow style="@style/AppTheme.TableRow">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/text_total_estimated_mileage"
+                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
+
+            <TextView
+                android:id="@+id/text_estimated_mileage_expanded"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:maxLines="1"
+                android:textAppearance="@style/AppTheme.TextAppearance.Text"
+                tools:text="@string/list_item_total"/>
+        </TableRow>
+
+        <TableRow style="@style/AppTheme.TableRow">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/text_total_estimated_total"
+                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
+
+            <TextView
+                android:id="@+id/text_estimated_total_expanded"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:maxLines="1"
+                android:textAppearance="@style/AppTheme.TextAppearance.Text"
+                tools:text="@string/list_item_total"/>
+        </TableRow>
+
+        <TableRow style="@style/AppTheme.TableRow.Last">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/text_total_average"
+                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
+
+            <TextView
+                android:id="@+id/text_average_expanded"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:maxLines="1"
+                android:textAppearance="@style/AppTheme.TextAppearance.Text"
+                tools:text="@string/list_item_volume"/>
+        </TableRow>
+    </TableLayout>
+</LinearLayout>

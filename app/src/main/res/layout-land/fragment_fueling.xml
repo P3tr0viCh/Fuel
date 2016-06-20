@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -20,18 +21,23 @@
             android:layout_height="0dp"
             android:background="@drawable/toolbar_shadow"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/total_panel"
-            android:layout_below="@+id/toolbar_dates"
-            android:choiceMode="none"
-            tools:listitem="@layout/fueling_list_item"/>
+            android:layout_below="@+id/toolbar_dates">
 
-        <include layout="@layout/partial_progress_wheel"/>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:choiceMode="none"
+                tools:listitem="@layout/fueling_list_item"/>
 
-        <include layout="@layout/partial_text_no_records"/>
+            <include layout="@layout/partial_progress_wheel"/>
+
+            <include layout="@layout/partial_text_no_records"/>
+        </RelativeLayout>
 
         <FrameLayout
             android:id="@+id/total_panel"
@@ -41,7 +47,12 @@
 
             <View style="@style/AppTheme.Divider.Horizontal"/>
 
-            <include layout="@layout/partial_fueling_total"/>
+            <ru.p3tr0vich.widget.ExpansionPanel
+                android:id="@+id/expansion_panel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:collapsedLayout="@layout/partial_fueling_total_collapsed"
+                app:expandedLayout="@layout/partial_fueling_total_expanded"/>
         </FrameLayout>
 
         <include

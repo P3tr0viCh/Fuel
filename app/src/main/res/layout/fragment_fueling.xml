@@ -21,18 +21,23 @@
             android:layout_height="0dp"
             android:background="@drawable/toolbar_shadow"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/total_panel"
-            android:layout_below="@+id/toolbar_dates"
-            android:choiceMode="none"
-            tools:listitem="@layout/fueling_list_item"/>
+            android:layout_below="@+id/toolbar_dates">
 
-        <include layout="@layout/partial_progress_wheel"/>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:choiceMode="none"
+                tools:listitem="@layout/fueling_list_item"/>
 
-        <include layout="@layout/partial_text_no_records"/>
+            <include layout="@layout/partial_progress_wheel"/>
+
+            <include layout="@layout/partial_text_no_records"/>
+        </RelativeLayout>
 
         <FrameLayout
             android:id="@+id/total_panel"

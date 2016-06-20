@@ -44,7 +44,7 @@ import ru.p3tr0vich.fuel.utils.UtilsDate;
 import ru.p3tr0vich.fuel.utils.UtilsFormat;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
 import ru.p3tr0vich.fuel.views.FuelingTotalView;
-import ru.p3tr0vich.fuel.views.FuelingTotalViewImpl;
+import ru.p3tr0vich.fuel.factories.FuelingTotalViewFactory;
 
 public class FragmentFueling extends FragmentBase implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -163,16 +163,7 @@ public class FragmentFueling extends FragmentBase implements
 
         View view = inflater.inflate(R.layout.fragment_fueling, container, false);
 
-        final int[] averageIds;
-        final int[] costSumIds;
-        if (Utils.isPhoneInPortrait()) {
-            averageIds = new int[]{R.id.text_average_collapsed, R.id.text_average_expanded};
-            costSumIds = new int[]{R.id.text_cost_sum_collapsed, R.id.text_cost_sum_expanded};
-        } else {
-            averageIds = new int[]{R.id.text_average};
-            costSumIds = new int[]{R.id.text_cost_sum};
-        }
-        mFuelingTotalView = new FuelingTotalViewImpl(view, averageIds, costSumIds);
+        mFuelingTotalView = FuelingTotalViewFactory.getFuelingTotalView(view);
 
         mToolbarDates = (Toolbar) view.findViewById(R.id.toolbar_dates);
         mToolbarShadow = view.findViewById(R.id.view_toolbar_shadow);
@@ -492,7 +483,6 @@ public class FragmentFueling extends FragmentBase implements
         switch (loader.getId()) {
             case FUELING_CURSOR_LOADER_ID:
                 swapRecords(data);
-//                setFabVisible(true); // TODO: remove?
                 break;
             case FUELING_TOTAL_CURSOR_LOADER_ID:
                 updateTotal(data);

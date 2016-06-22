@@ -4,15 +4,13 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:background="?attr/listChoiceBackgroundIndicator"
+              android:background="?attr/selectableItemBackground"
               android:baselineAligned="false"
-              android:clipToPadding="false"
               android:focusable="true"
               android:gravity="center_vertical"
               android:minHeight="48dp"
               android:paddingEnd="16dp"
-              android:paddingStart="16dp"
-              tools:ignore="Overdraw">
+              android:paddingStart="16dp">
 
     <LinearLayout
         android:id="@+id/icon_frame"
@@ -41,6 +39,9 @@
             android:id="@android:id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
+            android:maxLines="1"
             android:textAppearance="@style/AppTheme.TextAppearance.Body"
             android:textColor="@color/text_primary"/>
 

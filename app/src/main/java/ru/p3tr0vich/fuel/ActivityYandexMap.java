@@ -238,6 +238,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
             });
 
             mWebView.setWebViewClient(new WebViewClient() {
+                @SuppressWarnings("deprecation")
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
                     final String innerUrl = url;

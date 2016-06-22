@@ -33,6 +33,8 @@
 
     <dimen name="tab_min_width">72dp</dimen>
 
+    <dimen name="preference_category_height">32dp</dimen>
+
     <dimen name="abc_text_size_large_material" tools:override="true">16sp</dimen>
     <dimen name="abc_text_size_medium_material" tools:override="true">14sp</dimen>
     <dimen name="abc_text_size_small_material" tools:override="true">12sp</dimen>

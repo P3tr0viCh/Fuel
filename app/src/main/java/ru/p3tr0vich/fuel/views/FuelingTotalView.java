@@ -1,7 +1,6 @@
 package ru.p3tr0vich.fuel.views;
 
 import android.support.annotation.Nullable;
-import android.support.annotation.Size;
 
 import java.util.List;
 

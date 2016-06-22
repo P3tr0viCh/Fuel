@@ -163,7 +163,7 @@ public class FragmentChartCost extends FragmentBase implements
             updateChart();
         }
 
-        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if (!mUpdateYearsInProcess) setYear(getYearFromPosition(tab.getPosition()));

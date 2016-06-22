@@ -1,5 +1,6 @@
 package ru.p3tr0vich.fuel;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -158,7 +159,8 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
         assert preferences != null;
 
-        FrameLayout listContainer = (FrameLayout) preferences.findViewById(R.id.list_container);
+        @SuppressLint("InlinedApi")
+        FrameLayout listContainer = (FrameLayout) preferences.findViewById(android.R.id.list_container);
 
         FrameLayout root = (FrameLayout) inflater.inflate(R.layout.fragment_preferences, container, false);
         LinearLayout prefContainer = (LinearLayout) root.findViewById(R.id.pref_container);

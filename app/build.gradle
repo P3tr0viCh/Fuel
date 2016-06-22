@@ -22,6 +22,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
+    //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "ru.p3tr0vich.fuel"
 
@@ -60,6 +61,7 @@ android {
     productFlavors {
     }
 
+    //noinspection GroovyMissingReturnStatement
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'

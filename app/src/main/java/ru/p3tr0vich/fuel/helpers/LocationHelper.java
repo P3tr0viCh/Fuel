@@ -88,20 +88,22 @@ public class LocationHelper {
         return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mContext);
     }
 
+//  Взято отсюда: GooglePlayServicesUtil.showErrorDialogFragment()
     @Nullable
     public String getConnectionResultTitle(int result) {
-        return com.google.android.gms.common.internal.zzg.zzg(mContext, result);
+        return com.google.android.gms.common.internal.zzh.zzf(mContext, result);
     }
 
     @NonNull
     public String getConnectionResultMessage(int result) {
-        String var11 = GooglePlayServicesUtil.zzao(mContext);
-        return com.google.android.gms.common.internal.zzg.zzc(mContext, result, var11);
+        String var11 = GooglePlayServicesUtil.zzam(mContext);
+        return com.google.android.gms.common.internal.zzh.zzb(mContext, result, var11);
     }
 
+    /**
+     * @return true if permission denied
+     */
     private boolean checkSelfPermission() {
-        // result == true if denied
-
 //        if (result) {
 //        TODO: Consider calling
 //        ActivityCompat#requestPermissions

@@ -6,12 +6,19 @@ import android.support.annotation.NonNull;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
 @SuppressWarnings("unused")
 class YandexMapJavascriptInterface {
 
     public static final String NAME = "YandexMapJavascriptInterface";
 
+    private static final boolean LOG_ENABLED = false;
+
     private static final String JS = "javascript:";
+
+    private static final int ZOOM_HOUSES = 17;
+    private static final int ZOOM_CITIES = 8;
 
     private final Activity mActivity;
     private final WebView mWebView;
@@ -70,7 +77,7 @@ class YandexMapJavascriptInterface {
     private void runJavaScript(@NonNull String script) {
         script = JS + script;
 
-//        UtilsLog.d(NAME, "runJavaScript", "script == " + script);
+        if (LOG_ENABLED) UtilsLog.d(NAME, "runJavaScript", "script == " + script);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
             mWebView.evaluateJavascript(script, null);
@@ -82,8 +89,20 @@ class YandexMapJavascriptInterface {
         runJavaScript("setStartLocation(" + String.valueOf(latitude) + ", " + String.valueOf(longitude) + ")");
     }
 
-    public void setZoom(boolean inc) {
-        runJavaScript("setZoom(" + inc + ")");
+    public void setZoomIn() {
+        runJavaScript("setZoomIn()");
+    }
+
+    public void setZoomOut() {
+        runJavaScript("setZoomOut()");
+    }
+
+    public void setZoomToHouses() {
+        runJavaScript("setZoom(" + ZOOM_HOUSES + ")");
+    }
+
+    public void setZoomToCities() {
+        runJavaScript("setZoom(" + ZOOM_CITIES + ")");
     }
 
     @JavascriptInterface
@@ -191,7 +210,7 @@ class YandexMapJavascriptInterface {
             }
         });
     }
-    
+
     @JavascriptInterface
     public void onErrorSearchPoint() {
         mActivity.runOnUiThread(new Runnable() {

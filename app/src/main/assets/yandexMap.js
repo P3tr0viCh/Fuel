@@ -337,21 +337,31 @@ function setStartLocation(latitude, longitude) {
     calculator.setStartPoint([latitude, longitude]);
 }
 
-function setZoom(inc) {
+function setZoom(zoom) {
     try {
-        var zoom = calculator.map.getZoom();
-
-        if (inc) zoom++; else zoom--;
-
         calculator.map.setZoom(zoom, {checkZoomRange: true});
     } catch (err) {
-        console.log("setZoom catch error == " + err.toString());
+        console.log("setZoom error == " + err.toString());
     }
 }
 
-if (YandexMapJavascriptInterface) {
-    console.log("YandexMapJavascriptInterface found");
+function setZoomInOut(inc) {
+    var zoom = calculator.map.getZoom();
 
+    if (inc) zoom++; else zoom--;
+
+    setZoom(zoom);
+}
+
+function setZoomIn() {
+    setZoomInOut(true);
+}
+
+function setZoomOut() {
+    setZoomInOut(false);
+}
+
+if (YandexMapJavascriptInterface) {
     try {
         switch (mapType) {
             case MAP_TYPE_CENTER:

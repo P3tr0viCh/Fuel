@@ -51,7 +51,7 @@ public class FragmentFueling extends FragmentBase implements
 
     public static final String TAG = "FragmentFueling";
 
-    private static final boolean LOG_ENABLED = true;
+    private static final boolean LOG_ENABLED = false;
 
     private static final String KEY_FILTER_MODE = "KEY_FILTER_MODE";
     private static final String KEY_FILTER_DATE_FROM = "KEY_FILTER_DATE_FROM";
@@ -114,6 +114,20 @@ public class FragmentFueling extends FragmentBase implements
     private OnFilterChangeListener mOnFilterChangeListener;
     private OnRecordChangeListener mOnRecordChangeListener;
 
+    private static class AnimationDuration {
+        public final int layoutTotalShow;
+        public final int layoutTotalHide;
+        public final int startDelayFab;
+
+        public AnimationDuration() {
+            startDelayFab = Utils.getInteger(R.integer.animation_start_delay_fab);
+            layoutTotalShow = Utils.getInteger(R.integer.animation_duration_layout_total_show);
+            layoutTotalHide = Utils.getInteger(R.integer.animation_duration_layout_total_hide);
+        }
+    }
+
+    private AnimationDuration mAnimationDuration;
+
     @NonNull
     public static Fragment newInstance(int id) {
         return newInstance(id, new FragmentFueling());
@@ -124,6 +138,8 @@ public class FragmentFueling extends FragmentBase implements
         super.onCreate(savedInstanceState);
 
         mFilter = new DatabaseHelper.Filter();
+
+        mAnimationDuration = new AnimationDuration();
 
         if (savedInstanceState == null) {
             if (LOG_ENABLED) UtilsLog.d(TAG, "onCreate", "savedInstanceState == null");
@@ -319,9 +335,13 @@ public class FragmentFueling extends FragmentBase implements
         mOnFilterChangeListener.onFilterChange(filterMode);
     }
 
+    /**
+     * Изменяет текущий фильтр и вызывает restartLoader в случае изменения.
+     *
+     * @param filterMode новый фильтр.
+     * @return true, если фильтр изменился.
+     */
     public boolean setFilterMode(@DatabaseHelper.Filter.Mode int filterMode) {
-        // Результат: true -- фильтр изменён, вызван restartLoader.
-
         if (mFilter.mode != filterMode) {
 
             setToolbarDatesVisible(filterMode == DatabaseHelper.Filter.MODE_DATES, true);
@@ -343,11 +363,14 @@ public class FragmentFueling extends FragmentBase implements
                 UtilsDate.getCurrentYear();
     }
 
+    /**
+     * Проверяет, входит ли dateTime в фильтр записей mFilter.
+     *
+     * @param dateTime дата и время.
+     * @return true, если dateTime входит в фильтр, можно вызвать forceLoad,
+     * и false, если фильтр был изменён, при этом был вызван restartLoader.
+     */
     private boolean checkDateTime(final long dateTime) {
-        // Результат:
-        // true -- dateTime входит в фильтр, можно вызвать forceLoad.
-        // false -- фильтр изменён, вызван restartLoader.
-
         switch (mFilter.mode) {
             case DatabaseHelper.Filter.MODE_ALL:
                 return true;
@@ -360,7 +383,7 @@ public class FragmentFueling extends FragmentBase implements
                 if (dateTime >= mFilter.dateFrom && dateTime <= mFilter.dateTo)
                     return true;
                 else if (isDateTimeInCurrentYear(dateTime))
-                    return !setFilterMode(DatabaseHelper.Filter.MODE_CURRENT_YEAR);
+                    return !setFilterMode(DatabaseHelper.Filter.MODE_CURRENT_YEAR); // not
 
             case DatabaseHelper.Filter.MODE_YEAR:
             case DatabaseHelper.Filter.MODE_TWO_LAST_RECORDS:
@@ -667,9 +690,9 @@ public class FragmentFueling extends FragmentBase implements
         ValueAnimator valueAnimator = ValueAnimator.ofInt(
                 (int) mTotalPanel.getTranslationY(), visible ? 0 : mTotalPanel.getHeight());
         valueAnimator
-                .setDuration(Utils.getInteger(visible ?
-                        R.integer.animation_duration_layout_total_show :
-                        R.integer.animation_duration_layout_total_hide))
+                .setDuration(visible ?
+                        mAnimationDuration.layoutTotalShow :
+                        mAnimationDuration.layoutTotalHide)
                 .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     int translationY;
 
@@ -690,7 +713,8 @@ public class FragmentFueling extends FragmentBase implements
 
     public void setFabVisible(boolean visible) {
         final float value = visible ? 1.0f : 0.0f;
-        mFloatingActionButton.animate().scaleX(value).scaleY(value);
+        mFloatingActionButton.animate()
+                .setStartDelay(mAnimationDuration.startDelayFab).scaleX(value).scaleY(value);
     }
 
     private void updateFilterDateButtons(final boolean dateFrom, final long date) {
@@ -840,12 +864,26 @@ public class FragmentFueling extends FragmentBase implements
         ).show(getFragmentManager(), null);
     }
 
+    /**
+     * Вызывается при изменении фильтра.
+     * Используется в главной активности для обновления списка в тулбаре.
+     */
     public interface OnFilterChangeListener {
-        // to Toolbar Spinner
+        /**
+         * @param filterMode текущий фильтр.
+         */
         void onFilterChange(@DatabaseHelper.Filter.Mode int filterMode);
     }
 
+    /**
+     * Вызывается при добавлении или обновлении записи.
+     * Используется в главной активности для вызова активности изменения записи.
+     */
     public interface OnRecordChangeListener {
+        /**
+         * @param fuelingRecord если null -- добавляется новая запись,
+         *                      иначе -- запись обновляется.
+         */
         void onRecordChange(@Nullable FuelingRecord fuelingRecord);
     }
 

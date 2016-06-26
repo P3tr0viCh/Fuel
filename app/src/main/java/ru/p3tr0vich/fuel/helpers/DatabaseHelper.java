@@ -28,7 +28,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "DatabaseHelper";
 
-    private static final boolean LOG_ENABLED = true;
+    private static final boolean LOG_ENABLED = false;
 
     interface TableFuelingColumns {
         String DATETIME = "datetime";

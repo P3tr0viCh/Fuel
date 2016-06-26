@@ -6,6 +6,7 @@
     <integer name="animation_duration_layout_total_hide">200</integer>
     <integer name="animation_duration_sync">400</integer>
     <integer name="animation_duration_drawer_toggle">300</integer>
+    <integer name="animation_start_delay_fab">125</integer>
 
     <integer name="animation_chart">400</integer>
 

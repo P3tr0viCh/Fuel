@@ -45,10 +45,13 @@ import ru.p3tr0vich.fuel.utils.UtilsLog;
 
 public class ActivityYandexMap extends AppCompatActivity implements
         View.OnClickListener,
+        View.OnLongClickListener,
         YandexMapJavascriptInterface.YandexMap,
         LocationHelper.LocationHelperListener {
 
     private static final String TAG = "ActivityYandexMap";
+
+    private static final boolean LOG_ENABLED = false;
 
     private static final String INTENT_DISTANCE = "INTENT_DISTANCE";
     private static final String INTENT_MAP_CENTER_TEXT = "INTENT_MAP_CENTER_TEXT";
@@ -180,7 +183,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
             }
         });
 
-        UtilsLog.d(TAG, "initUI", "mLoading == " + mLoading);
+        if (LOG_ENABLED) UtilsLog.d(TAG, "initUI", "mLoading == " + mLoading);
 
         switch (mType) {
             case MAP_TYPE_DISTANCE:
@@ -201,10 +204,12 @@ public class ActivityYandexMap extends AppCompatActivity implements
         mBtnZoomIn = (FloatingActionButton) findViewById(R.id.btn_zoom_in);
         assert mBtnZoomIn != null;
         mBtnZoomIn.setOnClickListener(this);
+        mBtnZoomIn.setOnLongClickListener(this);
 
         mBtnZoomOut = (FloatingActionButton) findViewById(R.id.btn_zoom_out);
         assert mBtnZoomOut != null;
         mBtnZoomOut.setOnClickListener(this);
+        mBtnZoomOut.setOnLongClickListener(this);
 
         mBtnGeolocation = (FloatingActionButton) findViewById(R.id.btn_geolocation);
         assert mBtnGeolocation != null;
@@ -226,13 +231,15 @@ public class ActivityYandexMap extends AppCompatActivity implements
             mWebView.setWebChromeClient(new WebChromeClient() {
                 @Override
                 public boolean onConsoleMessage(@NonNull ConsoleMessage cm) {
-                    UtilsLog.d(TAG, "onConsoleMessage", cm.message() + " [line " + cm.lineNumber() + "]");
+                    if (LOG_ENABLED)
+                        UtilsLog.d(TAG, "onConsoleMessage", cm.message() + " [line " + cm.lineNumber() + "]");
                     return true;
                 }
 
                 @Override
                 public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                    UtilsLog.d(TAG, "onGeolocationPermissionsShowPrompt", "origin == " + origin);
+                    if (LOG_ENABLED)
+                        UtilsLog.d(TAG, "onGeolocationPermissionsShowPrompt", "origin == " + origin);
                     callback.invoke(origin, true, false);
                 }
             });
@@ -256,8 +263,9 @@ public class ActivityYandexMap extends AppCompatActivity implements
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                    UtilsLog.d(TAG, "onReceivedError", "errorCode == " + errorCode +
-                            ", description == " + description);
+                    if (LOG_ENABLED)
+                        UtilsLog.d(TAG, "onReceivedError", "errorCode == " + errorCode +
+                                ", description == " + description);
                     Utils.toast(String.format(getString(R.string.text_error_webview), description));
                 }
 
@@ -265,8 +273,9 @@ public class ActivityYandexMap extends AppCompatActivity implements
                 @Override
                 public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                     super.onReceivedError(view, request, error);
-                    UtilsLog.d(TAG, "onReceivedError", "request == " + request.toString() +
-                            ", error == " + error.toString());
+                    if (LOG_ENABLED)
+                        UtilsLog.d(TAG, "onReceivedError", "request == " + request.toString() +
+                                ", error == " + error.toString());
                     Utils.toast(String.format(getString(R.string.text_error_webview), error.getDescription()));
                 }
             });
@@ -367,10 +376,10 @@ public class ActivityYandexMap extends AppCompatActivity implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_zoom_in:
-                mYandexMapJavascriptInterface.setZoom(true);
+                mYandexMapJavascriptInterface.setZoomIn();
                 break;
             case R.id.btn_zoom_out:
-                mYandexMapJavascriptInterface.setZoom(false);
+                mYandexMapJavascriptInterface.setZoomOut();
                 break;
             case R.id.btn_geolocation:
                 final int googlePlayServicesAvailable = mLocationHelper.isGooglePlayServicesAvailable();
@@ -386,6 +395,20 @@ public class ActivityYandexMap extends AppCompatActivity implements
                             mLocationHelper.getConnectionResultMessage(googlePlayServicesAvailable));
 
                 break;
+        }
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_zoom_in:
+                mYandexMapJavascriptInterface.setZoomToHouses();
+                return true;
+            case R.id.btn_zoom_out:
+                mYandexMapJavascriptInterface.setZoomToCities();
+                return true;
+            default:
+                return false;
         }
     }
 
@@ -423,7 +446,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
         if (mDistance > 0)
             title += String.format(getString(R.string.title_yandex_map_add), mDistance);
 
-        UtilsLog.d(TAG, "onDistanceChange", "title == " + title);
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onDistanceChange", "title == " + title);
 
         //noinspection ConstantConditions
         getSupportActionBar().setTitle(title);
@@ -480,7 +503,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
     public void onMapCenterChange(String text, String title, String subtitle,
                                   double latitude, double longitude) {
-        UtilsLog.d(TAG, "onMapCenterChange", "text == " + text);
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onMapCenterChange", "text == " + text);
 
         if (!TextUtils.isEmpty(text))
             mMapCenter.text = minimizeGeoCode(text);
@@ -524,7 +547,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
     }
 
     public void onEndLoading(boolean hasError) {
-        UtilsLog.d(TAG, "onEndLoading", "hasError == " + hasError);
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onEndLoading", "hasError == " + hasError);
 
         mLoading = false;
 
@@ -583,7 +606,8 @@ public class ActivityYandexMap extends AppCompatActivity implements
         try {
             status.startResolutionForResult(this, RESOLUTION_REQUIRED_REQUEST_CODE);
         } catch (Exception e) {
-            UtilsLog.d(TAG, "onResolutionRequired", "Exception e == " + e.toString());
+            if (LOG_ENABLED)
+                UtilsLog.d(TAG, "onResolutionRequired", "Exception e == " + e.toString());
         }
     }
 
@@ -597,7 +621,8 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
                         break;
                     case Activity.RESULT_CANCELED:
-                        UtilsLog.d(TAG, "onActivityResult", "RESOLUTION_REQUIRED_REQUEST_CODE result == RESULT_CANCELED");
+                        if (LOG_ENABLED)
+                            UtilsLog.d(TAG, "onActivityResult", "RESOLUTION_REQUIRED_REQUEST_CODE result == RESULT_CANCELED");
 
                         break;
                     default:

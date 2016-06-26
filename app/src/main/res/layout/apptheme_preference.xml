@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
             android:fadingEdge="horizontal"
-            android:maxLines="1"
+            android:maxLines="3"
             android:textAppearance="@style/AppTheme.TextAppearance.Body"
             android:textColor="@color/text_primary"/>
 
@@ -56,7 +56,6 @@
             android:textColor="@color/text_secondary"/>
     </RelativeLayout>
 
-    <!-- Preference should place its actual preference widget here. -->
     <LinearLayout
         android:id="@android:id/widget_frame"
         android:layout_width="wrap_content"

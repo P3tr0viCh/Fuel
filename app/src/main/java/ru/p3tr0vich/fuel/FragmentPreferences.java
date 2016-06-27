@@ -1,6 +1,5 @@
 package ru.p3tr0vich.fuel;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,11 +11,6 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceGroup;
 import android.support.v7.preference.PreferenceScreen;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
@@ -149,27 +143,6 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
         super.onSaveInstanceState(outState);
 
         outState.putString(KEY_PREFERENCE_SCREEN, mIsInRoot ? null : getPreferenceScreen().getKey());
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (LOG_ENABLED) UtilsLog.d(TAG, "onCreateView");
-
-        LinearLayout preferences = (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
-
-        assert preferences != null;
-
-        @SuppressLint("InlinedApi")
-        FrameLayout listContainer = (FrameLayout) preferences.findViewById(android.R.id.list_container);
-
-        FrameLayout root = (FrameLayout) inflater.inflate(R.layout.fragment_preferences, container, false);
-        LinearLayout prefContainer = (LinearLayout) root.findViewById(R.id.pref_container);
-
-        preferences.removeAllViews();
-        prefContainer.addView(listContainer);
-        preferences.addView(root);
-
-        return preferences;
     }
 
     @Override

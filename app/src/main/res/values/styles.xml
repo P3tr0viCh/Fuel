@@ -138,6 +138,7 @@
     </style>
 
     <style name="AppTheme.PreferenceThemeOverlay" parent="PreferenceThemeOverlay.v14.Material">
+        <item name="android:layout">@layout/fragment_preferences</item>
         <item name="preferenceScreenStyle">@style/AppTheme.Preference.PreferenceScreen</item>
         <item name="preferenceCategoryStyle">@style/AppTheme.Preference.Category</item>
         <item name="preferenceStyle">@style/AppTheme.Preference</item>

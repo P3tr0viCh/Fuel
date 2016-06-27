@@ -50,7 +50,7 @@
     <string name="text_cost">Стоимость</string>
     <string name="text_volume">Объём</string>
     <string name="text_total">Пробег</string>
-    <string name="text_price">Цена за литр</string>
+    <string name="text_price">Цена топлива</string>
     <string name="text_distance">Расстояние</string>
     <string name="text_consumption">Расход</string>
 

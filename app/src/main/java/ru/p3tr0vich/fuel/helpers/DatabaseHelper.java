@@ -177,7 +177,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public DatabaseHelper(Context context) {
+    public DatabaseHelper(@NonNull Context context) {
         super(context, Database.NAME, null, Database.VERSION);
     }
 

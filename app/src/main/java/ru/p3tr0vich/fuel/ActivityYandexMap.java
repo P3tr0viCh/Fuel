@@ -158,8 +158,12 @@ public class ActivityYandexMap extends AppCompatActivity implements
                 mType = MAP_TYPE_CENTER;
         }
 
+        PreferencesHelper preferencesHelper = PreferencesHelper.getInstance(this);
+
         mMapCenter = new MapCenter();
         mMapCenter.text = getString(R.string.yandex_map_map_center_title);
+        mMapCenter.latitude = preferencesHelper.getMapCenterLatitude();
+        mMapCenter.longitude = preferencesHelper.getMapCenterLongitude();
 
         mLocationHelper = new LocationHelper(this).setLocationHelperListener(this);
 
@@ -458,12 +462,12 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
     @Override
     public double getMapCenterLatitude() {
-        return PreferencesHelper.getMapCenterLatitude();
+        return mMapCenter.latitude;
     }
 
     @Override
     public double getMapCenterLongitude() {
-        return PreferencesHelper.getMapCenterLongitude();
+        return mMapCenter.longitude;
     }
 
     @Override

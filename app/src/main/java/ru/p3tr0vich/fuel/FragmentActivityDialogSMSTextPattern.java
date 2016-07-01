@@ -45,8 +45,10 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
         mTextResult = (TextView) view.findViewById(R.id.text_check_result);
 
         if (savedInstanceState == null) {
-            mEditSMSText.setText(PreferencesHelper.getSMSText());
-            mEditSMSTextPattern.setText(PreferencesHelper.getSMSTextPattern());
+            PreferencesHelper preferencesHelper = PreferencesHelper.getInstance(getContext());
+
+            mEditSMSText.setText(preferencesHelper.getSMSText());
+            mEditSMSTextPattern.setText(preferencesHelper.getSMSTextPattern());
 
             updateResult();
         }
@@ -103,7 +105,7 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
 
     @Override
     public boolean onSaveClicked() {
-        PreferencesHelper.putSMSTextAndPattern(
+        PreferencesHelper.getInstance(getContext()).putSMSTextAndPattern(
                 mEditSMSText.getText().toString(),
                 mEditSMSTextPattern.getText().toString());
 

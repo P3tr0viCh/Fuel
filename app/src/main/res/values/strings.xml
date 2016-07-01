@@ -173,11 +173,9 @@
         <item>@string/winter</item>
     </string-array>
 
-    <string name="pref_def_key" translatable="false">key_def</string>
     <string name="pref_def_title">Заправка по умолчанию</string>
     <string name="pref_def_summary">Значения стоимости и объёма для новых записей</string>
 
-    <string name="pref_cons_key" translatable="false">key_cons</string>
     <string name="pref_cons_title">Расход топлива</string>
     <string name="pref_cons_summary">Расход топлива в различных режимах</string>
 
@@ -194,18 +192,6 @@
     <string name="pref_summary_winter_city">Расход зимой в городе</string>
     <string name="pref_summary_winter_highway">Расход зимой на трассе</string>
     <string name="pref_summary_winter_mixed">Расход зимой в смешанном режиме</string>
-
-    <string name="pref_def_cost" translatable="false">default cost</string>
-    <string name="pref_def_volume" translatable="false">default volume</string>
-    <string name="pref_last_total" translatable="false">last total</string>
-
-    <string name="pref_summer_city" translatable="false">summer city</string>
-    <string name="pref_summer_highway" translatable="false">summer highway</string>
-    <string name="pref_summer_mixed" translatable="false">summer mixed</string>
-
-    <string name="pref_winter_city" translatable="false">winter city</string>
-    <string name="pref_winter_highway" translatable="false">winter highway</string>
-    <string name="pref_winter_mixed" translatable="false">winter mixed</string>
 
     <string name="pref_sync_title">Синхронизация</string>
     <string name="pref_sync_summary_on">Включена</string>

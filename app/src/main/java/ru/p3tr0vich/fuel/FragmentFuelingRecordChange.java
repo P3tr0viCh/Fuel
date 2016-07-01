@@ -48,6 +48,8 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     private CostTextWatcherAdapter mCostTextWatcher = null;
     private VolumeTextWatcherAdapter mVolumeTextWatcher = null;
 
+    private PreferencesHelper mPreferencesHelper;
+
     @NonNull
     public static Fragment newInstance(@Nullable FuelingRecord fuelingRecord) {
         FragmentFuelingRecordChange fragment = new FragmentFuelingRecordChange();
@@ -56,6 +58,12 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
             fragment.setArguments(fuelingRecord.toBundle());
 
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mPreferencesHelper = PreferencesHelper.getInstance(getContext());
     }
 
     @Override
@@ -76,9 +84,9 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
             mFuelingRecord = new FuelingRecord(bundle);
         else
             mFuelingRecord = new FuelingRecord(
-                    PreferencesHelper.getDefaultCost(),
-                    PreferencesHelper.getDefaultVolume(),
-                    PreferencesHelper.getLastTotal());
+                    mPreferencesHelper.getDefaultCost(),
+                    mPreferencesHelper.getDefaultVolume(),
+                    mPreferencesHelper.getLastTotal());
 
         getActivity().setTitle(mFuelingRecord.getId() != 0 ?
                 R.string.dialog_caption_update :
@@ -103,8 +111,8 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 (savedInstanceState == null ||
                         savedInstanceState.getBoolean(STATE_KEY_CALC_ENABLED));
         if (mCalcEnabled) {
-            mDefaultCost = PreferencesHelper.getDefaultCost();
-            mDefaultVolume = PreferencesHelper.getDefaultVolume();
+            mDefaultCost = mPreferencesHelper.getDefaultCost();
+            mDefaultVolume = mPreferencesHelper.getDefaultVolume();
 
             if (mDefaultCost != 0 && mDefaultVolume != 0)
                 mOneCUVolumeCost = mDefaultCost / mDefaultVolume;
@@ -199,7 +207,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                     }
                 }
 
-                PreferencesHelper.putLastTotal(mFuelingRecord.getTotal());
+                mPreferencesHelper.putLastTotal(mFuelingRecord.getTotal());
 
                 Activity activity = getActivity();
 

@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import ru.p3tr0vich.fuel.helpers.DatabaseBackupXmlHelper;
-import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.utils.Utils;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
 
@@ -140,7 +139,7 @@ public class FragmentBackup extends FragmentBase {
         else if (result == DatabaseBackupXmlHelper.RESULT_LOAD_OK) {
             Utils.toast(R.string.message_load_file_ok);
 
-            PreferencesHelper.putFullSync(true);
+            preferencesHelper.putFullSync(true);
         } else
             FragmentDialogMessage.show(getActivity(), getString(R.string.title_message_error), resultMessage);
     }
@@ -152,7 +151,7 @@ public class FragmentBackup extends FragmentBase {
     private void loadFromXml() { // TODO: Сохранять старые в old?
         FragmentDialogQuestion.show(this, REQUEST_CODE_DIALOG_QUESTION,
                 R.string.dialog_caption_load_from_xml,
-                PreferencesHelper.isSyncEnabled() ?
+                preferencesHelper.isSyncEnabled() ?
                         R.string.message_dialog_load_from_xml_sync :
                         R.string.message_dialog_load_from_xml, R.string.dialog_btn_load, R.string.dialog_btn_disagree);
     }

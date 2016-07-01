@@ -2,6 +2,7 @@ package ru.p3tr0vich.fuel;
 
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.nfc.FormatException;
@@ -23,9 +24,12 @@ class SyncProviderPreferences {
 
     private static final String SEPARATOR = "=";
 
+    private final PreferencesHelper mPreferencesHelper;
+
     private final ContentProviderClient mProvider;
 
-    SyncProviderPreferences(ContentProviderClient provider) {
+    SyncProviderPreferences(Context context, ContentProviderClient provider) {
+        mPreferencesHelper = PreferencesHelper.getInstance(context);
         mProvider = provider;
     }
 
@@ -51,7 +55,7 @@ class SyncProviderPreferences {
                 do {
                     key = cursor.getString(0);
 
-                    switch (PreferencesHelper.getPreferenceType(key)) {
+                    switch (mPreferencesHelper.getPreferenceType(key)) {
                         case PreferencesHelper.PREFERENCE_TYPE_STRING:
                             result.put(key, cursor.getString(1));
                             break;
@@ -85,7 +89,7 @@ class SyncProviderPreferences {
         List<String> result = new ArrayList<>();
 
         for (String key : contentValues.keySet())
-            switch (PreferencesHelper.getPreferenceType(key)) {
+            switch (mPreferencesHelper.getPreferenceType(key)) {
                 case PreferencesHelper.PREFERENCE_TYPE_STRING:
                     result.add(key + SEPARATOR + UtilsString.encodeLineBreaks(contentValues.getAsString(key)));
                     break;
@@ -118,7 +122,7 @@ class SyncProviderPreferences {
 
             value = preference.substring(index + 1);
 
-            switch (PreferencesHelper.getPreferenceType(key)) {
+            switch (mPreferencesHelper.getPreferenceType(key)) {
                 case PreferencesHelper.PREFERENCE_TYPE_STRING:
                     contentValues.put(key, UtilsString.decodeLineBreaks(value));
                     break;
@@ -135,15 +139,14 @@ class SyncProviderPreferences {
     }
 
     public boolean isChanged() throws RemoteException, FormatException {
-        return query(PreferencesHelper.PREF_CHANGED)
-                .getAsBoolean(PreferencesHelper.PREF_CHANGED);
+        return query(mPreferencesHelper.keys.changed).getAsBoolean(mPreferencesHelper.keys.changed);
     }
 
     public void putChangedFalse() throws RemoteException {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(PreferencesHelper.PREF_CHANGED, false);
+        contentValues.put(mPreferencesHelper.keys.changed, false);
 
-        update(contentValues, PreferencesHelper.PREF_CHANGED);
+        update(contentValues, mPreferencesHelper.keys.changed);
     }
 
     private int getRevision(String keyRevision) throws RemoteException, FormatException {
@@ -151,11 +154,11 @@ class SyncProviderPreferences {
     }
 
     public int getDatabaseRevision() throws RemoteException, FormatException {
-        return getRevision(PreferencesHelper.PREF_DATABASE_REVISION);
+        return getRevision(mPreferencesHelper.keys.databaseRevision);
     }
 
     public int getPreferencesRevision() throws RemoteException, FormatException {
-        return getRevision(PreferencesHelper.PREF_PREFERENCES_REVISION);
+        return getRevision(mPreferencesHelper.keys.preferencesRevision);
     }
 
     private void putRevision(String keyRevision, int revision) throws RemoteException {
@@ -166,31 +169,30 @@ class SyncProviderPreferences {
     }
 
     public void putDatabaseRevision(int revision) throws RemoteException {
-        putRevision(PreferencesHelper.PREF_DATABASE_REVISION, revision);
+        putRevision(mPreferencesHelper.keys.databaseRevision, revision);
     }
 
     public void putPreferencesRevision(int revision) throws RemoteException {
-        putRevision(PreferencesHelper.PREF_PREFERENCES_REVISION, revision);
+        putRevision(mPreferencesHelper.keys.preferencesRevision, revision);
     }
 
-    public void putLastSync(final long dateTime, final boolean hasError) throws RemoteException {
+    public void putLastSync(long dateTime, boolean hasError) throws RemoteException {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(PreferencesHelper.PREF_LAST_SYNC_DATE_TIME, dateTime);
-        contentValues.put(PreferencesHelper.PREF_LAST_SYNC_HAS_ERROR, hasError);
+        contentValues.put(mPreferencesHelper.keys.lastSyncDateTime, dateTime);
+        contentValues.put(mPreferencesHelper.keys.lastSyncHasError, hasError);
 
-        update(contentValues, PreferencesHelper.PREF_LAST_SYNC_DATE_TIME);
-        update(contentValues, PreferencesHelper.PREF_LAST_SYNC_HAS_ERROR);
+        update(contentValues, mPreferencesHelper.keys.lastSyncDateTime);
+        update(contentValues, mPreferencesHelper.keys.lastSyncHasError);
     }
 
     public boolean isDatabaseFullSync() throws RemoteException, FormatException {
-        return query(PreferencesHelper.PREF_DATABASE_FULL_SYNC)
-                .getAsBoolean(PreferencesHelper.PREF_DATABASE_FULL_SYNC);
+        return query(mPreferencesHelper.keys.databaseFullSync).getAsBoolean(mPreferencesHelper.keys.databaseFullSync);
     }
 
     public void putDatabaseFullSyncFalse() throws RemoteException {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(PreferencesHelper.PREF_DATABASE_FULL_SYNC, false);
+        contentValues.put(mPreferencesHelper.keys.databaseFullSync, false);
 
-        update(contentValues, PreferencesHelper.PREF_DATABASE_FULL_SYNC);
+        update(contentValues, mPreferencesHelper.keys.databaseFullSync);
     }
 }

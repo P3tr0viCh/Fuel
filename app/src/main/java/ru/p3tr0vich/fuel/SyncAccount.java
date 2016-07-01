@@ -32,10 +32,10 @@ class SyncAccount {
         mAccountName = context.getString(R.string.sync_account_name);
         mAccountType = context.getString(R.string.sync_account_type);
 
-        mAccount = createAccount();
+        mAccount = createAccount(context);
     }
 
-    private Account createAccount() {
+    private Account createAccount(@NonNull Context context) {
         Account account;
 
         Account accounts[] = mAccountManager.getAccountsByType(getAccountType());
@@ -46,7 +46,7 @@ class SyncAccount {
             account = new Account(getAccountName(), getAccountType());
 
             if (mAccountManager.addAccountExplicitly(account, null, null)) {
-                setIsSyncable(account, PreferencesHelper.isSyncEnabled());
+                setIsSyncable(account, PreferencesHelper.getInstance(context).isSyncEnabled());
 
                 UtilsLog.d(TAG, "createAccount", "addAccountExplicitly == true");
             } else {

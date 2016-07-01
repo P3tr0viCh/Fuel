@@ -5,23 +5,20 @@ import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
-
 public class ApplicationFuel extends Application {
 
     @SuppressLint("StaticFieldLeak")
-    private static Context CONTEXT;
+    private static Context sContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        CONTEXT = getApplicationContext();
-        PreferencesHelper.init(CONTEXT);
+        sContext = getApplicationContext();
     }
 
     @NonNull
     public static Context getContext() {
-        if (CONTEXT == null) throw new AssertionError("Application context is null");
-        return CONTEXT;
+        if (sContext == null) throw new AssertionError("Application context is null");
+        return sContext;
     }
 }

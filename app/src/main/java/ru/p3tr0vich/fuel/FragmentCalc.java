@@ -21,14 +21,16 @@ import android.widget.Spinner;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.utils.Utils;
 import ru.p3tr0vich.fuel.utils.UtilsFormat;
+import ru.p3tr0vich.fuel.utils.UtilsLog;
 
 public class FragmentCalc extends FragmentBase implements
         AdapterView.OnItemSelectedListener, View.OnClickListener {
 
     public static final String TAG = "FragmentCalc";
+
+    private static final boolean LOG_ENABLED = false;
 
     private EditText mEditDistance;
     private EditText mEditCost;
@@ -46,6 +48,11 @@ public class FragmentCalc extends FragmentBase implements
 
     private float[][] arrCons = {{0, 0, 0}, {0, 0, 0}};
 
+    /**
+     * Изменённая единица, на основе которой вычисляются другие.
+     * Например, при изменении расстояния (CALC_ACTION_DISTANCE),
+     * вычисляются стоимость необходимого топлива и его объём.
+     */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({CALC_ACTION_DISTANCE, CALC_ACTION_COST, CALC_ACTION_VOLUME})
     private @interface CalcAction {
@@ -85,6 +92,8 @@ public class FragmentCalc extends FragmentBase implements
     @SuppressLint("InflateParams")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mCalculating = true;
+
         View view = inflater.inflate(R.layout.fragment_calc, container, false);
 
         mEditDistance = (EditText) view.findViewById(R.id.edit_distance);
@@ -116,17 +125,16 @@ public class FragmentCalc extends FragmentBase implements
             }
         });
 
-        mCalculating = true;
-
-        loadPrefs();
-
-        checkTextOnEmpty(mEditPrice);
-
         view.findViewById(R.id.text_distance).setOnClickListener(this);
         view.findViewById(R.id.text_cost).setOnClickListener(this);
         view.findViewById(R.id.text_volume).setOnClickListener(this);
         view.findViewById(R.id.text_price).setOnClickListener(this);
         view.findViewById(R.id.text_cons).setOnClickListener(this);
+
+        loadPrefs();
+
+        selectConsFromSpinners();
+        checkTextOnEmpty(mEditPrice);
 
         mSpinnerCons.setOnItemSelectedListener(this);
         mSpinnerSeason.setOnItemSelectedListener(this);
@@ -162,8 +170,12 @@ public class FragmentCalc extends FragmentBase implements
 
     @Override
     public void onResume() {
-        mCalculating = false;
         super.onResume();
+        mCalculating = false;
+
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onResume");
+
+        doCalculate(CALC_ACTION_COST);
     }
 
     @Override
@@ -198,20 +210,20 @@ public class FragmentCalc extends FragmentBase implements
     }
 
     private void loadPrefs() {
-        mEditDistance.setText(PreferencesHelper.getCalcDistance());
-        mEditCost.setText(PreferencesHelper.getCalcCost());
-        mEditVolume.setText(PreferencesHelper.getCalcVolume());
+        mEditDistance.setText(preferencesHelper.getCalcDistance());
+        mEditCost.setText(preferencesHelper.getCalcCost());
+        mEditVolume.setText(preferencesHelper.getCalcVolume());
 
-        mEditPrice.setText(PreferencesHelper.getCalcPrice());
+        mEditPrice.setText(preferencesHelper.getCalcPrice());
 
-        arrCons = PreferencesHelper.getCalcCons();
+        arrCons = preferencesHelper.getCalcCons();
 
-        mSpinnerCons.setSelection(PreferencesHelper.getCalcSelectedCons());
-        mSpinnerSeason.setSelection(PreferencesHelper.getCalcSelectedSeason());
+        mSpinnerCons.setSelection(preferencesHelper.getCalcSelectedCons());
+        mSpinnerSeason.setSelection(preferencesHelper.getCalcSelectedSeason());
     }
 
     private void savePrefs() {
-        PreferencesHelper.putCalc(
+        preferencesHelper.putCalc(
                 mEditDistance.getText().toString(),
                 mEditCost.getText().toString(),
                 mEditVolume.getText().toString(),
@@ -221,9 +233,11 @@ public class FragmentCalc extends FragmentBase implements
     }
 
     private void selectConsFromSpinners() {
-        UtilsFormat.floatToEditText(mEditCons,
-                arrCons[mSpinnerSeason.getSelectedItemPosition()][mSpinnerCons.getSelectedItemPosition()],
-                false);
+        float cons = arrCons[mSpinnerSeason.getSelectedItemPosition()][mSpinnerCons.getSelectedItemPosition()];
+
+        if (Float.compare(cons, UtilsFormat.editTextToFloat(mEditCons)) == 0) return;
+
+        UtilsFormat.floatToEditText(mEditCons, cons, false);
     }
 
     @Override
@@ -233,7 +247,6 @@ public class FragmentCalc extends FragmentBase implements
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-
     }
 
     private class EditTextWatcherAdapter extends TextWatcherAdapter {
@@ -246,6 +259,9 @@ public class FragmentCalc extends FragmentBase implements
 
         @Override
         public void afterTextChanged(Editable s) {
+            if (LOG_ENABLED) UtilsLog.d(TAG, "afterTextChanged",
+                    "mEditText id == " + getResources().getResourceEntryName(mEditText.getId()));
+
             switch (mEditText.getId()) {
                 case R.id.edit_price:
                     checkTextOnEmpty(mEditText);
@@ -265,25 +281,38 @@ public class FragmentCalc extends FragmentBase implements
         }
     }
 
+    /**
+     * Вычисляет расстояние, стоимость и объём необходимого топлива
+     * при указанных стоимости единицы объёма (литра и т.п.) и расходе топлива на 100 единиц расстояния (км и т.п.).
+     *
+     * @param calcAction изменённая единица, на основе которой считаются две другие.
+     * @see CalcAction
+     */
     private void doCalculate(@CalcAction int calcAction) {
+        if (LOG_ENABLED) UtilsLog.d(TAG, "doCalculate", "calcAction == " + calcAction);
 
         if (mCalculating) return;
+
+        if (LOG_ENABLED) UtilsLog.d(TAG, "doCalculate", "calc");
 
         mCalculating = true;
 
         try {
             float distancePerOneFuel, price, cons, distance, cost, volume;
 
+            // Цена за "литр".
             price = UtilsFormat.editTextToFloat(mEditPrice);
+            // Расход на 100 "км".
             cons = UtilsFormat.editTextToFloat(mEditCons);
+
+            if (price == 0 || cons == 0) return;
 
             distance = UtilsFormat.editTextToFloat(mEditDistance);
             cost = UtilsFormat.editTextToFloat(mEditCost);
             volume = UtilsFormat.editTextToFloat(mEditVolume);
 
-            if (price == 0 || cons == 0)  return;
-
-            distancePerOneFuel = (float) (100.0 / cons); // TODO: check
+            // Пробег на одном "литре".
+            distancePerOneFuel = 100.0f / cons;
 
             switch (calcAction) {
                 case CALC_ACTION_DISTANCE:

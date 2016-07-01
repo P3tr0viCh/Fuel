@@ -114,10 +114,15 @@ public class ContentProviderHelper extends ContentProvider {
             CURSOR_ITEM_BASE_TYPE + UriPath.PREFERENCES;
 
     private DatabaseHelper mDatabaseHelper;
+    private PreferencesHelper mPreferencesHelper;
 
     @Override
     public boolean onCreate() {
+        assert getContext() != null;
+
         mDatabaseHelper = new DatabaseHelper(getContext());
+        mPreferencesHelper = PreferencesHelper.getInstance(getContext());
+
         return true;
     }
 
@@ -173,9 +178,9 @@ public class ContentProviderHelper extends ContentProvider {
                 return mDatabaseHelper.getSyncRecords(true);
 
             case PREFERENCES:
-                return PreferencesHelper.getPreferences();
+                return mPreferencesHelper.getPreferences();
             case PREFERENCES_ITEM:
-                return PreferencesHelper.getPreference(uri.getLastPathSegment());
+                return mPreferencesHelper.getPreference(uri.getLastPathSegment());
             default:
                 UtilsLog.d(TAG, "query", "sURIMatcher.match() == default, uri == " + uri);
                 return null;
@@ -206,9 +211,9 @@ public class ContentProviderHelper extends ContentProvider {
             case DATABASE_SYNC:
                 return mDatabaseHelper.updateChanged();
             case PREFERENCES:
-                return PreferencesHelper.setPreferences(values, null);
+                return mPreferencesHelper.setPreferences(values, null);
             case PREFERENCES_ITEM:
-                return PreferencesHelper.setPreferences(values, uri.getLastPathSegment());
+                return mPreferencesHelper.setPreferences(values, uri.getLastPathSegment());
             default:
                 UtilsLog.d(TAG, "update", "sURIMatcher.match() == default, uri == " + uri);
                 return -1;

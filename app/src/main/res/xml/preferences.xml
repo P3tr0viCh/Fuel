@@ -1,14 +1,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceScreen
         android:icon="@drawable/ic_plus_circle"
-        android:key="@string/pref_def_key"
+        android:key="@string/pref_key_def"
         android:summary="@string/pref_def_summary"
         android:title="@string/pref_def_title">
         <EditTextPreference
             android:dialogLayout="@layout/preference_number_decimal"
             android:imeOptions="flagNoExtractUi"
             android:inputType="numberDecimal"
-            android:key="@string/pref_def_cost"
+            android:key="@string/pref_key_def_cost"
             android:negativeButtonText="@string/dialog_btn_cancel"
             android:positiveButtonText="@string/dialog_btn_done"
             android:summary="@string/pref_summary_cost"
@@ -17,7 +17,7 @@
             android:dialogLayout="@layout/preference_number_decimal"
             android:imeOptions="flagNoExtractUi"
             android:inputType="numberDecimal"
-            android:key="@string/pref_def_volume"
+            android:key="@string/pref_key_def_volume"
             android:negativeButtonText="@string/dialog_btn_cancel"
             android:positiveButtonText="@string/dialog_btn_done"
             android:summary="@string/pref_summary_volume"
@@ -26,18 +26,17 @@
 
     <PreferenceScreen
         android:icon="@drawable/ic_calculator"
-        android:key="@string/pref_cons_key"
+        android:key="@string/pref_key_cons"
         android:summary="@string/pref_cons_summary"
         android:title="@string/pref_cons_title">
         <PreferenceCategory
-            android:key="key_summer"
             android:summary="@string/pref_summary_summer"
             android:title="@string/summer">
             <EditTextPreference
                 android:dialogLayout="@layout/preference_number_decimal"
                 android:imeOptions="flagNoExtractUi"
                 android:inputType="numberDecimal"
-                android:key="@string/pref_summer_city"
+                android:key="@string/pref_key_summer_city"
                 android:negativeButtonText="@string/dialog_btn_cancel"
                 android:positiveButtonText="@string/dialog_btn_done"
                 android:summary="@string/pref_summary_summer_city"
@@ -46,7 +45,7 @@
                 android:dialogLayout="@layout/preference_number_decimal"
                 android:imeOptions="flagNoExtractUi"
                 android:inputType="numberDecimal"
-                android:key="@string/pref_summer_highway"
+                android:key="@string/pref_key_summer_highway"
                 android:negativeButtonText="@string/dialog_btn_cancel"
                 android:positiveButtonText="@string/dialog_btn_done"
                 android:summary="@string/pref_summary_summer_highway"
@@ -55,21 +54,20 @@
                 android:dialogLayout="@layout/preference_number_decimal"
                 android:imeOptions="flagNoExtractUi"
                 android:inputType="numberDecimal"
-                android:key="@string/pref_summer_mixed"
+                android:key="@string/pref_key_summer_mixed"
                 android:negativeButtonText="@string/dialog_btn_cancel"
                 android:positiveButtonText="@string/dialog_btn_done"
                 android:summary="@string/pref_summary_summer_mixed"
                 android:title="@string/mixed"/>
         </PreferenceCategory>
         <PreferenceCategory
-            android:key="key_winter"
             android:summary="@string/pref_summary_winter"
             android:title="@string/winter">
             <EditTextPreference
                 android:dialogLayout="@layout/preference_number_decimal"
                 android:imeOptions="flagNoExtractUi"
                 android:inputType="numberDecimal"
-                android:key="@string/pref_winter_city"
+                android:key="@string/pref_key_winter_city"
                 android:negativeButtonText="@string/dialog_btn_cancel"
                 android:positiveButtonText="@string/dialog_btn_done"
                 android:summary="@string/pref_summary_winter_city"
@@ -78,7 +76,7 @@
                 android:dialogLayout="@layout/preference_number_decimal"
                 android:imeOptions="flagNoExtractUi"
                 android:inputType="numberDecimal"
-                android:key="@string/pref_winter_highway"
+                android:key="@string/pref_key_winter_highway"
                 android:negativeButtonText="@string/dialog_btn_cancel"
                 android:positiveButtonText="@string/dialog_btn_done"
                 android:summary="@string/pref_summary_winter_highway"
@@ -87,7 +85,7 @@
                 android:dialogLayout="@layout/preference_number_decimal"
                 android:imeOptions="flagNoExtractUi"
                 android:inputType="numberDecimal"
-                android:key="@string/pref_winter_mixed"
+                android:key="@string/pref_key_winter_mixed"
                 android:negativeButtonText="@string/dialog_btn_cancel"
                 android:positiveButtonText="@string/dialog_btn_done"
                 android:summary="@string/pref_summary_winter_mixed"
@@ -97,44 +95,44 @@
 
     <Preference
         android:icon="@drawable/ic_map"
-        android:key="map center text"
+        android:key="@string/pref_key_map_center_text"
         android:title="@string/pref_yandex_map_title"/>
 
     <PreferenceScreen
         android:icon="@drawable/ic_sync"
-        android:key="key_sync"
+        android:key="@string/pref_key_sync"
         android:title="@string/pref_sync_title">
         <!--suppress AndroidElementNotAllowed -->
         <android.support.v7.preference.SwitchPreferenceCompat
-            android:key="sync enabled"
+            android:key="@string/pref_key_sync_enabled"
             android:switchTextOff="@string/pref_sync_enabled_off"
             android:switchTextOn="@string/pref_sync_enabled_on"/>
 
         <Preference
             android:icon="@mipmap/ic_yandex_disk_24dp"
-            android:key="key_sync_yandex_disk"
+            android:key="@string/pref_key_sync_yandex_disk"
             android:summary="@string/pref_sync_yandex_disk_summary_on"
             android:title="@string/pref_sync_yandex_disk_title"/>
     </PreferenceScreen>
 
     <PreferenceScreen
         android:icon="@drawable/ic_sms"
-        android:key="key_sms"
+        android:key="@string/pref_key_sms"
         android:title="@string/pref_sms_title">
         <!--suppress AndroidElementNotAllowed -->
         <android.support.v7.preference.SwitchPreferenceCompat
-            android:key="sms enabled"
+            android:key="@string/pref_key_sms_enabled"
             android:switchTextOff="@string/pref_sms_enabled_off"
             android:switchTextOn="@string/pref_sms_enabled_on"/>
 
         <Preference
-            android:dependency="sms enabled"
-            android:key="sms address"
+            android:dependency="@string/pref_key_sms_enabled"
+            android:key="@string/pref_key_sms_address"
             android:title="@string/pref_sms_address_title"/>
 
         <Preference
-            android:dependency="sms enabled"
-            android:key="sms text pattern"
+            android:dependency="@string/pref_key_sms_enabled"
+            android:key="@string/pref_key_sms_text_pattern"
             android:title="@string/pref_sms_text_title"/>
     </PreferenceScreen>
 </PreferenceScreen>

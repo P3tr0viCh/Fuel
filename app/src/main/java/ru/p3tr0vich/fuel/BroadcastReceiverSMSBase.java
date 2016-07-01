@@ -24,12 +24,16 @@ abstract class BroadcastReceiverSMSBase extends BroadcastReceiver {
         }
     }
 
+    protected abstract void onCreate(Context context);
+
     protected abstract boolean isEnabled();
 
     protected abstract boolean isCheckAddress(String originatingAddress);
 
     @Override
     public final void onReceive(Context context, Intent intent) {
+
+        onCreate(context);
 
         if (!isEnabled()) return;
 

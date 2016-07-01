@@ -53,7 +53,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         try { // finally
 
             mSyncProviderDatabase = new SyncProviderDatabase(provider);
-            mSyncProviderPreferences = new SyncProviderPreferences(provider);
+            mSyncProviderPreferences = new SyncProviderPreferences(getContext(), provider);
 
             mSyncAccount = new SyncAccount(getContext());
 

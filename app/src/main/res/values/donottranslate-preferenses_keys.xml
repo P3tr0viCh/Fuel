@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_key_def">key_def</string>
+    <string name="pref_key_def_cost">default cost</string>
+    <string name="pref_key_def_volume">default volume</string>
+
+    <string name="pref_key_cons">key_cons</string>
+
+    <string name="pref_key_last_total">last total</string>
+
+    <string name="pref_key_summer_city">summer city</string>
+    <string name="pref_key_summer_highway">summer highway</string>
+    <string name="pref_key_summer_mixed">summer mixed</string>
+
+    <string name="pref_key_winter_city">winter city</string>
+    <string name="pref_key_winter_highway">winter highway</string>
+    <string name="pref_key_winter_mixed">winter mixed</string>
+
+    <string name="pref_key_map_center_text">map center text</string>
+    <string name="pref_key_map_center_latitude">map center latitude</string>
+    <string name="pref_key_map_center_longitude">map center longitude</string>
+
+    <string name="pref_key_sync">key_sync</string>
+    <string name="pref_key_sync_enabled">sync enabled</string>
+    <string name="pref_key_sync_yandex_disk">key_sync_yandex_disk</string>
+
+    <string name="pref_key_sms">key_sms</string>
+    <string name="pref_key_sms_enabled">sms enabled</string>
+    <string name="pref_key_sms_address">sms address</string>
+    <string name="pref_key_sms_text">sms text</string>
+    <string name="pref_key_sms_text_pattern">sms text pattern</string>
+
+    <!-- Нижележащие настройки не отображаются на экране настроек. -->
+
+    <string name="pref_key_database_revision">database revision</string>
+    <string name="pref_key_preferences_revision">preferences revision</string>
+
+    <string name="pref_key_changed">changed</string>
+    <string name="pref_key_last_sync_date_time">last sync date time</string>
+    <string name="pref_key_last_sync_has_error">last sync has error</string>
+    <string name="pref_key_database_full_sync">database full sync</string>
+
+    <string name="pref_key_filter_date_from">filter date from</string>
+    <string name="pref_key_filter_date_to">filter date to</string>
+
+    <string name="pref_key_distance">distance</string>
+    <string name="pref_key_cost">cost</string>
+    <string name="pref_key_volume">volume</string>
+    <string name="pref_key_price">price</string>
+
+    <string name="pref_key_consumption">consumption</string>
+    <string name="pref_key_season">season</string>
+</resources>

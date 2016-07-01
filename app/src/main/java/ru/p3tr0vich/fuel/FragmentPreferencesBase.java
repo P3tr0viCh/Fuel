@@ -8,12 +8,16 @@ import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.View;
 
+import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+
 public abstract class FragmentPreferencesBase extends PreferenceFragmentCompat
         implements FragmentInterface {
 
     private int mFragmentId = -1;
 
     private OnFragmentChangeListener mOnFragmentChangeListener;
+
+    public PreferencesHelper preferencesHelper;
 
     @SuppressWarnings("WeakerAccess")
     @NonNull
@@ -28,6 +32,8 @@ public abstract class FragmentPreferencesBase extends PreferenceFragmentCompat
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        preferencesHelper = PreferencesHelper.getInstance(getContext());
+
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) mFragmentId = getArguments().getInt(KEY_ID, -1);

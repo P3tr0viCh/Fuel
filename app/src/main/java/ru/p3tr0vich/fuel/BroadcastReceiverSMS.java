@@ -18,11 +18,11 @@ import ru.p3tr0vich.fuel.utils.UtilsFormat;
 
 public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
-    private final boolean mEnabled;
+    private boolean mEnabled;
 
-    private final String mAddress;
+    private String mAddress;
 
-    private final String mPattern;
+    private String mPattern;
 
     @Override
     public boolean isEnabled() {
@@ -34,12 +34,15 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
         return PhoneNumberUtils.compare(originatingAddress, mAddress);
     }
 
-    public BroadcastReceiverSMS() {
-        mAddress = PreferencesHelper.getSMSAddress();
-        mPattern = PreferencesHelper.getSMSTextPattern();
+    @Override
+    public void onCreate(Context context) {
+        PreferencesHelper preferencesHelper = PreferencesHelper.getInstance(context);
+
+        mAddress = preferencesHelper.getSMSAddress();
+        mPattern = preferencesHelper.getSMSTextPattern();
 
         mEnabled = !(TextUtils.isEmpty(mAddress) || TextUtils.isEmpty(mPattern)) &&
-                PreferencesHelper.isSMSEnabled();
+                preferencesHelper.isSMSEnabled();
     }
 
     @Override
@@ -62,10 +65,12 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
     }
 
     private void showNotification(Context context, int id, float cost) {
+        PreferencesHelper preferencesHelper = PreferencesHelper.getInstance(context);
+
         final float volume;
 
-        final float defaultCost = PreferencesHelper.getDefaultCost();
-        final float defaultVolume = PreferencesHelper.getDefaultVolume();
+        final float defaultCost = preferencesHelper.getDefaultCost();
+        final float defaultVolume = preferencesHelper.getDefaultVolume();
 
         if (cost != 0 && defaultCost != 0 && defaultVolume != 0) {
             volume = cost == defaultCost ? defaultVolume : cost / (defaultCost / defaultVolume);
@@ -73,7 +78,7 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
             volume = 0;
 
         FuelingRecord fuelingRecord = new FuelingRecord(cost, volume,
-                PreferencesHelper.getLastTotal());
+                preferencesHelper.getLastTotal());
 
         PendingIntent contentIntent = PendingIntent.getActivity(context, id,
                 ActivityFuelingRecordChange.getIntentForStart(context, fuelingRecord),

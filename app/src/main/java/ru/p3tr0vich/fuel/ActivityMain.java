@@ -95,6 +95,8 @@ public class ActivityMain extends AppCompatActivity implements
     private PreferencesObserver mPreferencesObserver;
     private DatabaseObserver mDatabaseObserver;
 
+    private PreferencesHelper mPreferencesHelper;
+
     @FragmentId
     private int mCurrentFragmentId;
     private int mClickedMenuId = -1;
@@ -170,6 +172,8 @@ public class ActivityMain extends AppCompatActivity implements
         initDrawer();
 
         mSyncAccount = new SyncAccount(this);
+
+        mPreferencesHelper = PreferencesHelper.getInstance(this);
 
         initAnimationSync();
         initSyncViews();
@@ -361,7 +365,7 @@ public class ActivityMain extends AppCompatActivity implements
     private void startTimerSync() {
         TimerSync.stop(mTimerSync);
 
-        if (PreferencesHelper.isSyncEnabled())
+        if (mPreferencesHelper.isSyncEnabled())
             mTimerSync = TimerSync.start(mDatabaseChanged, mPreferencesChanged);
     }
 
@@ -555,14 +559,13 @@ public class ActivityMain extends AppCompatActivity implements
                 if (bundle == null) bundle = new Bundle();
 
                 bundle.putString(FragmentPreferences.KEY_PREFERENCE_SCREEN,
-                        PreferencesHelper.PREF_SYNC);
+                        mPreferencesHelper.keys.sync);
 
                 fragment.setArguments(bundle);
 
                 mOpenPreferenceSync = false;
             }
 
-            //noinspection WrongConstant
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, fragment, fragmentTag)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -640,7 +643,7 @@ public class ActivityMain extends AppCompatActivity implements
             case REQUEST_CODE_ACTIVITY_MAP_CENTER:
                 ActivityYandexMap.MapCenter mapCenter = ActivityYandexMap.getMapCenter(data);
 
-                PreferencesHelper.putMapCenter(mapCenter.text,
+                mPreferencesHelper.putMapCenter(mapCenter.text,
                         mapCenter.latitude, mapCenter.longitude);
 
                 break;
@@ -652,7 +655,7 @@ public class ActivityMain extends AppCompatActivity implements
                 String SMSAddress = ContactsHelper.getPhoneNumber(this, data);
 
                 if (SMSAddress != null)
-                    PreferencesHelper.putSMSAddress(SMSAddress);
+                    mPreferencesHelper.putSMSAddress(SMSAddress);
         }
     }
 
@@ -830,7 +833,7 @@ public class ActivityMain extends AppCompatActivity implements
                 syncPreferences = true;
         }
 
-        if (!PreferencesHelper.isSyncEnabled()) {
+        if (!mPreferencesHelper.isSyncEnabled()) {
             UtilsLog.d(TAG, "startSync", "sync disabled");
 
             if (showDialogs) {
@@ -890,16 +893,16 @@ public class ActivityMain extends AppCompatActivity implements
             text = getString(R.string.sync_in_process);
             imgId = R.drawable.ic_sync;
         } else {
-            if (PreferencesHelper.isSyncEnabled()) {
+            if (mPreferencesHelper.isSyncEnabled()) {
                 if (mSyncAccount.isYandexDiskTokenEmpty()) {
                     text = getString(R.string.sync_no_token);
                     imgId = R.drawable.ic_sync_off;
                 } else {
-                    if (PreferencesHelper.getLastSyncHasError()) {
+                    if (mPreferencesHelper.getLastSyncHasError()) {
                         text = getString(R.string.sync_error);
                         imgId = R.drawable.ic_sync_alert;
                     } else {
-                        final long dateTime = PreferencesHelper.getLastSyncDateTime();
+                        final long dateTime = mPreferencesHelper.getLastSyncDateTime();
 
                         text = dateTime != PreferencesHelper.SYNC_NONE ?
                                 getString(R.string.sync_done,
@@ -922,7 +925,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     @Override
-    public void onPreferenceSyncEnabledChanged(final boolean enabled) {
+    public void onPreferenceSyncEnabledChanged(boolean enabled) {
         mSyncAccount.setIsSyncable(enabled);
 
         updateSyncStatus();

@@ -6,11 +6,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+
 public abstract class FragmentBase extends Fragment implements FragmentInterface {
 
     private int mFragmentId = -1;
 
     private OnFragmentChangeListener mOnFragmentChangeListener;
+
+    public PreferencesHelper preferencesHelper;
 
     @SuppressWarnings("WeakerAccess")
     @NonNull
@@ -31,6 +35,8 @@ public abstract class FragmentBase extends Fragment implements FragmentInterface
 
         if (mFragmentId == -1)
             throw new IllegalArgumentException(getString(R.string.exception_fragment_no_id));
+
+        preferencesHelper = PreferencesHelper.getInstance(getContext());
     }
 
     @Override

@@ -12,7 +12,6 @@ import android.support.v7.preference.PreferenceGroup;
 import android.support.v7.preference.PreferenceScreen;
 import android.text.TextUtils;
 
-import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
 
 public class FragmentPreferences extends FragmentPreferencesBase implements
@@ -21,7 +20,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
     public static final String TAG = "FragmentPreferences";
 
-    private static final boolean LOG_ENABLED = false;
+    private static final boolean LOG_ENABLED = true;
 
     public static final String KEY_PREFERENCE_SCREEN = "KEY_PREFERENCE_SCREEN";
 
@@ -47,7 +46,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
     }
 
     public interface OnPreferenceSyncEnabledChangeListener {
-        void onPreferenceSyncEnabledChanged(final boolean enabled);
+        void onPreferenceSyncEnabledChanged(boolean enabled);
     }
 
     @NonNull
@@ -66,49 +65,43 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (LOG_ENABLED)
             UtilsLog.d(TAG, "onSharedPreferenceChanged", "key == " + key);
 
         updatePreferenceSummary(key);
 
-        switch (key) {
-            case PreferencesHelper.PREF_SYNC_ENABLED:
-                updatePreferenceSummary(PreferencesHelper.PREF_SYNC);
-                mOnPreferenceSyncEnabledChangeListener.onPreferenceSyncEnabledChanged(
-                        PreferencesHelper.isSyncEnabled());
-                break;
-            case PreferencesHelper.PREF_SMS_ENABLED:
-                updatePreferenceSummary(PreferencesHelper.PREF_SMS);
+        if (key.equals(preferencesHelper.keys.syncEnabled)) {
+            updatePreferenceSummary(preferencesHelper.keys.sync);
+            mOnPreferenceSyncEnabledChangeListener.onPreferenceSyncEnabledChanged(
+                    preferencesHelper.isSyncEnabled());
+        } else if (key.equals(preferencesHelper.keys.smsEnabled)) {
+            updatePreferenceSummary(preferencesHelper.keys.sms);
         }
     }
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        // add in onCreatePreferences
-
         String key = preference.getKey();
 
-        switch (key) {
-            case PreferencesHelper.PREF_MAP_CENTER_TEXT:
-                mOnPreferenceClickListener.onPreferenceMapCenterClick();
-
-                return true;
-            case PreferencesHelper.PREF_SYNC_YANDEX_DISK:
-                mOnPreferenceClickListener.onPreferenceSyncYandexDiskClick();
-
-                return true;
-            case PreferencesHelper.PREF_SMS_ADDRESS:
-                mOnPreferenceClickListener.onPreferenceSMSAddressClick();
-
-                return true;
-            case PreferencesHelper.PREF_SMS_TEXT_PATTERN:
-                mOnPreferenceClickListener.onPreferenceSMSTextPatternClick();
-
-                return true;
-            default:
-                return false;
+        if (key.equals(preferencesHelper.keys.mapCenterText)) {
+            mOnPreferenceClickListener.onPreferenceMapCenterClick();
+        } else if (key.equals(preferencesHelper.keys.syncYandexDisk)) {
+            mOnPreferenceClickListener.onPreferenceSyncYandexDiskClick();
+        } else if (key.equals(preferencesHelper.keys.smsAddress)) {
+            mOnPreferenceClickListener.onPreferenceSMSAddressClick();
+        } else if (key.equals(preferencesHelper.keys.smsTextPattern)) {
+            mOnPreferenceClickListener.onPreferenceSMSTextPatternClick();
+        } else {
+            return false;
         }
+
+        return true;
     }
 
     @Override
@@ -118,10 +111,10 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
         addPreferencesFromResource(R.xml.preferences);
         mRootPreferenceScreen = getPreferenceScreen();
 
-        findPreference(PreferencesHelper.PREF_MAP_CENTER_TEXT).setOnPreferenceClickListener(this);
-        findPreference(PreferencesHelper.PREF_SYNC_YANDEX_DISK).setOnPreferenceClickListener(this);
-        findPreference(PreferencesHelper.PREF_SMS_ADDRESS).setOnPreferenceClickListener(this);
-        findPreference(PreferencesHelper.PREF_SMS_TEXT_PATTERN).setOnPreferenceClickListener(this);
+        findPreference(preferencesHelper.keys.mapCenterText).setOnPreferenceClickListener(this);
+        findPreference(preferencesHelper.keys.syncYandexDisk).setOnPreferenceClickListener(this);
+        findPreference(preferencesHelper.keys.smsAddress).setOnPreferenceClickListener(this);
+        findPreference(preferencesHelper.keys.smsTextPattern).setOnPreferenceClickListener(this);
 
         String keyPreferenceScreen = null;
 
@@ -132,7 +125,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
         } else
             keyPreferenceScreen = bundle.getString(KEY_PREFERENCE_SCREEN);
 
-        if (keyPreferenceScreen == null)
+        if (TextUtils.isEmpty(keyPreferenceScreen))
             mIsInRoot = true;
         else
             navigateToScreen((PreferenceScreen) findPreference(keyPreferenceScreen));
@@ -153,7 +146,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
     }
 
     private void navigateToScreen(@Nullable PreferenceScreen preferenceScreen) {
-        mIsInRoot = preferenceScreen == null;
+        mIsInRoot = preferenceScreen == null || preferenceScreen.equals(mRootPreferenceScreen);
 
         setPreferenceScreen(mIsInRoot ? mRootPreferenceScreen : preferenceScreen);
 
@@ -169,7 +162,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
     }
 
     public void goToSyncScreen() {
-        navigateToScreen((PreferenceScreen) findPreference(PreferencesHelper.PREF_SYNC));
+        navigateToScreen((PreferenceScreen) findPreference(preferencesHelper.keys.sync));
     }
 
     @Override
@@ -216,7 +209,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
         updatePreferenceSummary(mRootPreferenceScreen.findPreference(key));
     }
 
-    private void updatePreferenceSummary(Preference preference) {
+    private void updatePreferenceSummary(@Nullable Preference preference) {
         if (LOG_ENABLED)
             UtilsLog.d(TAG, "updatePreferenceSummary", "preference == " + preference);
 
@@ -229,7 +222,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
         if (preference instanceof EditTextPreference) {
 //            text = preference.getText() not updated after sync;
-            text = PreferencesHelper.getString(key);
+            text = preferencesHelper.getString(key);
 
             if (LOG_ENABLED)
                 UtilsLog.d(TAG, "updatePreferenceSummary", "text == " + text);
@@ -246,50 +239,41 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
             preference.setSummary(summary);
         } else {
-            switch (key) {
-                case PreferencesHelper.PREF_MAP_CENTER_TEXT:
-                    text = PreferencesHelper.getMapCenterText();
-                    break;
-                case PreferencesHelper.PREF_SYNC:
-                case PreferencesHelper.PREF_SYNC_ENABLED:
-                    text = getString(PreferencesHelper.isSyncEnabled() ?
-                            R.string.pref_sync_summary_on : R.string.pref_sync_summary_off);
-                    break;
-                case PreferencesHelper.PREF_SMS:
-                case PreferencesHelper.PREF_SMS_ENABLED:
-                    text = getString(PreferencesHelper.isSMSEnabled() ?
-                            R.string.pref_sms_summary_on : R.string.pref_sms_summary_off);
-                    break;
-                case PreferencesHelper.PREF_SMS_ADDRESS:
-                    text = PreferencesHelper.getSMSAddress();
-                    break;
-                case PreferencesHelper.PREF_SMS_TEXT_PATTERN:
-                    text = PreferencesHelper.getSMSTextPattern();
-                    text = text.replaceAll("[\\s]+", " ");
-                    break;
-                default:
-                    text = null;
+            if (key.equals(preferencesHelper.keys.mapCenterText)) {
+                text = preferencesHelper.getMapCenterText();
+            } else if (key.equals(preferencesHelper.keys.sync) ||
+                    key.equals(preferencesHelper.keys.syncEnabled)) {
+                text = getString(preferencesHelper.isSyncEnabled() ?
+                        R.string.pref_sync_summary_on : R.string.pref_sync_summary_off);
+            } else if (key.equals(preferencesHelper.keys.sms) ||
+                    key.equals(preferencesHelper.keys.smsEnabled)) {
+                text = getString(preferencesHelper.isSMSEnabled() ?
+                        R.string.pref_sms_summary_on : R.string.pref_sms_summary_off);
+            } else if (key.equals(preferencesHelper.keys.smsAddress)) {
+                text = preferencesHelper.getSMSAddress();
+            } else if (key.equals(preferencesHelper.keys.smsTextPattern)) {
+                text = preferencesHelper.getSMSTextPattern();
+                text = text.replaceAll("[\\s]+", " ");
+            } else {
+                text = null;
             }
 
             if (LOG_ENABLED)
                 UtilsLog.d(TAG, "updatePreferenceSummary", "text == " + text);
 
-            switch (key) {
-                case PreferencesHelper.PREF_MAP_CENTER_TEXT:
-                case PreferencesHelper.PREF_SYNC:
-                case PreferencesHelper.PREF_SMS:
-                case PreferencesHelper.PREF_SMS_ADDRESS:
-                case PreferencesHelper.PREF_SMS_TEXT_PATTERN:
-                    preference.setSummary(text);
-                    break;
-                case PreferencesHelper.PREF_SYNC_ENABLED:
-                case PreferencesHelper.PREF_SMS_ENABLED:
-                    preference.setTitle(text);
+            if (key.equals(preferencesHelper.keys.mapCenterText) ||
+                    key.equals(preferencesHelper.keys.sync) ||
+                    key.equals(preferencesHelper.keys.sms) ||
+                    key.equals(preferencesHelper.keys.smsAddress) ||
+                    key.equals(preferencesHelper.keys.smsTextPattern)) {
+                preference.setSummary(text);
+            } else if (key.equals(preferencesHelper.keys.syncEnabled) || key.equals(preferencesHelper.keys.smsEnabled)) {
+                preference.setTitle(text);
             }
         }
     }
 
-    private void init(Preference preference) {
+    private void init(@NonNull Preference preference) {
         updatePreferenceSummary(preference);
         if (preference instanceof PreferenceScreen || preference instanceof PreferenceGroup) {
             for (int i = 0, count = ((PreferenceGroup) preference).getPreferenceCount(); i < count; i++)

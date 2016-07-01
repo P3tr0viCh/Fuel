@@ -35,16 +35,15 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.List;
 
+import ru.p3tr0vich.fuel.factories.FuelingTotalViewFactory;
 import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
 import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
-import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
 import ru.p3tr0vich.fuel.utils.Utils;
 import ru.p3tr0vich.fuel.utils.UtilsDate;
 import ru.p3tr0vich.fuel.utils.UtilsFormat;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
 import ru.p3tr0vich.fuel.views.FuelingTotalView;
-import ru.p3tr0vich.fuel.factories.FuelingTotalViewFactory;
 
 public class FragmentFueling extends FragmentBase implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -146,8 +145,8 @@ public class FragmentFueling extends FragmentBase implements
 
             mFilter.mode = DatabaseHelper.Filter.MODE_CURRENT_YEAR;
 
-            mFilter.dateFrom = PreferencesHelper.getFilterDateFrom();
-            mFilter.dateTo = PreferencesHelper.getFilterDateTo();
+            mFilter.dateFrom = preferencesHelper.getFilterDateFrom();
+            mFilter.dateTo = preferencesHelper.getFilterDateTo();
         } else {
             if (LOG_ENABLED) UtilsLog.d(TAG, "onCreate", "savedInstanceState != null");
 
@@ -312,7 +311,7 @@ public class FragmentFueling extends FragmentBase implements
         mHandler.removeCallbacks(mRunnableShowNoRecords);
         mHandler.removeCallbacks(mRunnableShowProgressWheelFueling);
 
-        PreferencesHelper.putFilterDate(mFilter.dateFrom, mFilter.dateTo);
+        preferencesHelper.putFilterDate(mFilter.dateFrom, mFilter.dateTo);
 
         super.onDestroy();
     }

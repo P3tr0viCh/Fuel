@@ -214,7 +214,7 @@ public class FragmentCalc extends FragmentBase implements
         mEditCost.setText(preferencesHelper.getCalcCost());
         mEditVolume.setText(preferencesHelper.getCalcVolume());
 
-        mEditPrice.setText(preferencesHelper.getCalcPrice());
+        mEditPrice.setText(preferencesHelper.getPriceAsString());
 
         arrCons = preferencesHelper.getCalcCons();
 
@@ -227,7 +227,6 @@ public class FragmentCalc extends FragmentBase implements
                 mEditDistance.getText().toString(),
                 mEditCost.getText().toString(),
                 mEditVolume.getText().toString(),
-                mEditPrice.getText().toString(),
                 mSpinnerCons.getSelectedItemPosition(),
                 mSpinnerSeason.getSelectedItemPosition());
     }

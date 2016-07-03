@@ -82,11 +82,18 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
 
         if (bundle != null && bundle.containsKey(FuelingRecord.NAME))
             mFuelingRecord = new FuelingRecord(bundle);
-        else
-            mFuelingRecord = new FuelingRecord(
-                    mPreferencesHelper.getDefaultCost(),
-                    mPreferencesHelper.getDefaultVolume(),
-                    mPreferencesHelper.getLastTotal());
+        else {
+            float cost = mPreferencesHelper.getDefaultCost();
+            float volume = mPreferencesHelper.getDefaultVolume();
+            float price = mPreferencesHelper.getPrice();
+
+            if (price != 0) {
+                if (cost == 0 && volume != 0) cost = volume * price;
+                else if (volume == 0 && cost != 0) volume = cost / price;
+            }
+
+            mFuelingRecord = new FuelingRecord(cost, volume, mPreferencesHelper.getLastTotal());
+        }
 
         getActivity().setTitle(mFuelingRecord.getId() != 0 ?
                 R.string.dialog_caption_update :

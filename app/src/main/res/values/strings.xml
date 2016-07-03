@@ -173,16 +173,20 @@
         <item>@string/winter</item>
     </string-array>
 
+    <string name="pref_price">Стоимость топлива</string>
+    <string name="pref_price_empty">Не указана</string>
+
     <string name="pref_def_title">Заправка по умолчанию</string>
-    <string name="pref_def_summary">Значения стоимости и объёма для новых записей</string>
+    <string name="pref_def_summary">Значение стоимости или объёма для новых записей</string>
+    <string name="pref_def_cost">Стоимость</string>
+    <string name="pref_def_cost_empty">Не указана</string>
+    <string name="pref_def_cost_calc">Вычисляется на основе объёма</string>
+    <string name="pref_def_volume">Объём</string>
+    <string name="pref_def_volume_empty">Не указан</string>
+    <string name="pref_def_volume_calc">Вычисляется на основе стоимости</string>
 
     <string name="pref_cons_title">Расход топлива</string>
     <string name="pref_cons_summary">Расход топлива в различных режимах</string>
-
-    <string name="pref_yandex_map_title">Яндекс.Карты. Начало маршрута</string>
-
-    <string name="pref_summary_cost">Стоимость заправки по умолчанию для новых записей</string>
-    <string name="pref_summary_volume">Объём заправки по умолчанию для новых записей</string>
 
     <string name="pref_summary_summer">Настройка расхода летом</string>
     <string name="pref_summary_summer_city">Расход летом в городе</string>
@@ -192,6 +196,8 @@
     <string name="pref_summary_winter_city">Расход зимой в городе</string>
     <string name="pref_summary_winter_highway">Расход зимой на трассе</string>
     <string name="pref_summary_winter_mixed">Расход зимой в смешанном режиме</string>
+
+    <string name="pref_yandex_map_title">Яндекс.Карты. Начало маршрута</string>
 
     <string name="pref_sync_title">Синхронизация</string>
     <string name="pref_sync_summary_on">Включена</string>

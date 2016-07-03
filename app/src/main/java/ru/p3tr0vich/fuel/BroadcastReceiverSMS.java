@@ -24,6 +24,8 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
     private String mPattern;
 
+    private PreferencesHelper mPreferencesHelper;
+
     @Override
     public boolean isEnabled() {
         return mEnabled;
@@ -36,13 +38,13 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
 
     @Override
     public void onCreate(Context context) {
-        PreferencesHelper preferencesHelper = PreferencesHelper.getInstance(context);
+        mPreferencesHelper = PreferencesHelper.getInstance(context);
 
-        mAddress = preferencesHelper.getSMSAddress();
-        mPattern = preferencesHelper.getSMSTextPattern();
+        mAddress = mPreferencesHelper.getSMSAddress();
+        mPattern = mPreferencesHelper.getSMSTextPattern();
 
         mEnabled = !(TextUtils.isEmpty(mAddress) || TextUtils.isEmpty(mPattern)) &&
-                preferencesHelper.isSMSEnabled();
+                mPreferencesHelper.isSMSEnabled();
     }
 
     @Override
@@ -65,20 +67,13 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
     }
 
     private void showNotification(Context context, int id, float cost) {
-        PreferencesHelper preferencesHelper = PreferencesHelper.getInstance(context);
+        float volume = 0;
 
-        final float volume;
+        float price = mPreferencesHelper.getPrice();
 
-        final float defaultCost = preferencesHelper.getDefaultCost();
-        final float defaultVolume = preferencesHelper.getDefaultVolume();
+        if (price != 0) volume = cost / price;
 
-        if (cost != 0 && defaultCost != 0 && defaultVolume != 0) {
-            volume = cost == defaultCost ? defaultVolume : cost / (defaultCost / defaultVolume);
-        } else
-            volume = 0;
-
-        FuelingRecord fuelingRecord = new FuelingRecord(cost, volume,
-                preferencesHelper.getLastTotal());
+        FuelingRecord fuelingRecord = new FuelingRecord(cost, volume, mPreferencesHelper.getLastTotal());
 
         PendingIntent contentIntent = PendingIntent.getActivity(context, id,
                 ActivityFuelingRecordChange.getIntentForStart(context, fuelingRecord),

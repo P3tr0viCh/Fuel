@@ -17,7 +17,7 @@ public abstract class FragmentPreferencesBase extends PreferenceFragmentCompat
 
     private OnFragmentChangeListener mOnFragmentChangeListener;
 
-    public PreferencesHelper preferencesHelper;
+    protected PreferencesHelper preferencesHelper;
 
     @SuppressWarnings("WeakerAccess")
     @NonNull

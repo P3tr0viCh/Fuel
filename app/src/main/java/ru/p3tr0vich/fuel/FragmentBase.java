@@ -14,7 +14,7 @@ public abstract class FragmentBase extends Fragment implements FragmentInterface
 
     private OnFragmentChangeListener mOnFragmentChangeListener;
 
-    public PreferencesHelper preferencesHelper;
+    protected PreferencesHelper preferencesHelper;
 
     @SuppressWarnings("WeakerAccess")
     @NonNull

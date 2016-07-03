@@ -12,11 +12,11 @@ public abstract class FuelingTotalViewBase implements FuelingTotalView {
 
     private final FuelingTotalPresenter mFuelingTotalPresenter;
 
-    public FuelingTotalViewBase() {
+    protected FuelingTotalViewBase() {
         mFuelingTotalPresenter = new FuelingTotalPresenter(this);
     }
 
-    public static String floatToString(float value, boolean round) {
+    protected static String floatToString(float value, boolean round) {
         return UtilsFormat.floatToString(round ? Math.round(value) : value);
     }
 

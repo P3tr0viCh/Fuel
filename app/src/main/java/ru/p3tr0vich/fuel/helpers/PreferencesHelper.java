@@ -33,8 +33,8 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
     public static final double DEFAULT_MAP_CENTER_LATITUDE = 55.752023;  // Широта
     public static final double DEFAULT_MAP_CENTER_LONGITUDE = 37.617499; // Долгота
 
-    private Context mContext; // == ApplicationContext
-    private SharedPreferences mSharedPreferences;
+    private final Context mContext; // == ApplicationContext
+    private final SharedPreferences mSharedPreferences;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({PREFERENCE_TYPE_STRING, PREFERENCE_TYPE_INT, PREFERENCE_TYPE_LONG})
@@ -46,40 +46,90 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
     public static final int PREFERENCE_TYPE_LONG = 2;
 
     public static class Keys {
+        @Retention(RetentionPolicy.SOURCE)
+        @IntDef({UNKNOWN, PRICE, DEFAULT_COST, DEFAULT_VOLUME,
+                MAP_CENTER_TEXT, MAP_CENTER_LATITUDE, MAP_CENTER_LONGITUDE,
+                SYNC, SYNC_ENABLED, SYNC_YANDEX_DISK,
+                SMS, SMS_ENABLED, SMS_ADDRESS, SMS_TEXT, SMS_TEXT_PATTERN,
+                DATABASE_REVISION, PREFERENCES_REVISION, CHANGED,
+                LAST_SYNC_DATE_TIME, LAST_SYNC_HAS_ERROR, DATABASE_FULL_SYNC,
+                FILTER_DATE_FROM, FILTER_DATE_TO,
+                DISTANCE, COST, VOLUME,
+                CONSUMPTION, SEASON})
+        public @interface KeyAsInt {
+        }
+
+        public static final int UNKNOWN = -1;
+
+        public final String price;
+        public static final int PRICE = R.string.pref_key_price;
+
+        public final String defaultCost;
+        public static final int DEFAULT_COST = R.string.pref_key_def_cost;
+        public final String defaultVolume;
+        public static final int DEFAULT_VOLUME = R.string.pref_key_def_volume;
+
         public final String mapCenterText;
+        public static final int MAP_CENTER_TEXT = R.string.pref_key_map_center_text;
         public final String mapCenterLatitude;
+        public static final int MAP_CENTER_LATITUDE = R.string.pref_key_map_center_latitude;
         public final String mapCenterLongitude;
+        public static final int MAP_CENTER_LONGITUDE = R.string.pref_key_map_center_longitude;
 
         public final String sync;
+        public static final int SYNC = R.string.pref_key_sync;
         public final String syncEnabled;
+        public static final int SYNC_ENABLED = R.string.pref_key_sync_enabled;
         public final String syncYandexDisk;
+        public static final int SYNC_YANDEX_DISK = R.string.pref_key_sync_yandex_disk;
 
         public final String sms;
+        public static final int SMS = R.string.pref_key_sms;
         public final String smsEnabled;
+        public static final int SMS_ENABLED = R.string.pref_key_sms_enabled;
         public final String smsAddress;
+        public static final int SMS_ADDRESS = R.string.pref_key_sms_address;
         public final String smsText;
+        public static final int SMS_TEXT = R.string.pref_key_sms_text;
         public final String smsTextPattern;
+        public static final int SMS_TEXT_PATTERN = R.string.pref_key_sms_text_pattern;
 
         public final String databaseRevision;
+        public static final int DATABASE_REVISION = R.string.pref_key_database_revision;
         public final String preferencesRevision;
-
+        public static final int PREFERENCES_REVISION = R.string.pref_key_preferences_revision;
         public final String changed;
+        public static final int CHANGED = R.string.pref_key_changed;
         public final String lastSyncDateTime;
+        public static final int LAST_SYNC_DATE_TIME = R.string.pref_key_last_sync_date_time;
         public final String lastSyncHasError;
+        public static final int LAST_SYNC_HAS_ERROR = R.string.pref_key_last_sync_has_error;
         public final String databaseFullSync;
+        public static final int DATABASE_FULL_SYNC = R.string.pref_key_database_full_sync;
 
         public final String filterDateFrom;
+        public static final int FILTER_DATE_FROM = R.string.pref_key_filter_date_from;
         public final String filterDateTo;
+        public static final int FILTER_DATE_TO = R.string.pref_key_filter_date_to;
 
         public final String distance;
+        public static final int DISTANCE = R.string.pref_key_distance;
         public final String cost;
+        public static final int COST = R.string.pref_key_cost;
         public final String volume;
-        public final String price;
+        public static final int VOLUME = R.string.pref_key_volume;
 
         public final String consumption;
+        public static final int CONSUMPTION = R.string.pref_key_consumption;
         public final String season;
+        public static final int SEASON = R.string.pref_key_season;
 
         private Keys(@NonNull Context context) {
+            price = context.getString(R.string.pref_key_price);
+
+            defaultCost = context.getString(R.string.pref_key_def_cost);
+            defaultVolume = context.getString(R.string.pref_key_def_volume);
+
             mapCenterText = context.getString(R.string.pref_key_map_center_text);
             mapCenterLatitude = context.getString(R.string.pref_key_map_center_latitude);
             mapCenterLongitude = context.getString(R.string.pref_key_map_center_longitude);
@@ -108,10 +158,78 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
             distance = context.getString(R.string.pref_key_distance);
             cost = context.getString(R.string.pref_key_cost);
             volume = context.getString(R.string.pref_key_volume);
-            price = context.getString(R.string.pref_key_price);
 
             consumption = context.getString(R.string.pref_key_consumption);
             season = context.getString(R.string.pref_key_season);
+        }
+
+        @KeyAsInt
+        public int getAsInt(@Nullable String key) {
+            if (price.equals(key)) return PRICE;
+            else if (defaultCost.equals(key)) return DEFAULT_COST;
+            else if (defaultVolume.equals(key)) return DEFAULT_VOLUME;
+            else if (mapCenterText.equals(key)) return MAP_CENTER_TEXT;
+            else if (mapCenterLatitude.equals(key)) return MAP_CENTER_LATITUDE;
+            else if (mapCenterLongitude.equals(key)) return MAP_CENTER_LONGITUDE;
+            else if (sync.equals(key)) return SYNC;
+            else if (syncEnabled.equals(key)) return SYNC_ENABLED;
+            else if (syncYandexDisk.equals(key)) return SYNC_YANDEX_DISK;
+            else if (sms.equals(key)) return SMS;
+            else if (smsEnabled.equals(key)) return SMS_ENABLED;
+            else if (smsAddress.equals(key)) return SMS_ADDRESS;
+            else if (smsText.equals(key)) return SMS_TEXT;
+            else if (smsTextPattern.equals(key)) return SMS_TEXT_PATTERN;
+            else if (databaseRevision.equals(key)) return DATABASE_REVISION;
+            else if (preferencesRevision.equals(key)) return PREFERENCES_REVISION;
+            else if (changed.equals(key)) return CHANGED;
+            else if (lastSyncDateTime.equals(key)) return LAST_SYNC_DATE_TIME;
+            else if (lastSyncHasError.equals(key)) return LAST_SYNC_HAS_ERROR;
+            else if (databaseFullSync.equals(key)) return DATABASE_FULL_SYNC;
+            else if (filterDateFrom.equals(key)) return FILTER_DATE_FROM;
+            else if (filterDateTo.equals(key)) return FILTER_DATE_TO;
+            else if (distance.equals(key)) return DISTANCE;
+            else if (cost.equals(key)) return COST;
+            else if (volume.equals(key)) return VOLUME;
+            else if (consumption.equals(key)) return CONSUMPTION;
+            else if (season.equals(key)) return SEASON;
+            else return UNKNOWN;
+        }
+
+        private boolean isSyncKey(@Nullable String key) {
+            switch (getAsInt(key)) {
+                case SYNC_ENABLED:
+                case SMS_ENABLED:
+                case CHANGED:
+                case DATABASE_REVISION:
+                case PREFERENCES_REVISION:
+                case LAST_SYNC_DATE_TIME:
+                case LAST_SYNC_HAS_ERROR:
+                case DATABASE_FULL_SYNC:
+                default:
+                    return false;
+
+                case CONSUMPTION:
+                case COST:
+                case DEFAULT_COST:
+                case DEFAULT_VOLUME:
+                case DISTANCE:
+                case FILTER_DATE_FROM:
+                case FILTER_DATE_TO:
+                case MAP_CENTER_LATITUDE:
+                case MAP_CENTER_LONGITUDE:
+                case MAP_CENTER_TEXT:
+                case PRICE:
+                case SEASON:
+                case SMS_ADDRESS:
+                case SMS_TEXT_PATTERN:
+                case SMS_TEXT:
+                case SMS:
+                case SYNC_YANDEX_DISK:
+                case SYNC:
+                case UNKNOWN:
+                case VOLUME:
+                    return true;
+            }
         }
     }
 
@@ -144,18 +262,7 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         UtilsLog.d(TAG, "onSharedPreferenceChanged", "key == " + key);
 
-        if (isSyncKey(key)) putChanged(true);
-    }
-
-    private boolean isSyncKey(@NonNull String key) {
-        return !(key.equals(keys.syncEnabled) ||
-                key.equals(keys.smsEnabled) ||
-                key.equals(keys.changed) ||
-                key.equals(keys.databaseRevision) ||
-                key.equals(keys.preferencesRevision) ||
-                key.equals(keys.lastSyncDateTime) ||
-                key.equals(keys.lastSyncHasError) ||
-                key.equals(keys.databaseFullSync));
+        if (keys.isSyncKey(key)) putChanged(true);
     }
 
     private boolean isChanged() {
@@ -275,11 +382,11 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
     }
 
     public float getDefaultCost() {
-        return UtilsFormat.stringToFloat(getString(mContext.getString(R.string.pref_key_def_cost)));
+        return UtilsFormat.stringToFloat(getString(keys.defaultCost));
     }
 
     public float getDefaultVolume() {
-        return UtilsFormat.stringToFloat(getString(mContext.getString(R.string.pref_key_def_volume)));
+        return UtilsFormat.stringToFloat(getString(keys.defaultVolume));
     }
 
     public float getLastTotal() {
@@ -309,8 +416,12 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
     }
 
     @NonNull
-    public String getCalcPrice() {
+    public String getPriceAsString() {
         return getString(keys.price);
+    }
+
+    public float getPrice() {
+        return UtilsFormat.stringToFloat(getPriceAsString());
     }
 
     public float[][] getCalcCons() {
@@ -335,14 +446,12 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
         return mSharedPreferences.getInt(keys.season, 0);
     }
 
-    public void putCalc(String distance, String cost, String volume,
-                        String price, int cons, int season) {
+    public void putCalc(String distance, String cost, String volume, int cons, int season) {
         mSharedPreferences
                 .edit()
                 .putString(keys.distance, distance)
                 .putString(keys.cost, cost)
                 .putString(keys.volume, volume)
-                .putString(keys.price, price)
                 .putInt(keys.consumption, cons)
                 .putInt(keys.season, season)
                 .apply();
@@ -384,6 +493,7 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
         return getString(key, "");
     }
 
+    @SuppressLint("SwitchIntDef")
     @NonNull
     private ContentValues getPreferences(@Nullable String preference) {
         ContentValues result = new ContentValues();
@@ -397,7 +507,7 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
             for (Map.Entry<String, ?> entry : map.entrySet()) {
                 key = entry.getKey();
 
-                if (isSyncKey(key)) {
+                if (keys.isSyncKey(key)) {
                     value = entry.getValue();
 
                     if (value instanceof String) result.put(key, (String) value);
@@ -411,20 +521,28 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
                 }
             }
         } else {
-            if (preference.equals(keys.changed)) {
-                result.put(preference, isChanged());
-            } else if (preference.equals(keys.databaseFullSync)) {
-                result.put(preference, isFullSync());
-            } else if (preference.equals(keys.databaseRevision) || preference.equals(keys.preferencesRevision)) {
-                result.put(preference, getRevision(preference));
-            } else if (preference.equals(keys.lastSyncDateTime)) {
-                result.put(preference, getLastSyncDateTime());
-            } else if (preference.equals(keys.lastSyncHasError)) {
-                result.put(preference, getLastSyncHasError());
-            } else {
-                UtilsLog.d(TAG, "getPreferences", "unhandled preference == " + preference);
+            switch (keys.getAsInt(preference)) {
+                case Keys.CHANGED:
+                    result.put(preference, isChanged());
+                    break;
+                case Keys.DATABASE_FULL_SYNC:
+                    result.put(preference, isFullSync());
+                    break;
+                case Keys.DATABASE_REVISION:
+                case Keys.PREFERENCES_REVISION:
+                    result.put(preference, getRevision(preference));
+                    break;
+                case Keys.LAST_SYNC_DATE_TIME:
+                    result.put(preference, getLastSyncDateTime());
+                    break;
+                case Keys.LAST_SYNC_HAS_ERROR:
+                    result.put(preference, getLastSyncHasError());
+                    break;
+                default:
+                    UtilsLog.d(TAG, "getPreferences", "unhandled preference == " + preference);
             }
         }
+
 //        for (String key : result.keySet())
 //            UtilsLog.d(TAG, "getPreferences", "key == " + key + ", value == " + result.getAsString(key));
 
@@ -452,7 +570,7 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
         return getPreferencesCursor(preference);
     }
 
-    @SuppressLint("CommitPrefEdits")
+    @SuppressLint({"CommitPrefEdits", "SwitchIntDef"})
     public int setPreferences(@Nullable ContentValues preferences,
                               @Nullable String preference) {
         if (preferences == null || preferences.size() == 0) return -1;
@@ -484,34 +602,45 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
 
             return preferences.size();
         } else {
-            if (preference.equals(keys.changed)) {
-                putChanged(preferences.getAsBoolean(preference));
-            } else if (preference.equals(keys.databaseRevision) ||
-                    preference.equals(keys.preferencesRevision)) {
-                putRevision(preference, preferences.getAsInteger(preference));
-            } else if (preference.equals(keys.databaseFullSync)) {
-                putFullSync(preferences.getAsBoolean(preference));
-            } else if (preference.equals(keys.lastSyncDateTime)) {
-                putLastSyncDateTime(preferences.getAsLong(preference));
-            } else if (preference.equals(keys.lastSyncHasError)) {
-                putLastSyncHasError(preferences.getAsBoolean(preference));
-            } else {
-                UtilsLog.d(TAG, "setPreferences", "unhandled preference == " + preference);
+            switch (keys.getAsInt(preference)) {
+                case Keys.CHANGED:
+                    putChanged(preferences.getAsBoolean(preference));
+                    break;
+                case Keys.DATABASE_REVISION:
+                case Keys.PREFERENCES_REVISION:
+                    putRevision(preference, preferences.getAsInteger(preference));
+                    break;
+                case Keys.DATABASE_FULL_SYNC:
+                    putFullSync(preferences.getAsBoolean(preference));
+                    break;
+                case Keys.LAST_SYNC_DATE_TIME:
+                    putLastSyncDateTime(preferences.getAsLong(preference));
+                    break;
+                case Keys.LAST_SYNC_HAS_ERROR:
+                    putLastSyncHasError(preferences.getAsBoolean(preference));
+                    break;
+                default:
+                    UtilsLog.d(TAG, "setPreferences", "unhandled preference == " + preference);
             }
 
             return 1;
         }
     }
 
+    @SuppressLint("SwitchIntDef")
     @PreferenceType
     public int getPreferenceType(@NonNull String key) {
-        if (key.equals(keys.consumption) || key.equals(keys.season))
-            return PREFERENCE_TYPE_INT;
-
-        if (key.equals(keys.filterDateFrom) || key.equals(keys.filterDateTo) ||
-                key.equals(keys.mapCenterLatitude) || key.equals(keys.mapCenterLongitude))
-            return PREFERENCE_TYPE_LONG;
-
-        return PREFERENCE_TYPE_STRING;
+        switch (keys.getAsInt(key)) {
+            case Keys.CONSUMPTION:
+            case Keys.SEASON:
+                return PREFERENCE_TYPE_INT;
+            case Keys.FILTER_DATE_FROM:
+            case Keys.FILTER_DATE_TO:
+            case Keys.MAP_CENTER_LATITUDE:
+            case Keys.MAP_CENTER_LONGITUDE:
+                return PREFERENCE_TYPE_LONG;
+            default:
+                return PREFERENCE_TYPE_STRING;
+        }
     }
 }

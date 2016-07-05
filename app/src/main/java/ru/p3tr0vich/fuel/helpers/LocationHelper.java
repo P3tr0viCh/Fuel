@@ -75,6 +75,7 @@ public class LocationHelper {
     }
 
     public void disconnect() {
+        mHandler.removeCallbacks(mLocationTimeoutRunnable);
         mGoogleApiClient.disconnect();
     }
 

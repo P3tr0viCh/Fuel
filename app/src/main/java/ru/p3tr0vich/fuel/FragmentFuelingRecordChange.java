@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,12 +27,14 @@ import ru.p3tr0vich.fuel.utils.Utils;
 import ru.p3tr0vich.fuel.utils.UtilsDate;
 import ru.p3tr0vich.fuel.utils.UtilsFormat;
 
+import static ru.p3tr0vich.fuel.R.id.edit_cost;
+
 public class FragmentFuelingRecordChange extends Fragment implements View.OnClickListener {
 
     public static final String TAG = "FragmentFuelingRecordChange";
 
     private static final String STATE_KEY_DATE = "STATE_KEY_DATE";
-    private static final String STATE_KEY_CALC_ENABLED = "STATE_KEY_CALC_ENABLED";
+    private static final String STATE_KEY_CALC_STEP = "STATE_KEY_CALC_STEP";
 
     private FuelingRecord mFuelingRecord;
 
@@ -40,13 +43,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     private EditText mEditVolume;
     private EditText mEditTotal;
 
-    private float mDefaultCost;
-    private float mDefaultVolume;
-    private float mOneCUVolumeCost; // Стоимость одного литра
-    private boolean mCalcEnabled;
-
-    private CostTextWatcherAdapter mCostTextWatcher = null;
-    private VolumeTextWatcherAdapter mVolumeTextWatcher = null;
+    private float mPrice;
 
     private PreferencesHelper mPreferencesHelper;
 
@@ -74,22 +71,23 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         setHasOptionsMenu(true);
 
         mButtonDate = (Button) view.findViewById(R.id.btn_date);
-        mEditCost = (EditText) view.findViewById(R.id.edit_cost);
+        mEditCost = (EditText) view.findViewById(edit_cost);
         mEditVolume = (EditText) view.findViewById(R.id.edit_volume);
         mEditTotal = (EditText) view.findViewById(R.id.edit_total);
 
         Bundle bundle = getArguments();
 
-        if (bundle != null && bundle.containsKey(FuelingRecord.NAME))
+        if (bundle != null && bundle.containsKey(FuelingRecord.NAME)) {
             mFuelingRecord = new FuelingRecord(bundle);
-        else {
+            mPrice = 0;
+        } else {
             float cost = mPreferencesHelper.getDefaultCost();
             float volume = mPreferencesHelper.getDefaultVolume();
-            float price = mPreferencesHelper.getPrice();
+            mPrice = mPreferencesHelper.getPrice();
 
-            if (price != 0) {
-                if (cost == 0 && volume != 0) cost = volume * price;
-                else if (volume == 0 && cost != 0) volume = cost / price;
+            if (mPrice != 0) {
+                if (cost == 0 && volume != 0) cost = volume * mPrice;
+                else if (volume == 0 && cost != 0) volume = cost / mPrice;
             }
 
             mFuelingRecord = new FuelingRecord(cost, volume, mPreferencesHelper.getLastTotal());
@@ -114,63 +112,149 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         view.findViewById(R.id.text_volume).setOnClickListener(this);
         view.findViewById(R.id.text_total).setOnClickListener(this);
 
-        mCalcEnabled = mFuelingRecord.getId() == 0 &&
-                (savedInstanceState == null ||
-                        savedInstanceState.getBoolean(STATE_KEY_CALC_ENABLED));
-        if (mCalcEnabled) {
-            mDefaultCost = mPreferencesHelper.getDefaultCost();
-            mDefaultVolume = mPreferencesHelper.getDefaultVolume();
-
-            if (mDefaultCost != 0 && mDefaultVolume != 0)
-                mOneCUVolumeCost = mDefaultCost / mDefaultVolume;
-            else
-                mOneCUVolumeCost = 0;
-
-            mCalcEnabled = mOneCUVolumeCost != 0;
-        }
+        if (savedInstanceState == null)
+            mCalcStep = mFuelingRecord.getId() == 0 && mPrice > 0 ? CALC_STEP_SELECT : CALC_STEP_DISABLED;
+        else
+            mCalcStep = savedInstanceState.getInt(STATE_KEY_CALC_STEP, CALC_STEP_DISABLED);
 
         return view;
     }
+
+    /**
+     * Шаг ожидания ввода.
+     * В случае изменения старой записи или если цена меньше или равна нулю
+     * вычисление отключено ({@code CALC_STEP_DISABLED}).
+     * Иначе, при первом открытии фрагмента, шаг устанавливается на выбор
+     * редактируемого и вычисляемого полей ({@code CALC_STEP_SELECT}).
+     * При последующих пересозданиях фрагмента загружается предыдущее значение.
+     */
+    private int mCalcStep;
+
+    /**
+     * Выбор редактируемого и вычисляемого полей.
+     */
+    private static final int CALC_STEP_SELECT = 0;
+    /**
+     * Редактируемое поле -- Стоимость, вычисляемое поле -- Объём.
+     */
+    private static final int CALC_STEP_COST = 1;
+    /**
+     * Редактируемое поле -- Объём, вычисляемое -- Стоимость.
+     */
+    private static final int CALC_STEP_VOLUME = 2;
+    /**
+     * Вычисление отключено.
+     */
+    private static final int CALC_STEP_DISABLED = 3;
+
+    /**
+     * Проверка способа изменения поля:
+     * true, если поле изменяется в результате ручного ввода,
+     * false, если изменение происходит в результате вызова функции setText.
+     */
+    private boolean mManualInput = true;
+
+    private TextWatcher mCostTextWatcher = null;
+    private TextWatcher mVolumeTextWatcher = null;
 
     @Override
     public void onStart() {
         super.onStart();
 
-        if (mCalcEnabled) {
+        if (mCalcStep != CALC_STEP_DISABLED) {
             if (mCostTextWatcher == null) {
-                mCostTextWatcher = new CostTextWatcherAdapter();
+                mCostTextWatcher = new EditTextWatcherAdapter(mEditCost, mEditVolume,
+                        new CalcVolume(), CALC_STEP_COST);
                 mEditCost.addTextChangedListener(mCostTextWatcher);
             }
             if (mVolumeTextWatcher == null) {
-                mVolumeTextWatcher = new VolumeTextWatcherAdapter();
+                mVolumeTextWatcher = new EditTextWatcherAdapter(mEditVolume, mEditCost,
+                        new CalcCost(), CALC_STEP_VOLUME);
                 mEditVolume.addTextChangedListener(mVolumeTextWatcher);
             }
         }
     }
 
-    private class CostTextWatcherAdapter extends TextWatcherAdapter {
+    private class EditTextWatcherAdapter extends TextWatcherAdapter {
+        private final EditText mEdited;
+        private final EditText mCalculated;
+
+        private final Calculator mCalculator;
+
+        private final int mThisStep;
+
+        /**
+         * @param edited     редактируемое поле.
+         * @param calculated вычисляемое поле.
+         * @param calculator метод вычисления.
+         * @param thisStep   редактируемое поле ({@code CALC_STEP_COST или CALC_STEP_VOLUME}).
+         */
+        public EditTextWatcherAdapter(EditText edited, EditText calculated, Calculator calculator, int thisStep) {
+            mEdited = edited;
+            mCalculated = calculated;
+            mCalculator = calculator;
+            mThisStep = thisStep;
+        }
+
         @Override
         public void afterTextChanged(Editable s) {
-            final float cost = UtilsFormat.editTextToFloat(mEditCost);
+            // Изначально шаг установлен на выбор.
+            // После первого изменения в одном из полей, это поле назначается редактируемым,
+            // а другое -- вычисляемым.
 
-            final float volume =
-                    cost == 0 ? 0 : cost == mDefaultCost ? mDefaultVolume : cost / mOneCUVolumeCost;
+            if (mCalcStep == CALC_STEP_SELECT) {
+                mCalcStep = mThisStep;
+            }
 
-            mCalcEnabled = false;
-            UtilsFormat.floatToEditText(mEditVolume, volume, false);
-            mCalcEnabled = true;
+            if (mCalcStep == mThisStep) {
+                // Если значение изменяется в редактируемом поле,
+                // вычисляется значение для вычисляемого поля.
+
+                float enteredValue = UtilsFormat.editTextToFloat(mEdited);
+
+                float calculatedValue = mCalculator.calc(enteredValue, mPrice);
+
+                mManualInput = false;
+                UtilsFormat.floatToEditText(mCalculated, calculatedValue, false);
+                mManualInput = true;
+            } else {
+                // Иначе, если было произведено ручное изменение в вычисляемом поле,
+                // вычисление отключается.
+
+                if (mManualInput) {
+                    mCalcStep = CALC_STEP_DISABLED;
+                    mEditCost.removeTextChangedListener(mCostTextWatcher);
+                    mEditVolume.removeTextChangedListener(mVolumeTextWatcher);
+                }
+            }
         }
     }
 
-    private class VolumeTextWatcherAdapter extends TextWatcherAdapter {
-        @Override
-        public void afterTextChanged(Editable s) {
-            if (mCalcEnabled) {
-                mCalcEnabled = false;
+    /**
+     * Метод вычисления.
+     * См. {@link CalcCost}, {@link CalcVolume}
+     */
+    private interface Calculator {
+        float calc(float value, float price);
+    }
 
-                mEditVolume.removeTextChangedListener(mVolumeTextWatcher);
-                mEditCost.removeTextChangedListener(mCostTextWatcher);
-            }
+    /**
+     * Вычисляет объём на основе стоимости.
+     */
+    private static class CalcVolume implements Calculator {
+        public float calc(float cost, float price) {
+            if (cost == 0 || price == 0) return 0;
+            return cost / price;
+        }
+    }
+
+    /**
+     * Вычисляет стоимость на основе объёма.
+     */
+    private static class CalcCost implements Calculator {
+        public float calc(float volume, float price) {
+            if (volume == 0 || price == 0) return 0;
+            return volume * price;
         }
     }
 
@@ -179,7 +263,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         super.onSaveInstanceState(outState);
 
         outState.putLong(STATE_KEY_DATE, mFuelingRecord.getDateTime());
-        outState.putBoolean(STATE_KEY_CALC_ENABLED, mCalcEnabled);
+        outState.putInt(STATE_KEY_CALC_STEP, mCalcStep);
     }
 
     private void updateDate() {

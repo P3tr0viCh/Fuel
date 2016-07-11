@@ -29,9 +29,18 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
 
     public static final long SYNC_NONE = Long.MIN_VALUE;
 
+    /**
+     * Центр карты по умолчанию.
+     */
     public static final String DEFAULT_MAP_CENTER_TEXT = "Москва, Кремль";
-    public static final double DEFAULT_MAP_CENTER_LATITUDE = 55.752023;  // Широта
-    public static final double DEFAULT_MAP_CENTER_LONGITUDE = 37.617499; // Долгота
+    /**
+     * Широта центра карты по умолчанию.
+     */
+    public static final double DEFAULT_MAP_CENTER_LATITUDE = 55.752023;
+    /**
+     * Долгота центра карты по умолчанию.
+     */
+    public static final double DEFAULT_MAP_CENTER_LONGITUDE = 37.617499;
 
     private final Context mContext; // == ApplicationContext
     private final SharedPreferences mSharedPreferences;

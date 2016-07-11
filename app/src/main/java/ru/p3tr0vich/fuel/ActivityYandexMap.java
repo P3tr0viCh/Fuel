@@ -12,6 +12,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -40,6 +41,7 @@ import ru.p3tr0vich.fuel.helpers.ConnectivityHelper;
 import ru.p3tr0vich.fuel.helpers.LocationHelper;
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.utils.Utils;
+import ru.p3tr0vich.fuel.utils.UtilsDate;
 import ru.p3tr0vich.fuel.utils.UtilsFormat;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
 
@@ -53,27 +55,28 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
     private static final boolean LOG_ENABLED = false;
 
-    private static final String INTENT_DISTANCE = "INTENT_DISTANCE";
-    private static final String INTENT_MAP_CENTER_TEXT = "INTENT_MAP_CENTER_TEXT";
-    private static final String INTENT_MAP_CENTER_LATITUDE = "INTENT_MAP_CENTER_LATITUDE";
-    private static final String INTENT_MAP_CENTER_LONGITUDE = "INTENT_MAP_CENTER_LONGITUDE";
+    private static final String EXTRA_TYPE = "EXTRA_TYPE";
+    private static final String EXTRA_DISTANCE = "EXTRA_DISTANCE";
+    private static final String EXTRA_MAP_CENTER_TEXT = "EXTRA_MAP_CENTER_TEXT";
+    private static final String EXTRA_MAP_CENTER_LATITUDE = "EXTRA_MAP_CENTER_LATITUDE";
+
+    private static final String EXTRA_MAP_CENTER_LONGITUDE = "EXTRA_MAP_CENTER_LONGITUDE";
 
     private static final String PREFIX_RUSSIA = "Россия, ";
-
-    private static final String EXTRA_TYPE = "EXTRA_TYPE";
 
     private static final String URL_YANDEX_MAP = "file:///android_asset/yandexMap.html?";
 
     private static final String URL_QUERY_MAP_TYPE_DISTANCE = "distance";
     private static final String URL_QUERY_MAP_TYPE_CENTER = "center";
 
-    private static final int RESOLUTION_REQUIRED_REQUEST_CODE = 1000;
+    private static final int REQUEST_CODE_RESOLUTION_REQUIRED = 1000;
 
     @MapType
     private int mType;
 
     private boolean mLoading = true;
     private int mDistance = 0;
+    private int mTime = 0;
     private MapCenter mMapCenter;
 
     private Toolbar mToolbarYandexMap;
@@ -98,11 +101,24 @@ public class ActivityYandexMap extends AppCompatActivity implements
     public static final int MAP_TYPE_DISTANCE = 0;
     public static final int MAP_TYPE_CENTER = 1;
 
-    static class MapCenter {
-        String text;
-        String title;
-        String subtitle;
-        double latitude, longitude;
+    /**
+     * Центр карты.
+     */
+    public static class MapCenter {
+        /**
+         * Полное наименование географической точки.
+         */
+        public String text;
+        public String title;
+        public String subtitle;
+        /**
+         * Широта.
+         */
+        public double latitude;
+        /**
+         * Долгота.
+         */
+        public double longitude;
 
         MapCenter(String text, double latitude, double longitude) {
             this.text = text;
@@ -130,22 +146,36 @@ public class ActivityYandexMap extends AppCompatActivity implements
                     parent.getString(R.string.message_error_no_internet));
     }
 
+    /**
+     * Предназначена для использования в {@code onActivityResult}.
+     *
+     * @param data интент, содержащий расстояние.
+     *             Заполняется в {@code onOptionsItemSelected}.
+     * @return Расстояние в метрах.
+     */
     public static int getDistance(Intent data) {
-        return data.getIntExtra(INTENT_DISTANCE, 0);
+        return data.getIntExtra(EXTRA_DISTANCE, 0);
     }
 
+    /**
+     * Предназначена для использования в {@code onActivityResult}.
+     *
+     * @param data интент, содержащий центр карты.
+     * @return Центр карты. Объект типа {@link MapCenter}.
+     */
+    @NonNull
     public static MapCenter getMapCenter(Intent data) {
         return new MapCenter(
-                data.getStringExtra(INTENT_MAP_CENTER_TEXT),
-                data.getDoubleExtra(INTENT_MAP_CENTER_LATITUDE,
+                data.getStringExtra(EXTRA_MAP_CENTER_TEXT),
+                data.getDoubleExtra(EXTRA_MAP_CENTER_LATITUDE,
                         PreferencesHelper.DEFAULT_MAP_CENTER_LATITUDE),
-                data.getDoubleExtra(INTENT_MAP_CENTER_LONGITUDE,
+                data.getDoubleExtra(EXTRA_MAP_CENTER_LONGITUDE,
                         PreferencesHelper.DEFAULT_MAP_CENTER_LONGITUDE));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        UtilsLog.d(TAG, "onCreate");
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onCreate");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_yandex_map);
@@ -191,7 +221,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
         switch (mType) {
             case MAP_TYPE_DISTANCE:
-                onDistanceChange(mDistance);
+                onRouteChange(mDistance, mTime);
                 break;
             case MAP_TYPE_CENTER:
                 onMapCenterChange(
@@ -310,7 +340,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        UtilsLog.d(TAG, "onDestroy");
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onDestroy");
 
         if (mWebView != null) {
             mWebView.stopLoading();
@@ -326,14 +356,14 @@ public class ActivityYandexMap extends AppCompatActivity implements
     protected void onStart() {
         super.onStart();
 
-        UtilsLog.d(TAG, "onStart");
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onStart");
 
         mLocationHelper.connect();
     }
 
     @Override
     protected void onStop() {
-        UtilsLog.d(TAG, "onStop");
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onStop");
 
         mLocationHelper.disconnect();
 
@@ -342,7 +372,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        UtilsLog.d(TAG, "onConfigurationChanged");
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onConfigurationChanged");
 
         if (mWebView != null) mWebViewPlaceholder.removeView(mWebView);
 
@@ -425,7 +455,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
                         case R.id.action_done_x2:
                             mDistance *= 2;
                         case R.id.action_done:
-                            setResult(RESULT_OK, new Intent().putExtra(INTENT_DISTANCE, mDistance));
+                            setResult(RESULT_OK, new Intent().putExtra(EXTRA_DISTANCE, mDistance));
                             finish();
                     }
                 else
@@ -433,9 +463,9 @@ public class ActivityYandexMap extends AppCompatActivity implements
                 return true;
             case MAP_TYPE_CENTER:
                 setResult(RESULT_OK, new Intent()
-                        .putExtra(INTENT_MAP_CENTER_TEXT, mMapCenter.text)
-                        .putExtra(INTENT_MAP_CENTER_LATITUDE, mMapCenter.latitude)
-                        .putExtra(INTENT_MAP_CENTER_LONGITUDE, mMapCenter.longitude));
+                        .putExtra(EXTRA_MAP_CENTER_TEXT, mMapCenter.text)
+                        .putExtra(EXTRA_MAP_CENTER_LATITUDE, mMapCenter.latitude)
+                        .putExtra(EXTRA_MAP_CENTER_LONGITUDE, mMapCenter.longitude));
                 finish();
                 return true;
             default:
@@ -443,17 +473,33 @@ public class ActivityYandexMap extends AppCompatActivity implements
         }
     }
 
-    public void onDistanceChange(int distance) {
+    public void onRouteChange(int distance, int time) {
         mDistance = distance;
+        mTime = time;
 
         String title = getString(R.string.title_yandex_map);
         if (mDistance > 0)
-            title += String.format(getString(R.string.title_yandex_map_add), mDistance);
+            title += ": " + String.valueOf(mDistance / 1000) + " " + getString(R.string.units_km);
 
-        if (LOG_ENABLED) UtilsLog.d(TAG, "onDistanceChange", "title == " + title);
+        String subTitle = null;
+        if (mTime > 59) {
+            subTitle = getString(R.string.title_yandex_map_subtitle);
 
-        //noinspection ConstantConditions
-        getSupportActionBar().setTitle(title);
+            int[] hms = UtilsDate.splitSeconds(mTime);
+
+            subTitle += ":";
+            if (hms[0] > 0) subTitle += " " + hms[0] + " " + getString(R.string.units_hours);
+            if (hms[1] > 0) subTitle += " " + hms[1] + " " + getString(R.string.units_minutes);
+        }
+
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onRouteChange",
+                "title == " + title + ", subTitle == " + subTitle);
+
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+
+        actionBar.setTitle(title);
+        actionBar.setSubtitle(subTitle);
     }
 
     private String minimizeGeoCode(String text) {
@@ -579,7 +625,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
     }
 
     public void onErrorConstructRoute() {
-        onDistanceChange(0);
+        onRouteChange(0, 0);
         Utils.toast(R.string.message_error_yandex_map_route);
     }
 
@@ -608,7 +654,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
     @Override
     public void onResolutionRequired(@NonNull Status status) {
         try {
-            status.startResolutionForResult(this, RESOLUTION_REQUIRED_REQUEST_CODE);
+            status.startResolutionForResult(this, REQUEST_CODE_RESOLUTION_REQUIRED);
         } catch (Exception e) {
             if (LOG_ENABLED)
                 UtilsLog.d(TAG, "onResolutionRequired", "Exception e == " + e.toString());
@@ -618,7 +664,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case RESOLUTION_REQUIRED_REQUEST_CODE:
+            case REQUEST_CODE_RESOLUTION_REQUIRED:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         mBtnGeolocation.callOnClick();
@@ -626,7 +672,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
                         break;
                     case Activity.RESULT_CANCELED:
                         if (LOG_ENABLED)
-                            UtilsLog.d(TAG, "onActivityResult", "RESOLUTION_REQUIRED_REQUEST_CODE result == RESULT_CANCELED");
+                            UtilsLog.d(TAG, "onActivityResult", "REQUEST_CODE_RESOLUTION_REQUIRED result == RESULT_CANCELED");
 
                         break;
                     default:

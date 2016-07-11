@@ -2,6 +2,7 @@ package ru.p3tr0vich.fuel.utils;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Size;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
@@ -47,7 +48,7 @@ public class UtilsDate {
 
     @NonNull
     public static String getMonthName(@NonNull Context context, @NonNull Calendar calendar,
-                                int month, boolean abbrev) {
+                                      int month, boolean abbrev) {
         calendar.set(Calendar.MONTH, month);
         int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR | DateUtils.FORMAT_NO_MONTH_DAY;
         if (abbrev) flags |= DateUtils.FORMAT_ABBREV_MONTH;
@@ -100,6 +101,24 @@ public class UtilsDate {
         if (elapsed > DateUtils.MINUTE_IN_MILLIS && elapsed < DateUtils.WEEK_IN_MILLIS)
             result += ", " +
                     DateUtils.getRelativeTimeSpanString(context, dateTime, true).toString();
+
+        return result;
+    }
+
+    /**
+     * Разбивает секунды на часы, минуты и секунды.
+     *
+     * @param seconds секунды.
+     * @return массив из трёх элементов,
+     * где первый элемент -- часы, второй -- минуты и третий -- секунды.
+     */
+    @Size(3)
+    public static int[] splitSeconds(int seconds) {
+        int[] result = new int[3];
+
+        result[0] = seconds / 3600;
+        result[1] = (seconds % 3600) / 60;
+        result[2] = seconds % 60;
 
         return result;
     }

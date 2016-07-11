@@ -246,7 +246,7 @@ ptp.geocode = function (str, point) {
                 mapCenterSubtitle = '';
             }
 
-            this.getMapCenter();
+            this.updateMapCenter();
 
             break;
         case MAP_TYPE_DISTANCE:
@@ -262,7 +262,7 @@ ptp.geocode = function (str, point) {
                 console.log(str + ": " + finishBalloon);
             }
 
-            this.getDirection();
+            this.updateRoute();
 
             break;
         }
@@ -287,7 +287,7 @@ ptp.getAllKeys = function (object) {
         }
 }
 
-ptp.getMapCenter = function () {
+ptp.updateMapCenter = function () {
     if (this.start) {
         var startCoordinates = this.start.geometry.getCoordinates();
 
@@ -299,7 +299,7 @@ ptp.getMapCenter = function () {
     }
 }
 
-ptp.getDirection = function () {
+ptp.updateRoute = function () {
     if (this.route) this.map.geoObjects.remove(this.route);
 
     if (this.start && this.finish) {
@@ -309,9 +309,10 @@ ptp.getDirection = function () {
 
         ymaps.route([startCoordinates, finishCoordinates], { mapStateAutoApply: true })
             .then(function (router) {
-                var distance = Math.round(router.getLength() / 1000);
+                var distance = router.getLength();
+                var time = router.getTime();
 
-                console.log("distance == " + distance);
+                console.log("distance == " + distance + ", time == " + time);
 
                 self.route = router.getPaths();
 
@@ -319,13 +320,13 @@ ptp.getDirection = function () {
 
                 self.map.geoObjects.add(self.route);
 
-                YandexMapJavascriptInterface.onDistanceChange(distance);
+                self.map.setBounds(self.map.geoObjects.getBounds());
+
+                YandexMapJavascriptInterface.onRouteChange(distance, time);
             }, function (err) {
                  console.log("getDirection error: " + err.message);
                  YandexMapJavascriptInterface.onErrorConstructRoute();
             });
-
-        self.map.setBounds(self.map.geoObjects.getBounds())
     }
 }
 

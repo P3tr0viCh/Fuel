@@ -149,8 +149,13 @@ public class FragmentCalc extends FragmentBase implements
         return view;
     }
 
+    /**
+     * Изменяет поле Расстояние.
+     *
+     * @param distance расстояние в метрах.
+     */
     public void setDistance(int distance) {
-        UtilsFormat.floatToEditText(mEditDistance, distance, false);
+        UtilsFormat.floatToEditText(mEditDistance, distance / 1000, false);
     }
 
     private void checkTextOnEmpty(EditText editText) {

@@ -43,8 +43,19 @@ class YandexMapJavascriptInterface {
 
         int getFinishSearchControlTop();
 
-        void onDistanceChange(int distance);
+        /**
+         * @param distance расстояние в метрах.
+         * @param time     время в пути в секундах.
+         */
+        void onRouteChange(int distance, int time);
 
+        /**
+         * @param text      полное наименования географической точки.
+         * @param title     основное название (напр., название города).
+         * @param subtitle  дополнительное название (напр., улица и номер дома).
+         * @param latitude  широта.
+         * @param longitude долгота.
+         */
         void onMapCenterChange(String text, String title, String subtitle,
                                double latitude, double longitude);
 
@@ -151,11 +162,11 @@ class YandexMapJavascriptInterface {
     }
 
     @JavascriptInterface
-    public void onDistanceChange(final int distance) {
+    public void onRouteChange(final int distance, final int time) {
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                getYandexMapActivity().onDistanceChange(distance);
+                getYandexMapActivity().onRouteChange(distance, time);
             }
         });
     }

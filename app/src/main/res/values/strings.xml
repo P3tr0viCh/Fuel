@@ -7,7 +7,7 @@
     <string name="title_backup">Резервная копия</string>
     <string name="title_about">О программе</string>
     <string name="title_yandex_map">Расстояние</string>
-    <string name="title_yandex_map_add">: %d км</string>
+    <string name="title_yandex_map_subtitle">Время в пути</string>
     <string name="title_chart_cost">График расходов</string>
     <string name="title_chart_cost_subtitle">Сумма стоимости по месяцам</string>
 
@@ -172,6 +172,10 @@
         <item>@string/summer</item>
         <item>@string/winter</item>
     </string-array>
+
+    <string name="units_km">км</string>
+    <string name="units_hours">ч.</string>
+    <string name="units_minutes">мин.</string>
 
     <string name="pref_price">Стоимость топлива</string>
     <string name="pref_price_empty">Не указана</string>

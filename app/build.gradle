@@ -107,7 +107,7 @@ dependencies {
 
     compile 'com.github.P3tr0viCh:ExpansionPanel:1.0.0'
 
-    compile 'com.google.android.gms:play-services-location:9.0.2'
+    compile 'com.google.android.gms:play-services-location:9.2.1'
 
     compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
     compile 'com.yandex.android:disk-restapi-sdk:1.03'

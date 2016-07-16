@@ -97,8 +97,8 @@ public class LocationHelper {
 
     @NonNull
     public String getConnectionResultMessage(int result) {
-        String var11 = GooglePlayServicesUtil.zzam(mContext);
-        return com.google.android.gms.common.internal.zzh.zzb(mContext, result, var11);
+        String var11 = GooglePlayServicesUtil.zzbv(mContext);
+        return com.google.android.gms.common.internal.zzh.zzc(mContext, result, var11);
     }
 
     /**

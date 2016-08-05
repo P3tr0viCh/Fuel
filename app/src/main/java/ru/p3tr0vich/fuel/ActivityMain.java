@@ -3,14 +3,10 @@ package ru.p3tr0vich.fuel;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.content.res.Configuration;
-import android.database.ContentObserver;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -41,9 +37,7 @@ import android.widget.TextView;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import ru.p3tr0vich.fuel.helpers.ConnectivityHelper;
 import ru.p3tr0vich.fuel.helpers.ContactsHelper;
-import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
 import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
@@ -72,6 +66,8 @@ public class ActivityMain extends AppCompatActivity implements
 
     private static final int REQUEST_CODE_ACTIVITY_CONTACTS = 300;
 
+    private static final int REQUEST_CODE_REQUEST_SYNC = 400;
+
     private Toolbar mToolbarMain;
     private Spinner mToolbarSpinner;
 
@@ -86,14 +82,8 @@ public class ActivityMain extends AppCompatActivity implements
     private Animation mAnimationSync;
     private TextView mBtnSync;
 
-    private boolean mDatabaseChanged, mPreferencesChanged;
-    private TimerSync mTimerSync;
-
     private BroadcastReceiverLoading mBroadcastReceiverLoading;
-    private BroadcastReceiverSync mBroadcastReceiverSync;
-
-    private PreferencesObserver mPreferencesObserver;
-    private DatabaseObserver mDatabaseObserver;
+    private BroadcastReceiverDatabaseChanged mBroadcastReceiverDatabaseChanged;
 
     private PreferencesHelper mPreferencesHelper;
 
@@ -119,25 +109,6 @@ public class ActivityMain extends AppCompatActivity implements
     private static final int FRAGMENT_PREFERENCES_ID = 4;
     private static final int FRAGMENT_ABOUT_ID = 5;
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({START_SYNC_APP_STARTED,
-            START_SYNC_BUTTON_CLICKED,
-            START_SYNC_TOKEN_CHANGED,
-            START_SYNC_PREFERENCES_CHANGED,
-            START_SYNC_DATABASE_CHANGED,
-            START_SYNC_CHANGED,
-            START_SYNC_ACTIVITY_DESTROY})
-    private @interface StartSync {
-    }
-
-    private static final int START_SYNC_APP_STARTED = 0;
-    private static final int START_SYNC_BUTTON_CLICKED = 1;
-    private static final int START_SYNC_TOKEN_CHANGED = 2;
-    private static final int START_SYNC_PREFERENCES_CHANGED = 3;
-    private static final int START_SYNC_DATABASE_CHANGED = 4;
-    private static final int START_SYNC_CHANGED = 5;
-    private static final int START_SYNC_ACTIVITY_DESTROY = 6;
-
     @Nullable
     private Fragment findFragmentByTag(@Nullable String fragmentTag) {
         return fragmentTag != null ?
@@ -162,7 +133,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        UtilsLog.d(TAG, "**************** onCreate ****************");
+        UtilsLog.d(TAG, "onCreate");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -181,10 +152,7 @@ public class ActivityMain extends AppCompatActivity implements
         updateSyncStatus();
 
         initLoadingStatusReceiver();
-        initStartSyncReceiver();
-
-        initPreferencesObserver();
-        initDatabaseObserver();
+        initDatabaseChangedReceiver();
 
         mSyncMonitor = ContentResolver.addStatusChangeListener(
                 ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
@@ -198,7 +166,7 @@ public class ActivityMain extends AppCompatActivity implements
                     .setTransition(FragmentTransaction.TRANSIT_NONE)
                     .commit();
 
-            startSync(START_SYNC_APP_STARTED);
+            ContentObserverService.requestSync(this);
         } else {
             mCurrentFragmentId = intToFragmentId(savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID));
             if (mCurrentFragmentId == FRAGMENT_PREFERENCES_ID) {
@@ -320,14 +288,15 @@ public class ActivityMain extends AppCompatActivity implements
         mBtnSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startSync(START_SYNC_BUTTON_CLICKED);
+                ContentObserverService.requestSync(ActivityMain.this,
+                        createPendingResult(REQUEST_CODE_REQUEST_SYNC, new Intent(), 0));
             }
         });
     }
 
+    // TODO: move to FragmentFueling
     private void initLoadingStatusReceiver() {
         mBroadcastReceiverLoading = new BroadcastReceiverLoading() {
-
             @Override
             public void onReceive(boolean loading) {
                 FragmentFueling fragmentFueling = getFragmentFueling();
@@ -341,99 +310,15 @@ public class ActivityMain extends AppCompatActivity implements
         mBroadcastReceiverLoading.register(this);
     }
 
-    private void initStartSyncReceiver() {
-        mBroadcastReceiverSync = new BroadcastReceiverSync() {
-
+    private void initDatabaseChangedReceiver() {
+        mBroadcastReceiverDatabaseChanged = new BroadcastReceiverDatabaseChanged() {
             @Override
-            public void onReceive(boolean databaseChanged,
-                                  boolean preferencesChanged, boolean tokenChanged) {
-                if (tokenChanged)
-                    startSync(START_SYNC_TOKEN_CHANGED);
-                else {
-                    if (databaseChanged && preferencesChanged)
-                        startSync(START_SYNC_CHANGED);
-                    else if (databaseChanged)
-                        startSync(START_SYNC_DATABASE_CHANGED);
-                    else if (preferencesChanged)
-                        startSync(START_SYNC_PREFERENCES_CHANGED);
-                }
+            public void onReceive(long id) {
+                FragmentFueling fragmentFueling = getFragmentFueling();
+                if (fragmentFueling != null) fragmentFueling.updateList(id);
             }
         };
-        mBroadcastReceiverSync.register(this);
-    }
-
-    private void startTimerSync() {
-        TimerSync.stop(mTimerSync);
-
-        if (mPreferencesHelper.isSyncEnabled())
-            mTimerSync = TimerSync.start(mDatabaseChanged, mPreferencesChanged);
-    }
-
-    private class PreferencesObserver extends ContentObserver {
-        PreferencesObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            onChange(selfChange, null);
-        }
-
-        @Override
-        public void onChange(boolean selfChange, Uri changeUri) {
-            UtilsLog.d(TAG, "PreferencesObserver", "onChange: selfChange == " + selfChange +
-                    ", changeUri == " + changeUri);
-
-            mPreferencesChanged = true;
-            startTimerSync();
-        }
-    }
-
-    private void initPreferencesObserver() {
-        mPreferencesObserver = new PreferencesObserver(new Handler());
-        getContentResolver().registerContentObserver(ContentProviderHelper.URI_PREFERENCES,
-                false, mPreferencesObserver);
-    }
-
-    private class DatabaseObserver extends ContentObserver {
-        DatabaseObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            onChange(selfChange, null);
-        }
-
-        @Override
-        public void onChange(boolean selfChange, Uri changeUri) {
-            UtilsLog.d(TAG, "DatabaseObserver", "onChange: changeUri == " + changeUri);
-
-            long id = -1;
-
-            if (changeUri != null)
-                switch (ContentProviderHelper.uriMatch(changeUri)) {
-                    case ContentProviderHelper.DATABASE_ITEM:
-                        id = ContentUris.parseId(changeUri);
-                    case ContentProviderHelper.DATABASE:
-                        mDatabaseChanged = true;
-                        startTimerSync();
-                        break;
-                    case ContentProviderHelper.DATABASE_SYNC:
-                        break;
-                    default:
-                        return;
-                }
-
-            FragmentFueling fragmentFueling = getFragmentFueling();
-            if (fragmentFueling != null) fragmentFueling.updateList(id);
-        }
-    }
-
-    private void initDatabaseObserver() {
-        mDatabaseObserver = new DatabaseObserver(new Handler());
-        getContentResolver().registerContentObserver(ContentProviderHelper.URI_DATABASE,
-                true, mDatabaseObserver);
+        mBroadcastReceiverDatabaseChanged.register(this);
     }
 
     @Override
@@ -605,13 +490,8 @@ public class ActivityMain extends AppCompatActivity implements
     protected void onDestroy() {
         ContentResolver.removeStatusChangeListener(mSyncMonitor);
 
-        getContentResolver().unregisterContentObserver(mDatabaseObserver);
-        getContentResolver().unregisterContentObserver(mPreferencesObserver);
-
-        mBroadcastReceiverSync.unregister(this);
+        mBroadcastReceiverDatabaseChanged.unregister(this);
         mBroadcastReceiverLoading.unregister(this);
-
-        startSync(START_SYNC_ACTIVITY_DESTROY);
 
         super.onDestroy();
     }
@@ -630,14 +510,12 @@ public class ActivityMain extends AppCompatActivity implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) return;
 
-        Fragment fragment;
-
         switch (requestCode) {
             case REQUEST_CODE_ACTIVITY_MAP_DISTANCE:
-                fragment = findFragmentByTag(FragmentCalc.TAG);
+                FragmentCalc fragmentCalc = (FragmentCalc) findFragmentByTag(FragmentCalc.TAG);
 
-                if (fragment != null)
-                    ((FragmentCalc) fragment).setDistance(ActivityYandexMap.getDistance(data));
+                if (fragmentCalc != null)
+                    fragmentCalc.setDistance(ActivityYandexMap.getDistance(data));
 
                 break;
             case REQUEST_CODE_ACTIVITY_MAP_CENTER:
@@ -656,6 +534,34 @@ public class ActivityMain extends AppCompatActivity implements
 
                 if (SMSAddress != null)
                     mPreferencesHelper.putSMSAddress(SMSAddress);
+
+                break;
+            case REQUEST_CODE_REQUEST_SYNC:
+                if (data != null)
+                    switch (ContentObserverService.getResult(data)) {
+                        case ContentObserverService.RESULT_INTERNET_DISCONNECTED:
+                            FragmentDialogMessage.show(this,
+                                    null, getString(R.string.message_error_no_internet));
+
+                            break;
+                        case ContentObserverService.RESULT_TOKEN_EMPTY:
+                            showDialogNeedAuth();
+
+                            break;
+                        case ContentObserverService.RESULT_SYNC_DISABLED:
+                            mClickedMenuId = R.id.action_preferences;
+                            mOpenPreferenceSync = true;
+
+                            if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
+                                mDrawerLayout.closeDrawer(GravityCompat.START);
+                            else
+                                selectItem(mClickedMenuId);
+
+                            break;
+                        case ContentObserverService.RESULT_REQUEST_DONE:
+                        case ContentObserverService.RESULT_SYNC_ACTIVE:
+                        case ContentObserverService.RESULT_SYNC_DELAYED_REQUEST:
+                    }
         }
     }
 
@@ -778,110 +684,6 @@ public class ActivityMain extends AppCompatActivity implements
         anim.setInterpolator(new DecelerateInterpolator());
         anim.setDuration(Utils.getInteger(R.integer.animation_duration_drawer_toggle));
         anim.start();
-    }
-
-    private void startSync(@StartSync int startSync) {
-        mDatabaseChanged = false;
-        mPreferencesChanged = false;
-
-        boolean showDialogs = false;
-        boolean startIfSyncActive = false;
-        boolean syncDatabase = false;
-        boolean syncPreferences = false;
-
-        TimerSync.stop(mTimerSync);
-
-        switch (startSync) {
-            case START_SYNC_APP_STARTED:
-                UtilsLog.d(TAG, "startSync", "START_SYNC_APP_STARTED");
-                syncDatabase = true;
-                syncPreferences = true;
-                break;
-            case START_SYNC_BUTTON_CLICKED:
-                UtilsLog.d(TAG, "startSync", "START_SYNC_BUTTON_CLICKED");
-                showDialogs = true;
-                syncDatabase = true;
-                syncPreferences = true;
-                break;
-            case START_SYNC_TOKEN_CHANGED:
-                UtilsLog.d(TAG, "startSync", "START_SYNC_TOKEN_CHANGED");
-                syncDatabase = true;
-                syncPreferences = true;
-                break;
-            case START_SYNC_PREFERENCES_CHANGED:
-                UtilsLog.d(TAG, "startSync", "START_SYNC_PREFERENCES_CHANGED");
-                startIfSyncActive = true;
-                syncDatabase = false;
-                syncPreferences = true;
-                break;
-            case START_SYNC_DATABASE_CHANGED:
-                UtilsLog.d(TAG, "startSync", "START_SYNC_DATABASE_CHANGED");
-                startIfSyncActive = true;
-                syncDatabase = true;
-                syncPreferences = false;
-                break;
-            case START_SYNC_CHANGED:
-                UtilsLog.d(TAG, "startSync", "START_SYNC_CHANGED");
-                startIfSyncActive = true;
-                syncDatabase = true;
-                syncPreferences = true;
-                break;
-            case START_SYNC_ACTIVITY_DESTROY:
-                UtilsLog.d(TAG, "startSync", "START_SYNC_ACTIVITY_DESTROY");
-                startIfSyncActive = true;
-                syncDatabase = true;
-                syncPreferences = true;
-        }
-
-        if (!mPreferencesHelper.isSyncEnabled()) {
-            UtilsLog.d(TAG, "startSync", "sync disabled");
-
-            if (showDialogs) {
-                mClickedMenuId = R.id.action_preferences;
-                mOpenPreferenceSync = true;
-
-                if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
-                    mDrawerLayout.closeDrawer(GravityCompat.START);
-                else
-                    selectItem(mClickedMenuId);
-            }
-
-            return;
-        }
-
-        if (mSyncAccount.isSyncActive() && !startIfSyncActive) {
-            UtilsLog.d(TAG, "startSync", "sync active");
-
-            return;
-        }
-
-        if (mSyncAccount.isYandexDiskTokenEmpty()) {
-            UtilsLog.d(TAG, "startSync", "Yandex.Disk token empty");
-
-            if (showDialogs) showDialogNeedAuth();
-
-            return;
-        }
-
-        if (ConnectivityHelper.getConnectedState(this) == ConnectivityHelper.DISCONNECTED) {
-            UtilsLog.d(TAG, "startSync", "Internet disconnected");
-
-            if (showDialogs) FragmentDialogMessage.show(ActivityMain.this,
-                    null,
-                    getString(R.string.message_error_no_internet));
-
-            return;
-        }
-
-        Bundle extras = new Bundle();
-
-        extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-
-        extras.putBoolean(SyncAdapter.SYNC_DATABASE, syncDatabase);
-        extras.putBoolean(SyncAdapter.SYNC_PREFERENCES, syncPreferences);
-
-        ContentResolver.requestSync(mSyncAccount.getAccount(), mSyncAccount.getAuthority(), extras);
     }
 
     private void updateSyncStatus() {

@@ -5,6 +5,8 @@ import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import ru.p3tr0vich.fuel.utils.UtilsLog;
+
 public class ApplicationFuel extends Application {
 
     @SuppressLint("StaticFieldLeak")
@@ -14,6 +16,17 @@ public class ApplicationFuel extends Application {
     public void onCreate() {
         super.onCreate();
         sContext = getApplicationContext();
+
+        UtilsLog.d("ApplicationFuel", "**********************************************************");
+        UtilsLog.d("ApplicationFuel", "onCreate");
+
+        ContentObserverService.start(this);
+    }
+
+    @Override
+    public void onTerminate() {
+        UtilsLog.d("ApplicationFuel", "onTerminate");
+        super.onTerminate();
     }
 
     @NonNull

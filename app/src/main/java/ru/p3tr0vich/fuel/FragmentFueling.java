@@ -358,8 +358,8 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     private boolean isDateTimeInCurrentYear(final long dateTime) {
-        return UtilsDate.getCalendarInstance(dateTime).get(Calendar.YEAR) ==
-                UtilsDate.getCurrentYear();
+        int year = UtilsDate.getCalendarInstance(dateTime).get(Calendar.YEAR);
+        return year == UtilsDate.getCurrentYear();
     }
 
     /**

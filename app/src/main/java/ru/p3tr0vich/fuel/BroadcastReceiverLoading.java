@@ -15,8 +15,7 @@ abstract class BroadcastReceiverLoading extends BroadcastReceiverLocalBase {
         return ACTION;
     }
 
-    public static void send(@NonNull Context context,
-                            boolean loading) {
+    public static void send(@NonNull Context context, boolean loading) {
         LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ACTION)
                 .putExtra(EXTRA_LOADING, loading));
     }

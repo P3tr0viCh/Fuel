@@ -27,6 +27,8 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
 
     private static final String TAG = "PreferencesHelper";
 
+    private static final boolean LOG_ENABLED = false;
+
     public static final long SYNC_NONE = Long.MIN_VALUE;
 
     /**
@@ -269,7 +271,7 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        UtilsLog.d(TAG, "onSharedPreferenceChanged", "key == " + key);
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onSharedPreferenceChanged", "key == " + key);
 
         if (keys.isSyncKey(key)) putChanged(true);
     }
@@ -284,7 +286,7 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
                 .putBoolean(keys.changed, changed)
                 .apply();
 
-        UtilsLog.d(TAG, "putChanged", "changed == " + changed);
+        if (LOG_ENABLED) UtilsLog.d(TAG, "putChanged", "changed == " + changed);
 
         if (changed)
             mContext.getContentResolver().notifyChange(ContentProviderHelper.URI_PREFERENCES, null, false);
@@ -338,7 +340,7 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
                 .putInt(keyRevision, revision)
                 .apply();
 
-        UtilsLog.d(TAG, "putRevision", keyRevision + " == " + revision);
+        if (LOG_ENABLED) UtilsLog.d(TAG, "putRevision", keyRevision + " == " + revision);
     }
 
     private boolean isFullSync() {
@@ -584,7 +586,7 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
                               @Nullable String preference) {
         if (preferences == null || preferences.size() == 0) return -1;
 
-        UtilsLog.d(TAG, "setPreferences", "preference == " + preference);
+        if (LOG_ENABLED) UtilsLog.d(TAG, "setPreferences", "preference == " + preference);
 
         if (TextUtils.isEmpty(preference)) {
             mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);

@@ -10,7 +10,7 @@ import android.view.View;
 
 // TODO: не тестировалось с orientation != LinearLayoutManager.VERTICAL
 
-public abstract class DividerItemDecorationBase extends RecyclerView.ItemDecoration {
+abstract class DividerItemDecorationBase extends RecyclerView.ItemDecoration {
 
     private final Drawable mDivider;
 

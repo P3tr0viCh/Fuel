@@ -65,12 +65,13 @@ public class FuelingRecord implements Parcelable {
         this((FuelingRecord) bundle.getParcelable(NAME));
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public Intent toIntent(@NonNull Intent intent) {
         intent.putExtra(NAME, this);
         return intent;
     }
 
-    public Bundle toBundle(@NonNull Bundle bundle) {
+    private Bundle toBundle(@NonNull Bundle bundle) {
         bundle.putParcelable(NAME, this);
         return bundle;
     }

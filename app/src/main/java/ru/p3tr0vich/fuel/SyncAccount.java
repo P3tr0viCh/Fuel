@@ -25,7 +25,7 @@ class SyncAccount {
 
     private final Account mAccount;
 
-    SyncAccount(@NonNull Context context) {
+    public SyncAccount(@NonNull Context context) {
         mAccountManager = SystemServicesHelper.getAccountManager(context);
 
         mAuthority = context.getString(R.string.sync_authority);

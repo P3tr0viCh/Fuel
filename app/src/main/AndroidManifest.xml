@@ -103,6 +103,12 @@
                 android:resource="@xml/sync_adapter"/>
         </service>
 
+        <service
+            android:name=".ContentObserverService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
+
         <provider
             android:name=".helpers.ContentProviderHelper"
             android:authorities="@string/sync_authority"
@@ -113,7 +119,6 @@
             android:name=".BroadcastReceiverSMS"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
-
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
             </intent-filter>

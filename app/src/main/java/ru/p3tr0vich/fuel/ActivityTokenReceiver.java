@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 
 import ru.p3tr0vich.fuel.utils.UtilsLog;
 
+import static ru.p3tr0vich.fuel.ContentObserverService.SYNC_ALL;
+
 public class ActivityTokenReceiver extends AppCompatActivity {
 
     private static final String TAG = "ActivityTokenReceiver";
@@ -49,6 +51,6 @@ public class ActivityTokenReceiver extends AppCompatActivity {
         startActivity(new Intent(getApplicationContext(), ActivityMain.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP));
 
-        BroadcastReceiverSync.send(getApplicationContext(), false, false, true);
+        ContentObserverService.requestSync(this, SYNC_ALL, true, false, null);
     }
 }

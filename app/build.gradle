@@ -109,7 +109,7 @@ dependencies {
 
     compile 'com.google.android.gms:play-services-location:9.4.0'
 
-    compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
     compile 'com.yandex.android:disk-restapi-sdk:1.03'
 
     compile project(':libs:fab')

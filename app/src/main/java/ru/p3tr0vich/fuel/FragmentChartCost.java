@@ -17,13 +17,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.AxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
@@ -50,8 +54,6 @@ public class FragmentChartCost extends FragmentBase implements
     private TextView mTextMedian;
     private TextView mTextSum;
 
-    private final String[] mMonths = new String[12];
-
     private final int[] mColors = new int[]{R.color.chart_winter, R.color.chart_winter,
             R.color.chart_spring, R.color.chart_spring, R.color.chart_spring,
             R.color.chart_summer, R.color.chart_summer, R.color.chart_summer,
@@ -61,6 +63,25 @@ public class FragmentChartCost extends FragmentBase implements
     private boolean mUpdateYearsInProcess = true;
 
     private ChartCostModel mChartCostModel;
+
+    private static class Months {
+        public static final int COUNT = 12;
+
+        private final String[] mMonths = new String[COUNT];
+
+        public Months(@NonNull Context context) {
+            Calendar calendar = Calendar.getInstance();
+            boolean abbrev = Utils.isPhoneInPortrait();
+
+            for (int month = Calendar.JANUARY; month <= Calendar.DECEMBER; month++)
+                mMonths[month] = UtilsDate.getMonthName(context, calendar, month, abbrev);
+        }
+
+        @NonNull
+        public String getMonth(int month) {
+            return month >= Calendar.JANUARY && month <= Calendar.DECEMBER ? mMonths[month] : "";
+        }
+    }
 
     @NonNull
     public static Fragment newInstance(int id) {
@@ -140,23 +161,26 @@ public class FragmentChartCost extends FragmentBase implements
         mChart.setPinchZoom(false);
         mChart.setDrawGridBackground(false);
         mChart.setDrawValueAboveBar(true);
-        mChart.setDrawHighlightArrow(false);
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
-        xAxis.setSpaceBetweenLabels(0);
         xAxis.setTextSize(8f);
+        xAxis.setGranularity(1f);
+        xAxis.setLabelCount(Months.COUNT);
+        xAxis.setAxisMinValue(-1f);
+        xAxis.setAxisMaxValue(Months.COUNT);
+        xAxis.setValueFormatter(mMonthFormatter);
 
-        mChart.getAxisLeft().setEnabled(false);
-        mChart.getAxisLeft().setDrawLimitLinesBehindData(true);
+        YAxis yAxis = mChart.getAxisLeft();
+        yAxis.setEnabled(false);
+        yAxis.setAxisMinValue(0f);
+        yAxis.setDrawLimitLinesBehindData(true);
 
         mChart.getAxisRight().setEnabled(false);
         mChart.getLegend().setEnabled(false);
 
         mChart.setHardwareAccelerationEnabled(true);
-
-        updateMonths();
 
         if (savedInstanceState != null) {
             updateYears();
@@ -230,15 +254,6 @@ public class FragmentChartCost extends FragmentBase implements
         } finally {
             mUpdateYearsInProcess = false;
         }
-    }
-
-    private void updateMonths() {
-        Context context = getContext();
-        Calendar calendar = Calendar.getInstance();
-        boolean abbrev = Utils.isPhoneInPortrait();
-
-        for (int month = Calendar.JANUARY; month <= Calendar.DECEMBER; month++)
-            mMonths[month] = UtilsDate.getMonthName(context, calendar, month, abbrev);
     }
 
     private void setYear(int year) {
@@ -352,7 +367,27 @@ public class FragmentChartCost extends FragmentBase implements
         }
     }
 
+    private static final class MonthFormatter implements AxisValueFormatter {
+
+        private final Months mMonths;
+
+        public MonthFormatter(@NonNull Context context) {
+            mMonths = new Months(context);
+        }
+
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            return mMonths.getMonth((int) value);
+        }
+
+        @Override
+        public int getDecimalDigits() {
+            return 0;
+        }
+    }
+
     private final FloatFormatter mFloatFormatter = new FloatFormatter();
+    private final MonthFormatter mMonthFormatter = new MonthFormatter(getContext());
 
     private void updateChart() {
         mHandler.removeCallbacks(mRunnableShowNoRecords);
@@ -362,17 +397,21 @@ public class FragmentChartCost extends FragmentBase implements
 
             ArrayList<BarEntry> sumsEntries = new ArrayList<>();
 
-            for (int i = 0; i < 12; i++)
-                sumsEntries.add(new BarEntry(mChartCostModel.getSums()[i], i));
+            float[] sums = mChartCostModel.getSums();
+            for (int i = 0; i < sums.length; i++)
+                sumsEntries.add(new BarEntry(i, sums[i]));
 
             BarDataSet sumsSet = new BarDataSet(sumsEntries, "");
-            sumsSet.setBarSpacePercent(35f);
             sumsSet.setColors(mColors, getContext());
+            sumsSet.setAxisDependency(YAxis.AxisDependency.LEFT);
 
-            BarData sumsData = new BarData(mMonths);
-            sumsData.addDataSet(sumsSet);
+            ArrayList<IBarDataSet> dataSets = new ArrayList<>();
+            dataSets.add(sumsSet);
+
+            BarData sumsData = new BarData(dataSets);
             sumsData.setValueFormatter(mFloatFormatter);
             sumsData.setValueTextSize(8f);
+            sumsData.setBarWidth(0.8f);
 
             mChart.setData(sumsData);
 

@@ -118,11 +118,10 @@
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
       <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
     </content>
-    <orderEntry type="jdk" jdkName="Android API 24 Platform (1)" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="Android API 24 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="gson-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="okio-1.6.0" level="project" />
-    <orderEntry type="library" exported="" name="MPAndroidChart-v2.1.6" level="project" />
     <orderEntry type="library" exported="" name="juniversalchardet-1.0.3" level="project" />
     <orderEntry type="library" exported="" name="play-services-base-9.4.0" level="project" />
     <orderEntry type="library" exported="" name="okhttp-2.3.0" level="project" />
@@ -140,6 +139,7 @@
     <orderEntry type="library" exported="" name="library-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="disk-restapi-sdk-1.03" level="project" />
     <orderEntry type="library" exported="" name="preference-v14-24.0.0" level="project" />
+    <orderEntry type="library" exported="" name="MPAndroidChart-v3.0.0-beta1" level="project" />
     <orderEntry type="library" exported="" name="play-services-basement-9.4.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-24.0.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-24.0.0" level="project" />

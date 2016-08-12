@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -34,9 +33,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
+import ru.p3tr0vich.fuel.factories.FragmentFactory;
 import ru.p3tr0vich.fuel.helpers.ContactsHelper;
 import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
@@ -87,49 +84,12 @@ public class ActivityMain extends AppCompatActivity implements
 
     private PreferencesHelper mPreferencesHelper;
 
-    @FragmentId
+    private FragmentFactory mFragmentFactory;
+
+    @FragmentFactory.Ids.Id
     private int mCurrentFragmentId;
     private int mClickedMenuId = -1;
     private boolean mOpenPreferenceSync = false;
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FRAGMENT_FUELING_ID,
-            FRAGMENT_CALC_ID,
-            FRAGMENT_CHART_COST_ID,
-            FRAGMENT_BACKUP_ID,
-            FRAGMENT_PREFERENCES_ID,
-            FRAGMENT_ABOUT_ID})
-    private @interface FragmentId {
-    }
-
-    private static final int FRAGMENT_FUELING_ID = 0;
-    private static final int FRAGMENT_CALC_ID = 1;
-    private static final int FRAGMENT_CHART_COST_ID = 2;
-    private static final int FRAGMENT_BACKUP_ID = 3;
-    private static final int FRAGMENT_PREFERENCES_ID = 4;
-    private static final int FRAGMENT_ABOUT_ID = 5;
-
-    @Nullable
-    private Fragment findFragmentByTag(@Nullable String fragmentTag) {
-        return fragmentTag != null ?
-                getSupportFragmentManager().findFragmentByTag(fragmentTag) : null;
-    }
-
-    @NonNull
-    private FragmentInterface getCurrentFragment() {
-        return (FragmentInterface) getSupportFragmentManager().findFragmentById(R.id.content_frame);
-
-    }
-
-    @Nullable
-    private FragmentFueling getFragmentFueling() {
-        return (FragmentFueling) getSupportFragmentManager().findFragmentByTag(FragmentFueling.TAG);
-    }
-
-    @Nullable
-    private FragmentPreferences getFragmentPreferences() {
-        return (FragmentPreferences) getSupportFragmentManager().findFragmentByTag(FragmentPreferences.TAG);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +106,8 @@ public class ActivityMain extends AppCompatActivity implements
 
         mPreferencesHelper = PreferencesHelper.getInstance(this);
 
+        mFragmentFactory = new FragmentFactory(this);
+
         initAnimationSync();
         initSyncViews();
 
@@ -158,19 +120,19 @@ public class ActivityMain extends AppCompatActivity implements
                 ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
 
         if (savedInstanceState == null) {
-            mCurrentFragmentId = FRAGMENT_FUELING_ID;
+            mCurrentFragmentId = FragmentFactory.Ids.FUELING;
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_frame,
-                            FragmentFueling.newInstance(FRAGMENT_FUELING_ID),
-                            FragmentFueling.TAG)
+                            mFragmentFactory.getFragmentNewInstance(FragmentFactory.Ids.FUELING),
+                            FragmentFactory.Tags.FUELING)
                     .setTransition(FragmentTransaction.TRANSIT_NONE)
                     .commit();
 
             ContentObserverService.requestSync(this);
         } else {
-            mCurrentFragmentId = intToFragmentId(savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID));
-            if (mCurrentFragmentId == FRAGMENT_PREFERENCES_ID) {
-                FragmentPreferences fragmentPreferences = getFragmentPreferences();
+            mCurrentFragmentId = FragmentFactory.intToFragmentId(savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID));
+            if (mCurrentFragmentId == FragmentFactory.Ids.PREFERENCES) {
+                FragmentPreferences fragmentPreferences = mFragmentFactory.getFragmentPreferences();
                 if (fragmentPreferences != null)
                     mDrawerToggle.setDrawerIndicatorEnabled(fragmentPreferences.isInRoot());
             }
@@ -199,14 +161,14 @@ public class ActivityMain extends AppCompatActivity implements
 
         mToolbarSpinner.setAdapter(adapter);
 
-        mToolbarSpinner.setDropDownVerticalOffset(-Utils.getSupportActionBarSize(this)); // minus!
+        mToolbarSpinner.setDropDownVerticalOffset(/* minus */-Utils.getSupportActionBarSize(this));
 
         mToolbarMain.addView(mToolbarSpinner);
 
         mToolbarSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                FragmentFueling fragmentFueling = getFragmentFueling();
+                FragmentFueling fragmentFueling = mFragmentFactory.getFragmentFueling();
                 if (fragmentFueling != null && fragmentFueling.isVisible())
                     fragmentFueling.setFilterMode(positionToFilterMode(position));
             }
@@ -226,7 +188,7 @@ public class ActivityMain extends AppCompatActivity implements
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
 
-                FragmentFueling fragmentFueling = getFragmentFueling();
+                FragmentFueling fragmentFueling = mFragmentFactory.getFragmentFueling();
                 if (fragmentFueling != null && fragmentFueling.isVisible())
                     fragmentFueling.setFabVisible(false);
 
@@ -239,7 +201,7 @@ public class ActivityMain extends AppCompatActivity implements
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
 
-                FragmentFueling fragmentFueling = getFragmentFueling();
+                FragmentFueling fragmentFueling = mFragmentFactory.getFragmentFueling();
                 if (fragmentFueling != null && fragmentFueling.isVisible())
                     fragmentFueling.setFabVisible(true);
 
@@ -251,7 +213,7 @@ public class ActivityMain extends AppCompatActivity implements
         mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getCurrentFragment().onBackPressed();
+                mFragmentFactory.getCurrentFragment().onBackPressed();
             }
         });
 
@@ -263,7 +225,7 @@ public class ActivityMain extends AppCompatActivity implements
                 mOpenPreferenceSync = false;
                 // Если текущий фрагмент -- настройки, может отображаться стрелка влево.
                 // Если нажат другой пункт меню, показывается значок меню.
-                if (mCurrentFragmentId == FRAGMENT_PREFERENCES_ID &&
+                if (mCurrentFragmentId == FragmentFactory.Ids.PREFERENCES &&
                         mCurrentFragmentId != menuIdToFragmentId(mClickedMenuId))
                     mDrawerToggle.setDrawerIndicatorEnabled(true);
 
@@ -299,7 +261,7 @@ public class ActivityMain extends AppCompatActivity implements
         mBroadcastReceiverLoading = new BroadcastReceiverLoading() {
             @Override
             public void onReceive(boolean loading) {
-                FragmentFueling fragmentFueling = getFragmentFueling();
+                FragmentFueling fragmentFueling = mFragmentFactory.getFragmentFueling();
 
                 if (fragmentFueling != null)
                     fragmentFueling.setLoading(loading);
@@ -314,7 +276,7 @@ public class ActivityMain extends AppCompatActivity implements
         mBroadcastReceiverDatabaseChanged = new BroadcastReceiverDatabaseChanged() {
             @Override
             public void onReceive(long id) {
-                FragmentFueling fragmentFueling = getFragmentFueling();
+                FragmentFueling fragmentFueling = mFragmentFactory.getFragmentFueling();
                 if (fragmentFueling != null) fragmentFueling.updateList(id);
             }
         };
@@ -328,61 +290,41 @@ public class ActivityMain extends AppCompatActivity implements
         outState.putInt(KEY_CURRENT_FRAGMENT_ID, mCurrentFragmentId);
     }
 
-    @Nullable
-    private Fragment getFragmentNewInstance(@Nullable String fragmentTag) {
-        if (fragmentTag == null) return null;
-        if (findFragmentByTag(fragmentTag) != null) return null;
-
-        switch (fragmentTag) {
-            case FragmentCalc.TAG:
-                return FragmentCalc.newInstance(FRAGMENT_CALC_ID);
-            case FragmentChartCost.TAG:
-                return FragmentChartCost.newInstance(FRAGMENT_CHART_COST_ID);
-            case FragmentPreferences.TAG:
-                return FragmentPreferences.newInstance(FRAGMENT_PREFERENCES_ID);
-            case FragmentBackup.TAG:
-                return FragmentBackup.newInstance(FRAGMENT_BACKUP_ID);
-            case FragmentAbout.TAG:
-                return FragmentAbout.newInstance(FRAGMENT_ABOUT_ID);
-            default:
-                return null;
-        }
-    }
-
-    @FragmentId
+    @FragmentFactory.Ids.Id
     private int menuIdToFragmentId(int menuId) {
         switch (menuId) {
             case R.id.action_fueling:
-                return FRAGMENT_FUELING_ID;
+                return FragmentFactory.Ids.FUELING;
             case R.id.action_calc:
-                return FRAGMENT_CALC_ID;
+                return FragmentFactory.Ids.CALC;
             case R.id.action_chart_cost:
-                return FRAGMENT_CHART_COST_ID;
+                return FragmentFactory.Ids.CHART_COST;
             case R.id.action_preferences:
-                return FRAGMENT_PREFERENCES_ID;
+                return FragmentFactory.Ids.PREFERENCES;
             case R.id.action_backup:
-                return FRAGMENT_BACKUP_ID;
+                return FragmentFactory.Ids.BACKUP;
             case R.id.action_about:
-                return FRAGMENT_ABOUT_ID;
+                return FragmentFactory.Ids.ABOUT;
             default:
                 throw new IllegalArgumentException("Bad menu id == " + menuId);
         }
     }
 
-    private int fragmentIdToMenuId(@FragmentId int fragmentId) {
+    private int fragmentIdToMenuId(@FragmentFactory.Ids.Id int fragmentId) {
         switch (fragmentId) {
-            case FRAGMENT_ABOUT_ID:
+            case FragmentFactory.Ids.ABOUT:
                 return R.id.action_about;
-            case FRAGMENT_BACKUP_ID:
+            case FragmentFactory.Ids.BACKUP:
                 return R.id.action_backup;
-            case FRAGMENT_CALC_ID:
+            case FragmentFactory.Ids.CALC:
                 return R.id.action_calc;
-            case FRAGMENT_CHART_COST_ID:
+            case FragmentFactory.Ids.CHART_COST:
                 return R.id.action_chart_cost;
-            case FRAGMENT_FUELING_ID:
+            case FragmentFactory.Ids.FUELING:
                 return R.id.action_fueling;
-            case FRAGMENT_PREFERENCES_ID:
+            case FragmentFactory.Ids.PREFERENCES:
                 return R.id.action_preferences;
+            case FragmentFactory.Ids.BAD_ID:
             default:
                 return -1;
         }
@@ -396,8 +338,8 @@ public class ActivityMain extends AppCompatActivity implements
         int fragmentId = menuIdToFragmentId(menuId);
 
         if (mCurrentFragmentId == fragmentId) {
-            if (mCurrentFragmentId == FRAGMENT_PREFERENCES_ID) {
-                FragmentPreferences fragmentPreferences = getFragmentPreferences();
+            if (mCurrentFragmentId == FragmentFactory.Ids.PREFERENCES) {
+                FragmentPreferences fragmentPreferences = mFragmentFactory.getFragmentPreferences();
                 if (fragmentPreferences != null) {
                     if (mOpenPreferenceSync)
                         fragmentPreferences.goToSyncScreen();
@@ -409,54 +351,32 @@ public class ActivityMain extends AppCompatActivity implements
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentFueling fragmentFueling = getFragmentFueling();
+        FragmentFueling fragmentFueling = mFragmentFactory.getFragmentFueling();
 
         if (fragmentFueling != null)
             if (!fragmentFueling.isVisible()) fragmentManager.popBackStack();
 
-        String fragmentTag = null;
+        if (mFragmentFactory.findFragmentById(fragmentId) != null) return;
 
-        switch (fragmentId) {
-            case FRAGMENT_ABOUT_ID:
-                fragmentTag = FragmentAbout.TAG;
-                break;
-            case FRAGMENT_BACKUP_ID:
-                fragmentTag = FragmentBackup.TAG;
-                break;
-            case FRAGMENT_CALC_ID:
-                fragmentTag = FragmentCalc.TAG;
-                break;
-            case FRAGMENT_CHART_COST_ID:
-                fragmentTag = FragmentChartCost.TAG;
-                break;
-            case FRAGMENT_FUELING_ID:
-                break;
-            case FRAGMENT_PREFERENCES_ID:
-                fragmentTag = FragmentPreferences.TAG;
-                break;
+        Fragment fragment = mFragmentFactory.getFragmentNewInstance(fragmentId);
+
+        if (mOpenPreferenceSync) {
+            Bundle bundle = fragment.getArguments();
+            if (bundle == null) bundle = new Bundle();
+
+            bundle.putString(FragmentPreferences.KEY_PREFERENCE_SCREEN,
+                    mPreferencesHelper.keys.sync);
+
+            fragment.setArguments(bundle);
+
+            mOpenPreferenceSync = false;
         }
 
-        Fragment fragment = getFragmentNewInstance(fragmentTag);
-
-        if (fragment != null) {
-            if (mOpenPreferenceSync) {
-                Bundle bundle = fragment.getArguments();
-                if (bundle == null) bundle = new Bundle();
-
-                bundle.putString(FragmentPreferences.KEY_PREFERENCE_SCREEN,
-                        mPreferencesHelper.keys.sync);
-
-                fragment.setArguments(bundle);
-
-                mOpenPreferenceSync = false;
-            }
-
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, fragment, fragmentTag)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    .addToBackStack(null)
-                    .commit();
-        }
+        fragmentManager.beginTransaction()
+                .replace(R.id.content_frame, fragment, mFragmentFactory.fragmentIdToTag(fragmentId))
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
@@ -464,7 +384,7 @@ public class ActivityMain extends AppCompatActivity implements
         if (mDrawerLayout.isDrawerVisible(GravityCompat.START))
             mDrawerLayout.closeDrawer(GravityCompat.START);
         else {
-            FragmentInterface fragment = getCurrentFragment();
+            FragmentInterface fragment = mFragmentFactory.getCurrentFragment();
 
             if (fragment.onBackPressed()) return;
 
@@ -512,7 +432,7 @@ public class ActivityMain extends AppCompatActivity implements
 
         switch (requestCode) {
             case REQUEST_CODE_ACTIVITY_MAP_DISTANCE:
-                FragmentCalc fragmentCalc = (FragmentCalc) findFragmentByTag(FragmentCalc.TAG);
+                FragmentCalc fragmentCalc = mFragmentFactory.getFragmentCalc();
 
                 if (fragmentCalc != null)
                     fragmentCalc.setDistance(ActivityYandexMap.getDistance(data));
@@ -591,11 +511,6 @@ public class ActivityMain extends AppCompatActivity implements
         }
     }
 
-    @FragmentId
-    private static int intToFragmentId(int id) {
-        return id;
-    }
-
     @Override
     public void onFilterChange(@DatabaseHelper.Filter.Mode int filterMode) {
         int position = filterModeToPosition(filterMode);
@@ -606,12 +521,12 @@ public class ActivityMain extends AppCompatActivity implements
 
     @Override
     public void onFragmentChange(FragmentInterface fragment) {
-        mCurrentFragmentId = intToFragmentId(fragment.getFragmentId());
+        mCurrentFragmentId = FragmentFactory.intToFragmentId(fragment.getFragmentId());
 
         setTitle(fragment.getTitle());
         setSubtitle(fragment.getSubtitle());
 
-        mToolbarSpinner.setVisibility(mCurrentFragmentId == FRAGMENT_FUELING_ID ? View.VISIBLE : View.GONE);
+        mToolbarSpinner.setVisibility(mCurrentFragmentId == FragmentFactory.Ids.FUELING ? View.VISIBLE : View.GONE);
 
         mNavigationView.getMenu().findItem(fragmentIdToMenuId(mCurrentFragmentId)).setChecked(true);
     }

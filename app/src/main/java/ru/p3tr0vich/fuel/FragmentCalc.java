@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -28,7 +27,7 @@ import ru.p3tr0vich.fuel.utils.UtilsLog;
 public class FragmentCalc extends FragmentBase implements
         AdapterView.OnItemSelectedListener, View.OnClickListener {
 
-    public static final String TAG = "FragmentCalc";
+    private static final String TAG = "FragmentCalc";
 
     private static final boolean LOG_ENABLED = false;
 
@@ -66,11 +65,6 @@ public class FragmentCalc extends FragmentBase implements
 
     public interface OnCalcDistanceButtonClickListener {
         void onCalcDistanceButtonClick();
-    }
-
-    @NonNull
-    public static Fragment newInstance(int id) {
-        return newInstance(id, new FragmentCalc());
     }
 
     @Override

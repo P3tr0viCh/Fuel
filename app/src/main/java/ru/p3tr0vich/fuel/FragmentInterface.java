@@ -3,10 +3,13 @@ package ru.p3tr0vich.fuel;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
-interface FragmentInterface {
+import ru.p3tr0vich.fuel.factories.FragmentFactory;
+
+public interface FragmentInterface {
 
     String KEY_ID = "KEY_ID";
 
+    @FragmentFactory.Ids.Id
     int getFragmentId();
 
     @SuppressWarnings("unused")

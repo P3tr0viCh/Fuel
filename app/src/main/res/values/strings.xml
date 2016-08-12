@@ -244,4 +244,5 @@
     <string name="host_yandex_disk" translatable="false">yandex-disk-token</string>
 
     <string name="exception_fragment_no_id" translatable="false">Fragment must have ID</string>
+    <string name="exception_fragment_bad_id" translatable="false">Fragment bad ID</string>
 </resources>

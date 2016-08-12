@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -42,8 +41,6 @@ import ru.p3tr0vich.fuel.utils.UtilsFormat;
 
 public class FragmentChartCost extends FragmentBase implements
         LoaderManager.LoaderCallbacks<Cursor> {
-
-    public static final String TAG = "FragmentChartCost";
 
     private static final int YEARS_CURSOR_LOADER_ID = 0;
     private static final int CHART_CURSOR_LOADER_ID = 1;
@@ -81,11 +78,6 @@ public class FragmentChartCost extends FragmentBase implements
         public String getMonth(int month) {
             return month >= Calendar.JANUARY && month <= Calendar.DECEMBER ? mMonths[month] : "";
         }
-    }
-
-    @NonNull
-    public static Fragment newInstance(int id) {
-        return newInstance(id, new FragmentChartCost());
     }
 
     @Override

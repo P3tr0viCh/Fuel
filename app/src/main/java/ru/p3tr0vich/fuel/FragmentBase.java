@@ -6,11 +6,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import ru.p3tr0vich.fuel.factories.FragmentFactory;
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
+
+import static ru.p3tr0vich.fuel.factories.FragmentFactory.Ids.BAD_ID;
 
 public abstract class FragmentBase extends Fragment implements FragmentInterface {
 
-    private int mFragmentId = -1;
+    @FragmentFactory.Ids.Id
+    private int mFragmentId = BAD_ID;
 
     private OnFragmentChangeListener mOnFragmentChangeListener;
 
@@ -18,7 +22,7 @@ public abstract class FragmentBase extends Fragment implements FragmentInterface
 
     @SuppressWarnings("WeakerAccess")
     @NonNull
-    protected static Fragment newInstance(int id, @NonNull Fragment fragment) {
+    public static Fragment newInstance(@FragmentFactory.Ids.Id int id, @NonNull Fragment fragment) {
         Bundle args = new Bundle();
         args.putInt(KEY_ID, id);
 
@@ -31,9 +35,10 @@ public abstract class FragmentBase extends Fragment implements FragmentInterface
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) mFragmentId = getArguments().getInt(KEY_ID, -1);
+        if (getArguments() != null)
+            mFragmentId = FragmentFactory.intToFragmentId(getArguments().getInt(KEY_ID, BAD_ID));
 
-        if (mFragmentId == -1)
+        if (mFragmentId == BAD_ID)
             throw new IllegalArgumentException(getString(R.string.exception_fragment_no_id));
 
         preferencesHelper = PreferencesHelper.getInstance(getContext());

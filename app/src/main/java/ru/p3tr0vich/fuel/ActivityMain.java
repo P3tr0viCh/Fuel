@@ -356,7 +356,7 @@ public class ActivityMain extends AppCompatActivity implements
         if (fragmentFueling != null)
             if (!fragmentFueling.isVisible()) fragmentManager.popBackStack();
 
-        if (mFragmentFactory.findFragmentById(fragmentId) != null) return;
+        if (fragmentId == FragmentFactory.Ids.FUELING) return;
 
         Fragment fragment = mFragmentFactory.getFragmentNewInstance(fragmentId);
 

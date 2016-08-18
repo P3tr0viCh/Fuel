@@ -34,6 +34,8 @@ public class ContentObserverService extends Service {
 
     private static final String TAG = "ContentObserverService";
 
+    private static final boolean LOG_ENABLED = false;
+
     private static final String EXTRA_NAME_SYNC = "EXTRA_NAME_SYNC";
     private static final String EXTRA_NAME_START_IF_ACTIVE = "EXTRA_NAME_START_IF_ACTIVE";
     private static final String EXTRA_NAME_WITH_DELAY = "EXTRA_NAME_WITH_DELAY";
@@ -132,7 +134,7 @@ public class ContentObserverService extends Service {
 
     @Override
     public void onCreate() {
-        UtilsLog.d(TAG, "onCreate");
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onCreate");
 
         super.onCreate();
 
@@ -145,7 +147,7 @@ public class ContentObserverService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        UtilsLog.d(TAG, "onStartCommand");
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onStartCommand");
 
         if (intent != null) {
             @Sync
@@ -161,7 +163,7 @@ public class ContentObserverService extends Service {
 
                 // Запуск после задержки.
                 if (intent.getBooleanExtra(EXTRA_NAME_WITH_DELAY, false)) {
-                    UtilsLog.d(TAG, "requestSync", "delayed start");
+                    if (LOG_ENABLED) UtilsLog.d(TAG, "requestSync", "delayed start");
 
                     @Sync
                     int runnableSync;
@@ -207,10 +209,12 @@ public class ContentObserverService extends Service {
 
                     sendResult(pendingIntent, result);
                 }
-            } else
-                UtilsLog.d(TAG, "requestSync", "sync == SYNC_NONE");
-        } else
-            UtilsLog.d(TAG, "requestSync", "intent == null");
+            } else {
+                if (LOG_ENABLED) UtilsLog.d(TAG, "requestSync", "sync == SYNC_NONE");
+            }
+        } else {
+            if (LOG_ENABLED) UtilsLog.d(TAG, "requestSync", "intent == null");
+        }
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -245,24 +249,24 @@ public class ContentObserverService extends Service {
     @Result
     private int performRequestSync(@Sync int sync, boolean startIfActive) {
         if (!PreferencesHelper.getInstance(this).isSyncEnabled()) {
-            UtilsLog.d(TAG, "requestSync", "sync disabled");
+            if (LOG_ENABLED) UtilsLog.d(TAG, "requestSync", "sync disabled");
             return RESULT_SYNC_DISABLED;
         }
 
         if (ConnectivityHelper.getConnectedState(this) == ConnectivityHelper.DISCONNECTED) {
-            UtilsLog.d(TAG, "requestSync", "Internet disconnected");
+            if (LOG_ENABLED) UtilsLog.d(TAG, "requestSync", "Internet disconnected");
             return RESULT_INTERNET_DISCONNECTED;
         }
 
         SyncAccount syncAccount = new SyncAccount(this);
 
         if (syncAccount.isYandexDiskTokenEmpty()) {
-            UtilsLog.d(TAG, "requestSync", "Yandex.Disk token empty");
+            if (LOG_ENABLED) UtilsLog.d(TAG, "requestSync", "Yandex.Disk token empty");
             return RESULT_TOKEN_EMPTY;
         }
 
         if (syncAccount.isSyncActive() && !startIfActive) {
-            UtilsLog.d(TAG, "requestSync", "sync active");
+            if (LOG_ENABLED) UtilsLog.d(TAG, "requestSync", "sync active");
             return RESULT_SYNC_ACTIVE;
         }
 
@@ -279,7 +283,7 @@ public class ContentObserverService extends Service {
 
         ContentResolver.requestSync(syncAccount.getAccount(), syncAccount.getAuthority(), extras);
 
-        UtilsLog.d(TAG, "requestSync", "request done");
+        if (LOG_ENABLED) UtilsLog.d(TAG, "requestSync", "request done");
 
         return RESULT_REQUEST_DONE;
     }
@@ -317,7 +321,7 @@ public class ContentObserverService extends Service {
 
     @Override
     public void onDestroy() {
-        UtilsLog.d(TAG, "onDestroy");
+        if (LOG_ENABLED) UtilsLog.d(TAG, "onDestroy");
 
         mPreferencesObserver.unregister(this);
         mDatabaseObserver.unregister(this);

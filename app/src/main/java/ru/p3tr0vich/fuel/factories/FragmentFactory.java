@@ -49,12 +49,12 @@ public class FragmentFactory {
     }
 
     public static final class Tags {
-        public static final String FUELING = "FragmentFueling";
-        public static final String CALC = "FragmentCalc";
-        public static final String CHART_COST = "FragmentChartCost";
-        public static final String PREFERENCES = "FragmentPreferences";
-        public static final String BACKUP = "FragmentBackup";
-        public static final String ABOUT = "FragmentAbout";
+        public static final String FUELING = FragmentFueling.class.getSimpleName();
+        public static final String CALC = FragmentCalc.class.getSimpleName();
+        public static final String CHART_COST = FragmentChartCost.class.getSimpleName();
+        public static final String PREFERENCES = FragmentPreferences.class.getSimpleName();
+        public static final String BACKUP = FragmentBackup.class.getSimpleName();
+        public static final String ABOUT = FragmentAbout.class.getSimpleName();
 
         private Tags() {
         }
@@ -114,12 +114,6 @@ public class FragmentFactory {
     @Nullable
     private Fragment findFragmentByTag(@NonNull String fragmentTag) {
         return mFragmentActivity.getSupportFragmentManager().findFragmentByTag(fragmentTag);
-    }
-
-    @Nullable
-    public FragmentInterface findFragmentById(@Ids.Id int fragmentId) {
-        FragmentInterface fragment = getCurrentFragment();
-        return fragment.getFragmentId() == fragmentId ? fragment : null;
     }
 
     @NonNull

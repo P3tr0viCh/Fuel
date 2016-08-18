@@ -16,8 +16,6 @@
 
         <item name="popupMenuStyle">@style/AppTheme.PopupMenu</item>
 
-        <item name="alertDialogTheme">@style/AppTheme.AlertDialog</item>
-
         <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
 
         <item name="windowActionModeOverlay">true</item>

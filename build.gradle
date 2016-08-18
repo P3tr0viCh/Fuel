@@ -14,7 +14,7 @@ ext {
     minSdkVersion = 17
     targetSdkVersion = 23
 
-    supportVersion = '24.0.0'
+    supportVersion = '24.2.0'
 
     supportDesign = 'com.android.support:design:' + supportVersion
     supportAppCompat = 'com.android.support:appcompat-v7:' + supportVersion
@@ -22,8 +22,6 @@ ext {
     supportPreferenceV14 = 'com.android.support:preference-v14:' + supportVersion
     supportCardView = 'com.android.support:cardview-v7:' + supportVersion
     supportRecyclerView = 'com.android.support:recyclerview-v7:' + supportVersion
-
-    nineoldandroidsLibrary = 'com.nineoldandroids:library:2.4.0'
 }
 
 allprojects {

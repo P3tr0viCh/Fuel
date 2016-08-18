@@ -7,11 +7,11 @@
         <item name="android:background">@color/divider</item>
     </style>
 
-    <style name="AppTheme.Divider.Horizontal" parent="AppTheme.Divider">
+    <style name="AppTheme.Divider.Horizontal">
         <item name="android:layout_height">1dp</item>
     </style>
 
-    <style name="AppTheme.Divider.Vertical" parent="AppTheme.Divider">
+    <style name="AppTheme.Divider.Vertical">
         <item name="android:layout_width">1dp</item>
     </style>
 
@@ -94,10 +94,6 @@
         <item name="android:paddingStart">24dp</item>
         <item name="android:paddingTop">24dp</item>
         <item name="android:textAppearance">@style/AppTheme.TextAppearance.DialogWindowTitle</item>
-    </style>
-
-    <style name="AppTheme.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/accent</item>
     </style>
 
     <style name="AppTheme.Toolbar" parent="Widget.AppCompat.Toolbar">

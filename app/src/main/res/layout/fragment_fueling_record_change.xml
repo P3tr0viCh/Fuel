@@ -41,7 +41,7 @@
                 android:gravity="center_vertical"
                 android:labelFor="@+id/edit_cost"
                 android:text="@string/text_cost"
-                android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
+                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
 
             <EditText
                 android:id="@+id/edit_cost"
@@ -68,7 +68,7 @@
                 android:gravity="center_vertical"
                 android:labelFor="@+id/edit_volume"
                 android:text="@string/text_volume"
-                android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
+                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
 
             <EditText
                 android:id="@+id/edit_volume"
@@ -95,7 +95,7 @@
                 android:gravity="center_vertical"
                 android:labelFor="@+id/edit_total"
                 android:text="@string/text_total"
-                android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
+                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
 
             <EditText
                 android:id="@+id/edit_total"

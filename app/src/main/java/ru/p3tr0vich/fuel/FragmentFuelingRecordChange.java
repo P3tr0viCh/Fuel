@@ -276,37 +276,53 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         inflater.inflate(R.menu.menu_fueling_record, menu);
     }
 
+    /**
+     * Выполняет добавление новой или изменение уже существующей записи.
+     *
+     * @return Истина, если сохранение успешно.
+     */
+    private boolean saveRecord() {
+        Utils.hideKeyboard(getActivity());
+
+        mFuelingRecord.setCost(UtilsFormat.editTextToFloat(mEditCost));
+        mFuelingRecord.setVolume(UtilsFormat.editTextToFloat(mEditVolume));
+        mFuelingRecord.setTotal(UtilsFormat.editTextToFloat(mEditTotal));
+
+        if (mFuelingRecord.getId() != 0) {
+            if (!ContentProviderHelper.updateRecord(getContext(), mFuelingRecord)) {
+                Utils.toast(R.string.message_error_update_record);
+
+                return false;
+            }
+        } else {
+            if (!ContentProviderHelper.insertRecord(getContext(), mFuelingRecord)) {
+                Utils.toast(R.string.message_error_insert_record);
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                mFuelingRecord.setCost(UtilsFormat.editTextToFloat(mEditCost));
-                mFuelingRecord.setVolume(UtilsFormat.editTextToFloat(mEditVolume));
-                mFuelingRecord.setTotal(UtilsFormat.editTextToFloat(mEditTotal));
+                if (saveRecord()) {
 
-                if (mFuelingRecord.getId() != 0) {
-                    if (ContentProviderHelper.updateRecord(getContext(), mFuelingRecord) == 0) {
-                        Utils.toast(R.string.message_error_update_record);
+                    mPreferencesHelper.putLastTotal(mFuelingRecord.getTotal());
 
-                        return false;
-                    }
+                    Activity activity = getActivity();
+
+                    activity.setResult(Activity.RESULT_OK);
+
+                    activity.finish();
+
+                    return true;
                 } else {
-                    if (ContentProviderHelper.insertRecord(getContext(), mFuelingRecord) == -1) {
-                        Utils.toast(R.string.message_error_insert_record);
-
-                        return false;
-                    }
+                    return false;
                 }
-
-                mPreferencesHelper.putLastTotal(mFuelingRecord.getTotal());
-
-                Activity activity = getActivity();
-
-                activity.setResult(Activity.RESULT_OK);
-
-                activity.finish();
-
-                return true;
         }
 
         return super.onOptionsItemSelected(item);

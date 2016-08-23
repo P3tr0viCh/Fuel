@@ -159,109 +159,136 @@ public class ContentProviderHelper extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-//        UtilsLog.d(TAG, "query, uri == " + uri);
-        switch (sURIMatcher.match(uri)) {
-            case DATABASE:
-                return mDatabaseHelper.getAll(selection);
-            case DATABASE_ITEM:
-                return mDatabaseHelper.getRecord(ContentUris.parseId(uri));
-            case DATABASE_YEARS:
-                return mDatabaseHelper.getYears();
-            case DATABASE_SUM_BY_MONTHS:
-                return mDatabaseHelper.getSumByMonthsForYear((int) ContentUris.parseId(uri));
-            case DATABASE_TWO_LAST_RECORDS:
-                return mDatabaseHelper.getTwoLastRecords();
+        try {
+            switch (sURIMatcher.match(uri)) {
+                case DATABASE:
+                    return mDatabaseHelper.getAll(selection);
+                case DATABASE_ITEM:
+                    return mDatabaseHelper.getRecord(ContentUris.parseId(uri));
+                case DATABASE_YEARS:
+                    return mDatabaseHelper.getYears();
+                case DATABASE_SUM_BY_MONTHS:
+                    return mDatabaseHelper.getSumByMonthsForYear((int) ContentUris.parseId(uri));
+                case DATABASE_TWO_LAST_RECORDS:
+                    return mDatabaseHelper.getTwoLastRecords();
 
-            case DATABASE_SYNC_ALL:
-                return mDatabaseHelper.getSyncRecords(false);
-            case DATABASE_SYNC_CHANGED:
-                return mDatabaseHelper.getSyncRecords(true);
+                case DATABASE_SYNC_ALL:
+                    return mDatabaseHelper.getSyncRecords(false);
+                case DATABASE_SYNC_CHANGED:
+                    return mDatabaseHelper.getSyncRecords(true);
 
-            case PREFERENCES:
-                return mPreferencesHelper.getPreferences();
-            case PREFERENCES_ITEM:
-                return mPreferencesHelper.getPreference(uri.getLastPathSegment());
-            default:
-                UtilsLog.d(TAG, "query", "sURIMatcher.match() == default, uri == " + uri);
-                return null;
+                case PREFERENCES:
+                    return mPreferencesHelper.getPreferences();
+                case PREFERENCES_ITEM:
+                    return mPreferencesHelper.getPreference(uri.getLastPathSegment());
+                default:
+                    UtilsLog.d(TAG, "query", "sURIMatcher.match() == default, uri == " + uri);
+                    return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            UtilsLog.d(TAG, "query", "exception == " + e.toString());
+            return null;
         }
     }
 
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        switch (sURIMatcher.match(uri)) {
-            case DATABASE:
-                return ContentUris.withAppendedId(URI_DATABASE,
-                        mDatabaseHelper.insert(values));
-            default:
-                UtilsLog.d(TAG, "insert", "sURIMatcher.match() == default, uri == " + uri);
-                return null;
+        try {
+            switch (sURIMatcher.match(uri)) {
+                case DATABASE:
+                    return ContentUris.withAppendedId(URI_DATABASE,
+                            mDatabaseHelper.insert(values));
+                default:
+                    UtilsLog.d(TAG, "insert", "sURIMatcher.match() == default, uri == " + uri);
+                    return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            UtilsLog.d(TAG, "insert", "exception == " + e.toString());
+            return null;
         }
     }
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-//        UtilsLog.d(TAG, "update, uri == " + uri);
-        switch (sURIMatcher.match(uri)) {
-            case DATABASE:
-                return mDatabaseHelper.update(values, selection);
-            case DATABASE_ITEM:
-                return mDatabaseHelper.update(values, ContentUris.parseId(uri));
-            case DATABASE_SYNC:
-                return mDatabaseHelper.updateChanged();
-            case PREFERENCES:
-                return mPreferencesHelper.setPreferences(values, null);
-            case PREFERENCES_ITEM:
-                return mPreferencesHelper.setPreferences(values, uri.getLastPathSegment());
-            default:
-                UtilsLog.d(TAG, "update", "sURIMatcher.match() == default, uri == " + uri);
-                return -1;
+        try {
+            switch (sURIMatcher.match(uri)) {
+                case DATABASE:
+                    return mDatabaseHelper.update(values, selection);
+                case DATABASE_ITEM:
+                    return mDatabaseHelper.update(values, ContentUris.parseId(uri));
+                case DATABASE_SYNC:
+                    return mDatabaseHelper.updateChanged();
+                case PREFERENCES:
+                    return mPreferencesHelper.setPreferences(values, null);
+                case PREFERENCES_ITEM:
+                    return mPreferencesHelper.setPreferences(values, uri.getLastPathSegment());
+                default:
+                    UtilsLog.d(TAG, "update", "sURIMatcher.match() == default, uri == " + uri);
+                    return -1;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            UtilsLog.d(TAG, "update", "exception == " + e.toString());
+            return -1;
         }
     }
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
-//        UtilsLog.d(TAG, "delete, uri == " + uri);
-        switch (sURIMatcher.match(uri)) {
-            case DATABASE:
-                return mDatabaseHelper.delete(selection);
-            case DATABASE_ITEM:
-                return mDatabaseHelper.delete(ContentUris.parseId(uri));
-            case DATABASE_SYNC:
-                return mDatabaseHelper.deleteMarkedAsDeleted();
-            default:
-                UtilsLog.d(TAG, "delete", "sURIMatcher.match() == default, uri == " + uri);
-                return -1;
+        try {
+            switch (sURIMatcher.match(uri)) {
+                case DATABASE:
+                    return mDatabaseHelper.delete(selection);
+                case DATABASE_ITEM:
+                    return mDatabaseHelper.delete(ContentUris.parseId(uri));
+                case DATABASE_SYNC:
+                    return mDatabaseHelper.deleteMarkedAsDeleted();
+                default:
+                    UtilsLog.d(TAG, "delete", "sURIMatcher.match() == default, uri == " + uri);
+                    return -1;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            UtilsLog.d(TAG, "delete", "exception == " + e.toString());
+            return -1;
         }
     }
 
     @Override
     public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
-        switch (sURIMatcher.match(uri)) {
-            case DATABASE:
-                int numValues = values.length;
+        try {
+            switch (sURIMatcher.match(uri)) {
+                case DATABASE:
+                    int numValues = values.length;
 
-                SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+                    SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
 
-                try {
-                    db.beginTransaction();
                     try {
-                        for (ContentValues value : values)
-                            mDatabaseHelper.insert(db, value);
+                        db.beginTransaction();
+                        try {
+                            for (ContentValues value : values)
+                                mDatabaseHelper.insert(db, value);
 
-                        db.setTransactionSuccessful();
+                            db.setTransactionSuccessful();
+                        } finally {
+                            db.endTransaction();
+                        }
                     } finally {
-                        db.endTransaction();
+                        db.close();
                     }
-                } finally {
-                    db.close();
-                }
 
-                return numValues;
-            default:
-                UtilsLog.d(TAG, "bulkInsert", "sURIMatcher.match() == default, uri == " + uri);
-                return -1;
+                    return numValues;
+                default:
+                    UtilsLog.d(TAG, "bulkInsert", "sURIMatcher.match() == default, uri == " + uri);
+                    return -1;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            UtilsLog.d(TAG, "bulkInsert", "exception == " + e.toString());
+            return -1;
         }
     }
 
@@ -330,26 +357,11 @@ public class ContentProviderHelper extends ContentProvider {
 
         context.getContentResolver().bulkInsert(URI_DATABASE, values);
 
-        notifyChangeAfterUser(context, -1);
+        context.getContentResolver().notifyChange(URI_DATABASE, null, false);
     }
 
-    private static void notifyChange(@Nullable Context context, @NonNull Uri uri) {
-        if (context != null)
-            context.getContentResolver().notifyChange(uri, null, false);
-    }
-
-    private static void notifyChangeAfterUser(@Nullable Context context, long id) {
-        notifyChange(context, id == -1 ?
-                URI_DATABASE :
-                ContentUris.withAppendedId(URI_DATABASE, id));
-    }
-
-    public static void notifyChangeAfterSync(@Nullable Context context) {
-        notifyChange(context, URI_DATABASE_SYNC);
-    }
-
-    public static long insertRecord(@NonNull Context context, @NonNull FuelingRecord fuelingRecord) {
-        final Uri result = context.getContentResolver().insert(
+    public static boolean insertRecord(@NonNull Context context, @NonNull FuelingRecord fuelingRecord) {
+        Uri result = context.getContentResolver().insert(
                 URI_DATABASE,
                 DatabaseHelper.getValues(
                         fuelingRecord.getDateTime(),
@@ -358,24 +370,17 @@ public class ContentProviderHelper extends ContentProvider {
                         fuelingRecord.getVolume(),
                         fuelingRecord.getTotal()));
 
-        long id;
+        if (result == null) return false;
 
-        try {
-            id = ContentUris.parseId(result);
-        } catch (Exception e) {
-            id = -1;
-        }
+        context.getContentResolver().notifyChange(result, null, false);
 
-        notifyChangeAfterUser(context, id);
-
-        return id;
+        return false;
     }
 
-    public static int updateRecord(@NonNull Context context, @NonNull FuelingRecord fuelingRecord) {
-        final long id = fuelingRecord.getId();
+    public static boolean updateRecord(@NonNull Context context, @NonNull FuelingRecord fuelingRecord) {
+        Uri uri = ContentUris.withAppendedId(URI_DATABASE, fuelingRecord.getId());
 
-        final int rowsUpdated = context.getContentResolver().update(
-                ContentUris.withAppendedId(URI_DATABASE, id),
+        int result = context.getContentResolver().update(uri,
                 DatabaseHelper.getValues(
                         null,
                         fuelingRecord.getDateTime(),
@@ -383,19 +388,24 @@ public class ContentProviderHelper extends ContentProvider {
                         fuelingRecord.getVolume(),
                         fuelingRecord.getTotal()), null, null);
 
-        notifyChangeAfterUser(context, id);
+        if (result == -1) return false;
 
-        return rowsUpdated;
+        context.getContentResolver().notifyChange(uri, null, false);
+
+        return true;
     }
 
-    public static int markRecordAsDeleted(@NonNull Context context, long id) {
-        final int rowsUpdated = context.getContentResolver().update(
-                ContentUris.withAppendedId(URI_DATABASE, id),
+    public static boolean markRecordAsDeleted(@NonNull Context context, long id) {
+        Uri uri = ContentUris.withAppendedId(URI_DATABASE, id);
+
+        int result = context.getContentResolver().update(uri,
                 DatabaseHelper.getValuesMarkAsDeleted(), null, null);
 
-        notifyChangeAfterUser(context, -1);
+        if (result == -1) return false;
 
-        return rowsUpdated;
+        context.getContentResolver().notifyChange(uri, null, false);
+
+        return true;
     }
 
     public static Cursor getYears(@NonNull Context context) {

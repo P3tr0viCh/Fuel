@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -36,6 +35,7 @@ import android.widget.TextView;
 import ru.p3tr0vich.fuel.factories.FragmentFactory;
 import ru.p3tr0vich.fuel.helpers.ContactsHelper;
 import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
+import ru.p3tr0vich.fuel.helpers.FragmentHelper;
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
 import ru.p3tr0vich.fuel.utils.Utils;
@@ -84,7 +84,7 @@ public class ActivityMain extends AppCompatActivity implements
 
     private PreferencesHelper mPreferencesHelper;
 
-    private FragmentFactory mFragmentFactory;
+    private FragmentHelper mFragmentHelper;
 
     @FragmentFactory.Ids.Id
     private int mCurrentFragmentId;
@@ -106,7 +106,7 @@ public class ActivityMain extends AppCompatActivity implements
 
         mPreferencesHelper = PreferencesHelper.getInstance(this);
 
-        mFragmentFactory = new FragmentFactory(this);
+        mFragmentHelper = new FragmentHelper(this);
 
         initAnimationSync();
         initSyncViews();
@@ -120,19 +120,13 @@ public class ActivityMain extends AppCompatActivity implements
                 ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
 
         if (savedInstanceState == null) {
-            mCurrentFragmentId = FragmentFactory.Ids.FUELING;
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_frame,
-                            mFragmentFactory.getFragmentNewInstance(FragmentFactory.Ids.FUELING),
-                            FragmentFactory.Tags.FUELING)
-                    .setTransition(FragmentTransaction.TRANSIT_NONE)
-                    .commit();
+            mFragmentHelper.addMainFragment();
 
             ContentObserverService.requestSync(this);
         } else {
             mCurrentFragmentId = FragmentFactory.intToFragmentId(savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID));
             if (mCurrentFragmentId == FragmentFactory.Ids.PREFERENCES) {
-                FragmentPreferences fragmentPreferences = mFragmentFactory.getFragmentPreferences();
+                FragmentPreferences fragmentPreferences = mFragmentHelper.getFragmentPreferences();
                 if (fragmentPreferences != null)
                     mDrawerToggle.setDrawerIndicatorEnabled(fragmentPreferences.isInRoot());
             }
@@ -168,7 +162,7 @@ public class ActivityMain extends AppCompatActivity implements
         mToolbarSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                FragmentFueling fragmentFueling = mFragmentFactory.getFragmentFueling();
+                FragmentFueling fragmentFueling = mFragmentHelper.getFragmentFueling();
                 if (fragmentFueling != null && fragmentFueling.isVisible())
                     fragmentFueling.setFilterMode(positionToFilterMode(position));
             }
@@ -188,7 +182,7 @@ public class ActivityMain extends AppCompatActivity implements
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
 
-                FragmentFueling fragmentFueling = mFragmentFactory.getFragmentFueling();
+                FragmentFueling fragmentFueling = mFragmentHelper.getFragmentFueling();
                 if (fragmentFueling != null && fragmentFueling.isVisible())
                     fragmentFueling.setFabVisible(false);
 
@@ -201,7 +195,7 @@ public class ActivityMain extends AppCompatActivity implements
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
 
-                FragmentFueling fragmentFueling = mFragmentFactory.getFragmentFueling();
+                FragmentFueling fragmentFueling = mFragmentHelper.getFragmentFueling();
                 if (fragmentFueling != null && fragmentFueling.isVisible())
                     fragmentFueling.setFabVisible(true);
 
@@ -213,14 +207,14 @@ public class ActivityMain extends AppCompatActivity implements
         mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mFragmentFactory.getCurrentFragment().onBackPressed();
+                mFragmentHelper.getCurrentFragment().onBackPressed();
             }
         });
 
         mNavigationView = (NavigationView) findViewById(R.id.drawer_navigation_view);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 mClickedMenuId = menuItem.getItemId();
                 mOpenPreferenceSync = false;
                 // Если текущий фрагмент -- настройки, может отображаться стрелка влево.
@@ -261,7 +255,7 @@ public class ActivityMain extends AppCompatActivity implements
         mBroadcastReceiverLoading = new BroadcastReceiverLoading() {
             @Override
             public void onReceive(boolean loading) {
-                FragmentFueling fragmentFueling = mFragmentFactory.getFragmentFueling();
+                FragmentFueling fragmentFueling = mFragmentHelper.getFragmentFueling();
 
                 if (fragmentFueling != null)
                     fragmentFueling.setLoading(loading);
@@ -276,7 +270,7 @@ public class ActivityMain extends AppCompatActivity implements
         mBroadcastReceiverDatabaseChanged = new BroadcastReceiverDatabaseChanged() {
             @Override
             public void onReceive(long id) {
-                FragmentFueling fragmentFueling = mFragmentFactory.getFragmentFueling();
+                FragmentFueling fragmentFueling = mFragmentHelper.getFragmentFueling();
                 if (fragmentFueling != null) fragmentFueling.updateList(id);
             }
         };
@@ -339,7 +333,7 @@ public class ActivityMain extends AppCompatActivity implements
 
         if (mCurrentFragmentId == fragmentId) {
             if (mCurrentFragmentId == FragmentFactory.Ids.PREFERENCES) {
-                FragmentPreferences fragmentPreferences = mFragmentFactory.getFragmentPreferences();
+                FragmentPreferences fragmentPreferences = mFragmentHelper.getFragmentPreferences();
                 if (fragmentPreferences != null) {
                     if (mOpenPreferenceSync)
                         fragmentPreferences.goToSyncScreen();
@@ -351,32 +345,24 @@ public class ActivityMain extends AppCompatActivity implements
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentFueling fragmentFueling = mFragmentFactory.getFragmentFueling();
 
-        if (fragmentFueling != null)
-            if (!fragmentFueling.isVisible()) fragmentManager.popBackStack();
+        Fragment fragmentMain = mFragmentHelper.getFragment(FragmentFactory.MainFragment.ID);
 
-        if (fragmentId == FragmentFactory.Ids.FUELING) return;
+        if (fragmentMain != null)
+            if (!fragmentMain.isVisible()) fragmentManager.popBackStack();
 
-        Fragment fragment = mFragmentFactory.getFragmentNewInstance(fragmentId);
+        if (fragmentId == FragmentFactory.MainFragment.ID) return;
+
+        Bundle bundle = new Bundle();
 
         if (mOpenPreferenceSync) {
-            Bundle bundle = fragment.getArguments();
-            if (bundle == null) bundle = new Bundle();
-
             bundle.putString(FragmentPreferences.KEY_PREFERENCE_SCREEN,
                     mPreferencesHelper.keys.sync);
-
-            fragment.setArguments(bundle);
 
             mOpenPreferenceSync = false;
         }
 
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, fragment, mFragmentFactory.fragmentIdToTag(fragmentId))
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .addToBackStack(null)
-                .commit();
+        mFragmentHelper.replaceFragment(fragmentId, bundle);
     }
 
     @Override
@@ -384,7 +370,7 @@ public class ActivityMain extends AppCompatActivity implements
         if (mDrawerLayout.isDrawerVisible(GravityCompat.START))
             mDrawerLayout.closeDrawer(GravityCompat.START);
         else {
-            FragmentInterface fragment = mFragmentFactory.getCurrentFragment();
+            FragmentInterface fragment = mFragmentHelper.getCurrentFragment();
 
             if (fragment.onBackPressed()) return;
 
@@ -432,7 +418,7 @@ public class ActivityMain extends AppCompatActivity implements
 
         switch (requestCode) {
             case REQUEST_CODE_ACTIVITY_MAP_DISTANCE:
-                FragmentCalc fragmentCalc = mFragmentFactory.getFragmentCalc();
+                FragmentCalc fragmentCalc = mFragmentHelper.getFragmentCalc();
 
                 if (fragmentCalc != null)
                     fragmentCalc.setDistance(ActivityYandexMap.getDistance(data));

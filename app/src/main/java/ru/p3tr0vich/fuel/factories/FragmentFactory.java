@@ -1,10 +1,10 @@
 package ru.p3tr0vich.fuel.factories;
 
+import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -15,15 +15,11 @@ import ru.p3tr0vich.fuel.FragmentBase;
 import ru.p3tr0vich.fuel.FragmentCalc;
 import ru.p3tr0vich.fuel.FragmentChartCost;
 import ru.p3tr0vich.fuel.FragmentFueling;
-import ru.p3tr0vich.fuel.FragmentInterface;
 import ru.p3tr0vich.fuel.FragmentPreferences;
-import ru.p3tr0vich.fuel.R;
 
 public class FragmentFactory {
 
-    private final FragmentActivity mFragmentActivity;
-
-    public static final class Ids {
+    public interface Ids {
 
         @Retention(RetentionPolicy.SOURCE)
         @IntDef({BAD_ID,
@@ -33,56 +29,69 @@ public class FragmentFactory {
                 BACKUP,
                 PREFERENCES,
                 ABOUT})
-        public @interface Id {
+        @interface Id {
         }
 
-        public static final int BAD_ID = -1;
-        public static final int FUELING = 0;
-        public static final int CALC = 1;
-        public static final int CHART_COST = 2;
-        public static final int BACKUP = 3;
-        public static final int PREFERENCES = 4;
-        public static final int ABOUT = 5;
-
-        private Ids() {
-        }
+        int BAD_ID = -1;
+        int FUELING = 0;
+        int CALC = 1;
+        int CHART_COST = 2;
+        int BACKUP = 3;
+        int PREFERENCES = 4;
+        int ABOUT = 5;
     }
 
-    public static final class Tags {
-        public static final String FUELING = FragmentFueling.class.getSimpleName();
-        public static final String CALC = FragmentCalc.class.getSimpleName();
-        public static final String CHART_COST = FragmentChartCost.class.getSimpleName();
-        public static final String PREFERENCES = FragmentPreferences.class.getSimpleName();
-        public static final String BACKUP = FragmentBackup.class.getSimpleName();
-        public static final String ABOUT = FragmentAbout.class.getSimpleName();
-
-        private Tags() {
-        }
+    private interface Tags {
+        String FUELING = FragmentFueling.class.getSimpleName();
+        String CALC = FragmentCalc.class.getSimpleName();
+        String CHART_COST = FragmentChartCost.class.getSimpleName();
+        String PREFERENCES = FragmentPreferences.class.getSimpleName();
+        String BACKUP = FragmentBackup.class.getSimpleName();
+        String ABOUT = FragmentAbout.class.getSimpleName();
     }
 
-    public FragmentFactory(@NonNull FragmentActivity fragmentActivity) {
-        mFragmentActivity = fragmentActivity;
+    public interface MainFragment {
+        int ID = Ids.FUELING;
+        String TAG = Tags.FUELING;
+    }
+
+    private FragmentFactory() {
     }
 
     @NonNull
-    public Fragment getFragmentNewInstance(@Ids.Id int fragmentId) {
+    public static Fragment getFragmentNewInstance(@Ids.Id int fragmentId, @Nullable Bundle args) {
+        Fragment fragment;
+
         switch (fragmentId) {
             case Ids.CALC:
-                return FragmentBase.newInstance(fragmentId, new FragmentCalc());
+                fragment = new FragmentCalc();
+                break;
             case Ids.CHART_COST:
-                return FragmentBase.newInstance(fragmentId, new FragmentChartCost());
+                fragment = new FragmentChartCost();
+                break;
             case Ids.PREFERENCES:
-                return FragmentBase.newInstance(fragmentId, new FragmentPreferences());
+                fragment = new FragmentPreferences();
+                break;
             case Ids.BACKUP:
-                return FragmentBase.newInstance(fragmentId, new FragmentBackup());
+                fragment = new FragmentBackup();
+                break;
             case Ids.ABOUT:
-                return FragmentBase.newInstance(fragmentId, new FragmentAbout());
+                fragment = new FragmentAbout();
+                break;
             case Ids.FUELING:
-                return FragmentBase.newInstance(fragmentId, new FragmentFueling());
+                fragment = new FragmentFueling();
+                break;
             case Ids.BAD_ID:
             default:
-                throw new IllegalArgumentException(mFragmentActivity.getString(R.string.exception_fragment_bad_id));
+                throw new IllegalArgumentException("Fragment bad ID");
         }
+
+        return FragmentBase.newInstance(fragmentId, fragment, args);
+    }
+
+    @NonNull
+    public static Fragment getFragmentNewInstance(@Ids.Id int fragmentId) {
+        return getFragmentNewInstance(fragmentId, null);
     }
 
     @Ids.Id
@@ -91,7 +100,7 @@ public class FragmentFactory {
     }
 
     @NonNull
-    public String fragmentIdToTag(@Ids.Id int id) {
+    public static String fragmentIdToTag(@Ids.Id int id) {
         switch (id) {
             case Ids.ABOUT:
                 return Tags.ABOUT;
@@ -107,34 +116,7 @@ public class FragmentFactory {
                 return Tags.PREFERENCES;
             case Ids.BAD_ID:
             default:
-                throw new IllegalArgumentException(mFragmentActivity.getString(R.string.exception_fragment_bad_id));
+                throw new IllegalArgumentException("Fragment bad ID");
         }
-    }
-
-    @Nullable
-    private Fragment findFragmentByTag(@NonNull String fragmentTag) {
-        return mFragmentActivity.getSupportFragmentManager().findFragmentByTag(fragmentTag);
-    }
-
-    @NonNull
-    public FragmentInterface getCurrentFragment() {
-        return (FragmentInterface) mFragmentActivity.getSupportFragmentManager()
-                .findFragmentById(R.id.content_frame);
-
-    }
-
-    @Nullable
-    public FragmentFueling getFragmentFueling() {
-        return (FragmentFueling) findFragmentByTag(Tags.FUELING);
-    }
-
-    @Nullable
-    public FragmentCalc getFragmentCalc() {
-        return (FragmentCalc) findFragmentByTag(Tags.CALC);
-    }
-
-    @Nullable
-    public FragmentPreferences getFragmentPreferences() {
-        return (FragmentPreferences) findFragmentByTag(Tags.PREFERENCES);
     }
 }

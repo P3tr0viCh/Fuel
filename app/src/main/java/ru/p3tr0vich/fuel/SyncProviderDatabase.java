@@ -54,7 +54,7 @@ class SyncProviderDatabase {
                 do {
                     fuelingRecord = DatabaseHelper.getFuelingRecordForSync(cursor);
 
-                    result.add(DatabaseHelper.getBoolean(cursor, DatabaseHelper.TableFueling.DELETED_INDEX) ?
+                    result.add(DatabaseHelper.getBoolean(cursor, DatabaseHelper.TableFueling.Columns.DELETED_INDEX) ?
                             DELETE + SEPARATOR +
                                     Long.toString(fuelingRecord.getId()) :
                             INSERT + SEPARATOR +

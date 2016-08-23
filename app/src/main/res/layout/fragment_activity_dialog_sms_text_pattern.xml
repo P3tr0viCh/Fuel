@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/edit_sms_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/edit_sms_text_pattern"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

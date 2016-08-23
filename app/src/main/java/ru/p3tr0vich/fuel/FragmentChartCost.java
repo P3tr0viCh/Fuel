@@ -308,8 +308,8 @@ public class FragmentChartCost extends FragmentBase implements
                 if (data.getCount() > 0) {
 
                     if (data.moveToFirst()) do {
-                        sum = data.getFloat(DatabaseHelper.TableFueling.COST_SUM_INDEX);
-                        month = data.getString(DatabaseHelper.TableFueling.MONTH_INDEX);
+                        sum = data.getFloat(DatabaseHelper.TableFueling.Columns.COST_SUM_INDEX);
+                        month = data.getString(DatabaseHelper.TableFueling.Columns.MONTH_INDEX);
 
                         sums[Integer.parseInt(month) - 1] = sum;
                     } while (data.moveToNext());
@@ -329,7 +329,7 @@ public class FragmentChartCost extends FragmentBase implements
                     int i = 0;
 
                     if (data.moveToFirst()) do {
-                        years[i] = data.getInt(DatabaseHelper.TableFueling.YEAR_INDEX);
+                        years[i] = data.getInt(DatabaseHelper.TableFueling.Columns.YEAR_INDEX);
 
                         i++;
                     } while (data.moveToNext());

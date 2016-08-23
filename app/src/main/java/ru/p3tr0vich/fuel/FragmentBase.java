@@ -13,6 +13,8 @@ import static ru.p3tr0vich.fuel.factories.FragmentFactory.Ids.BAD_ID;
 
 public abstract class FragmentBase extends Fragment implements FragmentInterface {
 
+    private static final String KEY_ID = "FRAGMENT_BASE_KEY_ID";
+
     @FragmentFactory.Ids.Id
     private int mFragmentId = BAD_ID;
 
@@ -22,8 +24,10 @@ public abstract class FragmentBase extends Fragment implements FragmentInterface
 
     @SuppressWarnings("WeakerAccess")
     @NonNull
-    public static Fragment newInstance(@FragmentFactory.Ids.Id int id, @NonNull Fragment fragment) {
-        Bundle args = new Bundle();
+    public static Fragment newInstance(@FragmentFactory.Ids.Id int id, @NonNull Fragment fragment,
+                                       @Nullable Bundle args) {
+        if (args == null) args = new Bundle();
+
         args.putInt(KEY_ID, id);
 
         fragment.setArguments(args);
@@ -39,7 +43,7 @@ public abstract class FragmentBase extends Fragment implements FragmentInterface
             mFragmentId = FragmentFactory.intToFragmentId(getArguments().getInt(KEY_ID, BAD_ID));
 
         if (mFragmentId == BAD_ID)
-            throw new IllegalArgumentException(getString(R.string.exception_fragment_no_id));
+            throw new IllegalArgumentException("Fragment must have ID");
 
         preferencesHelper = PreferencesHelper.getInstance(getContext());
     }

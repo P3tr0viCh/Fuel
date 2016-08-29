@@ -6,7 +6,7 @@ import android.os.AsyncTask;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
+import ru.p3tr0vich.fuel.helpers.ContentResolverHelper;
 import ru.p3tr0vich.fuel.helpers.DatabaseBackupXmlHelper;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
@@ -41,7 +41,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
         int result;
 
         if (mDoSave) {
-            fuelingRecordList = ContentProviderHelper.getAllRecordsList(mContext);
+            fuelingRecordList = ContentResolverHelper.getAllRecordsList(mContext);
 
             result = mDatabaseBackupXmlHelper.save(fuelingRecordList);
         } else {
@@ -50,7 +50,7 @@ class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
             result = mDatabaseBackupXmlHelper.load(fuelingRecordList);
 
             if (result == DatabaseBackupXmlHelper.RESULT_LOAD_OK)
-                ContentProviderHelper.swapRecords(mContext, fuelingRecordList);
+                ContentResolverHelper.swapRecords(mContext, fuelingRecordList);
         }
 
         return result;

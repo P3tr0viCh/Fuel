@@ -32,7 +32,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
+import ru.p3tr0vich.fuel.helpers.ContentResolverHelper;
 import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
 import ru.p3tr0vich.fuel.models.ChartCostModel;
 import ru.p3tr0vich.fuel.utils.Utils;
@@ -267,7 +267,7 @@ public class FragmentChartCost extends FragmentBase implements
 
         @Override
         public Cursor loadInBackground() {
-            return ContentProviderHelper.getSumByMonthsForYear(getContext(), mYear);
+            return ContentResolverHelper.getSumByMonthsForYear(getContext(), mYear);
         }
     }
 
@@ -279,7 +279,7 @@ public class FragmentChartCost extends FragmentBase implements
 
         @Override
         public Cursor loadInBackground() {
-            return ContentProviderHelper.getYears(getContext());
+            return ContentResolverHelper.getYears(getContext());
         }
     }
 

@@ -1,13 +1,16 @@
-package ru.p3tr0vich.fuel;
+package ru.p3tr0vich.fuel.models;
 
 import android.provider.BaseColumns;
 
-public interface Database {
-    int VERSION = 1;
+public interface DatabaseModel {
 
-    String NAME = "fuel.db";
+    interface Database {
+        int VERSION = 1;
 
-    String CREATE_STATEMENT = TableFueling.CREATE_STATEMENT;
+        String NAME = "fuel.db";
+
+        String CREATE_STATEMENT = TableFueling.CREATE_STATEMENT;
+    }
 
     interface TableFueling {
         String NAME = "fueling";

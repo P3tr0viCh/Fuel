@@ -16,19 +16,22 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
-import ru.p3tr0vich.fuel.Database;
+import ru.p3tr0vich.fuel.models.DatabaseModel;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
 import ru.p3tr0vich.fuel.utils.UtilsDate;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
 
 @SuppressWarnings("TryFinallyCanBeTryWithResources")
 // Try-with-resources requires API level 19 (current min is 17)
-public class DatabaseHelper extends SQLiteOpenHelper implements Database {
+public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseModel {
 
     private static final String TAG = "DatabaseHelper";
 
     private static final boolean LOG_ENABLED = false;
+
+    private static final boolean QUERY_WAIT_ENABLED = false;
 
     public static class Filter {
 
@@ -263,14 +266,15 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Database {
                     ", selection == " + selection + ", groupBy == " + groupBy +
                     ", orderBy == " + orderBy + ", limit == " + limit);
 
-//        for (int i = 0, waitSeconds = 3; i < waitSeconds; i++) {
-//            try {
-//                TimeUnit.SECONDS.sleep(1);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            UtilsLog.d(TAG, "query", "wait... " + (waitSeconds - i));
-//        }
+        if (QUERY_WAIT_ENABLED)
+            for (int i = 0, waitSeconds = 3; i < waitSeconds; i++) {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                UtilsLog.d(TAG, "query", "wait... " + (waitSeconds - i));
+            }
 
         return getReadableDatabase().query(TableFueling.NAME, columns, selection,
                 null, groupBy, null, orderBy, limit);

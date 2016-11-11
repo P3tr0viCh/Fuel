@@ -4,17 +4,17 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0-beta3'
+        classpath 'com.android.tools.build:gradle:2.2.2'
     }
 }
 
 ext {
-    compileSdkVersion = 24
-    buildToolsVersion = '24.0.2'
+    compileSdkVersion = 25
+    buildToolsVersion = '25.0.0'
     minSdkVersion = 17
     targetSdkVersion = 23
 
-    supportVersion = '24.2.0'
+    supportVersion = '25.0.0'
 
     supportDesign = 'com.android.support:design:' + supportVersion
     supportAppCompat = 'com.android.support:appcompat-v7:' + supportVersion

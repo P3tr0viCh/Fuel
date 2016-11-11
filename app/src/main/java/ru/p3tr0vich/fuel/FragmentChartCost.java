@@ -24,8 +24,8 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.formatter.AxisValueFormatter;
-import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
@@ -143,7 +143,8 @@ public class FragmentChartCost extends FragmentBase implements
 
         mChart = (BarChart) view.findViewById(R.id.chart);
 
-        mChart.setDescription("");
+        mChart.getDescription().setText("");
+
         mChart.setNoDataText("");
 
         mChart.setDrawBarShadow(false);
@@ -160,13 +161,13 @@ public class FragmentChartCost extends FragmentBase implements
         xAxis.setTextSize(8f);
         xAxis.setGranularity(1f);
         xAxis.setLabelCount(Months.COUNT);
-        xAxis.setAxisMinValue(-1f);
-        xAxis.setAxisMaxValue(Months.COUNT);
+        xAxis.setAxisMinimum(-1f);
+        xAxis.setAxisMaximum(Months.COUNT);
         xAxis.setValueFormatter(mMonthFormatter);
 
         YAxis yAxis = mChart.getAxisLeft();
         yAxis.setEnabled(false);
-        yAxis.setAxisMinValue(0f);
+        yAxis.setAxisMinimum(0f);
         yAxis.setDrawLimitLinesBehindData(true);
 
         mChart.getAxisRight().setEnabled(false);
@@ -351,7 +352,7 @@ public class FragmentChartCost extends FragmentBase implements
     public void onLoaderReset(Loader<Cursor> loader) {
     }
 
-    private static final class FloatFormatter implements ValueFormatter {
+    private static final class FloatFormatter implements IValueFormatter {
 
         @Override
         public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
@@ -359,7 +360,7 @@ public class FragmentChartCost extends FragmentBase implements
         }
     }
 
-    private static final class MonthFormatter implements AxisValueFormatter {
+    private static final class MonthFormatter implements IAxisValueFormatter {
 
         private final Months mMonths;
 

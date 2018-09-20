@@ -4,24 +4,24 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0-beta2'
+        classpath 'com.android.tools.build:gradle:3.2.0-alpha16'
     }
 }
 
 ext {
-    compileSdkVersion = 24
-    buildToolsVersion = '24.0.1'
-    minSdkVersion = 17
-    targetSdkVersion = 23
+    compileSdkVer = 27
+    buildToolsVer = '27.0.3'
+    minSdkVer = 17
+    targetSdkVer = 27
 
-    supportVersion = '24.2.0'
+    supportVer = '27.1.1'
 
-    supportDesign = 'com.android.support:design:' + supportVersion
-    supportAppCompat = 'com.android.support:appcompat-v7:' + supportVersion
-    supportPreferenceV7 = 'com.android.support:preference-v7:' + supportVersion
-    supportPreferenceV14 = 'com.android.support:preference-v14:' + supportVersion
-    supportCardView = 'com.android.support:cardview-v7:' + supportVersion
-    supportRecyclerView = 'com.android.support:recyclerview-v7:' + supportVersion
+    supportDesign = 'com.android.support:design:' + supportVer
+    supportAppCompat = 'com.android.support:appcompat-v7:' + supportVer
+    supportPreferenceV7 = 'com.android.support:preference-v7:' + supportVer
+    supportPreferenceV14 = 'com.android.support:preference-v14:' + supportVer
+    supportCardView = 'com.android.support:cardview-v7:' + supportVer
+    supportRecyclerView = 'com.android.support:recyclerview-v7:' + supportVer
 }
 
 allprojects {

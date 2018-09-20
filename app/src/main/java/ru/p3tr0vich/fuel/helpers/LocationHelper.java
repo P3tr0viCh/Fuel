@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -89,16 +88,19 @@ public class LocationHelper {
         return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mContext);
     }
 
+    // TODO: 02.06.2018
 //  Взято отсюда: GooglePlayServicesUtil.showErrorDialogFragment()
     @Nullable
     public String getConnectionResultTitle(int result) {
-        return com.google.android.gms.common.internal.zzh.zzf(mContext, result);
+//        return com.google.android.gms.common.internal.zzh.zzf(mContext, result);
+        return "getConnectionResultTitle";
     }
 
     @NonNull
     public String getConnectionResultMessage(int result) {
-        String var11 = GooglePlayServicesUtil.zzbv(mContext);
-        return com.google.android.gms.common.internal.zzh.zzc(mContext, result, var11);
+//        String var11 = GooglePlayServicesUtil.zzbv(mContext);
+//        return com.google.android.gms.common.internal.zzh.zzc(mContext, result, var11);
+        return "getConnectionResultMessage";
     }
 
     /**

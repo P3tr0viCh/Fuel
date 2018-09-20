@@ -106,8 +106,13 @@ dependencies {
 
     implementation  'com.google.android.gms:play-services-location:15.0.1'
 
+<<<<<<< HEAD
     implementation  'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
     implementation  'com.yandex.android:disk-restapi-sdk:1.03'
+=======
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.0'
+    compile 'com.yandex.android:disk-restapi-sdk:1.03'
+>>>>>>> 8226de5058be975a6065e2ee39b2a5cf8864a095
 
     implementation  project(':libs:fab')
     implementation  project(':libs:materialish-progress')

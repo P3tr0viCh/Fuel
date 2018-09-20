@@ -4,17 +4,30 @@ buildscript {
     }
 
     dependencies {
+<<<<<<< HEAD
         classpath 'com.android.tools.build:gradle:3.2.0-alpha16'
+=======
+        classpath 'com.android.tools.build:gradle:2.2.2'
+>>>>>>> 8226de5058be975a6065e2ee39b2a5cf8864a095
     }
 }
 
 ext {
+<<<<<<< HEAD
     compileSdkVer = 27
     buildToolsVer = '27.0.3'
     minSdkVer = 17
     targetSdkVer = 27
 
     supportVer = '27.1.1'
+=======
+    compileSdkVersion = 25
+    buildToolsVersion = '25.0.0'
+    minSdkVersion = 17
+    targetSdkVersion = 23
+
+    supportVersion = '25.0.0'
+>>>>>>> 8226de5058be975a6065e2ee39b2a5cf8864a095
 
     supportDesign = 'com.android.support:design:' + supportVer
     supportAppCompat = 'com.android.support:appcompat-v7:' + supportVer

@@ -20,7 +20,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
 
-import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
+import ru.p3tr0vich.fuel.helpers.ContentResolverHelper;
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
 import ru.p3tr0vich.fuel.utils.Utils;
@@ -289,40 +289,45 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         mFuelingRecord.setTotal(UtilsFormat.editTextToFloat(mEditTotal));
 
         if (mFuelingRecord.getId() != 0) {
-            if (!ContentProviderHelper.updateRecord(getContext(), mFuelingRecord)) {
+            if (ContentResolverHelper.updateRecord(getContext(), mFuelingRecord)) {
+                return true;
+            } else {
                 Utils.toast(R.string.message_error_update_record);
 
                 return false;
             }
         } else {
-            if (!ContentProviderHelper.insertRecord(getContext(), mFuelingRecord)) {
+            if (ContentResolverHelper.insertRecord(getContext(), mFuelingRecord)) {
+                return true;
+            } else {
                 Utils.toast(R.string.message_error_insert_record);
 
                 return false;
             }
         }
+    }
 
-        return true;
+    private boolean onSaveClicked() {
+        if (saveRecord()) {
+            mPreferencesHelper.putLastTotal(mFuelingRecord.getTotal());
+
+            Activity activity = getActivity();
+
+            activity.setResult(Activity.RESULT_OK);
+
+            activity.finish();
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                if (saveRecord()) {
-
-                    mPreferencesHelper.putLastTotal(mFuelingRecord.getTotal());
-
-                    Activity activity = getActivity();
-
-                    activity.setResult(Activity.RESULT_OK);
-
-                    activity.finish();
-
-                    return true;
-                } else {
-                    return false;
-                }
+                return onSaveClicked();
         }
 
         return super.onOptionsItemSelected(item);

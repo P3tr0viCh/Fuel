@@ -35,7 +35,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import ru.p3tr0vich.fuel.factories.FuelingTotalViewFactory;
-import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
+import ru.p3tr0vich.fuel.helpers.ContentResolverHelper;
 import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
 import ru.p3tr0vich.fuel.utils.Utils;
@@ -103,7 +103,7 @@ public class FragmentFueling extends FragmentBase implements
     private final View.OnClickListener mUndoClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ContentProviderHelper.insertRecord(getContext(), mDeletedFuelingRecord);
+            ContentResolverHelper.insertRecord(getContext(), mDeletedFuelingRecord);
 
             mDeletedFuelingRecord = null;
         }
@@ -391,7 +391,7 @@ public class FragmentFueling extends FragmentBase implements
         boolean forceLoad = true;
 
         if (id != -1) {
-            FuelingRecord fuelingRecord = ContentProviderHelper.getFuelingRecord(getContext(), id);
+            FuelingRecord fuelingRecord = ContentResolverHelper.getFuelingRecord(getContext(), id);
 
             if (fuelingRecord != null)
                 forceLoad = checkDateTime(fuelingRecord.getDateTime());
@@ -406,9 +406,9 @@ public class FragmentFueling extends FragmentBase implements
     private boolean markRecordAsDeleted(@NonNull FuelingRecord fuelingRecord) {
         final long id = fuelingRecord.getId();
 
-        if (ContentProviderHelper.markRecordAsDeleted(getContext(), id))
+        if (ContentResolverHelper.markRecordAsDeleted(getContext(), id)) {
             return true;
-        else {
+        } else {
             Utils.toast(R.string.message_error_delete_record);
 
             return false;
@@ -549,7 +549,7 @@ public class FragmentFueling extends FragmentBase implements
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         FuelingRecord fuelingRecord =
-                                ContentProviderHelper.getFuelingRecord(getContext(), id);
+                                ContentResolverHelper.getFuelingRecord(getContext(), id);
 
                         if (fuelingRecord == null) {
                             UtilsLog.d(TAG, "onMenuItemClick",
@@ -896,7 +896,7 @@ public class FragmentFueling extends FragmentBase implements
             BroadcastReceiverLoading.send(getContext(), true);
 
             try {
-                return ContentProviderHelper.getAll(getContext(), mFilter);
+                return ContentResolverHelper.getAll(getContext(), mFilter);
             } finally {
                 BroadcastReceiverLoading.send(getContext(), false);
             }
@@ -913,7 +913,7 @@ public class FragmentFueling extends FragmentBase implements
         public Cursor loadInBackground() {
             if (LOG_ENABLED) UtilsLog.d(TAG, "FuelingTotalCursorLoader", "loadInBackground");
 
-            return ContentProviderHelper.getTwoLastRecords(getContext());
+            return ContentResolverHelper.getTwoLastRecords(getContext());
         }
     }
 }

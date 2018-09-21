@@ -3,11 +3,13 @@ package ru.p3tr0vich.fuel;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.TextView;
@@ -24,20 +26,28 @@ public class FragmentDialogProgress extends DialogFragment {
 
     private AsyncTaskOperationXml mAsyncTaskOperationXml;
 
-    public static void show(Fragment parent, int requestCode,
+    public static void show(@NonNull Fragment parent, int requestCode,
                             @NonNull DatabaseBackupXmlHelper databaseBackupXmlHelper,
                             boolean doSave) {
         FragmentDialogProgress fragmentDialogProgress = new FragmentDialogProgress();
 
+        Context context = parent.getContext();
+
+        assert context != null;
+
         fragmentDialogProgress.setTask(
-                new AsyncTaskOperationXml(parent.getContext(), databaseBackupXmlHelper, doSave));
+                new AsyncTaskOperationXml(context, databaseBackupXmlHelper, doSave));
         fragmentDialogProgress.setTargetFragment(parent, requestCode);
 
         Bundle args = new Bundle();
         args.putString(MESSAGE, parent.getString(doSave ? R.string.message_progress_save : R.string.message_progress_load));
         fragmentDialogProgress.setArguments(args);
 
-        fragmentDialogProgress.show(parent.getFragmentManager(), TAG);
+        FragmentManager fragmentManager = parent.getFragmentManager();
+
+        assert fragmentManager != null;
+
+        fragmentDialogProgress.show(fragmentManager, TAG);
     }
 
     @DatabaseBackupXmlHelper.BackupResult
@@ -107,11 +117,19 @@ public class FragmentDialogProgress extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         UtilsLog.d(TAG, "onCreateDialog");
 
+        Activity activity = getActivity();
+
+        assert activity != null;
+
         @SuppressLint("InflateParams")
-        View rootView = getActivity().getLayoutInflater().inflate(R.layout.dialog_progress, null, false);
+        View rootView = activity.getLayoutInflater().inflate(R.layout.dialog_progress, null, false);
 
-        ((TextView) rootView.findViewById(R.id.text_message)).setText(getArguments().getString(MESSAGE));
+        Bundle bundle = getArguments();
 
-        return new AlertDialog.Builder(getActivity()).setView(rootView).create();
+        assert bundle != null;
+
+        ((TextView) rootView.findViewById(R.id.text_message)).setText(bundle.getString(MESSAGE));
+
+        return new AlertDialog.Builder(activity).setView(rootView).create();
     }
 }

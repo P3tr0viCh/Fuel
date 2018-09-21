@@ -91,6 +91,7 @@ static def appendVersionName(variant, defaultConfig) {
 }
 
 dependencies {
+    implementation  "com.android.support:support-v4:$supportVer"
     implementation  "com.android.support:appcompat-v7:$supportVer"
     implementation  "com.android.support:design:$supportVer"
     implementation  "com.android.support:preference-v7:$supportVer"

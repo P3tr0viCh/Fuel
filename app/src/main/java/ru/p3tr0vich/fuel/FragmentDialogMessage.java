@@ -1,6 +1,7 @@
 package ru.p3tr0vich.fuel;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -41,13 +42,19 @@ public class FragmentDialogMessage extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle arguments = getArguments();
 
+        assert arguments != null;
+
         String title = arguments.getString(TITLE);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        Activity activity = getActivity();
+
+        assert activity != null;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
         if (!TextUtils.isEmpty(title)) {
             @SuppressLint("InflateParams")
-            TextView customTitle = (TextView) getActivity().getLayoutInflater()
+            TextView customTitle = (TextView) activity.getLayoutInflater()
                     .inflate(R.layout.apptheme_dialog_title, null, false);
 
             customTitle.setText(title);

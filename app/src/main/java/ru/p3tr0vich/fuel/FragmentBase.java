@@ -26,7 +26,9 @@ public abstract class FragmentBase extends Fragment implements FragmentInterface
     @NonNull
     public static Fragment newInstance(@FragmentFactory.Ids.Id int id, @NonNull Fragment fragment,
                                        @Nullable Bundle args) {
-        if (args == null) args = new Bundle();
+        if (args == null) {
+            args = new Bundle();
+        }
 
         args.putInt(KEY_ID, id);
 
@@ -39,13 +41,19 @@ public abstract class FragmentBase extends Fragment implements FragmentInterface
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null)
+        if (getArguments() != null) {
             mFragmentId = FragmentFactory.intToFragmentId(getArguments().getInt(KEY_ID, BAD_ID));
+        }
 
-        if (mFragmentId == BAD_ID)
+        if (mFragmentId == BAD_ID) {
             throw new IllegalArgumentException("Fragment must have ID");
+        }
 
-        preferencesHelper = PreferencesHelper.getInstance(getContext());
+        Context context = getContext();
+
+        assert context != null;
+
+        preferencesHelper = PreferencesHelper.getInstance(context);
     }
 
     @Override

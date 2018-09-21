@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              android:paddingEnd="@dimen/expansion_panel_padding_end"
-              android:paddingStart="@dimen/expansion_panel_padding_start">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/expansion_panel_padding_start"
+    android:paddingEnd="@dimen/expansion_panel_padding_end">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="@string/text_total_sum_cost"
-            android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
+            android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary" />
 
         <TextView
             android:id="@+id/text_cost_sum_expanded"
@@ -26,7 +26,7 @@
             android:layout_marginLeft="8dp"
             android:maxLines="1"
             android:textAppearance="@style/AppTheme.TextAppearance.Text"
-            tools:text="@string/list_item_cost"/>
+            tools:text="@string/list_item_cost" />
     </LinearLayout>
 
     <TableLayout
@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:text="@string/text_total_last_cons"
-                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
+                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary" />
 
             <TextView
                 android:id="@+id/text_last_cons_expanded"
@@ -49,7 +49,7 @@
                 android:layout_marginLeft="8dp"
                 android:maxLines="1"
                 android:textAppearance="@style/AppTheme.TextAppearance.Text"
-                tools:text="@string/list_item_volume"/>
+                tools:text="@string/list_item_volume" />
         </TableRow>
 
         <TableRow style="@style/AppTheme.TableRow">
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:text="@string/text_total_estimated_mileage"
-                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
+                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary" />
 
             <TextView
                 android:id="@+id/text_estimated_mileage_expanded"
@@ -68,7 +68,7 @@
                 android:layout_marginLeft="8dp"
                 android:maxLines="1"
                 android:textAppearance="@style/AppTheme.TextAppearance.Text"
-                tools:text="@string/list_item_total"/>
+                tools:text="@string/list_item_total" />
         </TableRow>
 
         <TableRow style="@style/AppTheme.TableRow">
@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:text="@string/text_total_estimated_total"
-                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
+                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary" />
 
             <TextView
                 android:id="@+id/text_estimated_total_expanded"
@@ -87,7 +87,7 @@
                 android:layout_marginLeft="8dp"
                 android:maxLines="1"
                 android:textAppearance="@style/AppTheme.TextAppearance.Text"
-                tools:text="@string/list_item_total"/>
+                tools:text="@string/list_item_total" />
         </TableRow>
 
         <TableRow style="@style/AppTheme.TableRow.Last">
@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:text="@string/text_total_average"
-                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary"/>
+                android:textAppearance="@style/AppTheme.TextAppearance.Text.Secondary" />
 
             <TextView
                 android:id="@+id/text_average_expanded"
@@ -106,7 +106,7 @@
                 android:layout_marginLeft="8dp"
                 android:maxLines="1"
                 android:textAppearance="@style/AppTheme.TextAppearance.Text"
-                tools:text="@string/list_item_volume"/>
+                tools:text="@string/list_item_volume" />
         </TableRow>
     </TableLayout>
 </LinearLayout>

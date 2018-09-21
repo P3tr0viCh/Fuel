@@ -147,6 +147,7 @@ public class FuelingRecord implements Parcelable {
         }
     };
 
+    @NonNull
     @Override
     public String toString() {
         return mId + ", " + mDateTime + ", " + mCost + ", " + mVolume + ", " + mTotal;

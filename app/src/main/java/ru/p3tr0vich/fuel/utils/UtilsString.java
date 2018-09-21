@@ -11,15 +11,21 @@ public class UtilsString {
 
     @NonNull
     public static String encodeLineBreaks(@Nullable String s) {
-        if (TextUtils.isEmpty(s)) return "";
+        if (TextUtils.isEmpty(s)) {
+            return "";
+        }
 
+        //noinspection ConstantConditions
         return s.replaceAll("\\\\n", "\\\\\\\\n").replaceAll("[\\n]", "\\\\n");
     }
 
     @NonNull
     public static String decodeLineBreaks(@Nullable String s) {
-        if (TextUtils.isEmpty(s)) return "";
+        if (TextUtils.isEmpty(s)) {
+            return "";
+        }
 
+        //noinspection ConstantConditions
         return s.replaceAll("(?<![\\\\])\\\\n", "\n").replaceAll("\\\\\\\\n", "\\\\n");
     }
 }

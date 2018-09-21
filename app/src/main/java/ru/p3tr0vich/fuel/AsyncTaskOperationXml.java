@@ -1,5 +1,6 @@
 package ru.p3tr0vich.fuel;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -11,6 +12,7 @@ import ru.p3tr0vich.fuel.helpers.DatabaseBackupXmlHelper;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
 
+@SuppressLint("StaticFieldLeak")
 class AsyncTaskOperationXml extends AsyncTask<Void, Void, Integer> {
 
     private static final String TAG = "AsyncTaskOperationXml";

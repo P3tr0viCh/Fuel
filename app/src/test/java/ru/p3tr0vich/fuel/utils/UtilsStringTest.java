@@ -13,12 +13,12 @@ public class UtilsStringTest {
         return UtilsString.decodeLineBreaks(UtilsString.encodeLineBreaks(s));
     }
 
-    private void checkAssert(String s) {
+    private void checkAssert(String s) throws AssertionError {
         assertEquals(s, s, doEncodeDecode(s));
     }
 
     @Test
-    public void testEncodeDecode() throws Exception {
+    public void testEncodeDecode() throws AssertionError {
         checkAssert("\n");
 
         checkAssert("\\n");

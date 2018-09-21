@@ -44,7 +44,9 @@ public class ChartCostModel implements Parcelable {
 
     public void setYears(@Nullable int[] years) {
         mYears = years;
-        if (years == null) mHasData = false;
+        if (years == null) {
+            mHasData = false;
+        }
     }
 
     @NonNull
@@ -75,7 +77,11 @@ public class ChartCostModel implements Parcelable {
 
     private float calcMedian(float[] sums) {
         int aboveZeroCount = 0;
-        for (float value : sums) if (value > 0) aboveZeroCount++;
+        for (float value : sums) {
+            if (value > 0) {
+                aboveZeroCount++;
+            }
+        }
 
         if (aboveZeroCount > 1) {
             float[] sortedSums = new float[aboveZeroCount];
@@ -163,6 +169,7 @@ public class ChartCostModel implements Parcelable {
         }
     };
 
+    @NonNull
     @Override
     public String toString() {
         return "hasData: " + mHasData + ", years: " + Arrays.toString(mYears) +

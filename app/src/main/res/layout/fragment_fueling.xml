@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,13 +12,13 @@
 
         <include
             android:id="@+id/toolbar_dates"
-            layout="@layout/partial_toolbar_dates"/>
+            layout="@layout/partial_toolbar_dates" />
 
         <View
             android:id="@+id/view_toolbar_shadow"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@drawable/toolbar_shadow"/>
+            android:background="@drawable/toolbar_shadow" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -32,27 +31,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:choiceMode="none"
-                tools:listitem="@layout/fueling_list_item"/>
+                tools:listitem="@layout/fueling_list_item" />
 
-            <include layout="@layout/partial_progress_wheel"/>
+            <include layout="@layout/partial_progress_wheel" />
 
-            <include layout="@layout/partial_text_no_records"/>
+            <include layout="@layout/partial_text_no_records" />
         </RelativeLayout>
 
         <FrameLayout
             android:id="@+id/total_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true">
+            android:layout_alignParentBottom="true"
+            tools:ignore="InconsistentLayout">
 
-            <View style="@style/AppTheme.Divider.Horizontal"/>
+            <View style="@style/AppTheme.Divider.Horizontal" />
 
             <ru.p3tr0vich.widget.ExpansionPanel
                 android:id="@+id/expansion_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:collapsedLayout="@layout/partial_fueling_total_collapsed"
-                app:expandedLayout="@layout/partial_fueling_total_expanded"/>
+                app:expandedLayout="@layout/partial_fueling_total_expanded" />
         </FrameLayout>
 
         <include
@@ -61,6 +61,6 @@
             layout="@layout/partial_floating_action_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/total_panel"/>
+            android:layout_above="@+id/total_panel" />
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

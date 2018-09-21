@@ -2,6 +2,7 @@ package ru.p3tr0vich.fuel;
 
 import android.databinding.DataBindingUtil;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -106,8 +107,9 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return mFuelingRecords.size();
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_ITEM:
                 return new FuelingItemViewHolder(
@@ -127,7 +129,7 @@ class FuelingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof FuelingItemViewHolder) {
             final FuelingRecord fuelingRecord = mFuelingRecords.get(position);
 

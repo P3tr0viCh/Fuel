@@ -16,10 +16,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import ru.p3tr0vich.fuel.models.DatabaseModel;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
+import ru.p3tr0vich.fuel.utils.Utils;
 import ru.p3tr0vich.fuel.utils.UtilsDate;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
 
@@ -229,22 +229,25 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseModel {
     }
 
     public Cursor getYears() {
-        if (LOG_ENABLED)
+        if (LOG_ENABLED) {
             UtilsLog.d(TAG, "getYears");
+        }
         return query(TableFueling.Columns.COLUMNS_YEARS, Where.RECORD_NOT_DELETED,
-                TableFueling.Columns.YEAR, TableFueling.Columns.YEAR);
+                TableFueling.Columns.YEAR, TableFueling.Columns.YEAR + Statement.DESC);
     }
 
     public Cursor getSumByMonthsForYear(int year) {
-        if (LOG_ENABLED)
+        if (LOG_ENABLED) {
             UtilsLog.d(TAG, "getSumByMonthsForYear", "year == " + year);
+        }
         return query(TableFueling.Columns.COLUMNS_SUM_BY_MONTHS, new Filter(year).getSelection(),
                 TableFueling.Columns.MONTH, TableFueling.Columns.MONTH);
     }
 
     public Cursor getSyncRecords(boolean getChanged) {
-        if (LOG_ENABLED)
+        if (LOG_ENABLED) {
             UtilsLog.d(TAG, "getSyncRecords", "getChanged == " + getChanged);
+        }
         return query(TableFueling.Columns.COLUMNS_WITH_DELETED,
                 getChanged ? TableFueling.Columns.CHANGED + Statement.EQUAL + Statement.TRUE : null, null, null);
     }
@@ -261,20 +264,15 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseModel {
     }
 
     private Cursor query(String[] columns, String selection, String groupBy, String orderBy, String limit) {
-        if (LOG_ENABLED)
+        if (LOG_ENABLED) {
             UtilsLog.d(TAG, "query", "columns == " + Arrays.toString(columns) +
                     ", selection == " + selection + ", groupBy == " + groupBy +
                     ", orderBy == " + orderBy + ", limit == " + limit);
+        }
 
-        if (QUERY_WAIT_ENABLED)
-            for (int i = 0, waitSeconds = 3; i < waitSeconds; i++) {
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                UtilsLog.d(TAG, "query", "wait... " + (waitSeconds - i));
-            }
+        if (QUERY_WAIT_ENABLED) {
+            Utils.wait(3);
+        }
 
         return getReadableDatabase().query(TableFueling.NAME, columns, selection,
                 null, groupBy, null, orderBy, limit);

@@ -3,6 +3,7 @@ package ru.p3tr0vich.fuel;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -103,7 +105,11 @@ public class FragmentFueling extends FragmentBase implements
     private final View.OnClickListener mUndoClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ContentResolverHelper.insertRecord(getContext(), mDeletedFuelingRecord);
+            Context context = getContext();
+
+            assert context != null;
+
+            ContentResolverHelper.insertRecord(context, mDeletedFuelingRecord);
 
             mDeletedFuelingRecord = null;
         }
@@ -174,14 +180,14 @@ public class FragmentFueling extends FragmentBase implements
 
         mFuelingTotalView = FuelingTotalViewFactory.getFuelingTotalView(view);
 
-        mToolbarDates = (Toolbar) view.findViewById(R.id.toolbar_dates);
+        mToolbarDates = view.findViewById(R.id.toolbar_dates);
         mToolbarShadow = view.findViewById(R.id.view_toolbar_shadow);
 
-        mLayoutMain = (RelativeLayout) view.findViewById(R.id.layout_main);
+        mLayoutMain = view.findViewById(R.id.layout_main);
 
         mTotalPanel = isPhone ? (ViewGroup) view.findViewById(R.id.total_panel) : null;
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        mRecyclerView = view.findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -212,12 +218,12 @@ public class FragmentFueling extends FragmentBase implements
                 }
             });
 
-        mProgressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
+        mProgressWheel = view.findViewById(R.id.progress_wheel);
         mProgressWheel.setVisibility(View.GONE);
-        mTextNoRecords = (TextView) view.findViewById(R.id.text_no_records);
+        mTextNoRecords = view.findViewById(R.id.text_no_records);
         mTextNoRecords.setVisibility(View.GONE);
 
-        mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
+        mFloatingActionButton = view.findViewById(R.id.fab);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -227,7 +233,7 @@ public class FragmentFueling extends FragmentBase implements
         mFloatingActionButton.setScaleX(0.0f);
         mFloatingActionButton.setScaleY(0.0f);
 
-        mBtnDateFrom = (Button) view.findViewById(R.id.btn_date_from);
+        mBtnDateFrom = view.findViewById(R.id.btn_date_from);
         mBtnDateFrom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -242,7 +248,7 @@ public class FragmentFueling extends FragmentBase implements
             }
         });
 
-        mBtnDateTo = (Button) view.findViewById(R.id.btn_date_to);
+        mBtnDateTo = view.findViewById(R.id.btn_date_to);
         mBtnDateTo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -285,7 +291,7 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putInt(KEY_FILTER_MODE, mFilter.mode);
@@ -454,6 +460,7 @@ public class FragmentFueling extends FragmentBase implements
         getLoaderManager().restartLoader(FUELING_CURSOR_LOADER_ID, null, this);
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
@@ -462,7 +469,7 @@ public class FragmentFueling extends FragmentBase implements
             case FUELING_TOTAL_CURSOR_LOADER_ID:
                 return new FuelingTotalCursorLoader(getContext());
             default:
-                return null;
+                throw new IllegalArgumentException("Wrong Loader ID");
         }
     }
 
@@ -493,7 +500,7 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         if (LOG_ENABLED) UtilsLog.d(TAG, "onLoadFinished");
 
         switch (loader.getId()) {
@@ -508,7 +515,7 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         if (LOG_ENABLED) UtilsLog.d(TAG, "onLoaderReset");
 
         switch (loader.getId()) {
@@ -529,7 +536,11 @@ public class FragmentFueling extends FragmentBase implements
     };
 
     private void doPopup(final View v) {
-        PopupMenu popupMenu = new PopupMenu(getActivity(), v);
+        Activity activity = getActivity();
+
+        assert activity != null;
+
+        PopupMenu popupMenu = new PopupMenu(activity, v);
         popupMenu.inflate(R.menu.menu_fueling);
 
         Object menuHelper = null;
@@ -548,8 +559,12 @@ public class FragmentFueling extends FragmentBase implements
                 new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
+                        Context context = getContext();
+
+                        assert context != null;
+
                         FuelingRecord fuelingRecord =
-                                ContentResolverHelper.getFuelingRecord(getContext(), id);
+                                ContentResolverHelper.getFuelingRecord(context, id);
 
                         if (fuelingRecord == null) {
                             UtilsLog.d(TAG, "onMenuItemClick",
@@ -570,7 +585,7 @@ public class FragmentFueling extends FragmentBase implements
                                             .make(mLayoutMain, R.string.message_record_deleted,
                                                     Snackbar.LENGTH_LONG)
                                             .setAction(R.string.dialog_btn_cancel, mUndoClickListener)
-                                            .setCallback(mSnackBarCallback);
+                                            .addCallback(mSnackBarCallback);
                                     mSnackbar.show();
                                 }
 
@@ -838,6 +853,10 @@ public class FragmentFueling extends FragmentBase implements
         final Calendar calendar =
                 UtilsDate.getCalendarInstance(dateFrom ? mFilter.dateFrom : mFilter.dateTo);
 
+        FragmentManager fragmentManager = getFragmentManager();
+
+        assert fragmentManager != null;
+
         DatePickerDialog.newInstance(
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
@@ -854,7 +873,7 @@ public class FragmentFueling extends FragmentBase implements
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
-        ).show(getFragmentManager(), null);
+        ).show(fragmentManager, null);
     }
 
     /**

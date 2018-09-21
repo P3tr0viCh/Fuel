@@ -36,7 +36,7 @@ public class ActivityFuelingRecordChange extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fueling_record_change);
 
-        Toolbar toolbarRecord = (Toolbar) findViewById(R.id.toolbar_record);
+        Toolbar toolbarRecord = findViewById(R.id.toolbar_record);
         setSupportActionBar(toolbarRecord);
 
         assert toolbarRecord != null;

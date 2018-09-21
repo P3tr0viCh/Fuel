@@ -4,6 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="activity_calc_horizontal_margin">16dp</dimen>
     <dimen name="activity_backup_horizontal_margin">16dp</dimen>
+    <dimen name="activity_about_horizontal_margin">0dp</dimen>
 
     <dimen name="drawer_max_width">280dp</dimen>
     <dimen name="drawer_sync_height">48dp</dimen>

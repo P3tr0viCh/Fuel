@@ -13,8 +13,8 @@
 
     <string name="title_message_error">Ошибка</string>
 
-    <string name="about_version">Версия</string>
-    <string name="about_copyright" translatable="false">© П3тр0виЧъ</string>
+    <string name="about_version">Версия %s</string>
+    <string name="about_copyright">© П3тр0виЧъ</string>
     <string name="about_disclaimer">
         Приложение предоставляется на основе принципов «КАК ЕСТЬ» без каких-либо гарантий,
         то есть вы используете его на собственный риск и соглашаетесь с тем, что разработчик данного приложения
@@ -41,10 +41,12 @@
     <string name="action_dates_curr_year">Текущий год</string>
     <string name="action_dates_prev_year">Прошлый год</string>
 
-    <string name="list_item_date">29 марта 1981 г.</string>
-    <string name="list_item_cost">500</string>
-    <string name="list_item_volume">16.37</string>
-    <string name="list_item_total">12345</string>
+    <string name="list_item_date" translatable="false">29 марта 1981 г.</string>
+    <string name="list_item_cost" translatable="false">500</string>
+    <string name="list_item_volume" translatable="false">16.37</string>
+    <string name="list_item_total" translatable="false">12345</string>
+
+    <string name="btn_date" translatable="false">29/03/1981</string>
 
     <string name="text_date">Дата</string>
     <string name="text_cost">Стоимость</string>

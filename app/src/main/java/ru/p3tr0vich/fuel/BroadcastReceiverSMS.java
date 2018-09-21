@@ -32,7 +32,7 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
     }
 
     @Override
-    public boolean isCheckAddress(String originatingAddress) {
+    public boolean isCheckAddress(@NonNull String originatingAddress) {
         return PhoneNumberUtils.compare(originatingAddress, mAddress);
     }
 

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tab_layout"
         style="@style/AppTheme.TabLayout"
         android:layout_alignParentTop="true"
         app:layout_scrollFlags="scroll|enterAlways"
-        app:tabMode="scrollable"/>
+        app:tabMode="scrollable" />
 
-    <include layout="@layout/partial_text_no_records"/>
+    <include layout="@layout/partial_text_no_records" />
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/chart"
@@ -20,16 +20,16 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/layout_total"
         android:layout_below="@+id/tab_layout"
-        android:layout_margin="16dp"/>
+        android:layout_margin="16dp" />
 
     <View
         style="@style/AppTheme.Divider.Horizontal"
-        android:layout_above="@+id/layout_total"/>
+        android:layout_above="@+id/layout_total" />
 
     <include
         android:id="@+id/layout_total"
         layout="@layout/partial_chart_cost_total"
         android:layout_width="match_parent"
         android:layout_height="@dimen/expansion_panel_collapsed_min_height"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>

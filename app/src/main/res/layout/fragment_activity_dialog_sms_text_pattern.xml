@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:isScrollContainer="false">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:isScrollContainer="false">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingEnd="16dp"
         android:paddingStart="16dp"
-        android:paddingTop="16dp">
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp">
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -23,7 +23,7 @@
                 android:hint="@string/text_sms_text"
                 android:imeOptions="actionNone|flagNoExtractUi"
                 android:inputType="textMultiLine"
-                android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
+                android:textAppearance="@style/AppTheme.TextAppearance.Text" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -38,7 +38,7 @@
                 android:hint="@string/text_sms_text_pattern"
                 android:imeOptions="actionNone|flagNoExtractUi"
                 android:inputType="textMultiLine"
-                android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
+                android:textAppearance="@style/AppTheme.TextAppearance.Text" />
         </android.support.design.widget.TextInputLayout>
 
         <TextView
@@ -47,6 +47,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/text_sms_text_result_all_empty"
-            android:textAppearance="@style/AppTheme.TextAppearance.Text"/>
+            android:textAppearance="@style/AppTheme.TextAppearance.Text" />
     </LinearLayout>
 </ScrollView>

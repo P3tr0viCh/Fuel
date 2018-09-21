@@ -61,7 +61,7 @@ public class UtilsDate {
         final long now = System.currentTimeMillis();
         final long elapsed = now - dateTime;
 
-        String result = null;
+        String result = "";
 
         if (elapsed > 0) {
             if (elapsed < 10 * DateUtils.SECOND_IN_MILLIS)
@@ -95,12 +95,14 @@ public class UtilsDate {
             }
         }
 
-        if (TextUtils.isEmpty(result))
+        if (TextUtils.isEmpty(result)) {
             result = DateUtils.formatDateTime(context, dateTime, DateUtils.FORMAT_SHOW_DATE);
+        }
 
-        if (elapsed > DateUtils.MINUTE_IN_MILLIS && elapsed < DateUtils.WEEK_IN_MILLIS)
+        if (elapsed > DateUtils.MINUTE_IN_MILLIS && elapsed < DateUtils.WEEK_IN_MILLIS) {
             result += ", " +
                     DateUtils.getRelativeTimeSpanString(context, dateTime, true).toString();
+        }
 
         return result;
     }

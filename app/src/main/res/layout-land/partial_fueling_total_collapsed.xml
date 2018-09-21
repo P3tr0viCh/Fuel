@@ -1,57 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="center_vertical"
-              android:orientation="horizontal"
-              android:paddingEnd="@dimen/expansion_panel_padding_end"
-              android:paddingStart="@dimen/expansion_panel_padding_start">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/expansion_panel_padding_start"
+    android:paddingEnd="@dimen/expansion_panel_padding_end">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/text_consumption"
-        android:src="@drawable/ic_barrel"/>
+        android:src="@drawable/ic_barrel" />
 
     <TextView
         android:id="@+id/text_average_and_last_cons_collapsed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:maxLines="1"
         android:textAppearance="@style/AppTheme.TextAppearance.Text"
-        tools:text="12.34/56.78"/>
+        tools:text="12.34/56.78" />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/row_item_space_between"
+        android:layout_marginStart="@dimen/row_item_space_between"
         android:contentDescription="@string/text_total_estimated_mileage"
-        android:src="@drawable/ic_road"/>
+        android:src="@drawable/ic_road" />
 
     <TextView
         android:id="@+id/text_estimated_mileage_and_total_collapsed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:maxLines="1"
         android:textAppearance="@style/AppTheme.TextAppearance.Text"
-        tools:text="123/45678"/>
+        tools:text="123/45678" />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/row_item_space_between"
+        android:layout_marginStart="@dimen/row_item_space_between"
         android:contentDescription="@string/text_total_estimated_mileage"
-        android:src="@drawable/ic_cash_100"/>
+        android:src="@drawable/ic_cash_100" />
 
     <TextView
         android:id="@+id/text_cost_sum_collapsed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:maxLines="1"
         android:textAppearance="@style/AppTheme.TextAppearance.Text"
-        tools:text="@string/list_item_cost"/>
+        tools:text="@string/list_item_cost" />
 </LinearLayout>

@@ -116,7 +116,7 @@ public class FragmentChartCost extends FragmentBase implements
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(ChartCostModel.NAME, mChartCostModel);
     }
@@ -128,20 +128,20 @@ public class FragmentChartCost extends FragmentBase implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_chart_cost, container, false);
 
-        mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
+        mTabLayout = view.findViewById(R.id.tab_layout);
 
-        mTextNoRecords = (TextView) view.findViewById(R.id.text_no_records);
+        mTextNoRecords = view.findViewById(R.id.text_no_records);
         mTextNoRecords.setVisibility(View.GONE);
 
-        mTextMedian = (TextView) view.findViewById(R.id.text_median);
-        mTextSum = (TextView) view.findViewById(R.id.text_sum);
+        mTextMedian = view.findViewById(R.id.text_median);
+        mTextSum = view.findViewById(R.id.text_sum);
 
-        mChart = (BarChart) view.findViewById(R.id.chart);
+        mChart = view.findViewById(R.id.chart);
 
         mChart.getDescription().setText("");
 
@@ -183,7 +183,9 @@ public class FragmentChartCost extends FragmentBase implements
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if (!mUpdateYearsInProcess) setYear(getYearFromPosition(tab.getPosition()));
+                if (!mUpdateYearsInProcess) {
+                    setYear(getYearFromPosition(tab.getPosition()));
+                }
             }
 
             @Override
@@ -202,21 +204,26 @@ public class FragmentChartCost extends FragmentBase implements
     }
 
     private void selectTab(@Nullable TabLayout.Tab tab) {
-        if (tab != null) tab.select();
+        if (tab != null) {
+            tab.select();
+        }
     }
 
     private final OnSwipeTouchListener mOnSwipeTouchListener = new OnSwipeTouchListener(getActivity()) {
         @Override
         public void onSwipeRight() {
             int position = mTabLayout.getSelectedTabPosition();
-            if (position != 0) selectTab(mTabLayout.getTabAt(position - 1));
+            if (position != 0) {
+                selectTab(mTabLayout.getTabAt(position - 1));
+            }
         }
 
         @Override
         public void onSwipeLeft() {
             int position = mTabLayout.getSelectedTabPosition();
-            if (position != mTabLayout.getTabCount() - 1)
+            if (position != mTabLayout.getTabCount() - 1) {
                 selectTab(mTabLayout.getTabAt(position + 1));
+            }
         }
 
         @Override
@@ -234,8 +241,9 @@ public class FragmentChartCost extends FragmentBase implements
             if (mChartCostModel.getYears() == null || mChartCostModel.getYears().length == 0)
                 return;
 
-            for (int year : mChartCostModel.getYears())
+            for (int year : mChartCostModel.getYears()) {
                 mTabLayout.addTab(mTabLayout.newTab().setText(String.valueOf(year)));
+            }
 
             int position = getPositionForYear(mChartCostModel.getYear());
             if (position == -1) {
@@ -284,6 +292,7 @@ public class FragmentChartCost extends FragmentBase implements
         }
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
@@ -292,12 +301,12 @@ public class FragmentChartCost extends FragmentBase implements
             case YEARS_CURSOR_LOADER_ID:
                 return new YearsCursorLoader(getContext());
             default:
-                return null;
+                throw new IllegalArgumentException("Wrong Loader ID");
         }
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
             case CHART_CURSOR_LOADER_ID:
                 float sum;
@@ -364,7 +373,8 @@ public class FragmentChartCost extends FragmentBase implements
 
         private final Months mMonths;
 
-        MonthFormatter(@NonNull Context context) {
+        MonthFormatter(@Nullable Context context) {
+            assert context != null;
             mMonths = new Months(context);
         }
 

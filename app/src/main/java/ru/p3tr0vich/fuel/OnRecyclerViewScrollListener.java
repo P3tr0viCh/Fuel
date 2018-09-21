@@ -1,5 +1,6 @@
 package ru.p3tr0vich.fuel;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -18,7 +19,7 @@ abstract class OnRecyclerViewScrollListener extends RecyclerView.OnScrollListene
     }
 
     @Override
-    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+    public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
             if (((LinearLayoutManager) recyclerView.getLayoutManager())
                     .findFirstCompletelyVisibleItemPosition() == 0)
@@ -37,7 +38,7 @@ abstract class OnRecyclerViewScrollListener extends RecyclerView.OnScrollListene
     }
 
     @Override
-    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
         mOffset += dy;
     }
 }

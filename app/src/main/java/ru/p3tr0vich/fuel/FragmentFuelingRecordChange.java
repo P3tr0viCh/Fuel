@@ -64,16 +64,16 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fueling_record_change, container, false);
 
         setHasOptionsMenu(true);
 
-        mButtonDate = (Button) view.findViewById(R.id.btn_date);
-        mEditCost = (EditText) view.findViewById(edit_cost);
-        mEditVolume = (EditText) view.findViewById(R.id.edit_volume);
-        mEditTotal = (EditText) view.findViewById(R.id.edit_total);
+        mButtonDate = view.findViewById(R.id.btn_date);
+        mEditCost = view.findViewById(edit_cost);
+        mEditVolume = view.findViewById(R.id.edit_volume);
+        mEditTotal = view.findViewById(R.id.edit_total);
 
         Bundle bundle = getArguments();
 
@@ -259,7 +259,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putLong(STATE_KEY_DATE, mFuelingRecord.getDateTime());

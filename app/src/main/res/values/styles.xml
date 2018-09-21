@@ -15,7 +15,7 @@
         <item name="android:layout_width">1dp</item>
     </style>
 
-    <style name="AppTheme.PopupMenu" parent="Widget.AppCompat.PopupMenu"/>
+    <style name="AppTheme.PopupMenu" parent="Widget.AppCompat.PopupMenu" />
 
     <style name="AppTheme.FloatingActionButton">
         <item name="android:layout_width">wrap_content</item>
@@ -29,49 +29,57 @@
         <item name="android:layout_alignParentBottom">false</item>
     </style>
 
-    <style name="AppTheme.Button" parent="Widget.AppCompat.Button"/>
+    <style name="AppTheme.Button" parent="Widget.AppCompat.Button" />
 
-    <style name="AppTheme.Button.Colored" parent="Widget.AppCompat.Button.Colored"/>
+    <style name="AppTheme.Button.Colored" parent="Widget.AppCompat.Button.Colored" />
 
-    <style name="AppTheme.Spinner.Underlined" parent="Widget.AppCompat.Spinner.Underlined"/>
+    <style name="AppTheme.Spinner.Underlined" parent="Widget.AppCompat.Spinner.Underlined" />
 
-    <style name="AppTheme.DatePickerButton" parent="AppTheme.Spinner.Underlined">
-        <item name="android:paddingRight">24dp</item>
+    <style name="AppTheme.DatePickerButton" parent="Widget.AppCompat.Button">
+        <item name="android:drawableEnd">@drawable/ic_calendar</item>
+    </style>
+
+    <style name="AppTheme.DatePickerButton.Toolbar" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:drawableEnd">@drawable/ic_calendar_white</item>
+        <item name="android:textAppearance">
+            @style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle
+        </item>
+        <item name="android:textColor">@color/toolbar_title_text</item>
     </style>
 
     <style name="AppTheme.TextAppearance.Body" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.List" parent="AppTheme.TextAppearance.Body"/>
+    <style name="AppTheme.TextAppearance.List" parent="AppTheme.TextAppearance.Body" />
 
-    <style name="AppTheme.TextAppearance.Text" parent="AppTheme.TextAppearance.Body"/>
+    <style name="AppTheme.TextAppearance.Text" parent="AppTheme.TextAppearance.Body" />
 
     <style name="AppTheme.TextAppearance.Text.Secondary">
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Caption" parent="TextAppearance.AppCompat.Caption"/>
+    <style name="AppTheme.TextAppearance.Caption" parent="TextAppearance.AppCompat.Caption" />
 
     <style name="AppTheme.TextAppearance.Display" parent="TextAppearance.AppCompat.Display1">
         <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Headline" parent="TextAppearance.AppCompat.Headline"/>
+    <style name="AppTheme.TextAppearance.Headline" parent="TextAppearance.AppCompat.Headline" />
 
-    <style name="AppTheme.TextAppearance.Subhead" parent="TextAppearance.AppCompat.Subhead"/>
+    <style name="AppTheme.TextAppearance.Subhead" parent="TextAppearance.AppCompat.Subhead" />
 
     <style name="AppTheme.TextAppearance.Subhead.Secondary">
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Medium" parent="TextAppearance.AppCompat.Medium"/>
+    <style name="AppTheme.TextAppearance.Medium" parent="TextAppearance.AppCompat.Medium" />
 
     <style name="AppTheme.TextAppearance.Medium.Secondary">
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Small" parent="TextAppearance.AppCompat.Small"/>
+    <style name="AppTheme.TextAppearance.Small" parent="TextAppearance.AppCompat.Small" />
 
     <style name="AppTheme.TextAppearance.ErrorValue" parent="AppTheme.TextAppearance.Small">
         <item name="android:textColor">?attr/colorError</item>
@@ -186,5 +194,5 @@
         <item name="height">?attr/actionBarSize</item>
     </style>
 
-    <style name="AppTheme.DialogWhenLarge"/>
+    <style name="AppTheme.DialogWhenLarge" />
 </resources>

@@ -3,46 +3,46 @@
 
     <data>
 
-        <import type="ru.p3tr0vich.fuel.utils.UtilsFormat"/>
+        <import type="ru.p3tr0vich.fuel.utils.UtilsFormat" />
 
         <variable
             name="fuelingRecord"
-            type="ru.p3tr0vich.fuel.models.FuelingRecord"/>
+            type="ru.p3tr0vich.fuel.models.FuelingRecord" />
 
         <variable
             name="showYear"
-            type="boolean"/>
+            type="boolean" />
     </data>
 
     <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
-                    android:layout_width="match_parent"
-                    android:layout_height="72dp"
-                    android:clickable="false"
-                    android:descendantFocusability="blocksDescendants"
-                    android:orientation="horizontal"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp">
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:clickable="false"
+        android:descendantFocusability="blocksDescendants"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
         <TextView
             android:id="@+id/text_date"
             android:layout_width="match_parent"
             android:layout_height="34dp"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/btn_menu"
+            android:layout_toStartOf="@+id/btn_menu"
             android:clickable="false"
             android:gravity="bottom"
             android:text="@{UtilsFormat.dateToString(fuelingRecord.getDateTime, showYear)}"
             android:textAppearance="@style/AppTheme.TextAppearance.List"
-            tools:text="@string/list_item_date"/>
+            tools:text="@string/list_item_date" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="34dp"
+            android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="16dp"
-            android:layout_toLeftOf="@+id/btn_menu"
+            android:layout_marginStart="16dp"
+            android:layout_toStartOf="@+id/btn_menu"
             android:gravity="top"
             android:orientation="horizontal">
 
@@ -54,7 +54,7 @@
                 android:gravity="top"
                 android:text="@{UtilsFormat.floatToString(fuelingRecord.getCost)}"
                 android:textAppearance="@style/AppTheme.TextAppearance.List"
-                tools:text="@string/list_item_cost"/>
+                tools:text="@string/list_item_cost" />
 
             <TextView
                 android:id="@+id/text_volume"
@@ -64,7 +64,7 @@
                 android:gravity="top"
                 android:text="@{UtilsFormat.floatToString(fuelingRecord.getVolume)}"
                 android:textAppearance="@style/AppTheme.TextAppearance.List"
-                tools:text="@string/list_item_volume"/>
+                tools:text="@string/list_item_volume" />
 
             <TextView
                 android:id="@+id/text_total"
@@ -74,22 +74,22 @@
                 android:gravity="top"
                 android:text="@{UtilsFormat.floatToString(fuelingRecord.getTotal)}"
                 android:textAppearance="@style/AppTheme.TextAppearance.List"
-                tools:text="@string/list_item_total"/>
+                tools:text="@string/list_item_total" />
         </LinearLayout>
 
         <ImageButton
             android:id="@+id/btn_menu"
             android:layout_width="48dp"
             android:layout_height="47dp"
-            android:layout_alignParentEnd="false"
-            android:layout_alignParentLeft="false"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="false"
             android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:adjustViewBounds="false"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
+            android:focusable="true"
             android:src="@drawable/ic_dots_vertical"
-            tools:ignore="ContentDescription"/>
+            tools:ignore="ContentDescription" />
     </RelativeLayout>
 </layout>

@@ -253,10 +253,10 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 
-        mSharedPreferences.edit()
-                .remove("last sync")
-                .remove("full sync")
-                .apply();
+//        mSharedPreferences.edit()
+//                .remove("last sync")
+//                .remove("full sync")
+//                .apply();
 
         mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
@@ -496,6 +496,7 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
 
     @NonNull
     private String getString(String key, @NonNull String defValue) {
+        //noinspection ConstantConditions
         return mSharedPreferences.getString(key, defValue);
     }
 
@@ -581,7 +582,7 @@ public class PreferencesHelper implements SharedPreferences.OnSharedPreferenceCh
         return getPreferencesCursor(preference);
     }
 
-    @SuppressLint({"CommitPrefEdits", "SwitchIntDef"})
+    @SuppressLint({"CommitPrefEdits", "SwitchIntDef", "ApplySharedPref"})
     public int setPreferences(@Nullable ContentValues preferences,
                               @Nullable String preference) {
         if (preferences == null || preferences.size() == 0) return -1;

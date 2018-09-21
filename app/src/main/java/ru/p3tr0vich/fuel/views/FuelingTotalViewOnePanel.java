@@ -15,11 +15,11 @@ public class FuelingTotalViewOnePanel extends FuelingTotalViewBase {
     private final TextView mEstimatedTotal;
 
     public FuelingTotalViewOnePanel(@NonNull View view) {
-        mAverage = (TextView) view.findViewById(R.id.text_average);
-        mCostSum = (TextView) view.findViewById(R.id.text_cost_sum);
-        mLastConsumption = (TextView) view.findViewById(R.id.text_last_cons);
-        mEstimatedMileage = (TextView) view.findViewById(R.id.text_estimated_mileage);
-        mEstimatedTotal = (TextView) view.findViewById(R.id.text_estimated_total);
+        mAverage = view.findViewById(R.id.text_average);
+        mCostSum = view.findViewById(R.id.text_cost_sum);
+        mLastConsumption = view.findViewById(R.id.text_last_cons);
+        mEstimatedMileage = view.findViewById(R.id.text_estimated_mileage);
+        mEstimatedTotal = view.findViewById(R.id.text_estimated_total);
     }
 
     @Override

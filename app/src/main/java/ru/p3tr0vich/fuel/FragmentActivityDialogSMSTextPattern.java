@@ -1,5 +1,6 @@
 package ru.p3tr0vich.fuel;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -32,20 +33,23 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
 
     @Override
     public String getTitle() {
-        return getContext().getString(R.string.pref_sms_title);
+        return getString(R.string.pref_sms_title);
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_activity_dialog_sms_text_pattern, container, false);
 
-        mEditSMSText = (EditText) view.findViewById(R.id.edit_sms_text);
-        mEditSMSTextPattern = (EditText) view.findViewById(R.id.edit_sms_text_pattern);
-        mTextResult = (TextView) view.findViewById(R.id.text_check_result);
+        mEditSMSText = view.findViewById(R.id.edit_sms_text);
+        mEditSMSTextPattern = view.findViewById(R.id.edit_sms_text_pattern);
+        mTextResult = view.findViewById(R.id.text_check_result);
 
         if (savedInstanceState == null) {
-            PreferencesHelper preferencesHelper = PreferencesHelper.getInstance(getContext());
+            Context context = getContext();
+            assert context != null;
+
+            PreferencesHelper preferencesHelper = PreferencesHelper.getInstance(context);
 
             mEditSMSText.setText(preferencesHelper.getSMSText());
             mEditSMSTextPattern.setText(preferencesHelper.getSMSTextPattern());
@@ -105,7 +109,11 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
 
     @Override
     public boolean onSaveClicked() {
-        PreferencesHelper.getInstance(getContext()).putSMSTextAndPattern(
+        Context context = getContext();
+
+        assert context != null;
+
+        PreferencesHelper.getInstance(context).putSMSTextAndPattern(
                 mEditSMSText.getText().toString(),
                 mEditSMSTextPattern.getText().toString());
 

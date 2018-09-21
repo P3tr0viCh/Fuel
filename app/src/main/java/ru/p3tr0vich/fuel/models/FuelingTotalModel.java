@@ -1,5 +1,6 @@
 package ru.p3tr0vich.fuel.models;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 
@@ -118,6 +119,8 @@ public class FuelingTotalModel {
         mCalcTotalTask.execute();
     }
 
+    //// TODO: 21.09.2018 make static
+    @SuppressLint("StaticFieldLeak")
     private class CalcTotalTask extends AsyncTask<Void, Void, Float[]> {
 
         private final List<FuelingRecord> mFuelingRecords;

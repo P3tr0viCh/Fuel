@@ -201,7 +201,7 @@ public abstract class MonthView extends View {
         mMonthTitleColor = res.getColor(R.color.mdtp_white);
         mMonthTitleBGColor = res.getColor(R.color.mdtp_circle_background);
 
-         MINI_DAY_NUMBER_TEXT_SIZE = res.getDimensionPixelSize(R.dimen.mdtp_day_number_size);
+        MINI_DAY_NUMBER_TEXT_SIZE = res.getDimensionPixelSize(R.dimen.mdtp_day_number_size);
         MONTH_LABEL_TEXT_SIZE = res.getDimensionPixelSize(R.dimen.mdtp_month_label_size);
         MONTH_DAY_LABEL_TEXT_SIZE = res.getDimensionPixelSize(R.dimen.mdtp_month_day_label_text_size);
         MONTH_HEADER_SIZE = res.getDimensionPixelOffset(R.dimen.mdtp_month_list_item_header_height);
@@ -582,11 +582,9 @@ public abstract class MonthView extends View {
     protected boolean isOutOfRange(int year, int month, int day) {
         if (isBeforeMin(year, month, day)) {
             return true;
-        } else if (isAfterMax(year, month, day)) {
-            return true;
+        } else {
+            return isAfterMax(year, month, day);
         }
-
-        return false;
     }
 
     private boolean isBeforeMin(int year, int month, int day) {

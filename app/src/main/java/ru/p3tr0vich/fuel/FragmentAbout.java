@@ -1,5 +1,6 @@
 package ru.p3tr0vich.fuel;
 
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,13 +24,18 @@ public class FragmentAbout extends FragmentBase {
         View view = inflater.inflate(R.layout.fragment_about, container, false);
 
         String versionName;
+
+        Activity activity = getActivity();
+        assert activity != null;
+
         try {
-            versionName = getActivity().getPackageManager()
-                    .getPackageInfo(getActivity().getPackageName(), 0).versionName;
+            versionName = activity.getPackageManager()
+                    .getPackageInfo(activity.getPackageName(), 0).versionName;
         } catch (PackageManager.NameNotFoundException e) {
             versionName = "0.0";
         }
-        versionName = getActivity().getString(R.string.about_version) + " " + versionName;
+
+        versionName = activity.getString(R.string.about_version, versionName);
         ((TextView) view.findViewById(R.id.text_app_version)).setText(versionName);
 
         ((TextView) view.findViewById(R.id.text_app_build_date)).setText(

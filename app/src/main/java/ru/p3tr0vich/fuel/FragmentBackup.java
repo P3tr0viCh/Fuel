@@ -3,6 +3,9 @@ package ru.p3tr0vich.fuel;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,10 +33,14 @@ public class FragmentBackup extends FragmentBase {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        FragmentManager fragmentManager = getFragmentManager();
+
+        assert fragmentManager != null;
+
         FragmentDialogProgress fragmentDialogProgress =
-                (FragmentDialogProgress) getFragmentManager().findFragmentByTag(FragmentDialogProgress.TAG);
+                (FragmentDialogProgress) fragmentManager.findFragmentByTag(FragmentDialogProgress.TAG);
         FragmentDialogQuestion fragmentDialogQuestion =
-                (FragmentDialogQuestion) getFragmentManager().findFragmentByTag(FragmentDialogQuestion.TAG);
+                (FragmentDialogQuestion) fragmentManager.findFragmentByTag(FragmentDialogQuestion.TAG);
 
         UtilsLog.d(TAG, "onCreate", "fragmentDialogProgress " +
                 (fragmentDialogProgress == null ? "=" : "!") + "= null");
@@ -45,7 +52,7 @@ public class FragmentBackup extends FragmentBase {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         UtilsLog.d(TAG, "onCreateView");
 
@@ -127,14 +134,19 @@ public class FragmentBackup extends FragmentBase {
 
         UtilsLog.d(TAG, "stopOperationXml: " + resultMessage);
 
-        if (result == DatabaseBackupXmlHelper.RESULT_SAVE_OK)
+        if (result == DatabaseBackupXmlHelper.RESULT_SAVE_OK) {
             Utils.toast(R.string.message_save_file_ok);
-        else if (result == DatabaseBackupXmlHelper.RESULT_LOAD_OK) {
+        } else if (result == DatabaseBackupXmlHelper.RESULT_LOAD_OK) {
             Utils.toast(R.string.message_load_file_ok);
 
             preferencesHelper.putFullSync(true);
-        } else
-            FragmentDialogMessage.show(getActivity(), getString(R.string.title_message_error), resultMessage);
+        } else {
+            FragmentActivity activity = getActivity();
+
+            assert activity != null;
+
+            FragmentDialogMessage.show(activity, getString(R.string.title_message_error), resultMessage);
+        }
     }
 
     private void saveToXml() {

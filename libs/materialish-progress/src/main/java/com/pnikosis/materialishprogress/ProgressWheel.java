@@ -20,9 +20,9 @@ import android.view.View;
  * Todd Davies' Progress Wheel https://github.com/Todd-Davies/ProgressWheel
  *
  * @author Nico Hormazábal
- *         <p/>
- *         Licensed under the Apache License 2.0 license see:
- *         http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Licensed under the Apache License 2.0 license see:
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 public class ProgressWheel extends View {
     private static final String TAG = ProgressWheel.class.getSimpleName();
@@ -38,6 +38,7 @@ public class ProgressWheel extends View {
     private int rimWidth = 4;
 
     private final int barLength = 16;
+    @SuppressWarnings("FieldCanBeLocal")
     private final int barMaxLength = 270;
 
     private boolean fillRadius = false;
@@ -48,6 +49,7 @@ public class ProgressWheel extends View {
     private boolean barGrowingFromFront = true;
 
     private long pausedTimeWithoutGrowing = 0;
+    @SuppressWarnings("FieldCanBeLocal")
     private final long pauseGrowingTime = 200;
 
     //Colors (with defaults)
@@ -738,12 +740,12 @@ public class ProgressWheel extends View {
          * Method to call when the progress reaches a value
          * in order to avoid float precision issues, the progress
          * is rounded to a float with two decimals.
-         *
+         * <p>
          * In indeterminate mode, the callback is called each time
          * the wheel completes an animation cycle, with, the progress value is -1.0f
          *
          * @param progress a double value between 0.00 and 1.00 both included
          */
-        public void onProgressUpdate(float progress);
+        void onProgressUpdate(float progress);
     }
 }

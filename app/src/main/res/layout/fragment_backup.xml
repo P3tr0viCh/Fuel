@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="16dp">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/text_directory_caption"
@@ -12,49 +12,49 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:text="@string/text_backup_directory"
-        android:textAppearance="@style/AppTheme.TextAppearance.Caption"/>
+        android:textAppearance="@style/AppTheme.TextAppearance.Caption" />
 
     <TextView
         android:id="@+id/text_directory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/text_directory_caption"
-        android:layout_marginBottom="16dp"
+        android:layout_alignParentStart="true"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
         android:textAppearance="@style/AppTheme.TextAppearance.Text"
-        tools:text="Directory"/>
+        tools:text="Directory" />
 
     <TextView
         android:id="@+id/text_file_caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/text_directory"
+        android:layout_alignParentStart="true"
         android:text="@string/text_backup_file"
-        android:textAppearance="@style/AppTheme.TextAppearance.Caption"/>
+        android:textAppearance="@style/AppTheme.TextAppearance.Caption" />
 
     <TextView
         android:id="@+id/text_file"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/text_file_caption"
-        android:layout_marginBottom="16dp"
+        android:layout_alignParentStart="true"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
         android:textAppearance="@style/AppTheme.TextAppearance.Text"
-        tools:text="File_name.xml"/>
+        tools:text="File_name.xml" />
 
     <Button
         android:id="@+id/btn_save"
         style="@style/AppTheme.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/text_file"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="false"
-        android:layout_below="@+id/text_file"
         android:layout_marginRight="4dp"
-        android:text="@string/btn_backup_save"/>
+        android:text="@string/btn_backup_save" />
 
     <Button
         android:id="@+id/btn_load"
@@ -64,5 +64,5 @@
         android:layout_alignTop="@+id/btn_save"
         android:layout_marginLeft="4dp"
         android:layout_toEndOf="@+id/btn_save"
-        android:text="@string/btn_backup_load"/>
+        android:text="@string/btn_backup_load" />
 </RelativeLayout>

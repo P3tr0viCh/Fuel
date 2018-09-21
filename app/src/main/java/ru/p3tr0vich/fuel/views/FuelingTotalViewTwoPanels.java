@@ -26,23 +26,23 @@ public class FuelingTotalViewTwoPanels extends FuelingTotalViewBase {
     private String mEstimatedTotal;
 
     public FuelingTotalViewTwoPanels(@NonNull View view) {
-        mAverageAndLastConsumptionCollapsed = (TextView) view.findViewById(R.id.text_average_and_last_cons_collapsed);
-        mEstimatedMileageAndTotalCollapsed = (TextView) view.findViewById(R.id.text_estimated_mileage_and_total_collapsed);
-        mCostSumCollapsed = (TextView) view.findViewById(R.id.text_cost_sum_collapsed);
+        mAverageAndLastConsumptionCollapsed = view.findViewById(R.id.text_average_and_last_cons_collapsed);
+        mEstimatedMileageAndTotalCollapsed = view.findViewById(R.id.text_estimated_mileage_and_total_collapsed);
+        mCostSumCollapsed = view.findViewById(R.id.text_cost_sum_collapsed);
 
-        mAverageExpanded = (TextView) view.findViewById(R.id.text_average_expanded);
-        mCostSumExpanded = (TextView) view.findViewById(R.id.text_cost_sum_expanded);
-        mLastConsumptionExpanded = (TextView) view.findViewById(R.id.text_last_cons_expanded);
-        mEstimatedMileageExpanded = (TextView) view.findViewById(R.id.text_estimated_mileage_expanded);
-        mEstimatedTotalExpanded = (TextView) view.findViewById(R.id.text_estimated_total_expanded);
+        mAverageExpanded = view.findViewById(R.id.text_average_expanded);
+        mCostSumExpanded = view.findViewById(R.id.text_cost_sum_expanded);
+        mLastConsumptionExpanded = view.findViewById(R.id.text_last_cons_expanded);
+        mEstimatedMileageExpanded = view.findViewById(R.id.text_estimated_mileage_expanded);
+        mEstimatedTotalExpanded = view.findViewById(R.id.text_estimated_total_expanded);
     }
 
     private void updateAverageAndLastConsumptionCollapsed() {
-        mAverageAndLastConsumptionCollapsed.setText(mLastConsumption + "/" + mAverage);
+        mAverageAndLastConsumptionCollapsed.setText(String.format("%s/%s", mLastConsumption, mAverage));
     }
 
     private void updateEstimatedMileageAndTotalCollapsed() {
-        mEstimatedMileageAndTotalCollapsed.setText(mEstimatedMileage + "/" + mEstimatedTotal);
+        mEstimatedMileageAndTotalCollapsed.setText(String.format("%s/%s", mEstimatedMileage, mEstimatedTotal));
     }
 
     @Override

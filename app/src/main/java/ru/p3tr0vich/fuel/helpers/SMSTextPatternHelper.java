@@ -29,6 +29,7 @@ public class SMSTextPatternHelper {
         // символов '(', '|', ')', '@' и символа экранирования '\'.
         // Пример: "яяя (xxx[zzz]111\|/) qqq" -> "яяя (xxx\[zzz\]111\|\/) qqq".
         // RegEx: "([^\w\s@\(\|\)\\])". Replace: "\$1".
+        //noinspection RegExpRedundantEscape
         pattern = pattern.replaceAll("([^\\w\\s@\\(\\|\\)\\\\])", "\\\\$1");
 
         // Замена групп символов-разделителей.

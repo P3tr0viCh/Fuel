@@ -28,24 +28,30 @@ abstract class BroadcastReceiverSMSBase extends BroadcastReceiver {
 
     protected abstract boolean isEnabled();
 
-    protected abstract boolean isCheckAddress(String originatingAddress);
+    protected abstract boolean isCheckAddress(@NonNull String originatingAddress);
 
     @Override
     public final void onReceive(Context context, Intent intent) {
 
         onCreate(context);
 
-        if (!isEnabled()) return;
+        if (!isEnabled()) {
+            return;
+        }
 
-        if (intent == null) return;
+        if (intent == null) {
+            return;
+        }
 
-        if (!Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction())) return;
+        if (!Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction())) {
+            return;
+        }
 
         SmsMessage[] smsMessages = null;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             smsMessages = Telephony.Sms.Intents.getMessagesFromIntent(intent);
-        else {
+        } else {
             Bundle extras = intent.getExtras();
 
             if (extras != null) {
@@ -76,7 +82,11 @@ abstract class BroadcastReceiverSMSBase extends BroadcastReceiver {
 
             originatingAddress = smsMessage.getOriginatingAddress();
 
-            if (!isCheckAddress(originatingAddress)) continue;
+            if (originatingAddress == null) continue;
+
+            if (!isCheckAddress(originatingAddress)) {
+                continue;
+            }
 
             id = smsMessage.hashCode();
             messageBody = smsMessage.getMessageBody();

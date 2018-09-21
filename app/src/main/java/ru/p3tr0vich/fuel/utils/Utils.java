@@ -22,6 +22,8 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import java.util.concurrent.TimeUnit;
+
 import ru.p3tr0vich.fuel.ApplicationFuel;
 import ru.p3tr0vich.fuel.R;
 import ru.p3tr0vich.fuel.helpers.SystemServicesHelper;
@@ -119,7 +121,10 @@ public class Utils {
         } catch (Exception e) {
             UtilsLog.d(TAG, "openUrl", "exception == " + e.toString());
 
-            if (!TextUtils.isEmpty(onErrorMessage)) toast(onErrorMessage);
+            if (!TextUtils.isEmpty(onErrorMessage)) {
+                //noinspection ConstantConditions
+                toast(onErrorMessage);
+            }
         }
     }
 
@@ -134,5 +139,17 @@ public class Utils {
                                     new int[]{}},
                             new int[]{
                                     getColor(defaultColor), getColor(pressedColor)}));
+    }
+
+    public static void wait(int seconds) {
+        for (int i = 0; i < seconds; i++) {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            UtilsLog.d(TAG, "query", "wait... " + (seconds - i));
+        }
     }
 }

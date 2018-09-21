@@ -74,7 +74,6 @@ public class DatabaseBackupXmlHelper {
 
     private File mExternalDirectory;
     private File mFileName;
-    private File mFullFileName;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({RESULT_SAVE_OK, RESULT_LOAD_OK, RESULT_ERROR_MKDIRS,
@@ -339,14 +338,20 @@ public class DatabaseBackupXmlHelper {
 
     @BackupResult
     public int save(@NonNull List<FuelingRecord> fuelingRecordList) {
-
-        mFullFileName = new File(mExternalDirectory.getPath(), mFileName.getName());
-
         try {
             UtilsFileIO.makeDir(mExternalDirectory);
         } catch (IOException e) {
             UtilsLog.d(TAG, "save", "makeDir exception == " + e.toString());
             return RESULT_ERROR_MKDIRS;
+        }
+
+        File file = new File(mExternalDirectory.getPath(), mFileName.getName());
+
+        try {
+            UtilsFileIO.createFile(file);
+        } catch (IOException e) {
+            UtilsLog.d(TAG, "save", "createFile exception == " + e.toString());
+            return RESULT_ERROR_CREATE_FILE;
         }
 
         final String xmlString;
@@ -357,18 +362,11 @@ public class DatabaseBackupXmlHelper {
             return RESULT_ERROR_CREATE_XML;
         }
 
-        try {
-            UtilsFileIO.createFile(mFullFileName);
-        } catch (IOException e) {
-            UtilsLog.d(TAG, "save", "createFile exception == " + e.toString());
-            return RESULT_ERROR_CREATE_FILE;
-        }
-
         final ByteBuffer buff = ByteBuffer.wrap(xmlString.getBytes());
 
         final FileChannel fileChannel;
         try {
-            fileChannel = new FileOutputStream(mFullFileName).getChannel();
+            fileChannel = new FileOutputStream(file).getChannel();
         } catch (FileNotFoundException e) {
             UtilsLog.d(TAG, "save", "getChannel exception == " + e.toString());
             return RESULT_ERROR_CREATE_FILE;
@@ -387,20 +385,21 @@ public class DatabaseBackupXmlHelper {
 
     @BackupResult
     public int load(@NonNull List<FuelingRecord> fuelingRecordList) {
+        if (!mExternalDirectory.exists()) {
+            return RESULT_ERROR_DIR_NOT_EXISTS;
+        }
 
-        if (!mExternalDirectory.exists()) return RESULT_ERROR_DIR_NOT_EXISTS;
-
-        mFullFileName = new File(mExternalDirectory.getPath(), mFileName.getName());
+        File file = new File(mExternalDirectory.getPath(), mFileName.getName());
 
         try {
-            UtilsFileIO.checkExists(mFullFileName);
+            UtilsFileIO.checkExists(file);
         } catch (FileNotFoundException e) {
             return RESULT_ERROR_FILE_NOT_EXISTS;
         }
 
         FileInputStream fileInputStream;
         try {
-            fileInputStream = new FileInputStream(mFullFileName);
+            fileInputStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
             return RESULT_ERROR_FILE_NOT_EXISTS;
         }

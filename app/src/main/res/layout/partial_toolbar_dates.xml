@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.Toolbar
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/AppTheme.Toolbar"
-    android:paddingLeft="@dimen/toolbar_dates_padding_left"
-    android:paddingRight="@dimen/toolbar_dates_padding_right">
+    android:paddingStart="@dimen/toolbar_dates_padding_left"
+    android:paddingEnd="@dimen/toolbar_dates_padding_right">
 
     <Button
         android:id="@+id/btn_date_from"
-        style="@style/AppTheme.DatePickerButton"
+        style="@style/AppTheme.DatePickerButton.Toolbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-        android:textColor="@color/toolbar_title_text"/>
+        android:text="@string/btn_date" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -23,14 +20,12 @@
         android:text="―"
         android:textAppearance="@style/AppTheme.TextAppearance.Text"
         android:textColor="@color/toolbar_title_text"
-        tools:ignore="HardcodedText"/>
+        tools:ignore="HardcodedText" />
 
     <Button
         android:id="@+id/btn_date_to"
-        style="@style/AppTheme.DatePickerButton"
+        style="@style/AppTheme.DatePickerButton.Toolbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-        android:textColor="@color/toolbar_title_text"/>
+        android:text="@string/btn_date" />
 </android.support.v7.widget.Toolbar>

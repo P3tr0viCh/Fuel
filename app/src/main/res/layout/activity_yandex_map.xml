@@ -1,13 +1,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:fab="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <include
         android:id="@+id/toolbar_yandex_map"
-        layout="@layout/partial_toolbar"/>
+        layout="@layout/partial_toolbar" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
         <FrameLayout
             android:id="@+id/web_view_placeholder"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
         <Space
             android:id="@+id/space_center"
@@ -24,53 +24,53 @@
             android:layout_height="0dp"
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
 
         <com.melnykov.fab.FloatingActionButton
             android:id="@+id/btn_zoom_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/space_center"
-            android:layout_alignParentBottom="false"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="false"
             android:layout_marginLeft="16dp"
             android:src="@drawable/ic_plus"
             android:visibility="invisible"
             fab:fab_colorNormal="@color/transparent_button_light"
             fab:fab_colorPressed="@color/transparent_button_light_pressed"
             fab:fab_type="mini"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <com.melnykov.fab.FloatingActionButton
             android:id="@+id/btn_zoom_out"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="false"
-            android:layout_alignParentLeft="true"
             android:layout_below="@+id/space_center"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="false"
             android:layout_marginLeft="16dp"
             android:src="@drawable/ic_minus"
             android:visibility="invisible"
             fab:fab_colorNormal="@color/transparent_button_light"
             fab:fab_colorPressed="@color/transparent_button_light_pressed"
             fab:fab_type="mini"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <com.melnykov.fab.FloatingActionButton
             android:id="@+id/btn_geolocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_marginBottom="16dp"
+            android:layout_alignParentBottom="true"
             android:layout_marginLeft="16dp"
+            android:layout_marginBottom="16dp"
             android:src="@drawable/ic_crosshairs_gps"
             android:visibility="invisible"
             fab:fab_colorNormal="@color/transparent_button_light"
             fab:fab_colorPressed="@color/transparent_button_light_pressed"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
-        <include layout="@layout/partial_progress_wheel"/>
+        <include layout="@layout/partial_progress_wheel" />
     </RelativeLayout>
 </LinearLayout>

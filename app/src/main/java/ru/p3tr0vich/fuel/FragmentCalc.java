@@ -1,6 +1,7 @@
 package ru.p3tr0vich.fuel;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
@@ -85,29 +86,33 @@ public class FragmentCalc extends FragmentBase implements
     @Nullable
     @SuppressLint("InflateParams")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mCalculating = true;
 
         View view = inflater.inflate(R.layout.fragment_calc, container, false);
 
-        mEditDistance = (EditText) view.findViewById(R.id.edit_distance);
-        mEditCost = (EditText) view.findViewById(R.id.edit_cost);
-        mEditVolume = (EditText) view.findViewById(R.id.edit_volume);
-        mEditPrice = (EditText) view.findViewById(R.id.edit_price);
-        mEditCons = (EditText) view.findViewById(R.id.edit_cons);
+        mEditDistance = view.findViewById(R.id.edit_distance);
+        mEditCost = view.findViewById(R.id.edit_cost);
+        mEditVolume = view.findViewById(R.id.edit_volume);
+        mEditPrice = view.findViewById(R.id.edit_price);
+        mEditCons = view.findViewById(R.id.edit_cons);
 
-        mSpinnerCons = (Spinner) view.findViewById(R.id.spinner_cons);
-        mSpinnerSeason = (Spinner) view.findViewById(R.id.spinner_season);
+        mSpinnerCons = view.findViewById(R.id.spinner_cons);
+        mSpinnerSeason = view.findViewById(R.id.spinner_season);
 
-        mLayoutPriceEmpty = (LinearLayout) view.findViewById(R.id.layout_price_empty);
-        mLayoutConsEmpty = (LinearLayout) view.findViewById(R.id.layout_cons_empty);
+        mLayoutPriceEmpty = view.findViewById(R.id.layout_price_empty);
+        mLayoutConsEmpty = view.findViewById(R.id.layout_cons_empty);
 
-        ArrayAdapter<CharSequence> adapterCons = ArrayAdapter.createFromResource(getActivity(),
+        Activity activity = getActivity();
+
+        assert activity != null;
+
+        ArrayAdapter<CharSequence> adapterCons = ArrayAdapter.createFromResource(activity,
                 R.array.spinner_consumption, R.layout.spinner_item);
         adapterCons.setDropDownViewResource(R.layout.spinner_dropdown_item);
         mSpinnerCons.setAdapter(adapterCons);
 
-        ArrayAdapter<CharSequence> adapterSeason = ArrayAdapter.createFromResource(getActivity(),
+        ArrayAdapter<CharSequence> adapterSeason = ArrayAdapter.createFromResource(activity,
                 R.array.spinner_season, R.layout.spinner_item);
         adapterSeason.setDropDownViewResource(R.layout.spinner_dropdown_item);
         mSpinnerSeason.setAdapter(adapterSeason);
@@ -149,7 +154,7 @@ public class FragmentCalc extends FragmentBase implements
      * @param distance расстояние в метрах.
      */
     public void setDistance(int distance) {
-        UtilsFormat.floatToEditText(mEditDistance, distance / 1000, false);
+        UtilsFormat.floatToEditText(mEditDistance, (float) (distance / 1000.0), false);
     }
 
     private void checkTextOnEmpty(EditText editText) {

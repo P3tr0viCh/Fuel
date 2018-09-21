@@ -134,7 +134,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void initToolbar() {
-        mToolbarMain = (Toolbar) findViewById(R.id.toolbar_main);
+        mToolbarMain = findViewById(R.id.toolbar_main);
         setSupportActionBar(mToolbarMain);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -174,7 +174,7 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void initDrawer() {
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this,
                 mDrawerLayout, mToolbarMain, R.string.app_name, R.string.app_name) {
 
@@ -211,7 +211,7 @@ public class ActivityMain extends AppCompatActivity implements
             }
         });
 
-        mNavigationView = (NavigationView) findViewById(R.id.drawer_navigation_view);
+        mNavigationView = findViewById(R.id.drawer_navigation_view);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -238,9 +238,9 @@ public class ActivityMain extends AppCompatActivity implements
     }
 
     private void initSyncViews() {
-        mImgSync = (ImageView) findViewById(R.id.image_sync);
+        mImgSync = findViewById(R.id.image_sync);
 
-        mBtnSync = (TextView) findViewById(R.id.btn_sync);
+        mBtnSync = findViewById(R.id.btn_sync);
         mBtnSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -204,7 +204,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
     private void initUI() {
         mMenu = null;
 
-        mToolbarYandexMap = (Toolbar) findViewById(R.id.toolbar_yandex_map);
+        mToolbarYandexMap = findViewById(R.id.toolbar_yandex_map);
         setSupportActionBar(mToolbarYandexMap);
 
         mToolbarYandexMap.setNavigationIcon(R.drawable.ic_close);
@@ -233,23 +233,23 @@ public class ActivityYandexMap extends AppCompatActivity implements
                 break;
         }
 
-        mProgressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
+        mProgressWheel = findViewById(R.id.progress_wheel);
 
-        mBtnZoomIn = (FloatingActionButton) findViewById(R.id.btn_zoom_in);
+        mBtnZoomIn = findViewById(R.id.btn_zoom_in);
         assert mBtnZoomIn != null;
         mBtnZoomIn.setOnClickListener(this);
         mBtnZoomIn.setOnLongClickListener(this);
 
-        mBtnZoomOut = (FloatingActionButton) findViewById(R.id.btn_zoom_out);
+        mBtnZoomOut = findViewById(R.id.btn_zoom_out);
         assert mBtnZoomOut != null;
         mBtnZoomOut.setOnClickListener(this);
         mBtnZoomOut.setOnLongClickListener(this);
 
-        mBtnGeolocation = (FloatingActionButton) findViewById(R.id.btn_geolocation);
+        mBtnGeolocation = findViewById(R.id.btn_geolocation);
         assert mBtnGeolocation != null;
         mBtnGeolocation.setOnClickListener(this);
 
-        mWebViewPlaceholder = (FrameLayout) findViewById(R.id.web_view_placeholder);
+        mWebViewPlaceholder = findViewById(R.id.web_view_placeholder);
 
         if (mWebView == null) {
             mWebView = new WebView(this);

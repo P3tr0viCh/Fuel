@@ -349,7 +349,7 @@ public class FragmentChartCost extends FragmentBase implements
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
     }
 
     private static final class FloatFormatter implements IValueFormatter {
@@ -364,18 +364,13 @@ public class FragmentChartCost extends FragmentBase implements
 
         private final Months mMonths;
 
-        public MonthFormatter(@NonNull Context context) {
+        MonthFormatter(@NonNull Context context) {
             mMonths = new Months(context);
         }
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
             return mMonths.getMonth((int) value);
-        }
-
-        @Override
-        public int getDecimalDigits() {
-            return 0;
         }
     }
 

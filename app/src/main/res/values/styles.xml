@@ -74,7 +74,7 @@
     <style name="AppTheme.TextAppearance.Small" parent="TextAppearance.AppCompat.Small"/>
 
     <style name="AppTheme.TextAppearance.ErrorValue" parent="AppTheme.TextAppearance.Small">
-        <item name="android:textColor">?attr/textColorError</item>
+        <item name="android:textColor">?attr/colorError</item>
     </style>
 
     <style name="AppTheme.TextAppearance.PreferenceCategory" parent="AppTheme.TextAppearance.Medium">

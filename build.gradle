@@ -1,53 +1,29 @@
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
     }
 
     dependencies {
-<<<<<<< HEAD
-        classpath 'com.android.tools.build:gradle:2.3.0-beta3'
-=======
-<<<<<<< HEAD
-        classpath 'com.android.tools.build:gradle:3.2.0-alpha16'
-=======
-        classpath 'com.android.tools.build:gradle:2.2.2'
->>>>>>> 8226de5058be975a6065e2ee39b2a5cf8864a095
->>>>>>> 3a733bc8c9cf71820cf1618fb18476d7c9c5d5a0
+        classpath 'com.android.tools.build:gradle:3.3.0-alpha11'
     }
 }
 
 ext {
-<<<<<<< HEAD
-    compileSdkVer = 27
-    buildToolsVer = '27.0.3'
+    compileSdkVer = 28
+    buildToolsVer = '28.0.2'
     minSdkVer = 17
-    targetSdkVer = 27
+    targetSdkVer = 28
 
-    supportVer = '27.1.1'
-=======
-    compileSdkVersion = 25
-    buildToolsVersion = '25.0.2'
-    minSdkVersion = 17
-    targetSdkVersion = 23
-
-<<<<<<< HEAD
-    supportVersion = '25.1.1'
-=======
-    supportVersion = '25.0.0'
->>>>>>> 8226de5058be975a6065e2ee39b2a5cf8864a095
->>>>>>> 3a733bc8c9cf71820cf1618fb18476d7c9c5d5a0
-
-    supportDesign = 'com.android.support:design:' + supportVer
-    supportAppCompat = 'com.android.support:appcompat-v7:' + supportVer
-    supportPreferenceV7 = 'com.android.support:preference-v7:' + supportVer
-    supportPreferenceV14 = 'com.android.support:preference-v14:' + supportVer
-    supportCardView = 'com.android.support:cardview-v7:' + supportVer
-    supportRecyclerView = 'com.android.support:recyclerview-v7:' + supportVer
+    supportVer = '28.0.0-rc02'
 }
 
 allprojects {
     repositories {
+        google()
         jcenter()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
     }
 }
 

@@ -77,7 +77,7 @@ android {
     }
 }
 
-def appendVersionName(variant, defaultConfig) {
+static def appendVersionName(variant, defaultConfig) {
     variant.outputs.each { output ->
         if (output.zipAlign) {
             def file = output.outputFile

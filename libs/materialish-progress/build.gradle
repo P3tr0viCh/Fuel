@@ -2,14 +2,14 @@ apply plugin: 'com.android.library'
 
 android {
     //noinspection GroovyAssignabilityCheck
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdkVersion rootProject.ext.compileSdkVer
     //noinspection GroovyAssignabilityCheck
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    buildToolsVersion rootProject.ext.buildToolsVer
     defaultConfig {
         //noinspection GroovyAssignabilityCheck
-        minSdkVersion rootProject.ext.minSdkVersion
+        minSdkVersion rootProject.ext.minSdkVer
         //noinspection GroovyAssignabilityCheck
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVer
         versionCode 5
         versionName "1.4"
     }
@@ -32,6 +32,5 @@ android {
 }
 
 dependencies {
-    //noinspection GroovyAssignabilityCheck
-    compile rootProject.ext.supportAppCompat
+    implementation rootProject.ext.supportAppCompat
 }

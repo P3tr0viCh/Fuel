@@ -6,14 +6,14 @@ repositories {
 
 android {
     //noinspection GroovyAssignabilityCheck
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdkVersion rootProject.ext.compileSdkVer
     //noinspection GroovyAssignabilityCheck
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    buildToolsVersion rootProject.ext.buildToolsVer
     defaultConfig {
         //noinspection GroovyAssignabilityCheck
-        minSdkVersion rootProject.ext.minSdkVersion
+        minSdkVersion rootProject.ext.minSdkVer
         //noinspection GroovyAssignabilityCheck
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVer
         versionName "1.3.0"
         versionCode 13
     }
@@ -36,7 +36,6 @@ android {
 }
 
 dependencies {
-    compile 'com.nineoldandroids:library:2.4.0'
-    //noinspection GroovyAssignabilityCheck
-    compile rootProject.ext.supportRecyclerView
+    implementation 'com.nineoldandroids:library:2.4.0'
+    implementation rootProject.ext.supportRecyclerView
 }

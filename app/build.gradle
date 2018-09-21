@@ -11,6 +11,7 @@ android {
             storeFile file(props['storeFile'])
             storePassword props['storePassword']
         }
+
         release {
             keyAlias 'ru.p3tr0vich.fuel'
             keyPassword props['keyPassword']
@@ -19,15 +20,15 @@ android {
         }
     }
 
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion rootProject.ext.compileSdkVer
+    buildToolsVersion rootProject.ext.buildToolsVer
 
     //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "ru.p3tr0vich.fuel"
 
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion rootProject.ext.minSdkVer
+        targetSdkVersion rootProject.ext.targetSdkVer
 
         versionCode 1
         versionName "1.0"
@@ -44,6 +45,7 @@ android {
 
             ext.enableCrashlytics = false
         }
+
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -75,8 +77,8 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
-}
 
+<<<<<<< HEAD
 static def appendVersionName(variant, defaultConfig) {
     variant.outputs.each { output ->
         if (output.zipAlign) {
@@ -90,7 +92,18 @@ static def appendVersionName(variant, defaultConfig) {
         def fileName = file.name.replace("app-release.apk", defaultConfig.applicationId + "-" +
                 defaultConfig.versionName + "-release.apk")
         output.packageApplication.outputFile = new File(file.parent, fileName)
+=======
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+>>>>>>> 3a733bc8c9cf71820cf1618fb18476d7c9c5d5a0
     }
+}
+
+static def appendVersionName(variant, defaultConfig) {
+    variant.outputs.all { output ->
+        outputFileName = defaultConfig.applicationId + "-" + "${variant.versionName}-${variant.name}.apk"
+   }
 }
 
 repositories {
@@ -98,23 +111,28 @@ repositories {
 }
 
 dependencies {
-    compile rootProject.ext.supportAppCompat
-    compile rootProject.ext.supportDesign
-    compile rootProject.ext.supportPreferenceV7
-    compile rootProject.ext.supportPreferenceV14
-    compile rootProject.ext.supportCardView
-    compile rootProject.ext.supportRecyclerView
+    implementation  rootProject.ext.supportAppCompat
+    implementation  rootProject.ext.supportDesign
+    implementation  rootProject.ext.supportPreferenceV7
+    implementation  rootProject.ext.supportPreferenceV14
+    implementation  rootProject.ext.supportCardView
+    implementation  rootProject.ext.supportRecyclerView
 
-    compile 'com.github.P3tr0viCh:ExpansionPanel:1.0.0'
+    implementation  'com.github.P3tr0viCh:ExpansionPanel:1.0.0'
 
-    compile 'com.google.android.gms:play-services-location:9.4.0'
+    implementation  'com.google.android.gms:play-services-location:15.0.1'
 
+<<<<<<< HEAD
+    implementation  'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
+    implementation  'com.yandex.android:disk-restapi-sdk:1.03'
+=======
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.0'
     compile 'com.yandex.android:disk-restapi-sdk:1.03'
+>>>>>>> 8226de5058be975a6065e2ee39b2a5cf8864a095
 
-    compile project(':libs:fab')
-    compile project(':libs:materialish-progress')
-    compile project(':libs:materialdatetimepicker')
+    implementation  project(':libs:fab')
+    implementation  project(':libs:materialish-progress')
+    implementation  project(':libs:materialdatetimepicker')
 
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }

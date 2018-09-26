@@ -286,8 +286,10 @@ public class FragmentFueling extends FragmentBase implements
 
         doSetFilterMode(mFilter.mode);
 
-        getLoaderManager().initLoader(FUELING_CURSOR_LOADER_ID, null, this);
-        getLoaderManager().initLoader(FUELING_TOTAL_CURSOR_LOADER_ID, null, this);
+        LoaderManager loaderManager = getLoaderManager();
+
+        loaderManager.initLoader(FUELING_CURSOR_LOADER_ID, null, this);
+        loaderManager.initLoader(FUELING_TOTAL_CURSOR_LOADER_ID, null, this);
     }
 
     @Override
@@ -397,16 +399,45 @@ public class FragmentFueling extends FragmentBase implements
         boolean forceLoad = true;
 
         if (id != -1) {
-            FuelingRecord fuelingRecord = ContentResolverHelper.getFuelingRecord(getContext(), id);
+            Context context = getContext();
 
-            if (fuelingRecord != null)
+            assert context != null;
+
+            FuelingRecord fuelingRecord = ContentResolverHelper.getFuelingRecord(context, id);
+
+            if (fuelingRecord != null) {
                 forceLoad = checkDateTime(fuelingRecord.getDateTime());
+            }
         }
 
-        if (forceLoad)
-            getLoaderManager().getLoader(FUELING_CURSOR_LOADER_ID).forceLoad();
+        LoaderManager loaderManager;
+        try {
+            loaderManager = getLoaderManager();
+        } catch (Exception e) {
+            UtilsLog.d(TAG, "updateList", "getLoaderManager exception = " + e.getMessage());
 
-        getLoaderManager().getLoader(FUELING_TOTAL_CURSOR_LOADER_ID).forceLoad();
+            return;
+        }
+
+        if (loaderManager == null) {
+            UtilsLog.d(TAG, "updateList", "loaderManager == null");
+
+            return;
+        }
+
+        if (forceLoad) {
+            Loader loader = loaderManager.getLoader(FUELING_CURSOR_LOADER_ID);
+
+            assert loader != null;
+
+            loader.forceLoad();
+        }
+
+        Loader loaderTotal = loaderManager.getLoader(FUELING_TOTAL_CURSOR_LOADER_ID);
+
+        assert loaderTotal != null;
+
+        loaderTotal.forceLoad();
     }
 
     private boolean markRecordAsDeleted(@NonNull FuelingRecord fuelingRecord) {
@@ -451,12 +482,17 @@ public class FragmentFueling extends FragmentBase implements
     private void setFilterDate(final long dateFrom, final long dateTo) {
         mFilter.dateFrom = dateFrom;
         mFilter.dateTo = dateTo;
+
         getLoaderManager().restartLoader(FUELING_CURSOR_LOADER_ID, null, this);
     }
 
     private void setFilterDate(final boolean setDateFrom, final long date) {
-        if (setDateFrom) mFilter.dateFrom = date;
-        else mFilter.dateTo = date;
+        if (setDateFrom) {
+            mFilter.dateFrom = date;
+        } else {
+            mFilter.dateTo = date;
+        }
+
         getLoaderManager().restartLoader(FUELING_CURSOR_LOADER_ID, null, this);
     }
 
@@ -645,11 +681,17 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     private void setToolbarDatesVisible(final boolean visible, final boolean animate) {
-        if (mToolbarDatesVisible == visible) return;
+        if (mToolbarDatesVisible == visible) {
+            return;
+        }
 
         mToolbarDatesVisible = visible;
 
-        final int toolbarDatesTopHidden = -Utils.getSupportActionBarSize(getContext()); // minus!
+        Context context = getContext();
+
+        assert context != null;
+
+        final int toolbarDatesTopHidden = -Utils.getSupportActionBarSize(context); // minus!
         final int toolbarShadowHeight =
                 getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height);
 
@@ -808,7 +850,11 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     private void doPopupDate(final View v, final boolean dateFrom) {
-        PopupMenu popupMenu = new PopupMenu(getActivity(), v);
+        Activity activity = getActivity();
+
+        assert activity != null;
+
+        PopupMenu popupMenu = new PopupMenu(activity, v);
         popupMenu.inflate(R.menu.menu_dates);
 
         Object menuHelper = null;

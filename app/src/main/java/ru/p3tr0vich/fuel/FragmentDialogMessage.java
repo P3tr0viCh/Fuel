@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
@@ -35,6 +36,12 @@ public class FragmentDialogMessage extends DialogFragment {
                             @Nullable String title,
                             @NonNull String message) {
         newInstance(title, message).show(parent.getSupportFragmentManager(), TAG);
+    }
+
+    public static void show(@NonNull FragmentActivity parent,
+                            @Nullable @StringRes Integer titleId,
+                            @NonNull @StringRes Integer messageId) {
+        show(parent, titleId == null ? null : parent.getString(titleId), parent.getString(messageId));
     }
 
     @NonNull

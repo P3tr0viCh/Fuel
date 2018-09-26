@@ -1,7 +1,11 @@
 package ru.p3tr0vich.fuel;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
@@ -15,12 +19,17 @@ import ru.p3tr0vich.fuel.helpers.DatabaseBackupXmlHelper;
 import ru.p3tr0vich.fuel.utils.Utils;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
 
+import static android.support.v4.content.ContextCompat.checkSelfPermission;
+
 public class FragmentBackup extends FragmentBase {
 
     private static final String TAG = "FragmentBackup";
 
     private static final int REQUEST_CODE_DIALOG_PROGRESS = 100;
     private static final int REQUEST_CODE_DIALOG_QUESTION = 200;
+
+    private static final int REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_STORAGE = 300;
+    private static final int REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE = 301;
 
     private final DatabaseBackupXmlHelper mDatabaseBackupXmlHelper = new DatabaseBackupXmlHelper();
 
@@ -66,24 +75,30 @@ public class FragmentBackup extends FragmentBase {
         view.findViewById(R.id.btn_save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveToXml();
+                btnSaveClick();
             }
         });
 
         view.findViewById(R.id.btn_load).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadFromXml();
+                btnLoadClick();
             }
         });
 
         return view;
     }
 
-    private void startOperationXml(boolean doSave) {
-        UtilsLog.d(TAG, "startOperationXml");
+    private void startSave() {
+        UtilsLog.d(TAG, "startSave");
 
-        FragmentDialogProgress.show(this, REQUEST_CODE_DIALOG_PROGRESS, mDatabaseBackupXmlHelper, doSave);
+        FragmentDialogProgress.show(this, REQUEST_CODE_DIALOG_PROGRESS, mDatabaseBackupXmlHelper, true);
+    }
+
+    private void startLoad() { // TODO: Сохранять старые в old?
+        UtilsLog.d(TAG, "startLoad");
+
+        FragmentDialogProgress.show(this, REQUEST_CODE_DIALOG_PROGRESS, mDatabaseBackupXmlHelper, false);
     }
 
     private void stopOperationXml(@DatabaseBackupXmlHelper.BackupResult int result) {
@@ -149,11 +164,50 @@ public class FragmentBackup extends FragmentBase {
         }
     }
 
-    private void saveToXml() {
-        startOperationXml(true);
+    private boolean checkPermission(final int permissionCode) {
+        if (Build.VERSION.SDK_INT < 23) {
+            return true;
+        }
+
+        Context context = getContext();
+
+        assert context != null;
+
+        final String permission;
+
+        switch (permissionCode) {
+            case REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_STORAGE:
+                permission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+                break;
+            case REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE:
+                permission = Manifest.permission.READ_EXTERNAL_STORAGE;
+                break;
+            default:
+                return false;
+        }
+
+        if (checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+
+//        if (shouldShowRequestPermissionRationale(permission)) {
+//            FragmentDialogQuestion.show(this, permissionCode,
+//                    R.string.title_message_error, R.string.message_need_permission_to_storage,
+//                    R.string.dialog_btn_settings, R.string.dialog_btn_disagree);
+//        } else {
+            requestPermissions(new String[]{permission}, permissionCode);
+//        }
+
+        return false;
     }
 
-    private void loadFromXml() { // TODO: Сохранять старые в old?
+    private void btnSaveClick() {
+        if (checkPermission(REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_STORAGE)) {
+            startSave();
+        }
+    }
+
+    private void startLoadQuestion() {
         FragmentDialogQuestion.show(this, REQUEST_CODE_DIALOG_QUESTION,
                 R.string.dialog_caption_load_from_xml,
                 preferencesHelper.isSyncEnabled() ?
@@ -161,18 +215,52 @@ public class FragmentBackup extends FragmentBase {
                         R.string.message_dialog_load_from_xml, R.string.dialog_btn_load, R.string.dialog_btn_disagree);
     }
 
+    private void btnLoadClick() {
+        if (checkPermission(REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE)) {
+            startLoadQuestion();
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         UtilsLog.d(TAG, "onActivityResult");
 
-        if (resultCode != Activity.RESULT_OK) return;
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
 
         switch (requestCode) {
             case REQUEST_CODE_DIALOG_PROGRESS:
                 stopOperationXml(FragmentDialogProgress.getResult(data));
                 break;
             case REQUEST_CODE_DIALOG_QUESTION:
-                startOperationXml(false);
+                startLoad();
+                break;
+            case REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_STORAGE:
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
+                break;
+            case REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE:
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, requestCode);
+                break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            switch (requestCode) {
+                case REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_STORAGE:
+                    startSave();
+                    break;
+                case REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE:
+                    startLoadQuestion();
+            }
+        } else {
+            FragmentActivity activity = getActivity();
+
+            assert activity != null;
+
+            FragmentDialogMessage.show(activity, R.string.title_message_error, R.string.message_need_permission_to_storage);
         }
     }
 }

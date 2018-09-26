@@ -100,6 +100,7 @@
     <string name="dialog_btn_load">ЗАГРУЗИТЬ</string>
     <string name="dialog_btn_agree">СОГЛАСЕН</string>
     <string name="dialog_btn_disagree">НЕТ</string>
+    <string name="dialog_btn_settings">НАСТРОЙКИ</string>
 
     <string name="btn_backup_save">Сохранить</string>
     <string name="btn_backup_load">Загрузить</string>
@@ -141,6 +142,8 @@
     <string name="message_error_insert_record">Во время добавления записи произошла ошибка</string>
     <string name="message_error_update_record">Во время обновления записи произошла ошибка</string>
     <string name="message_error_delete_record">Во время удаления записи произошла ошибка</string>
+
+    <string name="message_need_permission_to_storage">Для сохранения или загрузки резервной копии необходим доступ к внешнему хранилищу</string>
 
     <string name="message_save_file_ok">Файл сохранён</string>
     <string name="message_load_file_ok">Данные из файла загружены</string>

@@ -118,6 +118,8 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/metadata_feature_manifest" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/prebuild" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/processed_res" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/proguard-files" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/proguard-rules" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/resources" />
@@ -191,5 +193,8 @@
     <orderEntry type="module" module-name="materialish-progress" />
     <orderEntry type="module" module-name="fab" />
     <orderEntry type="library" name="Gradle: android-android-28" level="project" />
+    <orderEntry type="module" module-name="materialdatetimepicker" />
+    <orderEntry type="module" module-name="materialish-progress" />
+    <orderEntry type="module" module-name="fab" />
   </component>
 </module>

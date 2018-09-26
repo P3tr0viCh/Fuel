@@ -341,7 +341,12 @@ public class ContentObserverService extends Service {
      * @param context Контекст.
      */
     public static void start(@NonNull Context context) {
-        context.startService(new Intent(context, ContentObserverService.class));
+        UtilsLog.d(TAG, "start");
+        try {
+            context.startService(new Intent(context, ContentObserverService.class));
+        } catch (Exception e) {
+            UtilsLog.d(TAG, "start", "exception = " + e.getMessage());
+        }
     }
 
     /**

@@ -271,7 +271,10 @@ public class ActivityMain extends AppCompatActivity implements
             @Override
             public void onReceive(long id) {
                 FragmentFueling fragmentFueling = mFragmentHelper.getFragmentFueling();
-                if (fragmentFueling != null) fragmentFueling.updateList(id);
+
+                if (fragmentFueling != null) {
+                    fragmentFueling.updateList(id);
+                }
             }
         };
         mBroadcastReceiverDatabaseChanged.register(this);

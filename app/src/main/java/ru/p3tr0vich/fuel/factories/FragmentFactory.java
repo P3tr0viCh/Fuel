@@ -39,20 +39,8 @@ public class FragmentFactory {
         int BACKUP = 3;
         int PREFERENCES = 4;
         int ABOUT = 5;
-    }
 
-    private interface Tags {
-        String FUELING = FragmentFueling.class.getSimpleName();
-        String CALC = FragmentCalc.class.getSimpleName();
-        String CHART_COST = FragmentChartCost.class.getSimpleName();
-        String PREFERENCES = FragmentPreferences.class.getSimpleName();
-        String BACKUP = FragmentBackup.class.getSimpleName();
-        String ABOUT = FragmentAbout.class.getSimpleName();
-    }
-
-    public interface MainFragment {
-        int ID = Ids.FUELING;
-        String TAG = Tags.FUELING;
+        int MAIN = FUELING;
     }
 
     private FragmentFactory() {
@@ -103,17 +91,12 @@ public class FragmentFactory {
     public static String fragmentIdToTag(@Ids.Id int id) {
         switch (id) {
             case Ids.ABOUT:
-                return Tags.ABOUT;
             case Ids.BACKUP:
-                return Tags.BACKUP;
             case Ids.CALC:
-                return Tags.CALC;
             case Ids.CHART_COST:
-                return Tags.CHART_COST;
             case Ids.FUELING:
-                return Tags.FUELING;
             case Ids.PREFERENCES:
-                return Tags.PREFERENCES;
+                return "TAG_" + String.valueOf(id);
             case Ids.BAD_ID:
             default:
                 throw new IllegalArgumentException("Fragment bad ID");

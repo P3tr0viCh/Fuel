@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 
 import ru.p3tr0vich.fuel.utils.UtilsFileIO;
-import ru.p3tr0vich.fuel.utils.UtilsLog;
 
 class SyncYandexDisk {
 
@@ -76,7 +75,7 @@ class SyncYandexDisk {
                 mRestClient.waitProgress(link, new Runnable() {
                     @Override
                     public void run() {
-                        UtilsLog.d("SyncYandexDisk", "wait until deleting object...");
+//                        UtilsLog.d("SyncYandexDisk", "wait until deleting object...");
                     }
                 });
         } catch (HttpCodeException e) {

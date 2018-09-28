@@ -190,13 +190,7 @@ public class FragmentBackup extends FragmentBase {
             return true;
         }
 
-//        if (shouldShowRequestPermissionRationale(permission)) {
-//            FragmentDialogQuestion.show(this, permissionCode,
-//                    R.string.title_message_error, R.string.message_need_permission_to_storage,
-//                    R.string.dialog_btn_settings, R.string.dialog_btn_disagree);
-//        } else {
-            requestPermissions(new String[]{permission}, permissionCode);
-//        }
+        requestPermissions(new String[]{permission}, permissionCode);
 
         return false;
     }
@@ -235,12 +229,6 @@ public class FragmentBackup extends FragmentBase {
                 break;
             case REQUEST_CODE_DIALOG_QUESTION:
                 startLoad();
-                break;
-            case REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_STORAGE:
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
-                break;
-            case REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE:
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, requestCode);
                 break;
         }
     }

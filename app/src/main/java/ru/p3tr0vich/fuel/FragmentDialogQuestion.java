@@ -79,14 +79,20 @@ public class FragmentDialogQuestion extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle arguments = getArguments();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        assert arguments != null;
+
+        Activity activity = getActivity();
+
+        assert activity != null;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
         @StringRes int textId;
 
         textId = arguments.getInt(TITLE);
         if (textId != 0) {
             @SuppressLint("InflateParams")
-            TextView customTitle = (TextView) getActivity().getLayoutInflater()
+            TextView customTitle = (TextView) activity.getLayoutInflater()
                     .inflate(R.layout.apptheme_dialog_title, null, false);
 
             customTitle.setText(textId);

@@ -13,7 +13,11 @@ public class DividerItemDecorationPreferences extends DividerItemDecorationBase 
 
     @Override
     public boolean shouldDrawDivider(RecyclerView parent, int childViewIndex) {
-        return !(((PreferenceGroupAdapter) parent.getAdapter()).getItem(childViewIndex)
+        RecyclerView.Adapter adapter = parent.getAdapter();
+
+        assert adapter != null;
+
+        return !(((PreferenceGroupAdapter) adapter).getItem(childViewIndex)
                 instanceof PreferenceCategory);
     }
 }

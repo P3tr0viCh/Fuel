@@ -1,10 +1,12 @@
 package ru.p3tr0vich.fuel;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -60,7 +62,12 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPreferencesHelper = PreferencesHelper.getInstance(getContext());
+
+        Context context = getContext();
+
+        assert context != null;
+
+        mPreferencesHelper = PreferencesHelper.getInstance(context);
     }
 
     @Override
@@ -93,7 +100,11 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
             mFuelingRecord = new FuelingRecord(cost, volume, mPreferencesHelper.getLastTotal());
         }
 
-        getActivity().setTitle(mFuelingRecord.getId() != 0 ?
+        Activity activity = getActivity();
+
+        assert activity != null;
+
+        activity.setTitle(mFuelingRecord.getId() != 0 ?
                 R.string.dialog_caption_update :
                 R.string.dialog_caption_add);
 
@@ -282,14 +293,22 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
      * @return Истина, если сохранение успешно.
      */
     private boolean saveRecord() {
-        Utils.hideKeyboard(getActivity());
+        Activity activity = getActivity();
+
+        assert activity != null;
+
+        Utils.hideKeyboard(activity);
 
         mFuelingRecord.setCost(UtilsFormat.editTextToFloat(mEditCost));
         mFuelingRecord.setVolume(UtilsFormat.editTextToFloat(mEditVolume));
         mFuelingRecord.setTotal(UtilsFormat.editTextToFloat(mEditTotal));
 
+        Context context = getContext();
+
+        assert context != null;
+
         if (mFuelingRecord.getId() != 0) {
-            if (ContentResolverHelper.updateRecord(getContext(), mFuelingRecord)) {
+            if (ContentResolverHelper.updateRecord(context, mFuelingRecord)) {
                 return true;
             } else {
                 Utils.toast(R.string.message_error_update_record);
@@ -297,7 +316,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                 return false;
             }
         } else {
-            if (ContentResolverHelper.insertRecord(getContext(), mFuelingRecord)) {
+            if (ContentResolverHelper.insertRecord(context, mFuelingRecord)) {
                 return true;
             } else {
                 Utils.toast(R.string.message_error_insert_record);
@@ -312,6 +331,8 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
             mPreferencesHelper.putLastTotal(mFuelingRecord.getTotal());
 
             Activity activity = getActivity();
+
+            assert activity != null;
 
             activity.setResult(Activity.RESULT_OK);
 
@@ -338,6 +359,10 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         if (v == mButtonDate) {
             final Calendar calendar = UtilsDate.getCalendarInstance(mFuelingRecord.getDateTime());
 
+            FragmentManager fragmentManager = getFragmentManager();
+
+            assert fragmentManager != null;
+
             DatePickerDialog.newInstance(
                     new DatePickerDialog.OnDateSetListener() {
                         @Override
@@ -352,7 +377,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
                     calendar.get(Calendar.DAY_OF_MONTH)
-            ).show(getFragmentManager(), null);
+            ).show(fragmentManager, null);
         } else {
             final EditText edit;
             switch (v.getId()) {

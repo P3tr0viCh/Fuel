@@ -26,15 +26,21 @@ public abstract class FragmentPreferencesBase extends PreferenceFragmentCompat
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        preferencesHelper = PreferencesHelper.getInstance(getContext());
+        Context context = getContext();
+
+        assert context != null;
+
+        preferencesHelper = PreferencesHelper.getInstance(context);
 
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null)
+        if (getArguments() != null) {
             mFragmentId = FragmentFactory.intToFragmentId(getArguments().getInt(KEY_ID, BAD_ID));
+        }
 
-        if (mFragmentId == BAD_ID)
+        if (mFragmentId == BAD_ID) {
             throw new IllegalArgumentException("Fragment must have ID");
+        }
     }
 
     @Override

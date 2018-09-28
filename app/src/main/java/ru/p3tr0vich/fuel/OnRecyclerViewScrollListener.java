@@ -21,18 +21,29 @@ abstract class OnRecyclerViewScrollListener extends RecyclerView.OnScrollListene
     @Override
     public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-            if (((LinearLayoutManager) recyclerView.getLayoutManager())
-                    .findFirstCompletelyVisibleItemPosition() == 0)
+            LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+            assert layoutManager != null;
+
+            if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
                 onScrollDown();
-            else if (((LinearLayoutManager) recyclerView.getLayoutManager())
-                    .findLastCompletelyVisibleItemPosition() ==
-                    (recyclerView.getAdapter().getItemCount() - 1))
-                onScrollUp();
-            else if (Math.abs(mOffset) > mScrollThreshold)
-                if (mOffset > 0)
+            } else {
+                RecyclerView.Adapter adapter = recyclerView.getAdapter();
+
+                assert adapter != null;
+
+                if (layoutManager.findLastCompletelyVisibleItemPosition() ==
+                        (adapter.getItemCount() - 1)) {
                     onScrollUp();
-                else
-                    onScrollDown();
+                } else {
+                    if (Math.abs(mOffset) > mScrollThreshold) {
+                        if (mOffset > 0)
+                            onScrollUp();
+                        else
+                            onScrollDown();
+                    }
+                }
+            }
             mOffset = 0;
         }
     }

@@ -74,8 +74,10 @@ public class SMSTextPatternHelper {
         if (TextUtils.isEmpty(regularExpression) || TextUtils.isEmpty(message))
             return null;
 
+        @SuppressWarnings("ConstantConditions")
         final Pattern pattern = Pattern.compile(convert(regularExpression), Pattern.CASE_INSENSITIVE);
 
+        @SuppressWarnings("ConstantConditions")
         final Matcher matcher = pattern.matcher(message.replace('\n', ' '));
 
         if (matcher.find() && (matcher.groupCount() > 0))

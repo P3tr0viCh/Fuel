@@ -443,7 +443,11 @@ public class FragmentFueling extends FragmentBase implements
     private boolean markRecordAsDeleted(@NonNull FuelingRecord fuelingRecord) {
         final long id = fuelingRecord.getId();
 
-        if (ContentResolverHelper.markRecordAsDeleted(getContext(), id)) {
+        Context context = getContext();
+
+        assert context != null;
+
+        if (ContentResolverHelper.markRecordAsDeleted(context, id)) {
             return true;
         } else {
             Utils.toast(R.string.message_error_delete_record);

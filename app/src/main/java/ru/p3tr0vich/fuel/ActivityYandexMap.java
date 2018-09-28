@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Build;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -31,7 +33,6 @@ import android.widget.FrameLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Status;
-import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.lang.annotation.Retention;
@@ -70,6 +71,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
     private static final String URL_QUERY_MAP_TYPE_CENTER = "center";
 
     private static final int REQUEST_CODE_RESOLUTION_REQUIRED = 1000;
+    private static final int REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION = 1001;
 
     @MapType
     private int mType;
@@ -195,7 +197,9 @@ public class ActivityYandexMap extends AppCompatActivity implements
         mMapCenter.latitude = preferencesHelper.getMapCenterLatitude();
         mMapCenter.longitude = preferencesHelper.getMapCenterLongitude();
 
-        mLocationHelper = new LocationHelper(this).setLocationHelperListener(this);
+        mLocationHelper = new LocationHelper(this)
+                .setLocationHelperListener(this)
+                .setRequestCodePermissionAccessFineLocation(REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION);
 
         initUI();
     }
@@ -423,10 +427,9 @@ public class ActivityYandexMap extends AppCompatActivity implements
                         Utils.toast(R.string.message_yandex_map_geolocation_in_progress);
                     else
                         mLocationHelper.getLocation();
-                } else
-                    FragmentDialogMessage.show(this,
-                            mLocationHelper.getConnectionResultTitle(googlePlayServicesAvailable),
-                            mLocationHelper.getConnectionResultMessage(googlePlayServicesAvailable));
+                } else {
+                    mLocationHelper.showErrorNotification(this, googlePlayServicesAvailable);
+                }
 
                 break;
         }
@@ -681,6 +684,19 @@ public class ActivityYandexMap extends AppCompatActivity implements
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            switch (requestCode) {
+                case REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION:
+                    mBtnGeolocation.callOnClick();
+                    break;
+            }
+        } else {
+            FragmentDialogMessage.show(this, R.string.title_message_error, R.string.message_need_permission_to_location);
         }
     }
 }

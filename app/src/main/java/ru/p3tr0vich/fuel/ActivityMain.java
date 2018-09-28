@@ -349,12 +349,17 @@ public class ActivityMain extends AppCompatActivity implements
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        Fragment fragmentMain = mFragmentHelper.getFragment(FragmentFactory.MainFragment.ID);
+        Fragment fragmentMain = mFragmentHelper.getFragment(FragmentFactory.Ids.MAIN);
 
-        if (fragmentMain != null)
-            if (!fragmentMain.isVisible()) fragmentManager.popBackStack();
+        if (fragmentMain != null) {
+            if (!fragmentMain.isVisible()) {
+                fragmentManager.popBackStack();
+            }
+        }
 
-        if (fragmentId == FragmentFactory.MainFragment.ID) return;
+        if (fragmentId == FragmentFactory.Ids.MAIN) {
+            return;
+        }
 
         Bundle bundle = new Bundle();
 

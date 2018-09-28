@@ -18,8 +18,12 @@ public class DividerItemDecorationFueling extends DividerItemDecorationBase {
 
     @Override
     public boolean shouldDrawDivider(RecyclerView parent, int childViewIndex) {
+        RecyclerView.Adapter adapter = parent.getAdapter();
+
+        assert adapter != null;
+
         return mFooterType <= -1 || childViewIndex != parent.getChildCount() - 2 ||
-                parent.getAdapter().getItemViewType(
+                adapter.getItemViewType(
                         parent.getChildAdapterPosition(parent.getChildAt(childViewIndex + 1))) !=
                         mFooterType;
     }

@@ -1,5 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -27,48 +27,45 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp" />
 
-        <com.melnykov.fab.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_zoom_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/space_center"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentBottom="false"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:src="@drawable/ic_plus"
             android:visibility="invisible"
-            fab:fab_colorNormal="@color/transparent_button_light"
-            fab:fab_colorPressed="@color/transparent_button_light_pressed"
-            fab:fab_type="mini"
+            app:backgroundTint="@color/transparent_button_light"
+            app:fabSize="mini"
             tools:visibility="visible" />
 
-        <com.melnykov.fab.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_zoom_out"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/space_center"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentBottom="false"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:src="@drawable/ic_minus"
             android:visibility="invisible"
-            fab:fab_colorNormal="@color/transparent_button_light"
-            fab:fab_colorPressed="@color/transparent_button_light_pressed"
-            fab:fab_type="mini"
+            app:backgroundTint="@color/transparent_button_light"
+            app:fabSize="mini"
             tools:visibility="visible" />
 
-        <com.melnykov.fab.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_geolocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:layout_marginBottom="16dp"
             android:src="@drawable/ic_crosshairs_gps"
             android:visibility="invisible"
-            fab:fab_colorNormal="@color/transparent_button_light"
-            fab:fab_colorPressed="@color/transparent_button_light_pressed"
+            app:backgroundTint="@color/transparent_button_light"
             tools:visibility="visible" />
 
         <include layout="@layout/partial_progress_wheel" />

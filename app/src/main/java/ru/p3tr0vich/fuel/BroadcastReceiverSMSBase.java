@@ -94,6 +94,7 @@ abstract class BroadcastReceiverSMSBase extends BroadcastReceiver {
             message = messages.get(originatingAddress);
 
             if (message != null)
+                //noinspection StringConcatenationInLoop
                 message.message += messageBody;
             else
                 message = new Message(id, messageBody);

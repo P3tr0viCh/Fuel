@@ -45,8 +45,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
                 android:maxLines="3"
-                android:textAppearance="@style/AppTheme.TextAppearance.Body"
-                android:textColor="@color/text_primary" />
+                android:textAppearance="@style/AppTheme.TextAppearance.PreferenceTitle" />
 
             <TextView
                 android:id="@android:id/summary"
@@ -55,8 +54,7 @@
                 android:layout_below="@android:id/title"
                 android:layout_alignStart="@android:id/title"
                 android:maxLines="10"
-                android:textAppearance="@style/AppTheme.TextAppearance.Medium"
-                android:textColor="@color/text_secondary" />
+                android:textAppearance="@style/AppTheme.TextAppearance.PreferenceSummary" />
         </RelativeLayout>
 
         <LinearLayout

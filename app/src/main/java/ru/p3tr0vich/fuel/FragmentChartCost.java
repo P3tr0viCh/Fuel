@@ -157,17 +157,23 @@ public class FragmentChartCost extends FragmentBase implements
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setAxisLineWidth(1f);
         xAxis.setDrawGridLines(false);
         xAxis.setTextSize(8f);
         xAxis.setGranularity(1f);
         xAxis.setLabelCount(Months.COUNT);
-        xAxis.setAxisMinimum(-1f);
-        xAxis.setAxisMaximum(Months.COUNT);
+        xAxis.setAxisMinimum(-0.5f);
+        xAxis.setAxisMaximum(Months.COUNT - 0.5f);
         xAxis.setValueFormatter(mMonthFormatter);
+        xAxis.setDrawLimitLinesBehindData(true);
 
         YAxis yAxis = mChart.getAxisLeft();
-        yAxis.setEnabled(false);
-        yAxis.setAxisMinimum(0f);
+        yAxis.setEnabled(true);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setDrawGridLines(false);
+        yAxis.setAxisMinimum(-1f);
+        yAxis.setDrawLabels(false);
         yAxis.setDrawLimitLinesBehindData(true);
 
         mChart.getAxisRight().setEnabled(false);
@@ -387,6 +393,10 @@ public class FragmentChartCost extends FragmentBase implements
     private final FloatFormatter mFloatFormatter = new FloatFormatter();
     private final MonthFormatter mMonthFormatter = new MonthFormatter(getContext());
 
+    private float round(float f) {
+        return Math.round(f / 10f) * 10f;
+    }
+
     private void updateChart() {
         mHandler.removeCallbacks(mRunnableShowNoRecords);
 
@@ -396,8 +406,14 @@ public class FragmentChartCost extends FragmentBase implements
             ArrayList<BarEntry> sumsEntries = new ArrayList<>();
 
             float[] sums = mChartCostModel.getSums();
-            for (int i = 0; i < sums.length; i++)
-                sumsEntries.add(new BarEntry(i, sums[i]));
+            float sum;
+            for (int i = 0; i < sums.length; i++) {
+                sum = sums[i];
+
+                sum = round(sum);
+
+                sumsEntries.add(new BarEntry(i, sum));
+            }
 
             BarDataSet sumsSet = new BarDataSet(sumsEntries, "");
             sumsSet.setColors(mColors, getContext());
@@ -418,7 +434,7 @@ public class FragmentChartCost extends FragmentBase implements
             if (mChartCostModel.getMedian() > 0 && mChartCostModel.isSumsNotEquals()) {
                 LimitLine medianLine = new LimitLine(mChartCostModel.getMedian());
                 medianLine.setLineColor(Utils.getColor(R.color.chart_median));
-                medianLine.setLineWidth(Utils.isPhone() ? 0.2f : 0.5f);
+                medianLine.setLineWidth(0.5f);
                 medianLine.enableDashedLine(8f, 2f, 0f);
 
                 mChart.getAxisLeft().addLimitLine(medianLine);
@@ -436,7 +452,7 @@ public class FragmentChartCost extends FragmentBase implements
     }
 
     private void updateTotal() {
-        UtilsFormat.floatToTextView(mTextMedian, mChartCostModel.getMedian(), true);
+        UtilsFormat.floatToTextView(mTextMedian, round(mChartCostModel.getMedian()), true);
         UtilsFormat.floatToTextView(mTextSum, mChartCostModel.getSum(), true);
     }
 

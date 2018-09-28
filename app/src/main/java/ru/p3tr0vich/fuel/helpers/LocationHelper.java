@@ -1,13 +1,15 @@
 package ru.p3tr0vich.fuel.helpers;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -24,7 +26,7 @@ public class LocationHelper {
 
     private static final int REQUEST_LOCATION_TIMEOUT = 60000;
 
-    private final Context mContext;
+    private final Activity mActivity;
 
     private final GoogleApiClient mGoogleApiClient;
 
@@ -36,6 +38,8 @@ public class LocationHelper {
 
     private final Handler mHandler;
 
+    private int mRequestCodePermissionAccessFineLocation;
+
     private LocationHelperListener mLocationHelperListener;
 
     public interface LocationHelperListener {
@@ -46,14 +50,14 @@ public class LocationHelper {
         void onResolutionRequired(@NonNull Status status);
     }
 
-    public LocationHelper(@NonNull Context context) {
-        mContext = context;
+    public LocationHelper(@NonNull Activity activity) {
+        mActivity = activity;
 
         mHandler = new Handler();
 
         mLocationHelperListener = null;
 
-        mGoogleApiClient = new GoogleApiClient.Builder(mContext)
+        mGoogleApiClient = new GoogleApiClient.Builder(mActivity)
                 .addApi(LocationServices.API)
                 .build();
 
@@ -67,6 +71,12 @@ public class LocationHelper {
                 .addLocationRequest(mLocationRequest)
                 .setAlwaysShow(true)
                 .build();
+    }
+
+    @NonNull
+    public LocationHelper setRequestCodePermissionAccessFineLocation(int requestCodePermissionAccessFineLocation) {
+        mRequestCodePermissionAccessFineLocation = requestCodePermissionAccessFineLocation;
+        return this;
     }
 
     public void connect() {
@@ -85,48 +95,36 @@ public class LocationHelper {
     }
 
     public int isGooglePlayServicesAvailable() {
-        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mContext);
+        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mActivity);
     }
 
-    // TODO: 02.06.2018
-//  Взято отсюда: GooglePlayServicesUtil.showErrorDialogFragment()
-    @Nullable
-    public String getConnectionResultTitle(int result) {
-//        return com.google.android.gms.common.internal.zzh.zzf(mContext, result);
-        return "getConnectionResultTitle";
+    public void showErrorNotification(Context context, int errorCode) {
+        GoogleApiAvailability.getInstance().showErrorNotification(context, errorCode);
     }
 
-    @NonNull
-    public String getConnectionResultMessage(int result) {
-//        String var11 = GooglePlayServicesUtil.zzbv(mContext);
-//        return com.google.android.gms.common.internal.zzh.zzc(mContext, result, var11);
-        return "getConnectionResultMessage";
-    }
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private boolean checkPermission() {
+        if (Build.VERSION.SDK_INT < 23) {
+            return true;
+        }
 
-    /**
-     * @return true if permission denied
-     */
-    private boolean checkSelfPermission() {
-//        if (result) {
-//        TODO: Consider calling
-//        ActivityCompat#requestPermissions
-//        here to request the missing permissions, and then overriding
-//        public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//        int[] grantResults)
-//        to handle the case where the user grants the permission. See the documentation
-//        for ActivityCompat#requestPermissions for more details.
-//        }
+        if (ContextCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
 
-        return ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED;
+        mActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, mRequestCodePermissionAccessFineLocation);
+
+        return false;
     }
 
     public void getLocation() {
-        if (checkSelfPermission()) return;
+        if (!checkPermission()) return;
 
-        if (mLocationHelperListener != null)
+        if (mLocationHelperListener != null) {
             mLocationHelperListener.onLastLocationReturn(
                     LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient));
+        }
 
         LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, mLocationSettingsRequest)
                 .setResultCallback(mLocationSettingsResultResultCallback);
@@ -142,7 +140,7 @@ public class LocationHelper {
 
                     switch (status.getStatusCode()) {
                         case LocationSettingsStatusCodes.SUCCESS:
-                            if (checkSelfPermission()) return;
+                            if (!checkPermission()) return;
 
                             LocationServices.FusedLocationApi.requestLocationUpdates(
                                     mGoogleApiClient, mLocationRequest, mLocationListener)
@@ -150,8 +148,9 @@ public class LocationHelper {
 
                             break;
                         case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                            if (mLocationHelperListener != null)
+                            if (mLocationHelperListener != null) {
                                 mLocationHelperListener.onResolutionRequired(status);
+                            }
 
                             break;
                         case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:

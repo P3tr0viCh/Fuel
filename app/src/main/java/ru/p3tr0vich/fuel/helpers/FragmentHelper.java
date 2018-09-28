@@ -29,8 +29,13 @@ public class FragmentHelper {
 
     @NonNull
     public FragmentInterface getCurrentFragment() {
-        return (FragmentInterface) mFragmentActivity.getSupportFragmentManager()
-                .findFragmentById(R.id.content_frame);
+        FragmentInterface fragmentInterface =
+                (FragmentInterface) mFragmentActivity.getSupportFragmentManager()
+                        .findFragmentById(R.id.content_frame);
+
+        assert fragmentInterface != null;
+
+        return fragmentInterface;
 
     }
 
@@ -52,8 +57,8 @@ public class FragmentHelper {
     public void addMainFragment() {
         mFragmentActivity.getSupportFragmentManager().beginTransaction()
                 .add(R.id.content_frame,
-                        FragmentFactory.getFragmentNewInstance(FragmentFactory.MainFragment.ID),
-                        FragmentFactory.MainFragment.TAG)
+                        FragmentFactory.getFragmentNewInstance(FragmentFactory.Ids.MAIN),
+                        FragmentFactory.fragmentIdToTag(FragmentFactory.Ids.MAIN))
                 .setTransition(FragmentTransaction.TRANSIT_NONE)
                 .commit();
     }

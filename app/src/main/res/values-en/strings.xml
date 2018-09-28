@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Accounting of fuel</string>
+    <string name="app_name">Fuel</string>
 
     <string name="title_calc">Calculator</string>
     <string name="title_prefs">Settings</string>

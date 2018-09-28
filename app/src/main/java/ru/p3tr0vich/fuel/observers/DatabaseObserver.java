@@ -6,12 +6,11 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import ru.p3tr0vich.fuel.ApplicationFuel;
 import ru.p3tr0vich.fuel.BroadcastReceiverDatabaseChanged;
 import ru.p3tr0vich.fuel.ContentObserverService;
 import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
-
-import static ru.p3tr0vich.fuel.ApplicationFuel.getContext;
 
 /**
  * Наблюдатель за изменениями в базе данных.
@@ -41,7 +40,7 @@ public class DatabaseObserver extends ContentObserverBase {
                 case ContentProviderHelper.DATABASE_ITEM:
                     id = ContentUris.parseId(changeUri);
                 case ContentProviderHelper.DATABASE:
-                    ContentObserverService.requestSync(getContext(),
+                    ContentObserverService.requestSync(ApplicationFuel.Companion.getContext(),
                             ContentObserverService.SYNC_DATABASE, true, true, null);
                     break;
                 case ContentProviderHelper.DATABASE_SYNC:
@@ -51,6 +50,6 @@ public class DatabaseObserver extends ContentObserverBase {
                     return;
             }
 
-        BroadcastReceiverDatabaseChanged.send(getContext(), id);
+        BroadcastReceiverDatabaseChanged.send(ApplicationFuel.Companion.getContext(), id);
     }
 }

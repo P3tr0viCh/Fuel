@@ -1,7 +1,9 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 
 Properties props = new Properties()
-props.load(new FileInputStream(file("c:\\Android\\Keystore\\ru.p3tr0vich.fuel.properties")))
+props.load(new FileInputStream(file("c:\\android\\keystore\\ru.p3tr0vich.fuel.properties")))
 
 android {
     signingConfigs {
@@ -82,6 +84,14 @@ android {
         checkReleaseBuilds false
         abortOnError false
     }
+
+    androidExtensions {
+        experimental = true
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
 }
 
 static def appendVersionName(variant, defaultConfig) {
@@ -91,24 +101,29 @@ static def appendVersionName(variant, defaultConfig) {
 }
 
 dependencies {
-    implementation  "com.android.support:support-v4:$supportVer"
-    implementation  "com.android.support:appcompat-v7:$supportVer"
-    implementation  "com.android.support:design:$supportVer"
-    implementation  "com.android.support:preference-v7:$supportVer"
-    implementation  "com.android.support:preference-v14:$supportVer"
-    implementation  "com.android.support:cardview-v7:$supportVer"
-    implementation  "com.android.support:recyclerview-v7:$supportVer"
+    implementation "com.android.support:support-v4:$supportVer"
+    implementation "com.android.support:appcompat-v7:$supportVer"
+    implementation "com.android.support:design:$supportVer"
+    implementation "com.android.support:preference-v7:$supportVer"
+    implementation "com.android.support:preference-v14:$supportVer"
+    implementation "com.android.support:cardview-v7:$supportVer"
+    implementation "com.android.support:recyclerview-v7:$supportVer"
 
-    implementation 'com.github.P3tr0viCh:ExpansionPanel:1.0.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVer"
 
-    implementation 'com.google.android.gms:play-services-location:15.0.1'
+    implementation "com.github.P3tr0viCh:ExpansionPanel:1.0.0"
 
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
-    implementation 'com.yandex.android:disk-restapi-sdk:1.03'
+    implementation "com.google.android.gms:play-services-location:15.0.1"
+
+    implementation "com.github.PhilJay:MPAndroidChart:v3.0.3"
+    implementation "com.yandex.android:disk-restapi-sdk:1.03"
 
     implementation project(':libs:fab')
     implementation project(':libs:materialish-progress')
     implementation project(':libs:materialdatetimepicker')
 
     testImplementation 'junit:junit:4.12'
+}
+repositories {
+    mavenCentral()
 }

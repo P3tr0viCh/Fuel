@@ -110,8 +110,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseModel {
     @Override
     public void onCreate(SQLiteDatabase db) {
         if (LOG_ENABLED)
-            UtilsLog.d(TAG, "onCreate", "sql == " + Database.CREATE_STATEMENT);
-        db.execSQL(Database.CREATE_STATEMENT);
+            UtilsLog.d(TAG, "onCreate", "sql == " + Database.Companion.getCREATE_STATEMENT());
+        db.execSQL(Database.Companion.getCREATE_STATEMENT());
     }
 
     @Override
@@ -180,7 +180,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseModel {
     private static FuelingRecord getFuelingRecord(@NonNull Cursor cursor, boolean convertDate) {
         final long dateTime = cursor.getLong(TableFueling.Columns.DATETIME_INDEX);
         return new FuelingRecord(
-                cursor.getLong(TableFueling.Columns._ID_INDEX),
+                cursor.getLong(TableFueling.Columns.ID_INDEX),
                 convertDate ?
                         UtilsDate.localToUtc(dateTime) :
                         dateTime,
@@ -214,25 +214,25 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseModel {
     }
 
     public Cursor getAll(String selection) {
-        return query(TableFueling.Columns.COLUMNS, selection, null, TableFueling.Columns.DATETIME + Statement.DESC);
+        return query(TableFueling.Columns.Companion.getCOLUMNS(), selection, null, TableFueling.Columns.DATETIME + Statement.DESC);
     }
 
     public Cursor getTwoLastRecords() {
         Filter filter = new Filter();
         filter.mode = Filter.MODE_TWO_LAST_RECORDS;
-        return query(TableFueling.Columns.COLUMNS, filter.getSelection(), null,
+        return query(TableFueling.Columns.Companion.getCOLUMNS(), filter.getSelection(), null,
                 TableFueling.Columns.DATETIME + Statement.DESC, "2");
     }
 
     public Cursor getRecord(long id) {
-        return query(TableFueling.Columns.COLUMNS, TableFueling.Columns._ID + Statement.EQUAL + id, null, null);
+        return query(TableFueling.Columns.Companion.getCOLUMNS(), TableFueling.Columns._ID + Statement.EQUAL + id, null, null);
     }
 
     public Cursor getYears() {
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "getYears");
         }
-        return query(TableFueling.Columns.COLUMNS_YEARS, Where.RECORD_NOT_DELETED,
+        return query(TableFueling.Columns.Companion.getCOLUMNS_YEARS(), Where.RECORD_NOT_DELETED,
                 TableFueling.Columns.YEAR, TableFueling.Columns.YEAR + Statement.DESC);
     }
 
@@ -240,7 +240,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseModel {
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "getSumByMonthsForYear", "year == " + year);
         }
-        return query(TableFueling.Columns.COLUMNS_SUM_BY_MONTHS, new Filter(year).getSelection(),
+        return query(TableFueling.Columns.Companion.getCOLUMNS_SUM_BY_MONTHS(), new Filter(year).getSelection(),
                 TableFueling.Columns.MONTH, TableFueling.Columns.MONTH);
     }
 
@@ -248,7 +248,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseModel {
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "getSyncRecords", "getChanged == " + getChanged);
         }
-        return query(TableFueling.Columns.COLUMNS_WITH_DELETED,
+        return query(TableFueling.Columns.Companion.getCOLUMNS_WITH_DELETED(),
                 getChanged ? TableFueling.Columns.CHANGED + Statement.EQUAL + Statement.TRUE : null, null, null);
     }
 

@@ -80,6 +80,8 @@ public class FragmentChartCost extends FragmentBase implements
         }
     }
 
+    Months months;
+
     @Override
     public int getTitleId() {
         return R.string.title_chart_cost;
@@ -106,6 +108,12 @@ public class FragmentChartCost extends FragmentBase implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Context context = getContext();
+
+        assert context != null;
+
+        months = new Months(context);
 
         if (savedInstanceState == null) {
             mChartCostModel = new ChartCostModel();
@@ -318,11 +326,10 @@ public class FragmentChartCost extends FragmentBase implements
                 float sum;
                 String month;
 
-                mChartCostModel.setSums(null);
+                mChartCostModel.clear();
                 float[] sums = mChartCostModel.getSums();
 
                 if (data.getCount() > 0) {
-
                     if (data.moveToFirst()) do {
                         sum = data.getFloat(DatabaseHelper.TableFueling.Columns.COST_SUM_INDEX);
                         month = data.getString(DatabaseHelper.TableFueling.Columns.MONTH_INDEX);
@@ -375,23 +382,16 @@ public class FragmentChartCost extends FragmentBase implements
         }
     }
 
-    private static final class MonthFormatter implements IAxisValueFormatter {
-
-        private final Months mMonths;
-
-        MonthFormatter(@Nullable Context context) {
-            assert context != null;
-            mMonths = new Months(context);
-        }
+    private final class MonthFormatter implements IAxisValueFormatter {
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return mMonths.getMonth((int) value);
+            return months.getMonth((int) value);
         }
     }
 
     private final FloatFormatter mFloatFormatter = new FloatFormatter();
-    private final MonthFormatter mMonthFormatter = new MonthFormatter(getContext());
+    private final MonthFormatter mMonthFormatter = new MonthFormatter();
 
     private float round(float f) {
         return Math.round(f / 10f) * 10f;
@@ -400,7 +400,7 @@ public class FragmentChartCost extends FragmentBase implements
     private void updateChart() {
         mHandler.removeCallbacks(mRunnableShowNoRecords);
 
-        if (mChartCostModel.hasData()) {
+        if (mChartCostModel.getHasData()) {
             mTextNoRecords.setVisibility(View.GONE);
 
             ArrayList<BarEntry> sumsEntries = new ArrayList<>();

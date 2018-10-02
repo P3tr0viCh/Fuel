@@ -20,34 +20,40 @@ class ChartCostModel() : Parcelable {
         set(years) {
             field = years
             if (years == null) {
-                mHasData = false
+                hasData = false
             }
         }
 
     @get:Size(12)
-    var sums: FloatArray? = FloatArray(12)
-        set(@Size(12) sums) = if (sums == null) {
-            for (i in 0..11) {
-                this.sums?.set(i, 0f)
-            }
+    var sums: FloatArray = FloatArray(12)
+        set(@Size(12) value) {
+            field = value
 
-            median = 0f
-            sum = 0f
-            mHasData = false
-            isSumsNotEquals = false
-        } else {
-            field = sums
-            median = calcMedian(this.sums!!)
-            sum = calcSum(this.sums!!)
-            mHasData = true
+            median = calcMedian(sums)
+            sum = calcSum(sums)
+
+            hasData = true
         }
 
-    private var mHasData: Boolean = false
+    fun clear() {
+        for (i in 0..11) {
+            this.sums[i] = 0f
+        }
 
-    var median: Float = 0.toFloat()
+        median = 0f
+        sum = 0f
+
+        hasData = false
+        isSumsNotEquals = false
+    }
+
+    var median: Float = 0f
         private set
 
-    var sum: Float = 0.toFloat()
+    var sum: Float = 0f
+        private set
+
+    var hasData: Boolean = false
         private set
 
     var isSumsNotEquals: Boolean = false
@@ -55,13 +61,10 @@ class ChartCostModel() : Parcelable {
 
     constructor(parcel: Parcel) : this() {
         year = parcel.readInt()
-        mHasData = parcel.readByte() != 0.toByte()
+        hasData = parcel.readByte() != 0.toByte()
     }
 
     init {
-        years = null
-        sums = null
-
         year = UtilsDate.currentYear
     }
 
@@ -109,12 +112,8 @@ class ChartCostModel() : Parcelable {
         return sum
     }
 
-    fun hasData(): Boolean {
-        return mHasData
-    }
-
     override fun toString(): String {
-        return "hasData: " + mHasData + ", years: " + Arrays.toString(years) +
+        return "hasData: " + hasData + ", years: " + Arrays.toString(years) +
                 ", year: " + year + ", sums: " + Arrays.toString(sums) +
                 ", median: " + median + ", sum: " + sum + ", sumsNotEquals: " + isSumsNotEquals
     }

@@ -91,6 +91,16 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+}
+
+afterEvaluate {
+    android.sourceSets.all { sourceSet ->
+        if (!sourceSet.name.startsWith("test"))
+        {
+            sourceSet.kotlin.setSrcDirs([])
+        }
     }
 }
 
@@ -124,6 +134,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
 }
+
 repositories {
     mavenCentral()
 }

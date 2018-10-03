@@ -1,6 +1,7 @@
 package ru.p3tr0vich.fuel;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.BitmapFactory;
@@ -93,6 +94,10 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
                 .setAutoCancel(true);
 
-        SystemServicesHelper.getNotificationManager(context).notify(id, builder.build());
+        NotificationManager notificationManager = SystemServicesHelper.getNotificationManager(context);
+
+        if (notificationManager != null) {
+            notificationManager.notify(id, builder.build());
+        }
     }
 }

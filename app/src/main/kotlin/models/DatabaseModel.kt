@@ -10,15 +10,15 @@ interface DatabaseModel {
 
             const val NAME = "fuel.db"
 
-            val CREATE_STATEMENT = TableFueling.CREATE_STATEMENT
+            const val CREATE_STATEMENT = TableFueling.CREATE_STATEMENT
         }
     }
 
     interface TableFueling {
 
-        interface Columns : BaseColumns {
+        interface Columns {
             companion object {
-                const val ID = "_id"
+                const val ID = BaseColumns._ID
 
                 const val DATETIME = "datetime"
                 const val COST = "cost"
@@ -30,7 +30,7 @@ interface DatabaseModel {
                 const val YEAR = "year"
                 const val MONTH = "month"
 
-                val COLUMNS = arrayOf(BaseColumns._ID, DATETIME, COST, VOLUME, TOTAL)
+                val COLUMNS = arrayOf(ID, DATETIME, COST, VOLUME, TOTAL)
 
                 const val ID_INDEX = 0
                 const val DATETIME_INDEX = 1
@@ -38,7 +38,7 @@ interface DatabaseModel {
                 const val VOLUME_INDEX = 3
                 const val TOTAL_INDEX = 4
 
-                val COLUMNS_WITH_DELETED = arrayOf(BaseColumns._ID, DATETIME, COST, VOLUME, TOTAL, DELETED)
+                val COLUMNS_WITH_DELETED = arrayOf(ID, DATETIME, COST, VOLUME, TOTAL, DELETED)
 
                 const val DELETED_INDEX = 5
 

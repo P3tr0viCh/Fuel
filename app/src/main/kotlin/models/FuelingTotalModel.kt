@@ -3,45 +3,35 @@ package ru.p3tr0vich.fuel.models
 import android.annotation.SuppressLint
 import android.os.AsyncTask
 
+/**
+ * @property average Средний расход в заданном периоде.
+ * @property costSum Сумма стоимости для заданного периода.
+ * @property lastConsumption Расход перед последней записью.
+ * @property estimatedMileage Предполагаемый пробег после последней заправки.
+ * @property estimatedTotal Предполагаемый общий пробег после последней заправки.
+ */
 class FuelingTotalModel {
-    // Средний расход в заданном периоде.
-    var average: Float = 0.toFloat()
+    var average: Float = 0f
         private set
-    // Сумма стоимости для заданного периода.
-    var costSum: Float = 0.toFloat()
+    var costSum: Float = 0f
         private set
-    // Расход перед последней записью.
-    var lastConsumption: Float = 0.toFloat()
+    var lastConsumption: Float = 0f
         private set
-    // Предполагаемый пробег после последней заправки.
-    var estimatedMileage: Float = 0.toFloat()
+    var estimatedMileage: Float = 0f
         private set
-    // Предполагаемый общий пробег после последней заправки.
-    var estimatedTotal: Float = 0.toFloat()
+    var estimatedTotal: Float = 0f
         private set
 
-    private var mCalcTotalTask: CalcTotalTask? = null
-
-    private var mOnChangeListener: OnChangeListener? = null
+    var onChangeListener: OnChangeListener? = null
 
     interface OnChangeListener {
         fun onChange()
     }
 
-    init {
-        average = 0f
-        costSum = 0f
-        lastConsumption = 0f
-        estimatedMileage = 0f
-        estimatedTotal = 0f
-    }
+    private var mCalcTotalTask: CalcTotalTask? = null
 
     fun destroy() {
         cancel()
-    }
-
-    fun setOnChangeListener(onChangeListener: OnChangeListener?) {
-        mOnChangeListener = onChangeListener
     }
 
     /**
@@ -59,6 +49,7 @@ class FuelingTotalModel {
 
         if (fuelingRecords == null || fuelingRecords.size < 2) return
 
+        // Последняя запись
         val lastRecord = fuelingRecords[0]
         // Объём последней заправки.
         val lastVolume = lastRecord.volume
@@ -67,6 +58,7 @@ class FuelingTotalModel {
 
         if (lastVolume <= 0 || lastTotal <= 0) return
 
+        // Предпоследняя запись
         val penultimateRecord = fuelingRecords[1]
 
         val penultimateVolume = penultimateRecord.volume
@@ -78,6 +70,7 @@ class FuelingTotalModel {
         // Единственное, что может равняться нулю.
         if (penultimateTotal < 0 || penultimateTotal >= lastTotal) return
 
+        // ----
         // Все необходимые значения в записях указаны корректно.
 
         lastConsumption = penultimateVolume / (lastTotal - penultimateTotal) * 100
@@ -91,19 +84,18 @@ class FuelingTotalModel {
     }
 
     private fun cancel() {
-        if (mCalcTotalTask != null) mCalcTotalTask!!.cancel(false)
+        mCalcTotalTask?.cancel(false)
     }
 
     fun setFuelingRecords(fuelingRecords: List<FuelingRecord>?) {
         cancel()
 
         mCalcTotalTask = CalcTotalTask(fuelingRecords)
-        mCalcTotalTask!!.execute()
+        mCalcTotalTask?.execute()
     }
 
-    //// TODO: 21.09.2018 make static
     @SuppressLint("StaticFieldLeak")
-    private inner class CalcTotalTask internal constructor(private val mFuelingRecords: List<FuelingRecord>?) : AsyncTask<Void, Void, Array<Float>>() {
+    private inner class CalcTotalTask(private val mFuelingRecords: List<FuelingRecord>?) : AsyncTask<Void, Void, Array<Float>>() {
 
         override fun doInBackground(vararg params: Void): Array<Float>? {
             if (mFuelingRecords == null) return arrayOf(0f, 0f)
@@ -133,16 +125,16 @@ class FuelingTotalModel {
                     volume = fuelingRecord.volume
                     total = fuelingRecord.total
 
-                    if (volume == 0f || total == 0f)
+                    if (volume == 0f || total == 0f) {
                         completeData = false
-                    else {
+                    } else {
                         // Сортировка записей по дате в обратном порядке
                         // 0 -- последняя заправка
                         // Последний (i == 0) объём заправки не нужен -- неизвестно, сколько на ней будет пробег,
                         // в volumeSum не включается
-                        if (i == 0)
+                        if (i == 0) {
                             lastTotal = total
-                        else {
+                        } else {
                             volumeSum += volume
                             if (i == size - 1) firstTotal = total
                         }
@@ -165,6 +157,7 @@ class FuelingTotalModel {
                     if (isCancelled) return null
 
                     lastTotal = mFuelingRecords[i].total
+
                     if (lastTotal != 0f) {
                         fuelingRecord = mFuelingRecords[i + 1]
 
@@ -176,6 +169,7 @@ class FuelingTotalModel {
                             averageCount++
                         }
                     }
+
                     i++
                 }
 
@@ -190,7 +184,7 @@ class FuelingTotalModel {
                 average = result[0]
                 costSum = result[1]
 
-                if (mOnChangeListener != null) mOnChangeListener!!.onChange()
+                onChangeListener?.onChange()
             }
         }
     }

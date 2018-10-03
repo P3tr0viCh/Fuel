@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.res.ColorStateList
 import android.net.Uri
+import android.os.Build
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.annotation.IntegerRes
@@ -25,12 +26,13 @@ import java.util.concurrent.TimeUnit
 
 object Utils {
 
-    private val TAG = "Utils"
+    private const val TAG = "Utils"
 
     @JvmStatic
     val isPhone: Boolean
         get() = ApplicationFuel.context.resources.getBoolean(R.bool.is_phone)
 
+    @JvmStatic
     private val isPortrait: Boolean
         get() = ApplicationFuel.context.resources.getBoolean(R.bool.is_portrait)
 
@@ -47,15 +49,16 @@ object Utils {
         editText.requestFocus()
         editText.selectAll()
         SystemServicesHelper.getInputMethodManager(editText.context)
-                .showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+                ?.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
     }
 
     @JvmStatic
     fun hideKeyboard(activity: Activity) {
         val view = activity.currentFocus
-        if (view != null)
+        if (view != null) {
             SystemServicesHelper.getInputMethodManager(view.context)
-                    .hideSoftInputFromWindow(view.windowToken, 0)
+                    ?.hideSoftInputFromWindow(view.windowToken, 0)
+        }
     }
 
     @JvmStatic
@@ -92,14 +95,18 @@ object Utils {
     @JvmStatic
     @ColorInt
     fun getColor(@ColorRes id: Int): Int {
-
-        return ApplicationFuel.context.resources.getColor(id)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ApplicationFuel.context.resources.getColor(id, null)
+        } else {
+            @Suppress("DEPRECATION")
+            ApplicationFuel.context.resources.getColor(id)
+        }
     }
 
     @JvmStatic
     fun getSupportActionBarSize(context: Context): Int {
         val a = context.theme.obtainStyledAttributes(
-                intArrayOf(android.support.v7.appcompat.R.attr.actionBarSize))
+                intArrayOf(android.R.attr.actionBarSize))
         try {
             return a.getDimensionPixelSize(0, 0)
         } finally {
@@ -118,15 +125,13 @@ object Utils {
     }
 
     @JvmStatic
-    fun openUrl(context: Context, url: String,
-                onErrorMessage: String?) {
+    fun openUrl(context: Context, url: String, onErrorMessage: String?) {
         try {
             context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         } catch (e: Exception) {
             UtilsLog.d(TAG, "openUrl", "exception == " + e.toString())
 
             if (!TextUtils.isEmpty(onErrorMessage)) {
-
                 toast(onErrorMessage!!)
             }
         }
@@ -134,13 +139,12 @@ object Utils {
     }
 
     @JvmStatic
-    fun setBackgroundTint(view: View,
-                          @ColorRes defaultColor: Int, @ColorRes pressedColor: Int) {
-        if (view is TintableBackgroundView)
-
+    fun setBackgroundTint(view: View, @ColorRes defaultColor: Int, @ColorRes pressedColor: Int) {
+        if (view is TintableBackgroundView) {
             (view as TintableBackgroundView).supportBackgroundTintList = ColorStateList(
                     arrayOf(intArrayOf(-android.R.attr.state_pressed, -android.R.attr.state_checked), intArrayOf()),
                     intArrayOf(getColor(defaultColor), getColor(pressedColor)))
+        }
     }
 
     @JvmStatic

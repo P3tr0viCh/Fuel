@@ -11,8 +11,6 @@ object UtilsString {
         } else {
             s!!.replace("\\\\n".toRegex(), "\\\\\\\\n").replace("[\\n]".toRegex(), "\\\\n")
         }
-
-
     }
 
     @JvmStatic
@@ -22,7 +20,5 @@ object UtilsString {
         } else {
             s!!.replace("(?<![\\\\])\\\\n".toRegex(), "\n").replace("\\\\\\\\n".toRegex(), "\\\\n")
         }
-
-
     }
 }

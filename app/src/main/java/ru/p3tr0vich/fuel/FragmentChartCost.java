@@ -453,7 +453,7 @@ public class FragmentChartCost extends FragmentBase implements
 
     private void updateTotal() {
         UtilsFormat.floatToTextView(mTextMedian, round(mChartCostModel.getMedian()), true);
-        UtilsFormat.floatToTextView(mTextSum, mChartCostModel.getSum(), true);
+        UtilsFormat.floatToTextView(mTextSum, round(mChartCostModel.getSum()), true);
     }
 
     private final Handler mHandler = new Handler();

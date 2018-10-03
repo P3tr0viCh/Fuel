@@ -137,15 +137,21 @@ public class ActivityYandexMap extends AppCompatActivity implements
         }
     }
 
-    public static void start(@NonNull FragmentActivity parent,
-                             @MapType int mapType, int requestCode) {
-        if (ConnectivityHelper.getConnectedState(parent.getApplicationContext()) != ConnectivityHelper.DISCONNECTED)
+    public static void start(@NonNull FragmentActivity parent, @MapType int mapType, int requestCode) {
+        int connectedState = ConnectivityHelper.getConnectedState(parent.getApplicationContext());
+
+        if (LOG_ENABLED) {
+            UtilsLog.d(TAG, "start", "connectedState == " + connectedState);
+        }
+
+        if (connectedState != ConnectivityHelper.DISCONNECTED) {
             parent.startActivityForResult(new Intent(parent, ActivityYandexMap.class)
                     .putExtra(EXTRA_TYPE, mapType), requestCode);
-        else
+        } else {
             FragmentDialogMessage.show(parent,
                     null,
                     parent.getString(R.string.message_error_no_internet));
+        }
     }
 
     /**

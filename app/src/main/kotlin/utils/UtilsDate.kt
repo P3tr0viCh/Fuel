@@ -64,32 +64,32 @@ object UtilsDate {
         var result = ""
 
         if (elapsed > 0) {
-            if (elapsed < 10 * DateUtils.SECOND_IN_MILLIS)
-                result = context.getString(R.string.relative_date_time_now)
-            else if (elapsed < DateUtils.MINUTE_IN_MILLIS)
-                result = context.getString(R.string.relative_date_time_minute)
-            else if (elapsed < DateUtils.HOUR_IN_MILLIS)
-                result = DateUtils.getRelativeTimeSpanString(
-                        dateTime, now,
-                        DateUtils.MINUTE_IN_MILLIS,
-                        DateUtils.FORMAT_SHOW_DATE).toString()
-            else {
-                val calendarNow = getCalendarInstance(now)
-                val calendarDateTime = getCalendarInstance(dateTime)
+            when {
+                elapsed < 10 * DateUtils.SECOND_IN_MILLIS ->
+                    result = context.getString(R.string.relative_date_time_now)
+                elapsed < DateUtils.MINUTE_IN_MILLIS ->
+                    result = context.getString(R.string.relative_date_time_minute)
+                elapsed < DateUtils.HOUR_IN_MILLIS ->
+                    result = DateUtils.getRelativeTimeSpanString(dateTime, now,
+                            DateUtils.MINUTE_IN_MILLIS,
+                            DateUtils.FORMAT_SHOW_DATE).toString()
+                else -> {
+                    val calendarNow = getCalendarInstance(now)
+                    val calendarDateTime = getCalendarInstance(dateTime)
 
-                if (calendarNow.get(Calendar.YEAR) == calendarDateTime.get(Calendar.YEAR)) {
-                    val daysBetween = Math.abs(
-                            calendarNow.get(Calendar.DAY_OF_YEAR) - calendarDateTime.get(Calendar.DAY_OF_YEAR))
+                    if (calendarNow.get(Calendar.YEAR) == calendarDateTime.get(Calendar.YEAR)) {
+                        val daysBetween = Math.abs(
+                                calendarNow.get(Calendar.DAY_OF_YEAR) - calendarDateTime.get(Calendar.DAY_OF_YEAR))
 
-                    if (daysBetween == 0)
-                        result = context.getString(R.string.relative_date_time_today)
-                    else if (daysBetween == 1)
-                        result = context.getString(R.string.relative_date_time_yesterday)
-                    else if (daysBetween < 7)
-                        result = DateUtils.getRelativeTimeSpanString(
-                                dateTime, now,
-                                DateUtils.DAY_IN_MILLIS,
-                                DateUtils.FORMAT_SHOW_DATE).toString()
+                        when {
+                            daysBetween == 0 -> result = context.getString(R.string.relative_date_time_today)
+                            daysBetween == 1 -> result = context.getString(R.string.relative_date_time_yesterday)
+                            daysBetween < 7 -> result = DateUtils.getRelativeTimeSpanString(
+                                    dateTime, now,
+                                    DateUtils.DAY_IN_MILLIS,
+                                    DateUtils.FORMAT_SHOW_DATE).toString()
+                        }
+                    }
                 }
             }
         }
@@ -99,7 +99,7 @@ object UtilsDate {
         }
 
         if (elapsed > DateUtils.MINUTE_IN_MILLIS && elapsed < DateUtils.WEEK_IN_MILLIS) {
-            result += ", " + DateUtils.getRelativeTimeSpanString(context, dateTime, true).toString()
+            result += ", " + DateUtils.getRelativeTimeSpanString(context, dateTime, true)
         }
 
         return result

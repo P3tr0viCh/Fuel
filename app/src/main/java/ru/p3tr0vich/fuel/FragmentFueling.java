@@ -143,29 +143,29 @@ public class FragmentFueling extends FragmentBase implements
         if (savedInstanceState == null) {
             if (LOG_ENABLED) UtilsLog.d(TAG, "onCreate", "savedInstanceState == null");
 
-            mFilter.mode = DatabaseHelper.Filter.MODE_CURRENT_YEAR;
+            mFilter.setMode(DatabaseHelper.Filter.MODE_CURRENT_YEAR);
 
-            mFilter.dateFrom = preferencesHelper.getFilterDateFrom();
-            mFilter.dateTo = preferencesHelper.getFilterDateTo();
+            mFilter.setDateFrom(preferencesHelper.getFilterDateFrom());
+            mFilter.setDateTo(preferencesHelper.getFilterDateTo());
         } else {
             if (LOG_ENABLED) UtilsLog.d(TAG, "onCreate", "savedInstanceState != null");
 
             switch (savedInstanceState.getInt(KEY_FILTER_MODE, DatabaseHelper.Filter.MODE_ALL)) {
                 case DatabaseHelper.Filter.MODE_CURRENT_YEAR:
-                    mFilter.mode = DatabaseHelper.Filter.MODE_CURRENT_YEAR;
+                    mFilter.setMode(DatabaseHelper.Filter.MODE_CURRENT_YEAR);
                     break;
                 case DatabaseHelper.Filter.MODE_YEAR:
-                    mFilter.mode = DatabaseHelper.Filter.MODE_YEAR;
+                    mFilter.setMode(DatabaseHelper.Filter.MODE_YEAR);
                     break;
                 case DatabaseHelper.Filter.MODE_DATES:
-                    mFilter.mode = DatabaseHelper.Filter.MODE_DATES;
+                    mFilter.setMode(DatabaseHelper.Filter.MODE_DATES);
                     break;
                 default:
-                    mFilter.mode = DatabaseHelper.Filter.MODE_ALL;
+                    mFilter.setMode(DatabaseHelper.Filter.MODE_ALL);
             }
 
-            mFilter.dateFrom = savedInstanceState.getLong(KEY_FILTER_DATE_FROM);
-            mFilter.dateTo = savedInstanceState.getLong(KEY_FILTER_DATE_TO);
+            mFilter.setDateFrom(savedInstanceState.getLong(KEY_FILTER_DATE_FROM));
+            mFilter.setDateTo(savedInstanceState.getLong(KEY_FILTER_DATE_TO));
         }
     }
 
@@ -267,12 +267,12 @@ public class FragmentFueling extends FragmentBase implements
         Utils.setBackgroundTint(mBtnDateTo, R.color.toolbar_title_text, R.color.primary_light);
 
         mToolbarDatesVisible = true;
-        setToolbarDatesVisible(mFilter.mode == DatabaseHelper.Filter.MODE_DATES, false);
+        setToolbarDatesVisible(mFilter.getMode() == DatabaseHelper.Filter.MODE_DATES, false);
 
         mTotalPanelVisible = true;
 
-        updateFilterDateButtons(true, mFilter.dateFrom);
-        updateFilterDateButtons(false, mFilter.dateTo);
+        updateFilterDateButtons(true, mFilter.getDateFrom());
+        updateFilterDateButtons(false, mFilter.getDateTo());
 
         return view;
     }
@@ -284,7 +284,7 @@ public class FragmentFueling extends FragmentBase implements
         if (LOG_ENABLED) UtilsLog.d(TAG, "onActivityCreated", "savedInstanceState " +
                 (savedInstanceState == null ? "=" : "!") + "= null");
 
-        doSetFilterMode(mFilter.mode);
+        doSetFilterMode(mFilter.getMode());
 
         LoaderManager loaderManager = getLoaderManager();
 
@@ -296,9 +296,9 @@ public class FragmentFueling extends FragmentBase implements
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt(KEY_FILTER_MODE, mFilter.mode);
-        outState.putLong(KEY_FILTER_DATE_FROM, mFilter.dateFrom);
-        outState.putLong(KEY_FILTER_DATE_TO, mFilter.dateTo);
+        outState.putInt(KEY_FILTER_MODE, mFilter.getMode());
+        outState.putLong(KEY_FILTER_DATE_FROM, mFilter.getDateFrom());
+        outState.putLong(KEY_FILTER_DATE_TO, mFilter.getDateTo());
     }
 
     @Override
@@ -313,7 +313,7 @@ public class FragmentFueling extends FragmentBase implements
         mHandler.removeCallbacks(mRunnableShowNoRecords);
         mHandler.removeCallbacks(mRunnableShowProgressWheelFueling);
 
-        preferencesHelper.putFilterDate(mFilter.dateFrom, mFilter.dateTo);
+        preferencesHelper.putFilterDate(mFilter.getDateFrom(), mFilter.getDateTo());
 
         super.onDestroy();
     }
@@ -331,7 +331,7 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     private void doSetFilterMode(@DatabaseHelper.Filter.Mode int filterMode) {
-        mFilter.mode = filterMode;
+        mFilter.setMode(filterMode);
 
         mOnFilterChangeListener.onFilterChange(filterMode);
     }
@@ -343,7 +343,7 @@ public class FragmentFueling extends FragmentBase implements
      * @return true, если фильтр изменился.
      */
     public boolean setFilterMode(@DatabaseHelper.Filter.Mode int filterMode) {
-        if (mFilter.mode != filterMode) {
+        if (mFilter.getMode() != filterMode) {
 
             setToolbarDatesVisible(filterMode == DatabaseHelper.Filter.MODE_DATES, true);
 
@@ -372,7 +372,7 @@ public class FragmentFueling extends FragmentBase implements
      * и false, если фильтр был изменён, при этом был вызван restartLoader.
      */
     private boolean checkDateTime(final long dateTime) {
-        switch (mFilter.mode) {
+        switch (mFilter.getMode()) {
             case DatabaseHelper.Filter.MODE_ALL:
                 return true;
 
@@ -381,7 +381,7 @@ public class FragmentFueling extends FragmentBase implements
                     return true;
 
             case DatabaseHelper.Filter.MODE_DATES:
-                if (dateTime >= mFilter.dateFrom && dateTime <= mFilter.dateTo)
+                if (dateTime >= mFilter.getDateFrom() && dateTime <= mFilter.getDateTo())
                     return true;
                 else if (isDateTimeInCurrentYear(dateTime))
                     return !setFilterMode(DatabaseHelper.Filter.MODE_CURRENT_YEAR); // not
@@ -484,17 +484,17 @@ public class FragmentFueling extends FragmentBase implements
     }
 
     private void setFilterDate(final long dateFrom, final long dateTo) {
-        mFilter.dateFrom = dateFrom;
-        mFilter.dateTo = dateTo;
+        mFilter.setDateFrom(dateFrom);
+        mFilter.setDateTo(dateTo);
 
         getLoaderManager().restartLoader(FUELING_CURSOR_LOADER_ID, null, this);
     }
 
     private void setFilterDate(final boolean setDateFrom, final long date) {
         if (setDateFrom) {
-            mFilter.dateFrom = date;
+            mFilter.setDateFrom(date);
         } else {
-            mFilter.dateTo = date;
+            mFilter.setDateTo(date);
         }
 
         getLoaderManager().restartLoader(FUELING_CURSOR_LOADER_ID, null, this);
@@ -523,7 +523,7 @@ public class FragmentFueling extends FragmentBase implements
         else
             mTextNoRecords.setVisibility(View.GONE);
 
-        mFuelingAdapter.setShowYear(mFilter.mode != DatabaseHelper.Filter.MODE_CURRENT_YEAR);
+        mFuelingAdapter.setShowYear(mFilter.getMode() != DatabaseHelper.Filter.MODE_CURRENT_YEAR);
         mFuelingAdapter.swapRecords(records);
 
         if (mIdForScroll != -1) {
@@ -781,7 +781,7 @@ public class FragmentFueling extends FragmentBase implements
             case R.id.action_dates_start_of_year:
             case R.id.action_dates_end_of_year:
                 final Calendar calendar =
-                        UtilsDate.getCalendarInstance(setDateFrom ? mFilter.dateFrom : mFilter.dateTo);
+                        UtilsDate.getCalendarInstance(setDateFrom ? mFilter.getDateFrom() : mFilter.getDateTo());
 
                 switch (menuId) {
                     case R.id.action_dates_start_of_year:
@@ -811,7 +811,7 @@ public class FragmentFueling extends FragmentBase implements
                 switch (menuId) {
                     case R.id.action_dates_winter:
                     case R.id.action_dates_summer:
-                        calendarFrom.setTimeInMillis(setDateFrom ? mFilter.dateFrom : mFilter.dateTo);
+                        calendarFrom.setTimeInMillis(setDateFrom ? mFilter.getDateFrom() : mFilter.getDateTo());
 
                         year = calendarFrom.get(Calendar.YEAR);
                         break;
@@ -901,7 +901,7 @@ public class FragmentFueling extends FragmentBase implements
 
     private void showDateDialog(final boolean dateFrom) {
         final Calendar calendar =
-                UtilsDate.getCalendarInstance(dateFrom ? mFilter.dateFrom : mFilter.dateTo);
+                UtilsDate.getCalendarInstance(dateFrom ? mFilter.getDateFrom() : mFilter.getDateTo());
 
         FragmentManager fragmentManager = getFragmentManager();
 

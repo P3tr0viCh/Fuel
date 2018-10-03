@@ -34,19 +34,23 @@ object UtilsFormat {
     @JvmStatic
     fun stringToFloat(value: String): Float {
         if (TextUtils.isEmpty(value)) return 0f
-        try {
-            return java.lang.Float.parseFloat(value)
+        return try {
+            java.lang.Float.parseFloat(value)
         } catch (e: Exception) {
-            return 0f
+            0f
         }
-
     }
 
     @JvmStatic
     @JvmOverloads
     fun floatToString(value: Float, showZero: Boolean = true): String {
-        val strValue = DECIMAL_FORMAT.format(value.toDouble()).replace(',', '.')
-        return if (showZero) strValue else if (value == 0f) "" else strValue
+        val strValue = DECIMAL_FORMAT.format(value).replace(',', '.')
+
+        return when {
+            showZero -> strValue
+            value == 0f -> ""
+            else -> strValue
+        }
     }
 
     @JvmStatic

@@ -1,6 +1,5 @@
 package ru.p3tr0vich.fuel.models
 
-import android.os.Parcel
 import android.os.Parcelable
 import android.support.annotation.Size
 import kotlinx.android.parcel.Parcelize
@@ -8,7 +7,7 @@ import ru.p3tr0vich.fuel.utils.UtilsDate
 import java.util.*
 
 @Parcelize
-class ChartCostModel() : Parcelable {
+class ChartCostModel : Parcelable {
 
     companion object {
         const val NAME = "CHART_COST_MODEL"
@@ -58,11 +57,6 @@ class ChartCostModel() : Parcelable {
 
     var isSumsNotEquals: Boolean = false
         private set
-
-    constructor(parcel: Parcel) : this() {
-        year = parcel.readInt()
-        hasData = parcel.readByte() != 0.toByte()
-    }
 
     init {
         year = UtilsDate.currentYear

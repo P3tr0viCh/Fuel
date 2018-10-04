@@ -92,13 +92,16 @@ class DatabaseHelper(context: Context) :
             if (LOG_ENABLED) {
                 UtilsLog.d(TAG, "getYears")
             }
+
             return query(DatabaseModel.TableFueling.Columns.COLUMNS_YEARS, DatabaseModel.Where.RECORD_NOT_DELETED,
                     DatabaseModel.TableFueling.Columns.YEAR, DatabaseModel.TableFueling.Columns.YEAR + DatabaseModel.Statement.DESC)
         }
 
     override fun onCreate(db: SQLiteDatabase) {
-        if (LOG_ENABLED)
+        if (LOG_ENABLED) {
             UtilsLog.d(TAG, "onCreate", "sql == " + DatabaseModel.Database.CREATE_STATEMENT)
+        }
+
         db.execSQL(DatabaseModel.Database.CREATE_STATEMENT)
     }
 
@@ -189,12 +192,11 @@ class DatabaseHelper(context: Context) :
     }
 
     companion object {
-
         private const val TAG = "DatabaseHelper"
 
-        private const val LOG_ENABLED = false
+        private var LOG_ENABLED = false
 
-        private const val QUERY_WAIT_ENABLED = false
+        private var QUERY_WAIT_ENABLED = false
 
         @JvmStatic
         fun getBoolean(cursor: Cursor, columnIndex: Int): Boolean {

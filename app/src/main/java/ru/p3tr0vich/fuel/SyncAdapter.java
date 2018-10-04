@@ -19,9 +19,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
-
-import static ru.p3tr0vich.fuel.helpers.ContentProviderHelper.URI_DATABASE_SYNC;
 
 class SyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -437,7 +436,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         mSyncProviderPreferences.putDatabaseRevision(serverRevision);
 
-        getContext().getContentResolver().notifyChange(URI_DATABASE_SYNC, null, false);
+        getContext().getContentResolver().notifyChange(ContentProviderHelper.Companion.getURI_DATABASE_SYNC(), null, false);
 
         if (LOG_ENABLED) UtilsLog.d(TAG, "syncDatabaseLoad", "finish");
     }

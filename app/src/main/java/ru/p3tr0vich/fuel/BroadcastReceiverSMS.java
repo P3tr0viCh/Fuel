@@ -41,8 +41,8 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
     public void onCreate(Context context) {
         mPreferencesHelper = PreferencesHelper.getInstance(context);
 
-        mAddress = mPreferencesHelper.getSMSAddress();
-        mPattern = mPreferencesHelper.getSMSTextPattern();
+        mAddress = mPreferencesHelper.getSmsAddress();
+        mPattern = mPreferencesHelper.getSmsTextPattern();
 
         mEnabled = !(TextUtils.isEmpty(mAddress) || TextUtils.isEmpty(mPattern)) &&
                 mPreferencesHelper.isSMSEnabled();

@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceGroup;
@@ -80,31 +79,31 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
         updatePreference(key);
 
-        switch (preferencesHelper.keys.getAsInt(key)) {
+        switch (preferencesHelper.getKeys().getAsInt(key)) {
             case PRICE:
-                updatePreference(preferencesHelper.keys.defaultCost);
-                updatePreference(preferencesHelper.keys.defaultVolume);
+                updatePreference(preferencesHelper.getKeys().getDefaultCost());
+                updatePreference(preferencesHelper.getKeys().getDefaultVolume());
                 break;
             case DEFAULT_COST:
-                updatePreference(preferencesHelper.keys.defaultVolume);
+                updatePreference(preferencesHelper.getKeys().getDefaultVolume());
                 break;
             case DEFAULT_VOLUME:
-                updatePreference(preferencesHelper.keys.defaultCost);
+                updatePreference(preferencesHelper.getKeys().getDefaultCost());
                 break;
             case SYNC_ENABLED:
-                updatePreference(preferencesHelper.keys.sync);
+                updatePreference(preferencesHelper.getKeys().getSync());
                 mOnPreferenceSyncEnabledChangeListener.onPreferenceSyncEnabledChanged(
                         preferencesHelper.isSyncEnabled());
                 break;
             case SMS_ENABLED:
-                updatePreference(preferencesHelper.keys.sms);
+                updatePreference(preferencesHelper.getKeys().getSms());
         }
     }
 
     @SuppressLint("SwitchIntDef")
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        switch (preferencesHelper.keys.getAsInt(preference.getKey())) {
+        switch (preferencesHelper.getKeys().getAsInt(preference.getKey())) {
             case MAP_CENTER_TEXT:
                 mOnPreferenceClickListener.onPreferenceMapCenterClick();
                 return true;
@@ -129,10 +128,10 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
         addPreferencesFromResource(R.xml.preferences);
         mRootPreferenceScreen = getPreferenceScreen();
 
-        findPreference(preferencesHelper.keys.mapCenterText).setOnPreferenceClickListener(this);
-        findPreference(preferencesHelper.keys.syncYandexDisk).setOnPreferenceClickListener(this);
-        findPreference(preferencesHelper.keys.smsAddress).setOnPreferenceClickListener(this);
-        findPreference(preferencesHelper.keys.smsTextPattern).setOnPreferenceClickListener(this);
+        findPreference(preferencesHelper.getKeys().getMapCenterText()).setOnPreferenceClickListener(this);
+        findPreference(preferencesHelper.getKeys().getSyncYandexDisk()).setOnPreferenceClickListener(this);
+        findPreference(preferencesHelper.getKeys().getSmsAddress()).setOnPreferenceClickListener(this);
+        findPreference(preferencesHelper.getKeys().getSmsTextPattern()).setOnPreferenceClickListener(this);
 
         String keyPreferenceScreen = null;
 
@@ -180,7 +179,7 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
     }
 
     public void goToSyncScreen() {
-        navigateToScreen((PreferenceScreen) findPreference(preferencesHelper.keys.sync));
+        navigateToScreen((PreferenceScreen) findPreference(preferencesHelper.getKeys().getSync()));
     }
 
     @Override
@@ -216,7 +215,9 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
     @Override
     public void onStop() {
-        if (LOG_ENABLED) UtilsLog.d(TAG, "onStop");
+        if (LOG_ENABLED) {
+            UtilsLog.d(TAG, "onStop");
+        }
 
         mRootPreferenceScreen.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 
@@ -225,10 +226,6 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
 
     private String getValue(@Nullable String value, @NonNull String empty) {
         return TextUtils.isEmpty(value) ? empty : value;
-    }
-
-    private String getValue(@Nullable String value, @StringRes int emptyId) {
-        return getValue(value, getString(emptyId));
     }
 
     private void updatePreference(String key) {
@@ -247,11 +244,11 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
         String title = null;
         String summary = null;
 
-        int intKey = preferencesHelper.keys.getAsInt(key);
+        int intKey = preferencesHelper.getKeys().getAsInt(key);
 
         switch (intKey) {
             case PRICE:
-                summary = getValue(preferencesHelper.getPriceAsString(), R.string.pref_price_empty);
+                summary = getValue(preferencesHelper.getPriceAsString(), getString(R.string.pref_price_empty));
                 break;
             case DEFAULT_COST:
             case DEFAULT_VOLUME:
@@ -269,20 +266,25 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
                         if (cost == 0) {
                             summary = getString(R.string.pref_def_cost_calc);
 
-                            if (price != 0)
-                                summary += " (" +  UtilsFormat.floatToString(volume * price) + ")";
+                            if (price != 0) {
+                                summary += " (" + UtilsFormat.floatToString(volume * price) + ")";
+                            }
 
                         }
                     } else {
                         if (volume == 0) {
                             summary = getString(R.string.pref_def_volume_calc);
 
-                            if (price != 0)
+                            if (price != 0) {
                                 summary += " (" + UtilsFormat.floatToString(cost / price) + ")";
+                            }
                         }
                     }
                 }
-                if (TextUtils.isEmpty(summary)) summary = preferencesHelper.getString(key);
+
+                if (TextUtils.isEmpty(summary)) {
+                    summary = preferencesHelper.getString(key);
+                }
                 break;
             case MAP_CENTER_TEXT:
                 summary = preferencesHelper.getMapCenterText();
@@ -304,10 +306,10 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
                         R.string.pref_sms_summary_on : R.string.pref_sms_summary_off);
                 break;
             case SMS_ADDRESS:
-                summary = preferencesHelper.getSMSAddress();
+                summary = preferencesHelper.getSmsAddress();
                 break;
             case SMS_TEXT_PATTERN:
-                summary = preferencesHelper.getSMSTextPattern();
+                summary = preferencesHelper.getSmsTextPattern();
                 summary = summary.replaceAll("[\\s]+", " ");
                 break;
             default:
@@ -321,16 +323,25 @@ public class FragmentPreferences extends FragmentPreferencesBase implements
                     summary = preference.getSummary().toString();
 
                     int i = summary.lastIndexOf(" (");
-                    if (i != -1) summary = summary.substring(0, i);
+
+                    if (i != -1) {
+                        summary = summary.substring(0, i);
+                    }
+
                     summary += " (" + text + ")";
                 }
         }
 
-        if (LOG_ENABLED)
+        if (LOG_ENABLED) {
             UtilsLog.d(TAG, "updatePreference", "title == " + title + ", summary == " + summary);
+        }
 
-        if (title != null) preference.setTitle(title);
-        if (summary != null) preference.setSummary(summary);
+        if (title != null) {
+            preference.setTitle(title);
+        }
+        if (summary != null) {
+            preference.setSummary(summary);
+        }
     }
 
     private void init(@NonNull Preference preference) {

@@ -365,7 +365,7 @@ public class ActivityMain extends AppCompatActivity implements
 
         if (mOpenPreferenceSync) {
             bundle.putString(FragmentPreferences.KEY_PREFERENCE_SCREEN,
-                    mPreferencesHelper.keys.sync);
+                    mPreferencesHelper.getKeys().getSync());
 
             mOpenPreferenceSync = false;
         }

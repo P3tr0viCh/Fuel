@@ -51,8 +51,8 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
 
             PreferencesHelper preferencesHelper = PreferencesHelper.getInstance(context);
 
-            mEditSMSText.setText(preferencesHelper.getSMSText());
-            mEditSMSTextPattern.setText(preferencesHelper.getSMSTextPattern());
+            mEditSMSText.setText(preferencesHelper.getSmsText());
+            mEditSMSTextPattern.setText(preferencesHelper.getSmsTextPattern());
 
             updateResult();
         }

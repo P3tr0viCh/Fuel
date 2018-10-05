@@ -45,7 +45,37 @@
     <string name="sync_in_process">Synchronization is performed</string>
     <string name="sync_no_token">Authorization required</string>
     <string name="sync_not_performed">Never synced</string>
+
     <string name="units_km">km</string>
     <string name="units_hours">h.</string>
     <string name="units_minutes">min.</string>
+
+    <string name="action_dates_curr_year">Current year</string>
+    <string name="action_dates_prev_year">Last year</string>
+    <string name="action_dates_start_of_year">Beginning of year</string>
+    <string name="action_dates_end_of_year">End of year</string>
+    <string name="action_dates_winter">Winter</string>
+    <string name="action_dates_summer">Summer</string>
+
+    <string name="dialog_btn_cancel">CANCEL</string>
+    <string name="dialog_btn_ok">OK</string>
+    <string name="dialog_btn_done">DONE</string>
+    <string name="dialog_btn_load">LOAD</string>
+    <string name="dialog_btn_agree">AGREE</string>
+    <string name="dialog_btn_disagree">NO</string>
+
+    <string name="btn_backup_save">Save</string>
+    <string name="btn_backup_load">Load</string>
+
+    <string name="year_current">Current year</string>
+    <string name="year_all">All record</string>
+    <string name="date_filter">Period</string>
+
+    <string name="city">City</string>
+    <string name="highway">Highway</string>
+    <string name="mixed">Mixed</string>
+
+    <string name="summer">Summer</string>
+    <string name="winter">Winter</string>
+    <string name="text_no_data">No data</string>
 </resources>

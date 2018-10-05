@@ -7,7 +7,7 @@ import java.util.regex.PatternSyntaxException
 
 class SMSTextPatternHelperTest {
 
-    private var pattern: String = ""
+    private var pattern = ""
 
     @Throws(PatternSyntaxException::class)
     private fun check(message: String?): Float? {
@@ -61,7 +61,6 @@ class SMSTextPatternHelperTest {
         // Между xxx и числом должно быть или яяя или ничего
         assertNull(check("xxxэээ123.456yyy"))
     }
-
 
     @Test
     fun testException() {

@@ -203,9 +203,8 @@ public class ActivityYandexMap extends AppCompatActivity implements
         mMapCenter.latitude = preferencesHelper.getMapCenterLatitude();
         mMapCenter.longitude = preferencesHelper.getMapCenterLongitude();
 
-        mLocationHelper = new LocationHelper(this)
-                .setLocationHelperListener(this)
-                .setRequestCodePermissionAccessFineLocation(REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION);
+        mLocationHelper = new LocationHelper(this, this,
+                REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION);
 
         initUI();
     }
@@ -313,7 +312,7 @@ public class ActivityYandexMap extends AppCompatActivity implements
                     Utils.toast(String.format(getString(R.string.text_error_webview), description));
                 }
 
-                @TargetApi(Build.VERSION_CODES.M) // TODO: MARSHMALLOW
+                @TargetApi(Build.VERSION_CODES.M)
                 @Override
                 public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                     super.onReceivedError(view, request, error);
@@ -525,16 +524,19 @@ public class ActivityYandexMap extends AppCompatActivity implements
         return mMapCenter.longitude;
     }
 
+    @NonNull
     @Override
     public String getStartSearchControlPlaceholderContent() {
         return getString(R.string.yandex_map_start_search_control_placeholder_content);
     }
 
+    @NonNull
     @Override
     public String getFinishSearchControlPlaceholderContent() {
         return getString(R.string.yandex_map_finish_search_control_placeholder_content);
     }
 
+    @NonNull
     @Override
     public String getEmptyBalloonContent() {
         return "<h3>" + getString(R.string.yandex_map_empty_geocode) + "</h3>";

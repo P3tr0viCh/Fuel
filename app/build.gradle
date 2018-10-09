@@ -36,7 +36,7 @@ android {
 
         buildConfigField "long", "BUILD_DATE", System.currentTimeMillis() + "l"
 
-        buildConfigField "String", "YANDEX_DISK_CLIENT_ID", "${props['yandexDiskClientId']}"
+        buildConfigField "String", "YANDEX_DISK_CLIENT_ID", "\"${props['yandexDiskClientId']}\""
     }
 
     buildTypes {

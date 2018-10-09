@@ -30,6 +30,8 @@ import ru.p3tr0vich.fuel.helpers.DatabaseHelper
 import ru.p3tr0vich.fuel.helpers.FragmentHelper
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper
 import ru.p3tr0vich.fuel.models.FuelingRecord
+import ru.p3tr0vich.fuel.receivers.BroadcastReceiverDatabaseChanged
+import ru.p3tr0vich.fuel.receivers.BroadcastReceiverLoading
 import ru.p3tr0vich.fuel.utils.Utils
 import ru.p3tr0vich.fuel.utils.UtilsDate
 import ru.p3tr0vich.fuel.utils.UtilsLog

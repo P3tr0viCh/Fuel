@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import ru.p3tr0vich.fuel.adapters.TextWatcherAdapter;
 import ru.p3tr0vich.fuel.utils.Utils;
 import ru.p3tr0vich.fuel.utils.UtilsFormat;
 import ru.p3tr0vich.fuel.utils.UtilsLog;

@@ -116,7 +116,7 @@
             android:syncable="true"/>
 
         <receiver
-            android:name=".BroadcastReceiverSMS"
+            android:name=".receivers.BroadcastReceiverSMS"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>

@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import ru.p3tr0vich.fuel.activities.ActivityDialog;
+import ru.p3tr0vich.fuel.adapters.TextWatcherAdapter;
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.helpers.SMSTextPatternHelper;
 import ru.p3tr0vich.fuel.utils.Utils;
@@ -104,7 +105,7 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
 
     private class EditTextWatcherAdapter extends TextWatcherAdapter {
         @Override
-        public void afterTextChanged(Editable s) {
+        public void afterTextChanged(@NonNull Editable s) {
             updateResult();
         }
     }

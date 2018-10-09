@@ -4,11 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
-
 import ru.p3tr0vich.fuel.ApplicationFuel
-import ru.p3tr0vich.fuel.BroadcastReceiverDatabaseChanged
 import ru.p3tr0vich.fuel.ContentObserverService
 import ru.p3tr0vich.fuel.helpers.ContentProviderHelper
+import ru.p3tr0vich.fuel.receivers.BroadcastReceiverDatabaseChanged
 import ru.p3tr0vich.fuel.utils.UtilsLog
 
 /**

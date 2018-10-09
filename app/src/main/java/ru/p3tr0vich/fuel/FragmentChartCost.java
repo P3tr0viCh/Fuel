@@ -34,6 +34,7 @@ import java.util.Calendar;
 
 import ru.p3tr0vich.fuel.helpers.ContentResolverHelper;
 import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
+import ru.p3tr0vich.fuel.listeners.OnSwipeTouchListener;
 import ru.p3tr0vich.fuel.models.ChartCostModel;
 import ru.p3tr0vich.fuel.utils.Utils;
 import ru.p3tr0vich.fuel.utils.UtilsDate;
@@ -223,7 +224,7 @@ public class FragmentChartCost extends FragmentBase implements
         }
     }
 
-    private final OnSwipeTouchListener mOnSwipeTouchListener = new OnSwipeTouchListener(getActivity()) {
+    private final OnSwipeTouchListener mOnSwipeTouchListener = new OnSwipeTouchListener(getContext()) {
         @Override
         public void onSwipeRight() {
             int position = mTabLayout.getSelectedTabPosition();

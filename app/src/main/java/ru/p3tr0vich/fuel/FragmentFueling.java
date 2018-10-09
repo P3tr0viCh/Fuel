@@ -36,10 +36,13 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.List;
 
+import ru.p3tr0vich.fuel.adapters.FuelingAdapter;
 import ru.p3tr0vich.fuel.factories.FuelingTotalViewFactory;
 import ru.p3tr0vich.fuel.helpers.ContentResolverHelper;
 import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
+import ru.p3tr0vich.fuel.listeners.OnRecyclerViewScrollListener;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
+import ru.p3tr0vich.fuel.receivers.BroadcastReceiverLoading;
 import ru.p3tr0vich.fuel.utils.Utils;
 import ru.p3tr0vich.fuel.utils.UtilsDate;
 import ru.p3tr0vich.fuel.utils.UtilsFormat;

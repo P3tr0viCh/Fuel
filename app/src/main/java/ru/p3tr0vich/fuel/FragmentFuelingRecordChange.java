@@ -22,6 +22,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
 
+import ru.p3tr0vich.fuel.adapters.TextWatcherAdapter;
 import ru.p3tr0vich.fuel.helpers.ContentResolverHelper;
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
@@ -208,7 +209,7 @@ public class FragmentFuelingRecordChange extends Fragment implements View.OnClic
         }
 
         @Override
-        public void afterTextChanged(Editable s) {
+        public void afterTextChanged(@NonNull Editable s) {
             // Изначально шаг установлен на выбор.
             // После первого изменения в одном из полей, это поле назначается редактируемым,
             // а другое -- вычисляемым.

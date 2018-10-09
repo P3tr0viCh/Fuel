@@ -179,10 +179,10 @@ class SyncProviderPreferences {
     public void putLastSync(long dateTime, boolean hasError) throws RemoteException {
         ContentValues contentValues = new ContentValues();
         contentValues.put(mPreferencesHelper.getKeys().getLastSyncDateTime(), dateTime);
-        contentValues.put(mPreferencesHelper.getKeys().getLastSyncDateTime(), hasError);
+        contentValues.put(mPreferencesHelper.getKeys().getLastSyncHasError(), hasError);
 
         update(contentValues, mPreferencesHelper.getKeys().getLastSyncDateTime());
-        update(contentValues, mPreferencesHelper.getKeys().getLastSyncDateTime());
+        update(contentValues, mPreferencesHelper.getKeys().getLastSyncHasError());
     }
 
     public boolean isDatabaseFullSync() throws RemoteException, FormatException {

@@ -7,6 +7,7 @@ import android.webkit.WebView
 
 import ru.p3tr0vich.fuel.utils.UtilsLog
 
+@Suppress("unused")
 internal class YandexMapJavascriptInterface(private val activity: Activity, private val webView: WebView) {
 
     companion object {

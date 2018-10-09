@@ -313,9 +313,9 @@ public class ContentObserverService extends Service {
      * @return Результат запуска синхронизации ({@link Result}).
      */
     @Result
-    public static int getResult(@NonNull Intent data) {
+    public static int getResult(@Nullable Intent data) {
         @Result
-        int result = data.getIntExtra(EXTRA_NAME_RESULT, RESULT_REQUEST_DONE);
+        int result = data != null ? data.getIntExtra(EXTRA_NAME_RESULT, RESULT_REQUEST_DONE) : RESULT_REQUEST_DONE;
         return result;
     }
 

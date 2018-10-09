@@ -11,6 +11,7 @@ import android.text.TextUtils;
 
 import java.util.Map;
 
+import ru.p3tr0vich.fuel.activities.ActivityFuelingRecordChange;
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.helpers.SMSTextPatternHelper;
 import ru.p3tr0vich.fuel.helpers.SystemServicesHelper;
@@ -77,7 +78,7 @@ public class BroadcastReceiverSMS extends BroadcastReceiverSMSBase {
         FuelingRecord fuelingRecord = new FuelingRecord(cost, volume, mPreferencesHelper.getLastTotal());
 
         PendingIntent contentIntent = PendingIntent.getActivity(context, id,
-                ActivityFuelingRecordChange.getIntentForStart(context, fuelingRecord),
+                ActivityFuelingRecordChange.Companion.getIntentForStart(context, fuelingRecord),
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         String title = context.getString(R.string.text_notification_sms_title);

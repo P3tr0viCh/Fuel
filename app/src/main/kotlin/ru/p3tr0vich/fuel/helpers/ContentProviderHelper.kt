@@ -34,21 +34,21 @@ class ContentProviderHelper : ContentProvider() {
         private const val PREFERENCES = 30
         private const val PREFERENCES_ITEM = 31
 
-        private val sURIMatcher = UriMatcher(UriMatcher.NO_MATCH)
+        private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH)
 
         init {
-            sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE, DATABASE)
-            sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_ITEM, DATABASE_ITEM)
-            sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_YEARS, DATABASE_YEARS)
-            sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SUM_BY_MONTHS_ITEM, DATABASE_SUM_BY_MONTHS)
-            sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_TWO_LAST_RECORDS, DATABASE_TWO_LAST_RECORDS)
+            uriMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE, DATABASE)
+            uriMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_ITEM, DATABASE_ITEM)
+            uriMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_YEARS, DATABASE_YEARS)
+            uriMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SUM_BY_MONTHS_ITEM, DATABASE_SUM_BY_MONTHS)
+            uriMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_TWO_LAST_RECORDS, DATABASE_TWO_LAST_RECORDS)
 
-            sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SYNC, DATABASE_SYNC)
-            sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SYNC_ALL, DATABASE_SYNC_ALL)
-            sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SYNC_CHANGED, DATABASE_SYNC_CHANGED)
+            uriMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SYNC, DATABASE_SYNC)
+            uriMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SYNC_ALL, DATABASE_SYNC_ALL)
+            uriMatcher.addURI(BaseUri.AUTHORITY, UriPath.DATABASE_SYNC_CHANGED, DATABASE_SYNC_CHANGED)
 
-            sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.PREFERENCES, PREFERENCES)
-            sURIMatcher.addURI(BaseUri.AUTHORITY, UriPath.PREFERENCES_ITEM, PREFERENCES_ITEM)
+            uriMatcher.addURI(BaseUri.AUTHORITY, UriPath.PREFERENCES, PREFERENCES)
+            uriMatcher.addURI(BaseUri.AUTHORITY, UriPath.PREFERENCES_ITEM, PREFERENCES_ITEM)
         }
 
         private const val CURSOR_DIR_BASE_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE +
@@ -62,12 +62,12 @@ class ContentProviderHelper : ContentProvider() {
         private const val CURSOR_ITEM_BASE_TYPE_PREFERENCES = CURSOR_ITEM_BASE_TYPE + UriPath.PREFERENCES
 
         fun uriMatch(uri: Uri): Int {
-            return sURIMatcher.match(uri)
+            return uriMatcher.match(uri)
         }
     }
 
-    private lateinit var mDatabaseHelper: DatabaseHelper
-    private lateinit var mPreferencesHelper: PreferencesHelper
+    private lateinit var databaseHelper: DatabaseHelper
+    private lateinit var preferencesHelper: PreferencesHelper
 
     private object BaseUri {
         const val SCHEME = ContentResolver.SCHEME_CONTENT
@@ -99,16 +99,16 @@ class ContentProviderHelper : ContentProvider() {
     }
 
     override fun onCreate(): Boolean {
-        val context = context!!
+        assert(context != null)
 
-        mDatabaseHelper = DatabaseHelper(context)
-        mPreferencesHelper = PreferencesHelper.getInstance(context)
+        databaseHelper = DatabaseHelper(context!!)
+        preferencesHelper = PreferencesHelper.getInstance(context!!)
 
         return true
     }
 
     override fun getType(uri: Uri): String? {
-        return when (sURIMatcher.match(uri)) {
+        return when (uriMatcher.match(uri)) {
             DATABASE, DATABASE_YEARS,
             DATABASE_SUM_BY_MONTHS,
             DATABASE_TWO_LAST_RECORDS,
@@ -122,7 +122,7 @@ class ContentProviderHelper : ContentProvider() {
 
             PREFERENCES_ITEM -> CURSOR_ITEM_BASE_TYPE_PREFERENCES
             else -> {
-                UtilsLog.d(TAG, "getType", "sURIMatcher.match() == default, uri == $uri")
+                UtilsLog.d(TAG, "getType", "uriMatcher.match() == default, uri == $uri")
                 null
             }
         }
@@ -131,97 +131,97 @@ class ContentProviderHelper : ContentProvider() {
     override fun query(uri: Uri, projection: Array<String>?, selection: String?,
                        selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
         return try {
-            when (sURIMatcher.match(uri)) {
-                DATABASE -> mDatabaseHelper.getAll(selection!!)
-                DATABASE_ITEM -> mDatabaseHelper.getRecord(ContentUris.parseId(uri))
-                DATABASE_YEARS -> mDatabaseHelper.years
-                DATABASE_SUM_BY_MONTHS -> mDatabaseHelper.getSumByMonthsForYear(ContentUris.parseId(uri).toInt())
-                DATABASE_TWO_LAST_RECORDS -> mDatabaseHelper.twoLastRecords
+            when (uriMatcher.match(uri)) {
+                DATABASE -> databaseHelper.getAll(selection!!)
+                DATABASE_ITEM -> databaseHelper.getRecord(ContentUris.parseId(uri))
+                DATABASE_YEARS -> databaseHelper.years
+                DATABASE_SUM_BY_MONTHS -> databaseHelper.getSumByMonthsForYear(ContentUris.parseId(uri).toInt())
+                DATABASE_TWO_LAST_RECORDS -> databaseHelper.twoLastRecords
 
-                DATABASE_SYNC_ALL -> mDatabaseHelper.getSyncRecords(false)
-                DATABASE_SYNC_CHANGED -> mDatabaseHelper.getSyncRecords(true)
+                DATABASE_SYNC_ALL -> databaseHelper.getSyncRecords(false)
+                DATABASE_SYNC_CHANGED -> databaseHelper.getSyncRecords(true)
 
-                PREFERENCES -> mPreferencesHelper.preferences
-                PREFERENCES_ITEM -> mPreferencesHelper.getPreference(uri.lastPathSegment)
+                PREFERENCES -> preferencesHelper.preferences
+                PREFERENCES_ITEM -> preferencesHelper.getPreference(uri.lastPathSegment)
                 else -> {
-                    UtilsLog.d(TAG, "query", "sURIMatcher.match() == default, uri == $uri")
+                    UtilsLog.d(TAG, "query", "uriMatcher.match() == default, uri == $uri")
                     null
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            UtilsLog.d(TAG, "query", "exception == " + e.toString())
+            UtilsLog.d(TAG, "query", "exception == $e")
             null
         }
     }
 
     override fun insert(uri: Uri, values: ContentValues): Uri? {
         return try {
-            when (sURIMatcher.match(uri)) {
-                DATABASE -> ContentUris.withAppendedId(URI_DATABASE, mDatabaseHelper.insert(values))
+            when (uriMatcher.match(uri)) {
+                DATABASE -> ContentUris.withAppendedId(URI_DATABASE, databaseHelper.insert(values))
                 else -> {
-                    UtilsLog.d(TAG, "insert", "sURIMatcher.match() == default, uri == $uri")
+                    UtilsLog.d(TAG, "insert", "uriMatcher.match() == default, uri == $uri")
                     null
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            UtilsLog.d(TAG, "insert", "exception == " + e.toString())
+            UtilsLog.d(TAG, "insert", "exception == $e")
             null
         }
     }
 
     override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?): Int {
         return try {
-            when (sURIMatcher.match(uri)) {
-                DATABASE -> mDatabaseHelper.update(values!!, selection!!)
-                DATABASE_ITEM -> mDatabaseHelper.update(values!!, ContentUris.parseId(uri))
-                DATABASE_SYNC -> mDatabaseHelper.updateChanged()
-                PREFERENCES -> mPreferencesHelper.setPreferences(values, null)
-                PREFERENCES_ITEM -> mPreferencesHelper.setPreferences(values, uri.lastPathSegment)
+            when (uriMatcher.match(uri)) {
+                DATABASE -> databaseHelper.update(values!!, selection!!)
+                DATABASE_ITEM -> databaseHelper.update(values!!, ContentUris.parseId(uri))
+                DATABASE_SYNC -> databaseHelper.updateChanged()
+                PREFERENCES -> preferencesHelper.setPreferences(values, null)
+                PREFERENCES_ITEM -> preferencesHelper.setPreferences(values, uri.lastPathSegment)
                 else -> {
-                    UtilsLog.d(TAG, "update", "sURIMatcher.match() == default, uri == $uri")
+                    UtilsLog.d(TAG, "update", "uriMatcher.match() == default, uri == $uri")
                     -1
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            UtilsLog.d(TAG, "update", "exception == " + e.toString())
+            UtilsLog.d(TAG, "update", "exception == $e")
             -1
         }
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
         return try {
-            when (sURIMatcher.match(uri)) {
-                DATABASE -> mDatabaseHelper.delete(selection)
-                DATABASE_ITEM -> mDatabaseHelper.delete(ContentUris.parseId(uri))
-                DATABASE_SYNC -> mDatabaseHelper.deleteMarkedAsDeleted()
+            when (uriMatcher.match(uri)) {
+                DATABASE -> databaseHelper.delete(selection)
+                DATABASE_ITEM -> databaseHelper.delete(ContentUris.parseId(uri))
+                DATABASE_SYNC -> databaseHelper.deleteMarkedAsDeleted()
                 else -> {
-                    UtilsLog.d(TAG, "delete", "sURIMatcher.match() == default, uri == $uri")
+                    UtilsLog.d(TAG, "delete", "uriMatcher.match() == default, uri == $uri")
                     -1
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            UtilsLog.d(TAG, "delete", "exception == " + e.toString())
+            UtilsLog.d(TAG, "delete", "exception == $e")
             -1
         }
     }
 
     override fun bulkInsert(uri: Uri, values: Array<ContentValues>): Int {
         return try {
-            when (sURIMatcher.match(uri)) {
+            when (uriMatcher.match(uri)) {
                 DATABASE -> {
                     val numValues = values.size
 
-                    val db = mDatabaseHelper.writableDatabase
+                    val db = databaseHelper.writableDatabase
 
                     db.use {
                         it.beginTransaction()
                         try {
                             for (value in values) {
-                                mDatabaseHelper.insert(it, value)
+                                databaseHelper.insert(it, value)
                             }
 
                             it.setTransactionSuccessful()
@@ -233,13 +233,13 @@ class ContentProviderHelper : ContentProvider() {
                     numValues
                 }
                 else -> {
-                    UtilsLog.d(TAG, "bulkInsert", "sURIMatcher.match() == default, uri == $uri")
+                    UtilsLog.d(TAG, "bulkInsert", "uriMatcher.match() == default, uri == $uri")
                     -1
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            UtilsLog.d(TAG, "bulkInsert", "exception == " + e.toString())
+            UtilsLog.d(TAG, "bulkInsert", "exception == $e")
             -1
         }
     }

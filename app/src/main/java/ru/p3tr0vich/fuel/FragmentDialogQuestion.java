@@ -15,6 +15,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import ru.p3tr0vich.fuel.activities.ActivityMain;
+
 public class FragmentDialogQuestion extends DialogFragment {
 
     public static final String TAG = "FragmentDialogQuestion";

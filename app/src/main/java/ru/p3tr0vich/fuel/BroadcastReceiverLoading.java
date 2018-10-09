@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
-abstract class BroadcastReceiverLoading extends BroadcastReceiverLocalBase {
+public abstract class BroadcastReceiverLoading extends BroadcastReceiverLocalBase {
 
     private static final String ACTION = BuildConfig.APPLICATION_ID + ".ACTION_LOADING";
     private static final String EXTRA_LOADING = BuildConfig.APPLICATION_ID + ".EXTRA_LOADING";

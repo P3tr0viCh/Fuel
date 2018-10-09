@@ -11,7 +11,7 @@ import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.helpers.SystemServicesHelper;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
 
-class SyncAccount {
+public class SyncAccount {
 
     private static final String TAG = "SyncAccount";
 

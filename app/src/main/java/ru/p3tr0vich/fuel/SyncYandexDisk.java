@@ -14,7 +14,7 @@ import java.io.IOException;
 
 import ru.p3tr0vich.fuel.utils.UtilsFileIO;
 
-class SyncYandexDisk {
+public class SyncYandexDisk {
 
     public static final String PATTERN_ACCESS_TOKEN = "access_token=(.*?)(&|$)";
 

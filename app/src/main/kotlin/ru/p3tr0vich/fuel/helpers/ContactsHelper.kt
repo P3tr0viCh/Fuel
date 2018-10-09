@@ -8,13 +8,12 @@ import android.provider.ContactsContract
 object ContactsHelper {
 
     @JvmStatic
-    val intent: Intent
-        get() = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
-                .setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE)
+    val intent: Intent = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
+            .setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE)
 
     @JvmStatic
-    fun getPhoneNumber(context: Context, data: Intent): String? {
-        val uriData = data.data ?: return null
+    fun getPhoneNumber(context: Context, data: Intent?): String? {
+        val uriData = data?.data ?: return null
 
         @SuppressLint("Recycle")
         val cursor = context.contentResolver.query(uriData,

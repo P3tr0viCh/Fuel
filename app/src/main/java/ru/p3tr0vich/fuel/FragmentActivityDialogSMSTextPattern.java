@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import ru.p3tr0vich.fuel.activities.ActivityDialog;
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper;
 import ru.p3tr0vich.fuel.helpers.SMSTextPatternHelper;
 import ru.p3tr0vich.fuel.utils.Utils;
@@ -31,6 +32,7 @@ public class FragmentActivityDialogSMSTextPattern extends Fragment
         return new FragmentActivityDialogSMSTextPattern();
     }
 
+    @NonNull
     @Override
     public String getTitle() {
         return getString(R.string.pref_sms_title);

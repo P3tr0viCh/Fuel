@@ -41,6 +41,11 @@ class BroadcastReceiverSMS : BroadcastReceiverSMSBase() {
         pattern = preferencesHelper!!.smsTextPattern
 
         isEnabled = !(TextUtils.isEmpty(address) || TextUtils.isEmpty(pattern)) && preferencesHelper!!.isSMSEnabled
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            SystemServicesHelper.getNotificationManager(context)?.createNotificationChannel(
+                    NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT))
+        }
     }
 
     public override fun onReceive(context: Context, messages: Map<String, BroadcastReceiverSMSBase.Message>) {
@@ -82,30 +87,24 @@ class BroadcastReceiverSMS : BroadcastReceiverSMSBase() {
                 UtilsFormat.floatToString(cost),
                 UtilsFormat.floatToString(volume))
 
-        @Suppress("DEPRECATION")
         val builder = when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-            -> {
-                SystemServicesHelper.getNotificationManager(context)?.createNotificationChannel(
-                        NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
-                                NotificationManager.IMPORTANCE_DEFAULT))
-
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
                 Notification.Builder(context, CHANNEL_ID)
             }
             else -> {
+                @Suppress("DEPRECATION")
                 Notification.Builder(context)
             }
         }
 
-        builder.apply {
-            setTicker(title)
-            setContentTitle(title)
-            setContentText(text)
-            setContentIntent(contentIntent)
-            setSmallIcon(R.drawable.ic_stat_maps_local_gas_station)
-            setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
-            setAutoCancel(true)
-        }
+        builder
+                .setTicker(title)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setContentIntent(contentIntent)
+                .setSmallIcon(R.drawable.ic_stat_maps_local_gas_station)
+                .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
+                .setAutoCancel(true)
 
         SystemServicesHelper.getNotificationManager(context)?.notify(id, builder.build())
     }

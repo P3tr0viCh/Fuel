@@ -98,10 +98,14 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 handleException(e, syncResult);
             }
 
-            if (LOG_ENABLED) UtilsLog.d(TAG, "onPerformSync", "finish" +
-                    (syncResult.hasError() ? ", errors == " + syncResult.toString() : ", all ok"));
+            if (LOG_ENABLED || syncResult.hasError()) {
+                UtilsLog.d(TAG, "onPerformSync", "finish" +
+                        (syncResult.hasError() ? ", errors == " + syncResult.toString() : ", all ok"));
+            }
 
-            if (extras.getBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, false)) syncResult.clear();
+            if (extras.getBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, false)) {
+                syncResult.clear();
+            }
 
             mSyncYandexDisk = null;
             mSyncLocal = null;
@@ -125,7 +129,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         else if (e instanceof ServerException) syncResult.stats.numIoExceptions++;
         else syncResult.databaseError = true;
 
-        if (LOG_ENABLED) UtilsLog.d(TAG, "handleException", "error  == " + e.toString());
+        UtilsLog.d(TAG, "handleException", "error  == " + e.toString());
     }
 
     private void syncPreferences() throws

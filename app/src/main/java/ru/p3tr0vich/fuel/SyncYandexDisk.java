@@ -35,7 +35,7 @@ public class SyncYandexDisk {
         public static final String WWW = "https://disk.yandex.ru/client/disk";
 
         public static final String AUTH = "https://oauth.yandex.ru/authorize?response_type=token&client_id=" +
-                SyncYandexDiskSecret.CLIENT_ID;
+                BuildConfig.YANDEX_DISK_CLIENT_ID;
     }
 
     SyncYandexDisk(@NonNull SyncFiles syncFiles, String token) {

@@ -25,7 +25,6 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVer
     buildToolsVersion rootProject.ext.buildToolsVer
 
-    //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "ru.p3tr0vich.fuel"
 
@@ -36,6 +35,8 @@ android {
         versionName "1.0"
 
         buildConfigField "long", "BUILD_DATE", System.currentTimeMillis() + "l"
+
+        buildConfigField "String", "YANDEX_DISK_CLIENT_ID", "${props['yandexDiskClientId']}"
     }
 
     buildTypes {
@@ -97,8 +98,7 @@ android {
 
 afterEvaluate {
     android.sourceSets.all { sourceSet ->
-        if (!sourceSet.name.startsWith("test"))
-        {
+        if (!sourceSet.name.startsWith("test")) {
             sourceSet.kotlin.setSrcDirs([])
         }
     }
@@ -106,7 +106,7 @@ afterEvaluate {
 
 static def appendVersionName(variant, defaultConfig) {
     variant.outputs.all { output ->
-        outputFileName = defaultConfig.applicationId + "-" + "${variant.versionName}-${variant.name}.apk"
+        outputFileName = "${defaultConfig.applicationId}-${variant.versionName}-${variant.name}.apk"
     }
 }
 
@@ -123,7 +123,7 @@ dependencies {
 
     implementation "com.github.P3tr0viCh:ExpansionPanel:1.0.0"
 
-    implementation "com.google.android.gms:play-services-location:15.0.1"
+    implementation "com.google.android.gms:play-services-location:16.0.0"
 
     implementation "com.github.PhilJay:MPAndroidChart:v3.0.3"
     implementation "com.yandex.android:disk-restapi-sdk:1.03"

@@ -54,18 +54,18 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
         }
     }
 
-    private val mSharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     val keys = Keys(context)
 
     private val isChanged: Boolean
-        get() = mSharedPreferences.getBoolean(keys.changed, true)
+        get() = sharedPreferences.getBoolean(keys.changed, true)
 
     val isSyncEnabled: Boolean
-        get() = mSharedPreferences.getBoolean(keys.syncEnabled, false)
+        get() = sharedPreferences.getBoolean(keys.syncEnabled, false)
 
     val isSMSEnabled: Boolean
-        get() = mSharedPreferences.getBoolean(keys.smsEnabled, false)
+        get() = sharedPreferences.getBoolean(keys.smsEnabled, false)
 
     val smsAddress: String
         get() = getString(keys.smsAddress)
@@ -77,19 +77,19 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
         get() = getString(keys.smsText)
 
     private val isFullSync: Boolean
-        get() = mSharedPreferences.getBoolean(keys.databaseFullSync, false)
+        get() = sharedPreferences.getBoolean(keys.databaseFullSync, false)
 
     val lastSyncDateTime: Long
-        get() = mSharedPreferences.getLong(keys.lastSyncDateTime, SYNC_NONE)
+        get() = sharedPreferences.getLong(keys.lastSyncDateTime, SYNC_NONE)
 
     val lastSyncHasError: Boolean
-        get() = mSharedPreferences.getBoolean(keys.lastSyncHasError, false)
+        get() = sharedPreferences.getBoolean(keys.lastSyncHasError, false)
 
     val filterDateFrom: Long
-        get() = mSharedPreferences.getLong(keys.filterDateFrom, System.currentTimeMillis())
+        get() = sharedPreferences.getLong(keys.filterDateFrom, System.currentTimeMillis())
 
     val filterDateTo: Long
-        get() = mSharedPreferences.getLong(keys.filterDateTo, System.currentTimeMillis())
+        get() = sharedPreferences.getLong(keys.filterDateTo, System.currentTimeMillis())
 
     val defaultCost: Float
         get() = UtilsFormat.stringToFloat(getString(keys.defaultCost))
@@ -130,21 +130,21 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
         }
 
     val calcSelectedCons: Int
-        get() = mSharedPreferences.getInt(keys.consumption, 0)
+        get() = sharedPreferences.getInt(keys.consumption, 0)
 
     val calcSelectedSeason: Int
-        get() = mSharedPreferences.getInt(keys.season, 0)
+        get() = sharedPreferences.getInt(keys.season, 0)
 
     val mapCenterText: String
         get() = getString(keys.mapCenterText, DEFAULT_MAP_CENTER_TEXT)
 
     val mapCenterLatitude: Double
-        get() = java.lang.Double.longBitsToDouble(mSharedPreferences.getLong(
+        get() = java.lang.Double.longBitsToDouble(sharedPreferences.getLong(
                 keys.mapCenterLatitude,
                 java.lang.Double.doubleToLongBits(DEFAULT_MAP_CENTER_LATITUDE)))
 
     val mapCenterLongitude: Double
-        get() = java.lang.Double.longBitsToDouble(mSharedPreferences.getLong(
+        get() = java.lang.Double.longBitsToDouble(sharedPreferences.getLong(
                 keys.mapCenterLongitude,
                 java.lang.Double.doubleToLongBits(DEFAULT_MAP_CENTER_LONGITUDE)))
 
@@ -300,12 +300,12 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
     }
 
     init {
-        //        mSharedPreferences.edit()
+        //        sharedPreferences.edit()
         //                .remove("last sync")
         //                .remove("full sync")
         //                .apply();
 
-        mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
@@ -319,7 +319,7 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
     }
 
     private fun putChanged(changed: Boolean) {
-        mSharedPreferences
+        sharedPreferences
                 .edit()
                 .putBoolean(keys.changed, changed)
                 .apply()
@@ -333,14 +333,14 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
     }
 
     fun putSMSAddress(address: String) {
-        mSharedPreferences
+        sharedPreferences
                 .edit()
                 .putString(keys.smsAddress, address)
                 .apply()
     }
 
     fun putSMSTextAndPattern(text: String, pattern: String) {
-        mSharedPreferences
+        sharedPreferences
                 .edit()
                 .putString(keys.smsText, text)
                 .putString(keys.smsTextPattern, pattern)
@@ -348,11 +348,11 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
     }
 
     private fun getRevision(keyRevision: String?): Int {
-        return mSharedPreferences.getInt(keyRevision, -1)
+        return sharedPreferences.getInt(keyRevision, -1)
     }
 
     private fun putRevision(keyRevision: String?, revision: Int) {
-        mSharedPreferences
+        sharedPreferences
                 .edit()
                 .putInt(keyRevision, revision)
                 .apply()
@@ -361,28 +361,28 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
     }
 
     fun putFullSync(fullSync: Boolean) {
-        mSharedPreferences
+        sharedPreferences
                 .edit()
                 .putBoolean(keys.databaseFullSync, fullSync)
                 .apply()
     }
 
     private fun putLastSyncDateTime(dateTime: Long) {
-        mSharedPreferences
+        sharedPreferences
                 .edit()
                 .putLong(keys.lastSyncDateTime, dateTime)
                 .apply()
     }
 
     private fun putLastSyncHasError(hasError: Boolean) {
-        mSharedPreferences
+        sharedPreferences
                 .edit()
                 .putBoolean(keys.lastSyncHasError, hasError)
                 .apply()
     }
 
     fun putFilterDate(dateFrom: Long, dateTo: Long) {
-        mSharedPreferences
+        sharedPreferences
                 .edit()
                 .putLong(keys.filterDateFrom, dateFrom)
                 .putLong(keys.filterDateTo, dateTo)
@@ -390,14 +390,14 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
     }
 
     fun putLastTotal(lastTotal: Float) {
-        mSharedPreferences
+        sharedPreferences
                 .edit()
                 .putString(context.getString(R.string.pref_key_last_total), lastTotal.toString())
                 .apply()
     }
 
     fun putCalc(distance: String, cost: String, volume: String, cons: Int, season: Int) {
-        mSharedPreferences
+        sharedPreferences
                 .edit()
                 .putString(keys.distance, distance)
                 .putString(keys.cost, cost)
@@ -408,7 +408,7 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
     }
 
     fun putMapCenter(text: String, latitude: Double, longitude: Double) {
-        mSharedPreferences
+        sharedPreferences
                 .edit()
                 .putString(keys.mapCenterText, text)
                 .putLong(keys.mapCenterLatitude, java.lang.Double.doubleToRawLongBits(latitude))
@@ -417,7 +417,7 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
     }
 
     private fun getString(key: String, defValue: String): String {
-        return mSharedPreferences.getString(key, defValue) ?: defValue
+        return sharedPreferences.getString(key, defValue) ?: defValue
     }
 
     fun getString(key: String): String {
@@ -429,7 +429,7 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
         val result = ContentValues()
 
         if (TextUtils.isEmpty(preference)) {
-            val map = mSharedPreferences.all
+            val map = sharedPreferences.all
 
             var key: String
             var value: Any?
@@ -492,13 +492,13 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
         }
 
         if (LOG_ENABLED) {
-            UtilsLog.d(TAG, "setPreferences", "preference == $preference")
+            UtilsLog.d(TAG, "setPreferences", "preferences == $preferences, preference == $preference")
         }
 
         if (TextUtils.isEmpty(preference)) {
-            mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+            sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
 
-            val editor = mSharedPreferences.edit()
+            val editor = sharedPreferences.edit()
 
             try {
                 var value: Any
@@ -519,16 +519,19 @@ class PreferencesHelper private constructor(var context: Context) : SharedPrefer
             } finally {
                 editor.commit()
 
-                mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+                sharedPreferences.registerOnSharedPreferenceChangeListener(this)
             }
 
             return preferences.size()
         } else {
             when (keys.getAsInt(preference)) {
                 Keys.CHANGED -> putChanged(preferences.getAsBoolean(preference)!!)
+
                 Keys.DATABASE_REVISION,
                 Keys.PREFERENCES_REVISION -> putRevision(preference, preferences.getAsInteger(preference)!!)
+
                 Keys.DATABASE_FULL_SYNC -> putFullSync(preferences.getAsBoolean(preference)!!)
+
                 Keys.LAST_SYNC_DATE_TIME -> putLastSyncDateTime(preferences.getAsLong(preference)!!)
                 Keys.LAST_SYNC_HAS_ERROR -> putLastSyncHasError(preferences.getAsBoolean(preference)!!)
                 else -> UtilsLog.d(TAG, "setPreferences", "unhandled preference == $preference")

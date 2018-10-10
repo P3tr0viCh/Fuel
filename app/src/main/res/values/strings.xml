@@ -79,6 +79,7 @@
 
     <string name="text_notification_sms_title">Оплата топлива</string>
     <string name="text_notification_sms_text">Стоимость %1$s, объём %2$s</string>
+    <string name="text_notification_sms_channel_name">Оплата топлива</string>
 
     <string name="text_sms_text">Пример сообщения</string>
     <string name="text_sms_text_pattern">Шаблон сообщения</string>

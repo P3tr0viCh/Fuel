@@ -86,15 +86,17 @@ class ActivityMain : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        initToolbar()
-        initToolbarSpinner()
-        initDrawer()
-
         syncAccount = SyncAccount(this)
 
         preferencesHelper = PreferencesHelper.getInstance(this)
 
         fragmentHelper = FragmentHelper(this)
+
+        syncMonitor = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this)
+
+        initToolbar()
+        initToolbarSpinner()
+        initDrawer()
 
         initSyncViews()
 
@@ -102,8 +104,6 @@ class ActivityMain : AppCompatActivity(),
 
         initLoadingStatusReceiver()
         initDatabaseChangedReceiver()
-
-        syncMonitor = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this)
 
         if (savedInstanceState == null) {
             fragmentHelper!!.addMainFragment()
@@ -113,10 +113,8 @@ class ActivityMain : AppCompatActivity(),
             currentFragmentId = FragmentFactory.intToFragmentId(savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID))
 
             if (currentFragmentId == FragmentFactory.Ids.PREFERENCES) {
-                val fragmentPreferences = fragmentHelper!!.fragmentPreferences
-
-                if (fragmentPreferences != null) {
-                    drawerToggle!!.isDrawerIndicatorEnabled = fragmentPreferences.isInRoot
+                fragmentHelper!!.fragmentPreferences?.let {
+                    drawerToggle?.isDrawerIndicatorEnabled = it.isInRoot
                 }
             }
         }
@@ -132,7 +130,7 @@ class ActivityMain : AppCompatActivity(),
     private fun initToolbarSpinner() {
         toolbarSpinner = AppCompatSpinner(supportActionBar?.themedContext)
 
-        Utils.setBackgroundTint(toolbarSpinner!!, R.color.toolbar_title_text, R.color.primary_light)
+        Utils.setBackgroundTint(toolbarSpinner, R.color.toolbar_title_text, R.color.primary_light)
 
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
@@ -146,15 +144,15 @@ class ActivityMain : AppCompatActivity(),
         toolbarMain!!.addView(toolbarSpinner)
 
         toolbarSpinner!!.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                val fragmentFueling = fragmentHelper!!.fragmentFueling
-
-                if (fragmentFueling != null && fragmentFueling.isVisible) {
-                    fragmentFueling.setFilterMode(positionToFilterMode(position))
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                fragmentHelper?.fragmentFueling?.let {
+                    if (it.isVisible) {
+                        it.setFilterMode(positionToFilterMode(position))
+                    }
                 }
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>) {}
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 
@@ -167,9 +165,10 @@ class ActivityMain : AppCompatActivity(),
             override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
 
-                val fragmentFueling = fragmentHelper!!.fragmentFueling
-                if (fragmentFueling != null && fragmentFueling.isVisible) {
-                    fragmentFueling.setFabVisible(false)
+                fragmentHelper?.fragmentFueling?.let {
+                    if (it.isVisible) {
+                        it.setFabVisible(false)
+                    }
                 }
 
                 Utils.hideKeyboard(this@ActivityMain)
@@ -180,9 +179,10 @@ class ActivityMain : AppCompatActivity(),
             override fun onDrawerClosed(drawerView: View) {
                 super.onDrawerClosed(drawerView)
 
-                val fragmentFueling = fragmentHelper!!.fragmentFueling
-                if (fragmentFueling != null && fragmentFueling.isVisible) {
-                    fragmentFueling.setFabVisible(true)
+                fragmentHelper?.fragmentFueling?.let {
+                    if (it.isVisible) {
+                        it.setFabVisible(true)
+                    }
                 }
 
                 selectItem(clickedMenuId)
@@ -236,9 +236,7 @@ class ActivityMain : AppCompatActivity(),
     private fun initDatabaseChangedReceiver() {
         broadcastReceiverDatabaseChanged = object : BroadcastReceiverDatabaseChanged() {
             override fun onReceive(id: Long) {
-                val fragmentFueling = fragmentHelper!!.fragmentFueling
-
-                fragmentFueling?.updateList(id)
+                fragmentHelper!!.fragmentFueling?.updateList(id)
             }
         }
         broadcastReceiverDatabaseChanged!!.register(this)
@@ -271,8 +269,8 @@ class ActivityMain : AppCompatActivity(),
             FragmentFactory.Ids.CHART_COST -> R.id.action_chart_cost
             FragmentFactory.Ids.FUELING -> R.id.action_fueling
             FragmentFactory.Ids.PREFERENCES -> R.id.action_preferences
-            FragmentFactory.Ids.BAD_ID -> -1
-            else -> -1
+            FragmentFactory.Ids.BAD_ID -> throw IllegalArgumentException("Bad fragment id == $fragmentId")
+            else -> throw IllegalArgumentException("Bad fragment id == $fragmentId")
         }
     }
 
@@ -285,13 +283,11 @@ class ActivityMain : AppCompatActivity(),
 
         if (currentFragmentId == fragmentId) {
             if (currentFragmentId == FragmentFactory.Ids.PREFERENCES) {
-                val fragmentPreferences = fragmentHelper!!.fragmentPreferences
-
-                if (fragmentPreferences != null) {
+                fragmentHelper!!.fragmentPreferences?.let {
                     if (openPreferenceSync) {
-                        fragmentPreferences.goToSyncScreen()
+                        it.goToSyncScreen()
                     } else {
-                        fragmentPreferences.goToRootScreen()
+                        it.goToRootScreen()
                     }
                 }
             }
@@ -299,10 +295,8 @@ class ActivityMain : AppCompatActivity(),
             return
         }
 
-        val fragmentMain = fragmentHelper!!.getFragment(FragmentFactory.Ids.MAIN)
-
-        if (fragmentMain != null) {
-            if (!fragmentMain.isVisible) {
+        fragmentHelper!!.getFragment(FragmentFactory.Ids.MAIN)?.let {
+            if (!it.isVisible) {
                 supportFragmentManager?.popBackStack()
             }
         }
@@ -598,7 +592,6 @@ class ActivityMain : AppCompatActivity(),
 
         private const val REQUEST_CODE_REQUEST_SYNC = 400
 
-        @JvmStatic
         @DatabaseHelper.Filter.Mode
         private fun positionToFilterMode(position: Int): Int {
             return when (position) {
@@ -608,7 +601,6 @@ class ActivityMain : AppCompatActivity(),
             }
         }
 
-        @JvmStatic
         private fun filterModeToPosition(@DatabaseHelper.Filter.Mode filterMode: Int): Int {
             return when (filterMode) {
                 DatabaseHelper.Filter.MODE_YEAR, DatabaseHelper.Filter.MODE_DATES -> 1

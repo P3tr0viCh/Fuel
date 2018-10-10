@@ -139,7 +139,7 @@ object Utils {
     }
 
     @JvmStatic
-    fun setBackgroundTint(view: View, @ColorRes defaultColor: Int, @ColorRes pressedColor: Int) {
+    fun setBackgroundTint(view: View?, @ColorRes defaultColor: Int, @ColorRes pressedColor: Int) {
         if (view is TintableBackgroundView) {
             (view as TintableBackgroundView).supportBackgroundTintList = ColorStateList(
                     arrayOf(intArrayOf(-android.R.attr.state_pressed, -android.R.attr.state_checked), intArrayOf()),

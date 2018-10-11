@@ -53,15 +53,11 @@ class FragmentDialogMessage : DialogFragment() {
             return dialogMessage
         }
 
-        fun show(parent: FragmentActivity,
-                 title: String?,
-                 message: String) {
+        fun show(parent: FragmentActivity, title: String?, message: String) {
             newInstance(title, message).show(parent.supportFragmentManager, TAG)
         }
 
-        fun show(parent: FragmentActivity,
-                 @StringRes titleId: Int?,
-                 @StringRes messageId: Int) {
+        fun show(parent: FragmentActivity, @StringRes titleId: Int?, @StringRes messageId: Int) {
             show(parent, if (titleId == null) null else parent.getString(titleId), parent.getString(messageId))
         }
     }

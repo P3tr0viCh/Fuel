@@ -42,7 +42,9 @@ class FragmentDialogProgress : DialogFragment() {
 
         UtilsLog.d(TAG, "onResume", "asyncTaskOperationXml == $asyncTaskOperationXml")
 
-        if (asyncTaskOperationXml == null) dismiss()
+        if (asyncTaskOperationXml == null) {
+            dismiss()
+        }
     }
 
     override fun dismiss() {

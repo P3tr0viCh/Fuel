@@ -19,40 +19,34 @@ class FragmentDialogQuestion : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity!!)
 
-        @StringRes var textId: Int?
-
         arguments?.getInt(TITLE)?.let {
-            with(activity!!.layoutInflater
-                    .inflate(R.layout.apptheme_dialog_title, null, false) as TextView) {
+            val view = activity!!.layoutInflater
+                    .inflate(R.layout.apptheme_dialog_title, null, false) as TextView
 
-                this.setText(it)
+            view.setText(it)
 
-                builder.setCustomTitle(this)
-            }
+            builder.setCustomTitle(view)
         }
 
         builder.setMessage(arguments?.getInt(MESSAGE) ?: -1)
 
-        //todo
-        textId = arguments!!.getInt(POSITIVE_BUTTON_TEXT)
-        if (textId == 0) textId = R.string.dialog_btn_ok
-
-        builder.setPositiveButton(textId) { _, _ ->
-            val fragment = targetFragment
-            if (fragment != null) {
-                fragment.onActivityResult(targetRequestCode, Activity.RESULT_OK, null)
-            } else {
-                if (activity is ActivityMain)
-                // TODO: use listener?
-                    (activity as ActivityMain)
-                            .onActivityResult(targetRequestCode, Activity.RESULT_OK, null)
+        arguments?.getInt(POSITIVE_BUTTON_TEXT)?.let {
+            builder.setPositiveButton(if (it == 0) R.string.dialog_btn_ok else it) { _, _ ->
+                val fragment = targetFragment
+                if (fragment != null) {
+                    fragment.onActivityResult(targetRequestCode, Activity.RESULT_OK, null)
+                } else {
+                    if (activity is ActivityMain)
+                    // TODO: use listener?
+                        (activity as ActivityMain)
+                                .onActivityResult(targetRequestCode, Activity.RESULT_OK, null)
+                }
             }
         }
 
-        textId = arguments!!.getInt(NEGATIVE_BUTTON_TEXT)
-        if (textId == 0) textId = R.string.dialog_btn_cancel
-
-        builder.setNegativeButton(textId, null)
+        arguments?.getInt(NEGATIVE_BUTTON_TEXT)?.let {
+            builder.setNegativeButton(if (it == 0) R.string.dialog_btn_cancel else it, null)
+        }
 
         return builder.setCancelable(true).create()
     }
@@ -83,20 +77,18 @@ class FragmentDialogQuestion : DialogFragment() {
             return dialogQuestion
         }
 
+        //todo: delete
         fun show(parent: Fragment,
                  requestCode: Int,
                  @StringRes titleId: Int?,
                  @StringRes messageId: Int,
                  @StringRes positiveButtonTextId: Int?,
                  @StringRes negativeButtonTextId: Int?) {
-            val dialogQuestion = newInstance(titleId, messageId,
-                    positiveButtonTextId, negativeButtonTextId)
+            val dialogQuestion = newInstance(titleId, messageId, positiveButtonTextId, negativeButtonTextId)
 
             dialogQuestion.setTargetFragment(parent, requestCode)
 
-            val fragmentManager = parent.fragmentManager!!
-
-            dialogQuestion.show(fragmentManager, TAG)
+            dialogQuestion.show(parent.fragmentManager!!, TAG)
         }
 
         fun show(parent: AppCompatActivity,
@@ -105,10 +97,10 @@ class FragmentDialogQuestion : DialogFragment() {
                  @StringRes messageId: Int,
                  @StringRes positiveButtonTextId: Int?,
                  @StringRes negativeButtonTextId: Int?) {
-            val dialogQuestion = newInstance(titleId, messageId,
-                    positiveButtonTextId, negativeButtonTextId)
+            val dialogQuestion = newInstance(titleId, messageId, positiveButtonTextId, negativeButtonTextId)
 
             dialogQuestion.setTargetFragment(null, requestCode)
+
             dialogQuestion.show(parent.supportFragmentManager, TAG)
         }
     }

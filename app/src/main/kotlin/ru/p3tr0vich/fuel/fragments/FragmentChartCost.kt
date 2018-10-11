@@ -38,17 +38,22 @@ import java.util.*
 
 class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderManager.LoaderCallbacks<Cursor> {
 
-    private var mTabLayout: TabLayout? = null
-    private var mChart: BarChart? = null
-    private var mTextNoRecords: TextView? = null
-    private var mTextMedian: TextView? = null
-    private var mTextSum: TextView? = null
+    private var tabLayout: TabLayout? = null
+    private var chart: BarChart? = null
+    private var textNoRecords: TextView? = null
+    private var textMedian: TextView? = null
+    private var textSum: TextView? = null
 
-    private val mColors = intArrayOf(R.color.chart_winter, R.color.chart_winter, R.color.chart_spring, R.color.chart_spring, R.color.chart_spring, R.color.chart_summer, R.color.chart_summer, R.color.chart_summer, R.color.chart_autumn, R.color.chart_autumn, R.color.chart_autumn, R.color.chart_winter)
+    private val colors = intArrayOf(
+            R.color.chart_winter, R.color.chart_winter,
+            R.color.chart_spring, R.color.chart_spring, R.color.chart_spring,
+            R.color.chart_summer, R.color.chart_summer, R.color.chart_summer,
+            R.color.chart_autumn, R.color.chart_autumn, R.color.chart_autumn,
+            R.color.chart_winter)
 
-    private var mUpdateYearsInProcess = true
+    private var updateYearsInProcess = true
 
-    private var mChartCostModel: ChartCostModel? = null
+    private var chartCostModel: ChartCostModel? = null
 
     private lateinit var months: Months
 
@@ -58,18 +63,20 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
     override val subtitleId: Int
         get() = R.string.title_chart_cost_subtitle
 
-    private val mOnSwipeTouchListener = object : OnSwipeTouchListener(context) {
+    private val onSwipeTouchListener = object : OnSwipeTouchListener(context) {
         override fun onSwipeRight() {
-            val position = mTabLayout!!.selectedTabPosition
+            val position = tabLayout!!.selectedTabPosition
+
             if (position != 0) {
-                selectTab(mTabLayout!!.getTabAt(position - 1))
+                selectTab(tabLayout!!.getTabAt(position - 1))
             }
         }
 
         override fun onSwipeLeft() {
-            val position = mTabLayout!!.selectedTabPosition
-            if (position != mTabLayout!!.tabCount - 1) {
-                selectTab(mTabLayout!!.getTabAt(position + 1))
+            val position = tabLayout!!.selectedTabPosition
+
+            if (position != tabLayout!!.tabCount - 1) {
+                selectTab(tabLayout!!.getTabAt(position + 1))
             }
         }
 
@@ -78,12 +85,12 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
         override fun onSwipeBottom() {}
     }
 
-    private val mFloatFormatter = FloatFormatter()
-    private val mMonthFormatter = MonthFormatter()
+    private val floatFormatter = FloatFormatter()
+    private val monthFormatter = MonthFormatter()
 
-    private val mHandler = Handler()
+    private val handler = Handler()
 
-    private val mRunnableShowNoRecords = Runnable { Utils.setViewVisibleAnimate(mTextNoRecords!!, true) }
+    private val runnableShowNoRecords = Runnable { Utils.setViewVisibleAnimate(textNoRecords!!, true) }
 
     private class Months(context: Context) {
 
@@ -104,40 +111,42 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
     }
 
     private fun getYearFromPosition(index: Int): Int {
-        return if (mChartCostModel!!.years != null) mChartCostModel!!.years!![index] else -1
+        return chartCostModel!!.years?.get(index) ?: -1
     }
 
     private fun getPositionForYear(year: Int): Int {
-        if (mChartCostModel!!.years == null) return -1
+        if (chartCostModel!!.years == null) return -1
 
-        for (i in 0 until mChartCostModel!!.years!!.size)
-            if (mChartCostModel!!.years!![i] == year)
+        for (i in 0 until chartCostModel!!.years!!.size) {
+            if (chartCostModel!!.years!![i] == year) {
                 return i
+            }
+        }
+
         return -1
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val context = context!!
-
-        months = Months(context)
+        months = Months(context!!)
 
         if (savedInstanceState == null) {
-            mChartCostModel = ChartCostModel()
+            chartCostModel = ChartCostModel()
 
             loaderManager.initLoader(YEARS_CURSOR_LOADER_ID, null, this)
         } else
-            mChartCostModel = savedInstanceState.getParcelable(ChartCostModel.NAME)
+            chartCostModel = savedInstanceState.getParcelable(ChartCostModel.NAME)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(ChartCostModel.NAME, mChartCostModel)
+        outState.putParcelable(ChartCostModel.NAME, chartCostModel)
     }
 
     override fun onDestroy() {
-        mHandler.removeCallbacks(mRunnableShowNoRecords)
+        handler.removeCallbacks(runnableShowNoRecords)
+
         super.onDestroy()
     }
 
@@ -146,62 +155,64 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
 
         val view = inflater.inflate(R.layout.fragment_chart_cost, container, false)
 
-        mTabLayout = view.findViewById(R.id.tab_layout)
+        tabLayout = view.findViewById(R.id.tab_layout)
 
-        mTextNoRecords = view.findViewById(R.id.text_no_records)
-        mTextNoRecords!!.visibility = View.GONE
+        textNoRecords = view.findViewById(R.id.text_no_records)
+        textNoRecords!!.visibility = View.GONE
 
-        mTextMedian = view.findViewById(R.id.text_median)
-        mTextSum = view.findViewById(R.id.text_sum)
+        textMedian = view.findViewById(R.id.text_median)
+        textSum = view.findViewById(R.id.text_sum)
 
-        mChart = view.findViewById(R.id.chart)
+        chart = view.findViewById(R.id.chart)
 
-        mChart!!.description.text = ""
+        chart!!.description.text = ""
 
-        mChart!!.setNoDataText("")
+        chart!!.setNoDataText("")
 
-        mChart!!.setDrawBarShadow(false)
-        mChart!!.setTouchEnabled(false)
-        mChart!!.setScaleEnabled(false)
-        mChart!!.isDoubleTapToZoomEnabled = false
-        mChart!!.setPinchZoom(false)
-        mChart!!.setDrawGridBackground(false)
-        mChart!!.setDrawValueAboveBar(true)
+        chart!!.setDrawBarShadow(false)
+        chart!!.setTouchEnabled(false)
+        chart!!.setScaleEnabled(false)
+        chart!!.isDoubleTapToZoomEnabled = false
+        chart!!.setPinchZoom(false)
+        chart!!.setDrawGridBackground(false)
+        chart!!.setDrawValueAboveBar(true)
 
-        val xAxis = mChart!!.xAxis
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.setDrawAxisLine(true)
-        xAxis.axisLineWidth = 1f
-        xAxis.setDrawGridLines(false)
-        xAxis.textSize = 8f
-        xAxis.granularity = 1f
-        xAxis.labelCount = Months.COUNT
-        xAxis.axisMinimum = -0.5f
-        xAxis.axisMaximum = Months.COUNT - 0.5f
-        xAxis.valueFormatter = mMonthFormatter
-        xAxis.setDrawLimitLinesBehindData(true)
+        with(chart!!.xAxis) {
+            position = XAxis.XAxisPosition.BOTTOM
+            setDrawAxisLine(true)
+            axisLineWidth = 1f
+            setDrawGridLines(false)
+            textSize = 8f
+            granularity = 1f
+            labelCount = Months.COUNT
+            axisMinimum = -0.5f
+            axisMaximum = Months.COUNT - 0.5f
+            valueFormatter = monthFormatter
+            setDrawLimitLinesBehindData(true)
+        }
 
-        val yAxis = mChart!!.axisLeft
-        yAxis.isEnabled = true
-        xAxis.setDrawAxisLine(true)
-        xAxis.setDrawGridLines(false)
-        yAxis.axisMinimum = -1f
-        yAxis.setDrawLabels(false)
-        yAxis.setDrawLimitLinesBehindData(true)
+        with(chart!!.axisLeft) {
+            isEnabled = true
+            setDrawAxisLine(true)
+            setDrawGridLines(false)
+            axisMinimum = -1f
+            setDrawLabels(false)
+            setDrawLimitLinesBehindData(true)
+        }
 
-        mChart!!.axisRight.isEnabled = false
-        mChart!!.legend.isEnabled = false
+        chart!!.axisRight.isEnabled = false
+        chart!!.legend.isEnabled = false
 
-        mChart!!.setHardwareAccelerationEnabled(true)
+        chart!!.setHardwareAccelerationEnabled(true)
 
         if (savedInstanceState != null) {
             updateYears()
             updateChart()
         }
 
-        mTabLayout!!.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        tabLayout!!.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                if (!mUpdateYearsInProcess) {
+                if (!updateYearsInProcess) {
                     setYear(getYearFromPosition(tab.position))
                 }
             }
@@ -211,8 +222,9 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
 
-        view.setOnTouchListener(mOnSwipeTouchListener)
-        mChart!!.setOnTouchListener(mOnSwipeTouchListener)
+        view.setOnTouchListener(onSwipeTouchListener)
+        //todo: check
+//        chart!!.setOnTouchListener(onSwipeTouchListener)
 
         return view
     }
@@ -222,43 +234,44 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
     }
 
     private fun updateYears() {
-        mUpdateYearsInProcess = true
+        updateYearsInProcess = true
         try {
-            if (mChartCostModel!!.years == null || mChartCostModel!!.years!!.size == 0)
+            if (chartCostModel!!.years?.isEmpty() == true) {
                 return
-
-            for (year in mChartCostModel!!.years!!) {
-                mTabLayout!!.addTab(mTabLayout!!.newTab().setText(year.toString()))
             }
 
-            var position = getPositionForYear(mChartCostModel!!.year)
+            for (year in chartCostModel!!.years!!) {
+                tabLayout!!.addTab(tabLayout!!.newTab().setText(year.toString()))
+            }
+
+            var position = getPositionForYear(chartCostModel!!.year)
             if (position == -1) {
-                position = mChartCostModel!!.years!!.size - 1
-                mChartCostModel!!.year = mChartCostModel!!.years!![position]
+                position = chartCostModel!!.years!!.size - 1
+                chartCostModel!!.year = chartCostModel!!.years!![position]
             }
 
-            selectTab(mTabLayout!!.getTabAt(position))
+            selectTab(tabLayout!!.getTabAt(position))
         } finally {
-            mUpdateYearsInProcess = false
+            updateYearsInProcess = false
         }
     }
 
     private fun setYear(year: Int) {
-        if (year == mChartCostModel!!.year) return
+        if (year == chartCostModel!!.year) return
 
-        mChartCostModel!!.year = year
+        chartCostModel!!.year = year
 
         loaderManager.restartLoader(CHART_CURSOR_LOADER_ID, null, this)
     }
 
-    private class ChartCursorLoader internal constructor(context: Context, private val mYear: Int) : CursorLoader(context) {
+    private class ChartCursorLoader(context: Context, private val year: Int) : CursorLoader(context) {
 
         override fun loadInBackground(): Cursor? {
-            return ContentResolverHelper.getSumByMonthsForYear(context, mYear)
+            return ContentResolverHelper.getSumByMonthsForYear(context, year)
         }
     }
 
-    private class YearsCursorLoader internal constructor(context: Context) : CursorLoader(context) {
+    private class YearsCursorLoader(context: Context) : CursorLoader(context) {
 
         override fun loadInBackground(): Cursor? {
             return ContentResolverHelper.getYears(context)
@@ -267,7 +280,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         return when (id) {
-            CHART_CURSOR_LOADER_ID -> ChartCursorLoader(context!!, mChartCostModel!!.year)
+            CHART_CURSOR_LOADER_ID -> ChartCursorLoader(context!!, chartCostModel!!.year)
             YEARS_CURSOR_LOADER_ID -> YearsCursorLoader(context!!)
             else -> throw IllegalArgumentException("Wrong Loader ID")
         }
@@ -279,8 +292,8 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
                 var sum: Float
                 var month: String
 
-                mChartCostModel!!.clear()
-                val sums = mChartCostModel!!.sums
+                chartCostModel!!.clear()
+                val sums = chartCostModel!!.sums
 
                 if (data.count > 0) {
                     if (data.moveToFirst())
@@ -291,7 +304,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
                             sums[Integer.parseInt(month) - 1] = sum
                         } while (data.moveToNext())
 
-                    mChartCostModel!!.sums = sums
+                    chartCostModel!!.sums = sums
                 }
 
                 updateChart()
@@ -311,13 +324,13 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
                             i++
                         } while (data.moveToNext())
 
-                    mChartCostModel!!.years = years
+                    chartCostModel!!.years = years
 
                     updateYears()
 
                     loaderManager.initLoader(CHART_CURSOR_LOADER_ID, null, this)
                 } else {
-                    mChartCostModel!!.years = null
+                    chartCostModel!!.years = null
 
                     updateChart()
                 }
@@ -346,15 +359,17 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
     }
 
     private fun updateChart() {
-        mHandler.removeCallbacks(mRunnableShowNoRecords)
+        handler.removeCallbacks(runnableShowNoRecords)
 
-        if (mChartCostModel!!.hasData) {
-            mTextNoRecords!!.visibility = View.GONE
+        if (chartCostModel!!.hasData) {
+            textNoRecords!!.visibility = View.GONE
 
             val sumsEntries = ArrayList<BarEntry>()
 
-            val sums = mChartCostModel!!.sums
+            val sums = chartCostModel!!.sums
+
             var sum: Float
+
             for (i in sums.indices) {
                 sum = sums[i]
 
@@ -364,49 +379,49 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
             }
 
             val sumsSet = BarDataSet(sumsEntries, "")
-            sumsSet.setColors(mColors, context)
+            sumsSet.setColors(colors, context)
             sumsSet.axisDependency = YAxis.AxisDependency.LEFT
 
             val dataSets = ArrayList<IBarDataSet>()
             dataSets.add(sumsSet)
 
             val sumsData = BarData(dataSets)
-            sumsData.setValueFormatter(mFloatFormatter)
+            sumsData.setValueFormatter(floatFormatter)
             sumsData.setValueTextSize(8f)
             sumsData.barWidth = 0.8f
 
-            mChart!!.data = sumsData
+            chart!!.data = sumsData
 
-            mChart!!.axisLeft.removeAllLimitLines()
+            chart!!.axisLeft.removeAllLimitLines()
 
-            if (mChartCostModel!!.median > 0 && mChartCostModel!!.isSumsNotEquals) {
-                val medianLine = LimitLine(mChartCostModel!!.median)
+            if (chartCostModel!!.median > 0 && chartCostModel!!.isSumsNotEquals) {
+                val medianLine = LimitLine(chartCostModel!!.median)
                 medianLine.lineColor = Utils.getColor(R.color.chart_median)
                 medianLine.lineWidth = 0.5f
                 medianLine.enableDashedLine(8f, 2f, 0f)
 
-                mChart!!.axisLeft.addLimitLine(medianLine)
+                chart!!.axisLeft.addLimitLine(medianLine)
             }
 
             val duration = Utils.getInteger(R.integer.animation_chart)
-            mChart!!.animateXY(duration, duration)
+            chart!!.animateXY(duration, duration)
         } else {
-            mChart!!.clear()
+            chart!!.clear()
 
-            mHandler.postDelayed(mRunnableShowNoRecords, Utils.getInteger(R.integer.delayed_time_show_no_records).toLong())
+            handler.postDelayed(runnableShowNoRecords, Utils.getInteger(R.integer.delayed_time_show_no_records).toLong())
         }
 
         updateTotal()
     }
 
     private fun updateTotal() {
-        UtilsFormat.floatToTextView(mTextMedian!!, round(mChartCostModel!!.median), true)
-        UtilsFormat.floatToTextView(mTextSum!!, round(mChartCostModel!!.sum), true)
+        UtilsFormat.floatToTextView(textMedian, round(chartCostModel!!.median), true)
+        UtilsFormat.floatToTextView(textSum, round(chartCostModel!!.sum), true)
     }
 
     companion object {
 
-        private val YEARS_CURSOR_LOADER_ID = 0
-        private val CHART_CURSOR_LOADER_ID = 1
+        private const val YEARS_CURSOR_LOADER_ID = 0
+        private const val CHART_CURSOR_LOADER_ID = 1
     }
 }

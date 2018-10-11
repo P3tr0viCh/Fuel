@@ -94,7 +94,9 @@ object ContentResolverHelper {
     }
 
     @JvmStatic
-    fun insertRecord(context: Context, fuelingRecord: FuelingRecord): Boolean {
+    fun insertRecord(context: Context, fuelingRecord: FuelingRecord?): Boolean {
+        if (fuelingRecord == null) return false
+
         val result = context.contentResolver.insert(
                 URI_DATABASE,
                 DatabaseHelper.getValues(

@@ -304,14 +304,14 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
                     calendar.get(Calendar.DAY_OF_MONTH)
             ).show(fragmentManager, null)
         } else {
-            val edit: EditText?
-            when (v.id) {
-                R.id.text_cost -> edit = mEditCost
-                R.id.text_volume -> edit = mEditVolume
-                R.id.text_total -> edit = mEditTotal
+            val edit = when (v.id) {
+                R.id.text_cost -> mEditCost
+                R.id.text_volume -> mEditVolume
+                R.id.text_total -> mEditTotal
                 else -> return
             }
-            Utils.showKeyboard(edit!!)
+
+            Utils.showKeyboard(edit)
         }
     }
 

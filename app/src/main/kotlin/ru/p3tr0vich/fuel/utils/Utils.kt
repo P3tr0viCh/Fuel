@@ -45,24 +45,28 @@ object Utils {
         get() = ApplicationFuel.context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
 
     @JvmStatic
-    fun showKeyboard(editText: EditText) {
-        editText.requestFocus()
-        editText.selectAll()
-        SystemServicesHelper.getInputMethodManager(editText.context)
-                ?.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
-    }
+    fun showKeyboard(editText: EditText?) {
+        editText?.let {
+            it.requestFocus()
+            it.selectAll()
 
-    @JvmStatic
-    fun hideKeyboard(activity: Activity) {
-        val view = activity.currentFocus
-        if (view != null) {
-            SystemServicesHelper.getInputMethodManager(view.context)
-                    ?.hideSoftInputFromWindow(view.windowToken, 0)
+            SystemServicesHelper.getInputMethodManager(it.context)
+                    ?.showSoftInput(it, InputMethodManager.SHOW_IMPLICIT)
         }
     }
 
     @JvmStatic
-    fun setViewVisibleAnimate(view: View, visible: Boolean) {
+    fun hideKeyboard(activity: Activity?) {
+        activity?.currentFocus?.let {
+            SystemServicesHelper.getInputMethodManager(it.context)
+                    ?.hideSoftInputFromWindow(it.windowToken, 0)
+        }
+    }
+
+    @JvmStatic
+    fun setViewVisibleAnimate(view: View?, visible: Boolean) {
+        if (view == null) return
+
         if (view.visibility == View.VISIBLE && visible) return
 
         if (visible) {
@@ -75,13 +79,17 @@ object Utils {
     }
 
     @JvmStatic
-    fun setViewHeight(view: View, height: Int) {
+    fun setViewHeight(view: View?, height: Int) {
+        if (view == null) return
+
         view.layoutParams.height = height
         view.requestLayout()
     }
 
     @JvmStatic
-    fun setViewTopMargin(view: View, topMargin: Int) {
+    fun setViewTopMargin(view: View?, topMargin: Int) {
+        if (view == null) return
+
         val params = view.layoutParams as RelativeLayout.LayoutParams
         params.setMargins(params.leftMargin, topMargin, params.rightMargin, params.bottomMargin)
         view.layoutParams = params

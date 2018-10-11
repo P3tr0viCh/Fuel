@@ -4,8 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import ru.p3tr0vich.fuel.ImplementException
-import ru.p3tr0vich.fuel.factories.FragmentFactory
-import ru.p3tr0vich.fuel.factories.FragmentFactory.Ids.Companion.BAD_ID
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper
 
 abstract class FragmentBase(override val fragmentId: Int) : Fragment(), FragmentInterface {
@@ -35,14 +33,6 @@ abstract class FragmentBase(override val fragmentId: Int) : Fragment(), Fragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        if (arguments != null) {
-//            fragmentId = FragmentFactory.intToFragmentId(arguments!!.getInt(KEY_ID, BAD_ID))
-//        }
-
-        if (fragmentId == BAD_ID) {
-            throw IllegalArgumentException("Fragment must have ID")
-        }
-
         preferencesHelper = PreferencesHelper.getInstance(context!!)
     }
 
@@ -63,23 +53,5 @@ abstract class FragmentBase(override val fragmentId: Int) : Fragment(), Fragment
 
     override fun onBackPressed(): Boolean {
         return false
-    }
-
-    companion object {
-        private const val KEY_ID = "FRAGMENT_BASE_KEY_ID"
-
-        fun newInstance(@FragmentFactory.Ids.Id id: Int, fragment: Fragment,
-                        args: Bundle?): Fragment {
-//            var args = args
-//            if (args == null) {
-//                args = Bundle()
-//            }
-//
-//            args.putInt(KEY_ID, id)
-
-            fragment.arguments = args
-
-            return fragment
-        }
     }
 }

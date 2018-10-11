@@ -20,23 +20,23 @@ import ru.p3tr0vich.fuel.utils.UtilsLog
 
 class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemSelectedListener, View.OnClickListener {
 
-    private var mEditDistance: EditText? = null
-    private var mEditCost: EditText? = null
-    private var mEditVolume: EditText? = null
-    private var mEditPrice: EditText? = null
-    private var mEditCons: EditText? = null
+    private var editDistance: EditText? = null
+    private var editCost: EditText? = null
+    private var editVolume: EditText? = null
+    private var editPrice: EditText? = null
+    private var editCons: EditText? = null
 
-    private var mSpinnerCons: Spinner? = null
-    private var mSpinnerSeason: Spinner? = null
+    private var spinnerCons: Spinner? = null
+    private var spinnerSeason: Spinner? = null
 
-    private var mLayoutPriceEmpty: LinearLayout? = null
-    private var mLayoutConsEmpty: LinearLayout? = null
+    private var layoutPriceEmpty: LinearLayout? = null
+    private var layoutConsEmpty: LinearLayout? = null
 
-    private var mCalculating: Boolean = false
+    private var calculating: Boolean = false
 
     private var arrCons = arrayOf(floatArrayOf(0f, 0f, 0f), floatArrayOf(0f, 0f, 0f))
 
-    private var mOnCalcDistanceButtonClickListener: OnCalcDistanceButtonClickListener? = null
+    private var onCalcDistanceButtonClickListener: OnCalcDistanceButtonClickListener? = null
 
     override val titleId: Int
         get() = R.string.title_calc
@@ -57,7 +57,7 @@ class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemS
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         try {
-            mOnCalcDistanceButtonClickListener = context as OnCalcDistanceButtonClickListener?
+            onCalcDistanceButtonClickListener = context as OnCalcDistanceButtonClickListener?
         } catch (e: ClassCastException) {
             throw ImplementException(context!!, OnCalcDistanceButtonClickListener::class.java)
         }
@@ -66,35 +66,33 @@ class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemS
 
     @SuppressLint("InflateParams")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mCalculating = true
+        calculating = true
 
         val view = inflater.inflate(R.layout.fragment_calc, container, false)
 
-        mEditDistance = view.findViewById(R.id.edit_distance)
-        mEditCost = view.findViewById(R.id.edit_cost)
-        mEditVolume = view.findViewById(R.id.edit_volume)
-        mEditPrice = view.findViewById(R.id.edit_price)
-        mEditCons = view.findViewById(R.id.edit_cons)
+        editDistance = view.findViewById(R.id.edit_distance)
+        editCost = view.findViewById(R.id.edit_cost)
+        editVolume = view.findViewById(R.id.edit_volume)
+        editPrice = view.findViewById(R.id.edit_price)
+        editCons = view.findViewById(R.id.edit_cons)
 
-        mSpinnerCons = view.findViewById(R.id.spinner_cons)
-        mSpinnerSeason = view.findViewById(R.id.spinner_season)
+        spinnerCons = view.findViewById(R.id.spinner_cons)
+        spinnerSeason = view.findViewById(R.id.spinner_season)
 
-        mLayoutPriceEmpty = view.findViewById(R.id.layout_price_empty)
-        mLayoutConsEmpty = view.findViewById(R.id.layout_cons_empty)
+        layoutPriceEmpty = view.findViewById(R.id.layout_price_empty)
+        layoutConsEmpty = view.findViewById(R.id.layout_cons_empty)
 
-        val activity = activity!!
-
-        val adapterCons = ArrayAdapter.createFromResource(activity,
+        val adapterCons = ArrayAdapter.createFromResource(activity!!,
                 R.array.spinner_consumption, R.layout.spinner_item)
         adapterCons.setDropDownViewResource(R.layout.spinner_dropdown_item)
-        mSpinnerCons!!.adapter = adapterCons
+        spinnerCons!!.adapter = adapterCons
 
-        val adapterSeason = ArrayAdapter.createFromResource(activity,
+        val adapterSeason = ArrayAdapter.createFromResource(activity!!,
                 R.array.spinner_season, R.layout.spinner_item)
         adapterSeason.setDropDownViewResource(R.layout.spinner_dropdown_item)
-        mSpinnerSeason!!.adapter = adapterSeason
+        spinnerSeason!!.adapter = adapterSeason
 
-        view.findViewById<View>(R.id.btn_map).setOnClickListener { mOnCalcDistanceButtonClickListener!!.onCalcDistanceButtonClick() }
+        view.findViewById<View>(R.id.btn_map).setOnClickListener { onCalcDistanceButtonClickListener?.onCalcDistanceButtonClick() }
 
         view.findViewById<View>(R.id.text_distance).setOnClickListener(this)
         view.findViewById<View>(R.id.text_cost).setOnClickListener(this)
@@ -105,17 +103,17 @@ class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemS
         loadPrefs()
 
         selectConsFromSpinners()
-        checkTextOnEmpty(mEditPrice!!)
+        checkTextOnEmpty(editPrice!!)
 
-        mSpinnerCons!!.onItemSelectedListener = this
-        mSpinnerSeason!!.onItemSelectedListener = this
+        spinnerCons!!.onItemSelectedListener = this
+        spinnerSeason!!.onItemSelectedListener = this
 
-        mEditDistance!!.addTextChangedListener(EditTextWatcherAdapter(mEditDistance!!))
-        mEditCost!!.addTextChangedListener(EditTextWatcherAdapter(mEditCost!!))
-        mEditVolume!!.addTextChangedListener(EditTextWatcherAdapter(mEditVolume!!))
+        editDistance!!.addTextChangedListener(EditTextWatcherAdapter(editDistance!!))
+        editCost!!.addTextChangedListener(EditTextWatcherAdapter(editCost!!))
+        editVolume!!.addTextChangedListener(EditTextWatcherAdapter(editVolume!!))
 
-        mEditPrice!!.addTextChangedListener(EditTextWatcherAdapter(mEditPrice!!))
-        mEditCons!!.addTextChangedListener(EditTextWatcherAdapter(mEditCons!!))
+        editPrice!!.addTextChangedListener(EditTextWatcherAdapter(editPrice!!))
+        editCons!!.addTextChangedListener(EditTextWatcherAdapter(editCons!!))
 
         return view
     }
@@ -126,74 +124,80 @@ class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemS
      * @param distance расстояние в метрах.
      */
     fun setDistance(distance: Int) {
-        UtilsFormat.floatToEditText(mEditDistance!!, (distance / 1000.0).toFloat(), false)
+        UtilsFormat.floatToEditText(editDistance!!, (distance / 1000.0).toFloat(), false)
     }
 
     private fun checkTextOnEmpty(editText: EditText) {
-        val linearLayout: LinearLayout?
-        when (editText.id) {
-            R.id.edit_price -> linearLayout = mLayoutPriceEmpty
-            R.id.edit_cons -> linearLayout = mLayoutConsEmpty
+        val linearLayout = when (editText.id) {
+            R.id.edit_price -> layoutPriceEmpty
+            R.id.edit_cons -> layoutConsEmpty
             else -> return
         }
+
         linearLayout!!.visibility = if (TextUtils.isEmpty(editText.text)) View.VISIBLE else View.GONE
     }
 
     override fun onResume() {
         super.onResume()
-        mCalculating = false
 
-        if (LOG_ENABLED) UtilsLog.d(TAG, "onResume")
+        calculating = false
+
+        if (LOG_ENABLED) {
+            UtilsLog.d(TAG, "onResume")
+        }
 
         doCalculate(CALC_ACTION_COST)
     }
 
     override fun onDestroy() {
         savePrefs()
+
         super.onDestroy()
     }
 
     override fun onClick(v: View) {
-        val edit: EditText?
-        when (v.id) {
-            R.id.text_price -> edit = mEditPrice
-            R.id.text_cons -> edit = mEditCons
-            R.id.text_distance -> edit = mEditDistance
-            R.id.text_cost -> edit = mEditCost
-            R.id.text_volume -> edit = mEditVolume
+        val edit = when (v.id) {
+            R.id.text_price -> editPrice
+            R.id.text_cons -> editCons
+            R.id.text_distance -> editDistance
+            R.id.text_cost -> editCost
+            R.id.text_volume -> editVolume
             else -> return
         }
-        Utils.showKeyboard(edit!!)
+
+        Utils.showKeyboard(edit)
     }
 
     private fun loadPrefs() {
-        mEditDistance!!.setText(preferencesHelper.calcDistance)
-        mEditCost!!.setText(preferencesHelper.calcCost)
-        mEditVolume!!.setText(preferencesHelper.calcVolume)
+        editDistance!!.setText(preferencesHelper.calcDistance)
+        editCost!!.setText(preferencesHelper.calcCost)
+        editVolume!!.setText(preferencesHelper.calcVolume)
 
-        mEditPrice!!.setText(preferencesHelper.priceAsString)
+        editPrice!!.setText(preferencesHelper.priceAsString)
 
         arrCons = preferencesHelper.calcCons
 
-        mSpinnerCons!!.setSelection(preferencesHelper.calcSelectedCons)
-        mSpinnerSeason!!.setSelection(preferencesHelper.calcSelectedSeason)
+        spinnerCons!!.setSelection(preferencesHelper.calcSelectedCons)
+        spinnerSeason!!.setSelection(preferencesHelper.calcSelectedSeason)
     }
 
     private fun savePrefs() {
         preferencesHelper.putCalc(
-                mEditDistance!!.text.toString(),
-                mEditCost!!.text.toString(),
-                mEditVolume!!.text.toString(),
-                mSpinnerCons!!.selectedItemPosition,
-                mSpinnerSeason!!.selectedItemPosition)
+                editDistance!!.text.toString(),
+                editCost!!.text.toString(),
+                editVolume!!.text.toString(),
+                spinnerCons!!.selectedItemPosition,
+                spinnerSeason!!.selectedItemPosition)
     }
 
     private fun selectConsFromSpinners() {
-        val cons = arrCons[mSpinnerSeason!!.selectedItemPosition][mSpinnerCons!!.selectedItemPosition]
+        val cons = arrCons[spinnerSeason!!.selectedItemPosition][spinnerCons!!.selectedItemPosition]
 
-        if (java.lang.Float.compare(cons, UtilsFormat.editTextToFloat(mEditCons!!)) == 0) return
+        if (java.lang.Float.compare(cons, UtilsFormat.editTextToFloat(editCons!!)) == 0) {
+            return
+        }
 
-        UtilsFormat.floatToEditText(mEditCons!!, cons, false)
+        UtilsFormat.floatToEditText(editCons!!, cons, false)
     }
 
     override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
@@ -202,21 +206,21 @@ class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemS
 
     override fun onNothingSelected(parent: AdapterView<*>) {}
 
-    private inner class EditTextWatcherAdapter internal constructor(private val mEditText: EditText) : TextWatcherAdapter() {
+    private inner class EditTextWatcherAdapter(private val editText: EditText) : TextWatcherAdapter() {
 
         override fun afterTextChanged(s: Editable) {
-            if (LOG_ENABLED)
-                UtilsLog.d(TAG, "afterTextChanged",
-                        "mEditText id == " + resources.getResourceEntryName(mEditText.id))
+            if (LOG_ENABLED) {
+                UtilsLog.d(TAG, "afterTextChanged", "editText id == ${resources.getResourceEntryName(editText.id)}")
+            }
 
-            when (mEditText.id) {
+            when (editText.id) {
                 R.id.edit_price -> {
-                    checkTextOnEmpty(mEditText)
+                    checkTextOnEmpty(editText)
                     doCalculate(CALC_ACTION_DISTANCE)
                 }
                 R.id.edit_cost -> doCalculate(CALC_ACTION_COST)
                 R.id.edit_cons -> {
-                    checkTextOnEmpty(mEditText)
+                    checkTextOnEmpty(editText)
                     doCalculate(CALC_ACTION_DISTANCE)
                 }
                 R.id.edit_distance -> doCalculate(CALC_ACTION_DISTANCE)
@@ -233,58 +237,63 @@ class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemS
      * @see CalcAction
      */
     private fun doCalculate(@CalcAction calcAction: Int) {
-        if (LOG_ENABLED) UtilsLog.d(TAG, "doCalculate", "calcAction == $calcAction")
+        if (LOG_ENABLED) {
+            UtilsLog.d(TAG, "doCalculate", "calcAction == $calcAction")
+        }
 
-        if (mCalculating) return
+        if (calculating) {
+            return
+        }
 
-        if (LOG_ENABLED) UtilsLog.d(TAG, "doCalculate", "calc")
+        if (LOG_ENABLED) {
+            UtilsLog.d(TAG, "doCalculate", "calc")
+        }
 
-        mCalculating = true
+        calculating = true
 
         try {
-            val distancePerOneFuel: Float
-            val price: Float
-            val cons: Float
-            var distance: Float
-            var cost: Float
-            var volume: Float
-
             // Цена за "литр".
-            price = UtilsFormat.editTextToFloat(mEditPrice!!)
+            val price = UtilsFormat.editTextToFloat(editPrice!!)
             // Расход на 100 "км".
-            cons = UtilsFormat.editTextToFloat(mEditCons!!)
+            val cons = UtilsFormat.editTextToFloat(editCons!!)
 
-            if (price == 0f || cons == 0f) return
 
-            distance = UtilsFormat.editTextToFloat(mEditDistance!!)
-            cost = UtilsFormat.editTextToFloat(mEditCost!!)
-            volume = UtilsFormat.editTextToFloat(mEditVolume!!)
+            if (price == 0f || cons == 0f) {
+                return
+            }
+
+            var distance = UtilsFormat.editTextToFloat(editDistance!!)
+            var cost = UtilsFormat.editTextToFloat(editCost!!)
+            var volume = UtilsFormat.editTextToFloat(editVolume!!)
 
             // Пробег на одном "литре".
-            distancePerOneFuel = 100.0f / cons
+            val distancePerOneFuel = 100.0f / cons
 
             when (calcAction) {
                 CALC_ACTION_DISTANCE -> {
                     volume = distance / distancePerOneFuel
                     cost = price * volume
-                    UtilsFormat.floatToEditText(mEditVolume!!, volume, true)
-                    UtilsFormat.floatToEditText(mEditCost!!, cost, true)
+
+                    UtilsFormat.floatToEditText(editVolume!!, volume, true)
+                    UtilsFormat.floatToEditText(editCost!!, cost, true)
                 }
                 CALC_ACTION_COST -> {
                     volume = cost / price
                     distance = distancePerOneFuel * volume
-                    UtilsFormat.floatToEditText(mEditVolume!!, volume, true)
-                    UtilsFormat.floatToEditText(mEditDistance!!, distance, true)
+
+                    UtilsFormat.floatToEditText(editVolume!!, volume, true)
+                    UtilsFormat.floatToEditText(editDistance!!, distance, true)
                 }
                 CALC_ACTION_VOLUME -> {
                     cost = price * volume
                     distance = distancePerOneFuel * volume
-                    UtilsFormat.floatToEditText(mEditCost!!, cost, true)
-                    UtilsFormat.floatToEditText(mEditDistance!!, distance, true)
+
+                    UtilsFormat.floatToEditText(editCost!!, cost, true)
+                    UtilsFormat.floatToEditText(editDistance!!, distance, true)
                 }
             }
         } finally {
-            mCalculating = false
+            calculating = false
         }
     }
 

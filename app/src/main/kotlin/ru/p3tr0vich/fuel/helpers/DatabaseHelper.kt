@@ -5,7 +5,9 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.os.Parcelable
 import android.support.annotation.IntDef
+import kotlinx.android.parcel.Parcelize
 import ru.p3tr0vich.fuel.models.DatabaseModel
 import ru.p3tr0vich.fuel.models.FuelingRecord
 import ru.p3tr0vich.fuel.utils.Utils
@@ -16,7 +18,8 @@ import java.util.*
 class DatabaseHelper(context: Context) :
         SQLiteOpenHelper(context, DatabaseModel.Database.NAME, null, DatabaseModel.Database.VERSION) {
 
-    class Filter() {
+    //todo: @Parcelize
+    class Filter()  {
         @Retention(AnnotationRetention.SOURCE)
         @IntDef(MODE_ALL, MODE_CURRENT_YEAR, MODE_YEAR, MODE_DATES, MODE_TWO_LAST_RECORDS)
         annotation class Mode

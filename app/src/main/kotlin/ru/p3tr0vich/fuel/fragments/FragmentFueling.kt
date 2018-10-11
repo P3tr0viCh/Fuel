@@ -41,66 +41,64 @@ import java.util.*
 
 class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager.LoaderCallbacks<Cursor> {
 
-    private var mToolbarDates: Toolbar? = null
-    private var mToolbarShadow: View? = null
+    private var toolbarDates: Toolbar? = null
+    private var toolbarShadow: View? = null
 
-    private var mLayoutMain: RelativeLayout? = null
-    private var mTotalPanel: ViewGroup? = null
+    private var layoutMain: RelativeLayout? = null
+    private var totalPanel: ViewGroup? = null
 
-    private var mToolbarDatesVisible: Boolean = false
-    private var mTotalPanelVisible: Boolean = false
+    private var toolbarDatesVisible: Boolean = false
+    private var totalPanelVisible: Boolean = false
 
     private var filter = DatabaseHelper.Filter()
 
-    private var mFuelingAdapter: FuelingAdapter? = null
+    private var fuelingAdapter: FuelingAdapter? = null
 
-    private var mBtnDateFrom: Button? = null
-    private var mBtnDateTo: Button? = null
+    private var btnDateFrom: Button? = null
+    private var btnDateTo: Button? = null
 
-    private var mRecyclerView: RecyclerView? = null
+    private var recyclerView: RecyclerView? = null
 
-    private var mProgressWheel: ProgressWheel? = null
-    private var mTextNoRecords: TextView? = null
+    private var progressWheel: ProgressWheel? = null
+    private var textNoRecords: TextView? = null
 
-    private var mFloatingActionButton: FloatingActionButton? = null
+    private var floatingActionButton: FloatingActionButton? = null
 
-    private val mHandler = Handler()
+    private val handler = Handler()
 
-    private var mFuelingTotalView: FuelingTotalView? = null
+    private var fuelingTotalView: FuelingTotalView? = null
 
-    private var mIdForScroll: Long = -1
+    private var idForScroll: Long = -1
 
-    private var mSnackbar: Snackbar? = null
-    private val mSnackBarCallback = object : Snackbar.Callback() {
+    private var snackbar: Snackbar? = null
+    private val snackBarCallback = object : Snackbar.Callback() {
         override fun onDismissed(snackbar: Snackbar?, event: Int) {
             // Workaround for bug
 
             if (event == Snackbar.Callback.DISMISS_EVENT_SWIPE)
-                mFloatingActionButton!!.toggle(true, true, true)
+                floatingActionButton?.toggle(true, true, true)
         }
     }
 
-    private var mDeletedFuelingRecord: FuelingRecord? = null
+    private var deletedFuelingRecord: FuelingRecord? = null
 
-    private val mUndoClickListener = View.OnClickListener {
-        val context = context!!
+    private val undoClickListener = View.OnClickListener {
+        ContentResolverHelper.insertRecord(context!!, deletedFuelingRecord)
 
-        ContentResolverHelper.insertRecord(context, mDeletedFuelingRecord!!)
-
-        mDeletedFuelingRecord = null
+        deletedFuelingRecord = null
     }
 
-    private var mOnFilterChangeListener: OnFilterChangeListener? = null
-    private var mOnRecordChangeListener: OnRecordChangeListener? = null
+    private var onFilterChangeListener: OnFilterChangeListener? = null
+    private var onRecordChangeListener: OnRecordChangeListener? = null
 
-    private var mAnimationDuration: AnimationDuration? = null
+    private var animationDuration: AnimationDuration? = null
 
     private val recyclerViewLayoutManager: LinearLayoutManager
-        get() = mRecyclerView!!.layoutManager as LinearLayoutManager
+        get() = recyclerView!!.layoutManager as LinearLayoutManager
 
-    private val mRunnableShowNoRecords = Runnable { Utils.setViewVisibleAnimate(mTextNoRecords!!, true) }
+    private val runnableShowNoRecords = Runnable { Utils.setViewVisibleAnimate(textNoRecords, true) }
 
-    private val mRunnableShowProgressWheelFueling = Runnable { Utils.setViewVisibleAnimate(mProgressWheel!!, true) }
+    private val runnableShowProgressWheelFueling = Runnable { Utils.setViewVisibleAnimate(progressWheel, true) }
 
     private class AnimationDuration {
         val layoutTotalShow = Utils.getInteger(R.integer.animation_duration_layout_total_show)
@@ -111,24 +109,24 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mAnimationDuration = AnimationDuration()
+        animationDuration = AnimationDuration()
 
         if (savedInstanceState == null) {
-            if (LOG_ENABLED) UtilsLog.d(TAG, "onCreate", "savedInstanceState == null")
+            if (LOG_ENABLED) {
+                UtilsLog.d(TAG, "onCreate", "savedInstanceState == null")
+            }
 
             filter.mode = DatabaseHelper.Filter.MODE_CURRENT_YEAR
 
             filter.dateFrom = preferencesHelper.filterDateFrom
             filter.dateTo = preferencesHelper.filterDateTo
         } else {
-            if (LOG_ENABLED) UtilsLog.d(TAG, "onCreate", "savedInstanceState != null")
-
-            when (savedInstanceState.getInt(KEY_FILTER_MODE, DatabaseHelper.Filter.MODE_ALL)) {
-                DatabaseHelper.Filter.MODE_CURRENT_YEAR -> filter.mode = DatabaseHelper.Filter.MODE_CURRENT_YEAR
-                DatabaseHelper.Filter.MODE_YEAR -> filter.mode = DatabaseHelper.Filter.MODE_YEAR
-                DatabaseHelper.Filter.MODE_DATES -> filter.mode = DatabaseHelper.Filter.MODE_DATES
-                else -> filter.mode = DatabaseHelper.Filter.MODE_ALL
+            if (LOG_ENABLED) {
+                UtilsLog.d(TAG, "onCreate", "savedInstanceState != null")
             }
+
+            //todo: parcelize
+            filter.mode = savedInstanceState.getInt(KEY_FILTER_MODE, DatabaseHelper.Filter.MODE_ALL)
 
             filter.dateFrom = savedInstanceState.getLong(KEY_FILTER_DATE_FROM)
             filter.dateTo = savedInstanceState.getLong(KEY_FILTER_DATE_TO)
@@ -145,29 +143,29 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
 
         val view = inflater.inflate(R.layout.fragment_fueling, container, false)
 
-        mFuelingTotalView = FuelingTotalViewFactory.getFuelingTotalView(view)
+        fuelingTotalView = FuelingTotalViewFactory.getFuelingTotalView(view)
 
-        mToolbarDates = view.findViewById(R.id.toolbar_dates)
-        mToolbarShadow = view.findViewById(R.id.view_toolbar_shadow)
+        toolbarDates = view.findViewById(R.id.toolbar_dates)
+        toolbarShadow = view.findViewById(R.id.view_toolbar_shadow)
 
-        mLayoutMain = view.findViewById(R.id.layout_main)
+        layoutMain = view.findViewById(R.id.layout_main)
 
-        mTotalPanel = if (isPhone) view.findViewById<View>(R.id.total_panel) as ViewGroup else null
+        totalPanel = if (isPhone) view.findViewById<View>(R.id.total_panel) as ViewGroup else null
 
-        mRecyclerView = view.findViewById(R.id.recycler_view)
-        mRecyclerView!!.setHasFixedSize(true)
-        mRecyclerView!!.itemAnimator = DefaultItemAnimator()
+        recyclerView = view.findViewById(R.id.recycler_view)
+        recyclerView!!.setHasFixedSize(true)
+        recyclerView!!.itemAnimator = DefaultItemAnimator()
 
         val itemDecoration = DividerItemDecorationFueling(context)
         if (!isPhone) itemDecoration.footerType = FuelingAdapter.TYPE_FOOTER
-        mRecyclerView!!.addItemDecoration(itemDecoration)
+        recyclerView!!.addItemDecoration(itemDecoration)
 
-        mRecyclerView!!.layoutManager = LinearLayoutManager(context)
-        mFuelingAdapter = FuelingAdapter(View.OnClickListener { v -> doPopup(v) }, isPhone, !isPhone)
-        mRecyclerView!!.adapter = mFuelingAdapter
+        recyclerView!!.layoutManager = LinearLayoutManager(context)
+        fuelingAdapter = FuelingAdapter(View.OnClickListener { v -> doPopup(v) }, isPhone, !isPhone)
+        recyclerView!!.adapter = fuelingAdapter
 
         if (isPhone)
-            mRecyclerView!!.addOnScrollListener(object : OnRecyclerViewScrollListener(
+            recyclerView!!.addOnScrollListener(object : OnRecyclerViewScrollListener(
                     resources.getDimensionPixelOffset(R.dimen.recycler_view_scroll_threshold)) {
 
                 override fun onScrollUp() {
@@ -175,44 +173,45 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
                 }
 
                 override fun onScrollDown() {
-                    if (mSnackbar == null || !mSnackbar!!.isShown) setTotalAndFabVisible(true)
+                    //todo: check
+                    if (snackbar?.isShown != true) setTotalAndFabVisible(true)
                 }
             })
 
-        mProgressWheel = view.findViewById(R.id.progress_wheel)
-        mProgressWheel!!.visibility = View.GONE
-        mTextNoRecords = view.findViewById(R.id.text_no_records)
-        mTextNoRecords!!.visibility = View.GONE
+        progressWheel = view.findViewById(R.id.progress_wheel)
+        progressWheel!!.visibility = View.GONE
+        textNoRecords = view.findViewById(R.id.text_no_records)
+        textNoRecords!!.visibility = View.GONE
 
-        mFloatingActionButton = view.findViewById(R.id.fab)
-        mFloatingActionButton!!.setOnClickListener { mOnRecordChangeListener!!.onRecordChange(null) }
-        mFloatingActionButton!!.scaleX = 0.0f
-        mFloatingActionButton!!.scaleY = 0.0f
+        floatingActionButton = view.findViewById(R.id.fab)
+        floatingActionButton!!.setOnClickListener { onRecordChangeListener?.onRecordChange(null) }
+        floatingActionButton!!.scaleX = 0.0f
+        floatingActionButton!!.scaleY = 0.0f
 
-        mBtnDateFrom = view.findViewById(R.id.btn_date_from)
-        mBtnDateFrom!!.setOnClickListener { showDateDialog(true) }
-        mBtnDateFrom!!.setOnLongClickListener { v ->
-            doPopupDate(v, true)
+        btnDateFrom = view.findViewById(R.id.btn_date_from)
+        btnDateFrom!!.setOnClickListener { showDateDialog(btnDateFrom) }
+        btnDateFrom!!.setOnLongClickListener { v ->
+            doPopupDate(v, btnDateFrom)
             true
         }
 
-        mBtnDateTo = view.findViewById(R.id.btn_date_to)
-        mBtnDateTo!!.setOnClickListener { showDateDialog(false) }
-        mBtnDateTo!!.setOnLongClickListener { v ->
-            doPopupDate(v, false)
+        btnDateTo = view.findViewById(R.id.btn_date_to)
+        btnDateTo!!.setOnClickListener { showDateDialog(btnDateTo) }
+        btnDateTo!!.setOnLongClickListener { v ->
+            doPopupDate(v, btnDateTo)
             true
         }
 
-        Utils.setBackgroundTint(mBtnDateFrom, R.color.toolbar_title_text, R.color.primary_light)
-        Utils.setBackgroundTint(mBtnDateTo, R.color.toolbar_title_text, R.color.primary_light)
+        Utils.setBackgroundTint(btnDateFrom, R.color.toolbar_title_text, R.color.primary_light)
+        Utils.setBackgroundTint(btnDateTo, R.color.toolbar_title_text, R.color.primary_light)
 
-        mToolbarDatesVisible = true
+        toolbarDatesVisible = true
         setToolbarDatesVisible(filter.mode == DatabaseHelper.Filter.MODE_DATES, false)
 
-        mTotalPanelVisible = true
+        totalPanelVisible = true
 
-        updateFilterDateButtons(true, filter.dateFrom)
-        updateFilterDateButtons(false, filter.dateTo)
+        updateFilterDateButton(btnDateFrom, filter.dateFrom)
+        updateFilterDateButton(btnDateTo, filter.dateTo)
 
         return view
     }
@@ -220,13 +219,12 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        if (LOG_ENABLED)
+        if (LOG_ENABLED) {
             UtilsLog.d(TAG, "onActivityCreated", "savedInstanceState " +
                     (if (savedInstanceState == null) "=" else "!") + "= null")
+        }
 
         doSetFilterMode(filter.mode)
-
-        val loaderManager = loaderManager
 
         loaderManager.initLoader(FUELING_CURSOR_LOADER_ID, null, this)
         loaderManager.initLoader(FUELING_TOTAL_CURSOR_LOADER_ID, null, this)
@@ -241,14 +239,14 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     }
 
     override fun onDestroyView() {
-        mFuelingTotalView!!.destroy()
+        fuelingTotalView?.destroy()
 
         super.onDestroyView()
     }
 
     override fun onDestroy() {
-        mHandler.removeCallbacks(mRunnableShowNoRecords)
-        mHandler.removeCallbacks(mRunnableShowProgressWheelFueling)
+        handler.removeCallbacks(runnableShowNoRecords)
+        handler.removeCallbacks(runnableShowProgressWheelFueling)
 
         preferencesHelper.putFilterDate(filter.dateFrom, filter.dateTo)
 
@@ -257,18 +255,20 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
 
     override fun onResume() {
         super.onResume()
+
         setFabVisible(true)
     }
 
     override fun onPause() {
         setFabVisible(false)
+
         super.onPause()
     }
 
     private fun doSetFilterMode(@DatabaseHelper.Filter.Mode filterMode: Int) {
         filter.mode = filterMode
 
-        mOnFilterChangeListener!!.onFilterChange(filterMode)
+        onFilterChangeListener?.onFilterChange(filterMode)
     }
 
     /**
@@ -295,8 +295,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     }
 
     private fun isDateTimeInCurrentYear(dateTime: Long): Boolean {
-        val year = UtilsDate.getCalendarInstance(dateTime).get(Calendar.YEAR)
-        return year == UtilsDate.currentYear
+        return UtilsDate.getCalendarInstance(dateTime).get(Calendar.YEAR) == UtilsDate.currentYear
     }
 
     /**
@@ -329,33 +328,16 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     }
 
     fun updateList(id: Long) {
-        mIdForScroll = id
+        idForScroll = id
 
         var forceLoad = true
 
         if (id != -1L) {
-            val context = context!!
-
-            val fuelingRecord = ContentResolverHelper.getFuelingRecord(context, id)
+            val fuelingRecord = ContentResolverHelper.getFuelingRecord(context!!, id)
 
             if (fuelingRecord != null) {
                 forceLoad = checkDateTime(fuelingRecord.dateTime)
             }
-        }
-
-        val loaderManager: LoaderManager?
-        try {
-            loaderManager = getLoaderManager()
-        } catch (e: Exception) {
-            UtilsLog.d(TAG, "updateList", "getLoaderManager exception = " + e.message)
-
-            return
-        }
-
-        if (loaderManager == null) {
-            UtilsLog.d(TAG, "updateList", "loaderManager == null")
-
-            return
         }
 
         if (forceLoad) {
@@ -368,14 +350,12 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     private fun markRecordAsDeleted(fuelingRecord: FuelingRecord): Boolean {
         val id = fuelingRecord.id
 
-        val context = context!!
-
-        if (ContentResolverHelper.markRecordAsDeleted(context, id)) {
-            return true
+        return if (ContentResolverHelper.markRecordAsDeleted(context!!, id)) {
+            true
         } else {
             Utils.toast(R.string.message_error_delete_record)
 
-            return false
+            false
         }
     }
 
@@ -391,16 +371,19 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     }
 
     private fun scrollToPosition(position: Int) {
-        var position = position
         if (position < 0) return
 
-        if (mFuelingAdapter!!.isShowHeader && position == FuelingAdapter.HEADER_POSITION + 1)
-            position = FuelingAdapter.HEADER_POSITION
+        var pos = position
 
+        if (fuelingAdapter!!.isShowHeader && position == FuelingAdapter.HEADER_POSITION + 1) {
+            pos = FuelingAdapter.HEADER_POSITION
+        }
 
-        if (isItemVisible(position)) return
+        if (isItemVisible(pos)) {
+            return
+        }
 
-        recyclerViewLayoutManager.scrollToPositionWithOffset(position, 0)
+        recyclerViewLayoutManager.scrollToPositionWithOffset(pos, 0)
     }
 
     private fun setFilterDate(dateFrom: Long, dateTo: Long) {
@@ -429,33 +412,35 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     }
 
     private fun swapRecords(data: Cursor?) {
-        mHandler.removeCallbacks(mRunnableShowNoRecords)
+        handler.removeCallbacks(runnableShowNoRecords)
 
         val records = DatabaseHelper.getFuelingRecords(data)
 
-        if (records == null || records.isEmpty())
-            mHandler.postDelayed(mRunnableShowNoRecords, Utils.getInteger(R.integer.delayed_time_show_no_records).toLong())
-        else
-            mTextNoRecords!!.visibility = View.GONE
-
-        mFuelingAdapter!!.showYear = filter.mode != DatabaseHelper.Filter.MODE_CURRENT_YEAR
-        mFuelingAdapter!!.swapRecords(records)
-
-        if (mIdForScroll != -1L) {
-            scrollToPosition(mFuelingAdapter!!.findPositionById(mIdForScroll))
-            mIdForScroll = -1
+        if (records?.isEmpty() == true) {
+            handler.postDelayed(runnableShowNoRecords, Utils.getInteger(R.integer.delayed_time_show_no_records).toLong())
+        } else {
+            textNoRecords!!.visibility = View.GONE
         }
 
-        mFuelingTotalView!!.onFuelingRecordsChanged(records)
+        fuelingAdapter!!.showYear = filter.mode != DatabaseHelper.Filter.MODE_CURRENT_YEAR
+        fuelingAdapter!!.swapRecords(records)
+
+        if (idForScroll != -1L) {
+            scrollToPosition(fuelingAdapter!!.findPositionById(idForScroll))
+            idForScroll = -1
+        }
+
+        fuelingTotalView!!.onFuelingRecordsChanged(records)
     }
 
     private fun updateTotal(data: Cursor?) {
-        val records = DatabaseHelper.getFuelingRecords(data)
-        mFuelingTotalView!!.onLastFuelingRecordsChanged(records)
+        fuelingTotalView!!.onLastFuelingRecordsChanged(DatabaseHelper.getFuelingRecords(data))
     }
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor) {
-        if (LOG_ENABLED) UtilsLog.d(TAG, "onLoadFinished")
+        if (LOG_ENABLED) {
+            UtilsLog.d(TAG, "onLoadFinished")
+        }
 
         when (loader.id) {
             FUELING_CURSOR_LOADER_ID -> swapRecords(data)
@@ -465,7 +450,9 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     }
 
     override fun onLoaderReset(loader: Loader<Cursor>) {
-        if (LOG_ENABLED) UtilsLog.d(TAG, "onLoaderReset")
+        if (LOG_ENABLED) {
+            UtilsLog.d(TAG, "onLoaderReset")
+        }
 
         when (loader.id) {
             FUELING_CURSOR_LOADER_ID -> swapRecords(null)
@@ -474,9 +461,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     }
 
     private fun doPopup(v: View) {
-        val activity = activity!!
-
-        val popupMenu = PopupMenu(activity, v)
+        val popupMenu = PopupMenu(activity!!, v)
         popupMenu.inflate(R.menu.menu_fueling)
 
         var menuHelper: Any? = null
@@ -493,32 +478,33 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
 
         popupMenu.setOnMenuItemClickListener(
                 PopupMenu.OnMenuItemClickListener { item ->
-                    val context = context!!
-
-                    val fuelingRecord = ContentResolverHelper.getFuelingRecord(context, id)
+                    val fuelingRecord = ContentResolverHelper.getFuelingRecord(context!!, id)
 
                     if (fuelingRecord == null) {
                         UtilsLog.d(TAG, "onMenuItemClick",
                                 "ContentProviderHelper.getFuelingRecord() == null")
+
                         updateList(-1)
+
                         return@OnMenuItemClickListener true
                     }
 
                     when (item.itemId) {
                         R.id.action_fueling_update -> {
-                            mOnRecordChangeListener!!.onRecordChange(fuelingRecord)
+                            onRecordChangeListener?.onRecordChange(fuelingRecord)
                             true
                         }
                         R.id.action_fueling_delete -> {
-                            mDeletedFuelingRecord = fuelingRecord
+                            deletedFuelingRecord = fuelingRecord
 
                             if (markRecordAsDeleted(fuelingRecord)) {
-                                mSnackbar = Snackbar
-                                        .make(mLayoutMain!!, R.string.message_record_deleted,
+                                snackbar = Snackbar
+                                        .make(layoutMain!!, R.string.message_record_deleted,
                                                 Snackbar.LENGTH_LONG)
-                                        .setAction(R.string.dialog_btn_cancel, mUndoClickListener)
-                                        .addCallback(mSnackBarCallback)
-                                mSnackbar!!.show()
+                                        .setAction(R.string.dialog_btn_cancel, undoClickListener)
+                                        .addCallback(snackBarCallback)
+
+                                snackbar!!.show()
                             }
 
                             true
@@ -549,19 +535,20 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     }
 
     fun setLoading(loading: Boolean) {
-        mHandler.removeCallbacks(mRunnableShowProgressWheelFueling)
+        handler.removeCallbacks(runnableShowProgressWheelFueling)
+
         if (loading) {
-            mHandler.postDelayed(mRunnableShowProgressWheelFueling,
-                    Utils.getInteger(R.integer.delayed_time_show_progress_wheel).toLong())
-        } else
-            Utils.setViewVisibleAnimate(mProgressWheel!!, false)
+            handler.postDelayed(runnableShowProgressWheelFueling, Utils.getInteger(R.integer.delayed_time_show_progress_wheel).toLong())
+        } else {
+            Utils.setViewVisibleAnimate(progressWheel, false)
+        }
     }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         try {
-            mOnFilterChangeListener = context as OnFilterChangeListener?
-            mOnRecordChangeListener = context as OnRecordChangeListener?
+            onFilterChangeListener = context as OnFilterChangeListener?
+            onRecordChangeListener = context as OnRecordChangeListener?
         } catch (e: ClassCastException) {
             throw ImplementException(context!!,
                     arrayOf(OnFilterChangeListener::class.java, OnRecordChangeListener::class.java))
@@ -570,86 +557,92 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     }
 
     private fun setToolbarDatesVisible(visible: Boolean, animate: Boolean) {
-        if (mToolbarDatesVisible == visible) {
+        if (toolbarDatesVisible == visible) {
             return
         }
 
-        mToolbarDatesVisible = visible
+        toolbarDatesVisible = visible
 
-        val context = context!!
-
-        val toolbarDatesTopHidden = -Utils.getSupportActionBarSize(context) // minus!
+        val toolbarDatesTopHidden = -Utils.getSupportActionBarSize(context!!) // minus!
         val toolbarShadowHeight = resources.getDimensionPixelSize(R.dimen.toolbar_shadow_height)
 
         if (animate) {
             val valueAnimatorShadowShow = ValueAnimator.ofInt(0, toolbarShadowHeight)
             valueAnimatorShadowShow
                     .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar_shadow).toLong())
-                    .addUpdateListener { animation -> Utils.setViewHeight(mToolbarShadow!!, animation.animatedValue as Int) }
+                    .addUpdateListener { animation -> Utils.setViewHeight(toolbarShadow!!, animation.animatedValue as Int) }
 
             val valueAnimatorShadowHide = ValueAnimator.ofInt(toolbarShadowHeight, 0)
             valueAnimatorShadowHide
                     .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar_shadow).toLong())
-                    .addUpdateListener { animation -> Utils.setViewHeight(mToolbarShadow!!, animation.animatedValue as Int) }
+                    .addUpdateListener { animation -> Utils.setViewHeight(toolbarShadow!!, animation.animatedValue as Int) }
 
             val valueAnimatorToolbar = ValueAnimator.ofInt(
                     if (visible) toolbarDatesTopHidden else 0, if (visible) 0 else toolbarDatesTopHidden)
             valueAnimatorToolbar
                     .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar).toLong())
-                    .addUpdateListener { animation -> Utils.setViewTopMargin(mToolbarDates!!, animation.animatedValue as Int) }
+                    .addUpdateListener { animation -> Utils.setViewTopMargin(toolbarDates!!, animation.animatedValue as Int) }
 
-            val animatorSet = AnimatorSet()
-            animatorSet.playSequentially(valueAnimatorShadowShow,
-                    valueAnimatorToolbar, valueAnimatorShadowHide)
-            animatorSet.start()
-        } else
-            Utils.setViewTopMargin(mToolbarDates!!, if (visible) 0 else toolbarDatesTopHidden)
+            with(AnimatorSet()) {
+                playSequentially(valueAnimatorShadowShow,
+                        valueAnimatorToolbar, valueAnimatorShadowHide)
+
+                start()
+            }
+        } else {
+            Utils.setViewTopMargin(toolbarDates, if (visible) 0 else toolbarDatesTopHidden)
+        }
     }
 
     private fun setTotalPanelVisible(visible: Boolean) {
-        if (mTotalPanelVisible == visible) return
+        if (totalPanelVisible == visible) return
 
-        mTotalPanelVisible = visible
+        totalPanelVisible = visible
 
         val valueAnimator = ValueAnimator.ofInt(
-                mTotalPanel!!.translationY.toInt(), if (visible) 0 else mTotalPanel!!.height)
+                totalPanel!!.translationY.toInt(), if (visible) 0 else totalPanel!!.height)
+
         valueAnimator
                 .setDuration((if (visible)
-                    mAnimationDuration!!.layoutTotalShow
+                    animationDuration!!.layoutTotalShow
                 else
-                    mAnimationDuration!!.layoutTotalHide).toLong())
+                    animationDuration!!.layoutTotalHide).toLong())
+
                 .addUpdateListener(object : ValueAnimator.AnimatorUpdateListener {
-                    internal var translationY: Int = 0
+                    var translationY: Int = 0
 
                     override fun onAnimationUpdate(animation: ValueAnimator) {
                         translationY = animation.animatedValue as Int
 
-                        mTotalPanel!!.translationY = translationY.toFloat()
-                        Utils.setViewTopMargin(mTotalPanel!!, -translationY)
+                        totalPanel!!.translationY = translationY.toFloat()
+
+                        Utils.setViewTopMargin(totalPanel, -translationY)
                     }
                 })
+
         valueAnimator.start()
     }
 
     private fun setTotalAndFabVisible(visible: Boolean) {
-        mFloatingActionButton!!.toggle(visible, true)
+        floatingActionButton?.toggle(visible, true)
         setTotalPanelVisible(visible)
     }
 
     fun setFabVisible(visible: Boolean) {
         val value = if (visible) 1.0f else 0.0f
-        mFloatingActionButton!!.animate()
-                .setStartDelay(mAnimationDuration!!.startDelayFab.toLong()).scaleX(value).scaleY(value)
+
+        floatingActionButton?.animate()?.setStartDelay(animationDuration!!.startDelayFab.toLong())?.scaleX(value)?.scaleY(value)
     }
 
-    private fun updateFilterDateButtons(dateFrom: Boolean, date: Long) {
-        (if (dateFrom) mBtnDateFrom else mBtnDateTo)!!.text = UtilsFormat.dateTimeToString(date, true, Utils.isPhoneInPortrait)
+    private fun updateFilterDateButton(button: Button?, date: Long) {
+        button?.text = UtilsFormat.dateTimeToString(date, true, Utils.isPhoneInPortrait)
     }
 
-    private fun setPopupFilterDate(setDateFrom: Boolean, menuId: Int) {
+    private fun setPopupFilterDate(button: Button?, menuId: Int) {
         when (menuId) {
-            R.id.action_dates_start_of_year, R.id.action_dates_end_of_year -> {
-                val calendar = UtilsDate.getCalendarInstance(if (setDateFrom) filter.dateFrom else filter.dateTo)
+            R.id.action_dates_start_of_year,
+            R.id.action_dates_end_of_year -> {
+                val calendar = UtilsDate.getCalendarInstance(if (button == btnDateFrom) filter.dateFrom else filter.dateTo)
 
                 when (menuId) {
                     R.id.action_dates_start_of_year -> {
@@ -664,8 +657,9 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
 
                 val date = calendar.timeInMillis
 
-                updateFilterDateButtons(setDateFrom, date)
-                setFilterDate(setDateFrom, date)
+                updateFilterDateButton(button, date)
+
+                setFilterDate(button == btnDateFrom, date)
             }
             R.id.action_dates_winter, R.id.action_dates_summer, R.id.action_dates_curr_year, R.id.action_dates_prev_year -> {
                 val calendarFrom = Calendar.getInstance()
@@ -675,7 +669,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
 
                 when (menuId) {
                     R.id.action_dates_winter, R.id.action_dates_summer -> {
-                        calendarFrom.timeInMillis = if (setDateFrom) filter.dateFrom else filter.dateTo
+                        calendarFrom.timeInMillis = if (button == btnDateFrom) filter.dateFrom else filter.dateTo
 
                         year = calendarFrom.get(Calendar.YEAR)
                     }
@@ -710,18 +704,16 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
                 val dateFrom = calendarFrom.timeInMillis
                 val dateTo = calendarTo.timeInMillis
 
-                updateFilterDateButtons(true, dateFrom)
-                updateFilterDateButtons(false, dateTo)
+                updateFilterDateButton(btnDateFrom, dateFrom)
+                updateFilterDateButton(btnDateTo, dateTo)
 
                 setFilterDate(dateFrom, dateTo)
             }
         }
     }
 
-    private fun doPopupDate(v: View, dateFrom: Boolean) {
-        val activity = activity!!
-
-        val popupMenu = PopupMenu(activity, v)
+    private fun doPopupDate(v: View, button: Button?) {
+        val popupMenu = PopupMenu(activity!!, v)
         popupMenu.inflate(R.menu.menu_dates)
 
         var menuHelper: Any? = null
@@ -734,7 +726,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         }
 
         popupMenu.setOnMenuItemClickListener { item ->
-            setPopupFilterDate(dateFrom, item.itemId)
+            setPopupFilterDate(button, item.itemId)
             true
         }
 
@@ -758,20 +750,18 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
 
     }
 
-    private fun showDateDialog(dateFrom: Boolean) {
-        val calendar = UtilsDate.getCalendarInstance(if (dateFrom) filter.dateFrom else filter.dateTo)
-
-        val fragmentManager = fragmentManager!!
+    private fun showDateDialog(button: Button?) {
+        val calendar = UtilsDate.getCalendarInstance(if (button == btnDateFrom) filter.dateFrom else filter.dateTo)
 
         DatePickerDialog.newInstance(
-                { view, year, monthOfYear, dayOfMonth ->
+                { _, year, monthOfYear, dayOfMonth ->
                     calendar.set(year, monthOfYear, dayOfMonth)
 
                     val date = calendar.timeInMillis
 
-                    updateFilterDateButtons(dateFrom, date)
+                    updateFilterDateButton(button, date)
 
-                    setFilterDate(dateFrom, date)
+                    setFilterDate(button == btnDateFrom, date)
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -802,25 +792,29 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         fun onRecordChange(fuelingRecord: FuelingRecord?)
     }
 
-    private class FuelingCursorLoader internal constructor(context: Context, private val mFilter: DatabaseHelper.Filter) : CursorLoader(context) {
+    private class FuelingCursorLoader(context: Context, private val filter: DatabaseHelper.Filter) : CursorLoader(context) {
 
         override fun loadInBackground(): Cursor? {
-            if (LOG_ENABLED) UtilsLog.d(TAG, "FuelingCursorLoader", "loadInBackground")
+            if (LOG_ENABLED) {
+                UtilsLog.d(TAG, "FuelingCursorLoader", "loadInBackground")
+            }
 
             BroadcastReceiverLoading.send(context, true)
 
             try {
-                return ContentResolverHelper.getAll(context, mFilter)
+                return ContentResolverHelper.getAll(context, filter)
             } finally {
                 BroadcastReceiverLoading.send(context, false)
             }
         }
     }
 
-    private class FuelingTotalCursorLoader internal constructor(context: Context) : CursorLoader(context) {
+    private class FuelingTotalCursorLoader(context: Context) : CursorLoader(context) {
 
         override fun loadInBackground(): Cursor? {
-            if (LOG_ENABLED) UtilsLog.d(TAG, "FuelingTotalCursorLoader", "loadInBackground")
+            if (LOG_ENABLED) {
+                UtilsLog.d(TAG, "FuelingTotalCursorLoader", "loadInBackground")
+            }
 
             return ContentResolverHelper.getTwoLastRecords(context)
         }

@@ -30,8 +30,7 @@ class FragmentBackup : FragmentBase(FragmentFactory.Ids.BACKUP) {
         val fragmentDialogProgress = fragmentManager?.findFragmentByTag(FragmentDialogProgress.TAG) as FragmentDialogProgress?
         val fragmentDialogQuestion = fragmentManager?.findFragmentByTag(FragmentDialogQuestion.TAG) as FragmentDialogQuestion?
 
-        UtilsLog.d(TAG, "onCreate", "fragmentDialogProgress " +
-                (if (fragmentDialogProgress == null) "=" else "!") + "= null")
+        UtilsLog.d(TAG, "onCreate", "fragmentDialogProgress = $fragmentDialogProgress")
 
         fragmentDialogProgress?.setTargetFragment(this, REQUEST_CODE_DIALOG_PROGRESS)
         fragmentDialogQuestion?.setTargetFragment(this, REQUEST_CODE_DIALOG_QUESTION)
@@ -42,7 +41,6 @@ class FragmentBackup : FragmentBase(FragmentFactory.Ids.BACKUP) {
         UtilsLog.d(TAG, "onCreateView")
 
         with(inflater.inflate(R.layout.fragment_backup, container, false)) {
-
             (findViewById<View>(R.id.text_directory) as TextView).text =
                     databaseBackupXmlHelper.externalDirectory.toString()
             (findViewById<View>(R.id.text_file) as TextView).text =

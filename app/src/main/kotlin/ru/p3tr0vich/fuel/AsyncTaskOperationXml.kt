@@ -3,6 +3,7 @@ package ru.p3tr0vich.fuel
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.AsyncTask
+import ru.p3tr0vich.fuel.fragments.FragmentDialogProgress
 import ru.p3tr0vich.fuel.helpers.ContentResolverHelper
 import ru.p3tr0vich.fuel.helpers.DatabaseBackupXmlHelper
 import ru.p3tr0vich.fuel.models.FuelingRecord
@@ -14,13 +15,10 @@ internal class AsyncTaskOperationXml(val context: Context,
                                      private val databaseBackupXmlHelper: DatabaseBackupXmlHelper,
                                      private val doSave: Boolean) : AsyncTask<Void, Void, Int>() {
 
-    companion object {
-        private const val TAG = "AsyncTaskOperationXml"
-    }
-
     var fragmentDialogProgress: FragmentDialogProgress? = null
         set(value) {
-            UtilsLog.d(TAG, "setFragmentDialogProgress == " + if (value == null) "null" else "!")
+            UtilsLog.d(TAG, "fragmentDialogProgress == $fragmentDialogProgress")
+            field = value
         }
 
     override fun doInBackground(vararg params: Void): Int? {
@@ -48,8 +46,12 @@ internal class AsyncTaskOperationXml(val context: Context,
 
     override fun onPostExecute(result: Int?) {
         UtilsLog.d(TAG, "onPostExecute",
-                "fragmentDialogProgress == " + if (fragmentDialogProgress == null) "null" else "!")
+                "fragmentDialogProgress == $fragmentDialogProgress")
 
         fragmentDialogProgress?.stopTask(result!!)
+    }
+
+    companion object {
+        private const val TAG = "AsyncTaskOperationXml"
     }
 }

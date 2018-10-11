@@ -54,17 +54,17 @@ object UtilsFormat {
     }
 
     @JvmStatic
-    fun editTextToFloat(edit: EditText): Float {
-        return stringToFloat(edit.text.toString())
+    fun editTextToFloat(edit: EditText?): Float {
+        return stringToFloat(edit?.text.toString())
     }
 
     @JvmStatic
-    fun floatToEditText(edit: EditText, value: Float, showZero: Boolean) {
-        edit.setText(floatToString(value, showZero))
+    fun floatToEditText(edit: EditText?, value: Float, showZero: Boolean) {
+        edit?.setText(floatToString(value, showZero))
     }
 
     @JvmStatic
-    fun floatToTextView(text: TextView, value: Float, showZero: Boolean) {
-        text.text = floatToString(value, showZero)
+    fun floatToTextView(text: TextView?, value: Float, showZero: Boolean) {
+        text?.text = floatToString(value, showZero)
     }
 }

@@ -3,7 +3,7 @@ package ru.p3tr0vich.fuel.factories
 import android.os.Bundle
 import android.support.annotation.IntDef
 import android.support.v4.app.Fragment
-import ru.p3tr0vich.fuel.*
+import ru.p3tr0vich.fuel.fragments.*
 
 object FragmentFactory {
 
@@ -40,7 +40,10 @@ object FragmentFactory {
             else -> throw IllegalArgumentException("Fragment bad ID")
         }
 
-        return FragmentBase.newInstance(fragmentId, fragment, args)
+        fragment.arguments = args
+
+        return fragment
+//        return FragmentBase.newInstance(fragmentId, fragment, args)
     }
 
     @JvmStatic

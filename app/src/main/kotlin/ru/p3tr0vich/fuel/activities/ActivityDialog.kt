@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-import ru.p3tr0vich.fuel.FragmentActivityDialogSMSTextPattern
+import ru.p3tr0vich.fuel.fragments.FragmentActivityDialogSMSTextPattern
 import ru.p3tr0vich.fuel.R
 
 class ActivityDialog : AppCompatActivity() {

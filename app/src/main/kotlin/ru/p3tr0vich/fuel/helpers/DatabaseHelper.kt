@@ -14,7 +14,7 @@ import ru.p3tr0vich.fuel.utils.UtilsLog
 import java.util.*
 
 class DatabaseHelper(context: Context) :
-        SQLiteOpenHelper(context, DatabaseModel.Database.NAME, null, DatabaseModel.Database.VERSION), DatabaseModel {
+        SQLiteOpenHelper(context, DatabaseModel.Database.NAME, null, DatabaseModel.Database.VERSION) {
 
     class Filter() {
         @Retention(AnnotationRetention.SOURCE)
@@ -31,7 +31,7 @@ class DatabaseHelper(context: Context) :
 
         var dateFrom: Long = 0
         var dateTo: Long = 0
-        var year: Int = 0
+        private var year: Int = 0
         @Mode
         var mode: Int = MODE_ALL
 

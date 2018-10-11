@@ -4,8 +4,12 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentTransaction
-import ru.p3tr0vich.fuel.*
+import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.factories.FragmentFactory
+import ru.p3tr0vich.fuel.fragments.FragmentCalc
+import ru.p3tr0vich.fuel.fragments.FragmentFueling
+import ru.p3tr0vich.fuel.fragments.FragmentInterface
+import ru.p3tr0vich.fuel.fragments.FragmentPreferences
 
 class FragmentHelper(private val fragmentActivity: FragmentActivity) {
 

@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import ru.p3tr0vich.fuel.FragmentFuelingRecordChange
+import ru.p3tr0vich.fuel.fragments.FragmentFuelingRecordChange
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.models.FuelingRecord
 import ru.p3tr0vich.fuel.utils.UtilsLog

@@ -18,6 +18,7 @@ import java.util.List;
 
 import ru.p3tr0vich.fuel.helpers.ContentProviderHelper;
 import ru.p3tr0vich.fuel.helpers.DatabaseHelper;
+import ru.p3tr0vich.fuel.models.DatabaseModel;
 import ru.p3tr0vich.fuel.models.FuelingRecord;
 import ru.p3tr0vich.fuel.utils.UtilsLog;
 
@@ -54,7 +55,7 @@ class SyncProviderDatabase {
                 do {
                     fuelingRecord = DatabaseHelper.getFuelingRecordForSync(cursor);
 
-                    result.add(DatabaseHelper.getBoolean(cursor, DatabaseHelper.TableFueling.Columns.DELETED_INDEX) ?
+                    result.add(DatabaseHelper.getBoolean(cursor, DatabaseModel.TableFueling.Columns.DELETED_INDEX) ?
                             DELETE + SEPARATOR +
                                     Long.toString(fuelingRecord.getId()) :
                             INSERT + SEPARATOR +

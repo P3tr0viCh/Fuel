@@ -23,7 +23,7 @@ import android.widget.FrameLayout
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.Status
 import com.pnikosis.materialishprogress.ProgressWheel
-import ru.p3tr0vich.fuel.FragmentDialogMessage
+import ru.p3tr0vich.fuel.fragments.FragmentDialogMessage
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.YandexMapJavascriptInterface
 import ru.p3tr0vich.fuel.helpers.ConnectivityHelper

@@ -18,7 +18,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class DatabaseBackupXmlHelper() {
+class DatabaseBackupXmlHelper {
     companion object {
         private const val TAG = "DatabaseBackupXmlHelper"
 
@@ -105,11 +105,6 @@ class DatabaseBackupXmlHelper() {
         fun format(date: Long): String {
             return SimpleDateFormat(DATE_TIME_TEMPLATE, Locale.getDefault()).format(date)
         }
-    }
-
-    constructor(databaseBackupXmlHelper: DatabaseBackupXmlHelper) : this() {
-        externalDirectory = databaseBackupXmlHelper.externalDirectory
-        fileName = databaseBackupXmlHelper.fileName
     }
 
     @Throws(IOException::class, RuntimeException::class)

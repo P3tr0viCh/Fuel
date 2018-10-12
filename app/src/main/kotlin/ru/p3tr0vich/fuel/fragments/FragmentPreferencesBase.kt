@@ -22,8 +22,10 @@ abstract class FragmentPreferencesBase(override val fragmentId: Int) : Preferenc
         get() = -1
 
     override val subtitle: String?
-        get() = null
-
+        get() {
+            val id = subtitleId
+            return if (id != -1) getString(id) else null
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

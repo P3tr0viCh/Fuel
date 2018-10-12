@@ -114,14 +114,14 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
 //        }
     }
 
-    override fun onCreatePreferences(bundle: Bundle?, s: String) {
+    override fun onCreatePreferences(bundle: Bundle?, s: String?) {
         if (LOG_ENABLED) {
-            UtilsLog.d(TAG, "onCreatePreferences")
+            UtilsLog.d(TAG, "onCreatePreferences", "preferenceScreen == $preferenceScreen")
         }
 
         addPreferencesFromResource(R.xml.preferences)
 
-//        rootPreferenceScreen = preferenceScreen
+        rootPreferenceScreen = preferenceScreen
 
         findPreference(preferencesHelper.keys.mapCenterText).onPreferenceClickListener = this
         findPreference(preferencesHelper.keys.syncYandexDisk).onPreferenceClickListener = this

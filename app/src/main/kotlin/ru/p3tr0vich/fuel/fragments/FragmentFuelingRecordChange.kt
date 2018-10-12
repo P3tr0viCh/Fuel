@@ -22,14 +22,14 @@ import java.util.*
 
 class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
 
-    private var mFuelingRecord: FuelingRecord? = null
+    private var fuelingRecord: FuelingRecord? = null
 
-    private var mButtonDate: Button? = null
-    private var mEditCost: EditText? = null
-    private var mEditVolume: EditText? = null
-    private var mEditTotal: EditText? = null
+    private var buttonDate: Button? = null
+    private var editCost: EditText? = null
+    private var editVolume: EditText? = null
+    private var editTotal: EditText? = null
 
-    private var mPrice: Float = 0.toFloat()
+    private var price = 0f
 
     private lateinit var preferencesHelper: PreferencesHelper
 
@@ -41,24 +41,22 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
      * редактируемого и вычисляемого полей (`CALC_STEP_SELECT`).
      * При последующих пересозданиях фрагмента загружается предыдущее значение.
      */
-    private var mCalcStep: Int = 0
+    private var calcStep: Int = 0
 
     /**
      * Проверка способа изменения поля:
      * true, если поле изменяется в результате ручного ввода,
      * false, если изменение происходит в результате вызова функции setText.
      */
-    private var mManualInput = true
+    private var manualInput = true
 
-    private var mCostTextWatcher: TextWatcher? = null
-    private var mVolumeTextWatcher: TextWatcher? = null
+    private var costTextWatcher: TextWatcher? = null
+    private var volumeTextWatcher: TextWatcher? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val context = context!!
-
-        preferencesHelper = PreferencesHelper.getInstance(context)
+        preferencesHelper = PreferencesHelper.getInstance(context!!)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -67,56 +65,51 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
 
         setHasOptionsMenu(true)
 
-        mButtonDate = view.findViewById(R.id.btn_date)
-        mEditCost = view.findViewById(edit_cost)
-        mEditVolume = view.findViewById(R.id.edit_volume)
-        mEditTotal = view.findViewById(R.id.edit_total)
+        buttonDate = view.findViewById(R.id.btn_date)
+        editCost = view.findViewById(edit_cost)
+        editVolume = view.findViewById(R.id.edit_volume)
+        editTotal = view.findViewById(R.id.edit_total)
 
-        val bundle = arguments
-
-        if (bundle != null && bundle.containsKey(FuelingRecord.NAME)) {
-            mFuelingRecord = FuelingRecord(bundle)
-            mPrice = 0f
+        if (arguments != null && arguments!!.containsKey(FuelingRecord.NAME)) {
+            fuelingRecord = FuelingRecord(arguments!!)
+            price = 0f
         } else {
-            var cost = preferencesHelper!!.defaultCost
-            var volume = preferencesHelper!!.defaultVolume
-            mPrice = preferencesHelper!!.price
+            var cost = preferencesHelper.defaultCost
+            var volume = preferencesHelper.defaultVolume
+            price = preferencesHelper.price
 
-            if (mPrice != 0f) {
+            if (price != 0f) {
                 if (cost == 0f && volume != 0f)
-                    cost = volume * mPrice
-                else if (volume == 0f && cost != 0f) volume = cost / mPrice
+                    cost = volume * price
+                else if (volume == 0f && cost != 0f) volume = cost / price
             }
 
-            mFuelingRecord = FuelingRecord(cost, volume, preferencesHelper!!.lastTotal)
+            fuelingRecord = FuelingRecord(cost, volume, preferencesHelper.lastTotal)
         }
 
-        val activity = activity!!
-
-        activity.setTitle(if (mFuelingRecord!!.id != 0L)
+        activity!!.setTitle(if (fuelingRecord!!.id != 0L)
             R.string.dialog_caption_update
         else
             R.string.dialog_caption_add)
 
         if (savedInstanceState == null) {
-            UtilsFormat.floatToEditText(mEditCost!!, mFuelingRecord!!.cost, false)
-            UtilsFormat.floatToEditText(mEditVolume!!, mFuelingRecord!!.volume, false)
-            UtilsFormat.floatToEditText(mEditTotal!!, mFuelingRecord!!.total, false)
-        } else
-            mFuelingRecord!!.dateTime = savedInstanceState.getLong(STATE_KEY_DATE)
+            UtilsFormat.floatToEditText(editCost, fuelingRecord!!.cost, false)
+            UtilsFormat.floatToEditText(editVolume, fuelingRecord!!.volume, false)
+            UtilsFormat.floatToEditText(editTotal, fuelingRecord!!.total, false)
+        } else {
+            fuelingRecord!!.dateTime = savedInstanceState.getLong(STATE_KEY_DATE)
+        }
 
         updateDate()
 
-        mButtonDate!!.setOnClickListener(this)
+        buttonDate!!.setOnClickListener(this)
 
         view.findViewById<View>(R.id.text_cost).setOnClickListener(this)
         view.findViewById<View>(R.id.text_volume).setOnClickListener(this)
         view.findViewById<View>(R.id.text_total).setOnClickListener(this)
 
-        if (savedInstanceState == null)
-            mCalcStep = if (mFuelingRecord!!.id == 0L && mPrice > 0) CALC_STEP_SELECT else CALC_STEP_DISABLED
-        else
-            mCalcStep = savedInstanceState.getInt(STATE_KEY_CALC_STEP, CALC_STEP_DISABLED)
+        calcStep = savedInstanceState?.getInt(STATE_KEY_CALC_STEP, CALC_STEP_DISABLED) ?:
+                if (fuelingRecord!!.id == 0L && price > 0) CALC_STEP_SELECT else CALC_STEP_DISABLED
 
         return view
     }
@@ -124,16 +117,17 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
     override fun onStart() {
         super.onStart()
 
-        if (mCalcStep != CALC_STEP_DISABLED) {
-            if (mCostTextWatcher == null) {
-                mCostTextWatcher = EditTextWatcherAdapter(mEditCost, mEditVolume,
+        if (calcStep != CALC_STEP_DISABLED) {
+            if (costTextWatcher == null) {
+                costTextWatcher = EditTextWatcherAdapter(editCost, editVolume,
                         CalcVolume(), CALC_STEP_COST)
-                mEditCost!!.addTextChangedListener(mCostTextWatcher)
+                editCost!!.addTextChangedListener(costTextWatcher)
             }
-            if (mVolumeTextWatcher == null) {
-                mVolumeTextWatcher = EditTextWatcherAdapter(mEditVolume, mEditCost,
+
+            if (volumeTextWatcher == null) {
+                volumeTextWatcher = EditTextWatcherAdapter(editVolume, editCost,
                         CalcCost(), CALC_STEP_VOLUME)
-                mEditVolume!!.addTextChangedListener(mVolumeTextWatcher)
+                editVolume!!.addTextChangedListener(volumeTextWatcher)
             }
         }
     }
@@ -155,30 +149,30 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
             // После первого изменения в одном из полей, это поле назначается редактируемым,
             // а другое -- вычисляемым.
 
-            if (mCalcStep == CALC_STEP_SELECT) {
-                mCalcStep = thisStep
+            if (calcStep == CALC_STEP_SELECT) {
+                calcStep = thisStep
             }
 
-            if (mCalcStep == thisStep) {
+            if (calcStep == thisStep) {
                 // Если значение изменяется в редактируемом поле,
                 // вычисляется значение для вычисляемого поля.
 
                 val enteredValue = UtilsFormat.editTextToFloat(edited)
 
-                val calculatedValue = calculator.calc(enteredValue, mPrice)
+                val calculatedValue = calculator.calc(enteredValue, price)
 
-                mManualInput = false
+                manualInput = false
                 UtilsFormat.floatToEditText(calculated, calculatedValue, false)
-                mManualInput = true
+                manualInput = true
             } else {
                 // Иначе, если было произведено ручное изменение в вычисляемом поле,
                 // вычисление отключается.
 
-                if (mManualInput) {
-                    mCalcStep = CALC_STEP_DISABLED
+                if (manualInput) {
+                    calcStep = CALC_STEP_DISABLED
 
-                    mEditCost?.removeTextChangedListener(mCostTextWatcher)
-                    mEditVolume?.removeTextChangedListener(mVolumeTextWatcher)
+                    editCost?.removeTextChangedListener(costTextWatcher)
+                    editVolume?.removeTextChangedListener(volumeTextWatcher)
                 }
             }
         }
@@ -213,12 +207,12 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putLong(STATE_KEY_DATE, mFuelingRecord!!.dateTime)
-        outState.putInt(STATE_KEY_CALC_STEP, mCalcStep)
+        outState.putLong(STATE_KEY_DATE, fuelingRecord!!.dateTime)
+        outState.putInt(STATE_KEY_CALC_STEP, calcStep)
     }
 
     private fun updateDate() {
-        mButtonDate!!.text = UtilsFormat.dateToString(mFuelingRecord!!.dateTime, true)
+        buttonDate!!.text = UtilsFormat.dateToString(fuelingRecord!!.dateTime, true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -232,48 +226,42 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
      * @return Истина, если сохранение успешно.
      */
     private fun saveRecord(): Boolean {
-        val activity = activity!!
-
         Utils.hideKeyboard(activity)
 
-        mFuelingRecord!!.cost = UtilsFormat.editTextToFloat(mEditCost!!)
-        mFuelingRecord!!.volume = UtilsFormat.editTextToFloat(mEditVolume!!)
-        mFuelingRecord!!.total = UtilsFormat.editTextToFloat(mEditTotal!!)
+        fuelingRecord!!.cost = UtilsFormat.editTextToFloat(editCost)
+        fuelingRecord!!.volume = UtilsFormat.editTextToFloat(editVolume)
+        fuelingRecord!!.total = UtilsFormat.editTextToFloat(editTotal)
 
-        val context = context!!
-
-        if (mFuelingRecord!!.id != 0L) {
-            if (ContentResolverHelper.updateRecord(context, mFuelingRecord!!)) {
-                return true
+        if (fuelingRecord!!.id != 0L) {
+            return if (ContentResolverHelper.updateRecord(context!!, fuelingRecord!!)) {
+                true
             } else {
                 Utils.toast(R.string.message_error_update_record)
 
-                return false
+                false
             }
         } else {
-            if (ContentResolverHelper.insertRecord(context, mFuelingRecord!!)) {
-                return true
+            return if (ContentResolverHelper.insertRecord(context!!, fuelingRecord)) {
+                true
             } else {
                 Utils.toast(R.string.message_error_insert_record)
 
-                return false
+                false
             }
         }
     }
 
     private fun onSaveClicked(): Boolean {
-        if (saveRecord()) {
-            preferencesHelper!!.putLastTotal(mFuelingRecord!!.total)
+        return if (saveRecord()) {
+            preferencesHelper.putLastTotal(fuelingRecord!!.total)
 
-            val activity = activity!!
+            activity!!.setResult(Activity.RESULT_OK)
 
-            activity.setResult(Activity.RESULT_OK)
+            activity!!.finish()
 
-            activity.finish()
-
-            return true
+            true
         } else {
-            return false
+            false
         }
     }
 
@@ -286,16 +274,14 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-        if (v === mButtonDate) {
-            val calendar = UtilsDate.getCalendarInstance(mFuelingRecord!!.dateTime)
-
-            val fragmentManager = fragmentManager!!
+        if (v === buttonDate) {
+            val calendar = UtilsDate.getCalendarInstance(fuelingRecord!!.dateTime)
 
             DatePickerDialog.newInstance(
-                    { view, year, monthOfYear, dayOfMonth ->
+                    { _, year, monthOfYear, dayOfMonth ->
                         calendar.set(year, monthOfYear, dayOfMonth)
 
-                        mFuelingRecord!!.dateTime = calendar.timeInMillis
+                        fuelingRecord!!.dateTime = calendar.timeInMillis
 
                         updateDate()
                     },
@@ -305,9 +291,9 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
             ).show(fragmentManager, null)
         } else {
             val edit = when (v.id) {
-                R.id.text_cost -> mEditCost
-                R.id.text_volume -> mEditVolume
-                R.id.text_total -> mEditTotal
+                R.id.text_cost -> editCost
+                R.id.text_volume -> editVolume
+                R.id.text_total -> editTotal
                 else -> return
             }
 
@@ -317,16 +303,15 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
 
     companion object {
 
-        val TAG = "FragmentFuelingRecordChange"
+        const val TAG = "FragmentFuelingRecordChange"
 
-        private val STATE_KEY_DATE = "STATE_KEY_DATE"
-        private val STATE_KEY_CALC_STEP = "STATE_KEY_CALC_STEP"
+        private const val STATE_KEY_DATE = "STATE_KEY_DATE"
+        private const val STATE_KEY_CALC_STEP = "STATE_KEY_CALC_STEP"
 
         fun newInstance(fuelingRecord: FuelingRecord?): Fragment {
             val fragment = FragmentFuelingRecordChange()
 
-            if (fuelingRecord != null)
-                fragment.arguments = fuelingRecord.toBundle()
+            fragment.arguments = fuelingRecord?.toBundle()
 
             return fragment
         }
@@ -334,18 +319,18 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
         /**
          * Выбор редактируемого и вычисляемого полей.
          */
-        private val CALC_STEP_SELECT = 0
+        private const val CALC_STEP_SELECT = 0
         /**
          * Редактируемое поле -- Стоимость, вычисляемое поле -- Объём.
          */
-        private val CALC_STEP_COST = 1
+        private const val CALC_STEP_COST = 1
         /**
          * Редактируемое поле -- Объём, вычисляемое -- Стоимость.
          */
-        private val CALC_STEP_VOLUME = 2
+        private const val CALC_STEP_VOLUME = 2
         /**
          * Вычисление отключено.
          */
-        private val CALC_STEP_DISABLED = 3
+        private const val CALC_STEP_DISABLED = 3
     }
 }

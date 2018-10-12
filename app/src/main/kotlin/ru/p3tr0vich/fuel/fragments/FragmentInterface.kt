@@ -10,7 +10,7 @@ interface FragmentInterface {
     val fragmentId: Int
 
     @get:StringRes
-    val titleId: Int?
+    val titleId: Int
 
     val title: String?
 

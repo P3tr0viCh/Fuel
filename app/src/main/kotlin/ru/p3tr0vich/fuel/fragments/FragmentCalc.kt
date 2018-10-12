@@ -124,7 +124,7 @@ class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemS
      * @param distance расстояние в метрах.
      */
     fun setDistance(distance: Int) {
-        UtilsFormat.floatToEditText(editDistance!!, (distance / 1000.0).toFloat(), false)
+        UtilsFormat.floatToEditText(editDistance, (distance / 1000.0).toFloat(), false)
     }
 
     private fun checkTextOnEmpty(editText: EditText) {
@@ -193,14 +193,14 @@ class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemS
     private fun selectConsFromSpinners() {
         val cons = arrCons[spinnerSeason!!.selectedItemPosition][spinnerCons!!.selectedItemPosition]
 
-        if (java.lang.Float.compare(cons, UtilsFormat.editTextToFloat(editCons!!)) == 0) {
+        if (java.lang.Float.compare(cons, UtilsFormat.editTextToFloat(editCons)) == 0) {
             return
         }
 
-        UtilsFormat.floatToEditText(editCons!!, cons, false)
+        UtilsFormat.floatToEditText(editCons, cons, false)
     }
 
-    override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
         selectConsFromSpinners()
     }
 
@@ -253,18 +253,18 @@ class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemS
 
         try {
             // Цена за "литр".
-            val price = UtilsFormat.editTextToFloat(editPrice!!)
+            val price = UtilsFormat.editTextToFloat(editPrice)
             // Расход на 100 "км".
-            val cons = UtilsFormat.editTextToFloat(editCons!!)
+            val cons = UtilsFormat.editTextToFloat(editCons)
 
 
             if (price == 0f || cons == 0f) {
                 return
             }
 
-            var distance = UtilsFormat.editTextToFloat(editDistance!!)
-            var cost = UtilsFormat.editTextToFloat(editCost!!)
-            var volume = UtilsFormat.editTextToFloat(editVolume!!)
+            var distance = UtilsFormat.editTextToFloat(editDistance)
+            var cost = UtilsFormat.editTextToFloat(editCost)
+            var volume = UtilsFormat.editTextToFloat(editVolume)
 
             // Пробег на одном "литре".
             val distancePerOneFuel = 100.0f / cons
@@ -274,22 +274,22 @@ class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemS
                     volume = distance / distancePerOneFuel
                     cost = price * volume
 
-                    UtilsFormat.floatToEditText(editVolume!!, volume, true)
-                    UtilsFormat.floatToEditText(editCost!!, cost, true)
+                    UtilsFormat.floatToEditText(editVolume, volume, true)
+                    UtilsFormat.floatToEditText(editCost, cost, true)
                 }
                 CALC_ACTION_COST -> {
                     volume = cost / price
                     distance = distancePerOneFuel * volume
 
-                    UtilsFormat.floatToEditText(editVolume!!, volume, true)
-                    UtilsFormat.floatToEditText(editDistance!!, distance, true)
+                    UtilsFormat.floatToEditText(editVolume, volume, true)
+                    UtilsFormat.floatToEditText(editDistance, distance, true)
                 }
                 CALC_ACTION_VOLUME -> {
                     cost = price * volume
                     distance = distancePerOneFuel * volume
 
-                    UtilsFormat.floatToEditText(editCost!!, cost, true)
-                    UtilsFormat.floatToEditText(editDistance!!, distance, true)
+                    UtilsFormat.floatToEditText(editCost, cost, true)
+                    UtilsFormat.floatToEditText(editDistance, distance, true)
                 }
             }
         } finally {

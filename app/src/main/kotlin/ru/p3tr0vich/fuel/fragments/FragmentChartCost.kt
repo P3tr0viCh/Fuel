@@ -39,7 +39,7 @@ import java.util.*
 class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderManager.LoaderCallbacks<Cursor> {
 
     private var tabLayout: TabLayout? = null
-    private var chart: BarChart? = null
+    private lateinit var chart: BarChart
     private var textNoRecords: TextView? = null
     private var textMedian: TextView? = null
     private var textSum: TextView? = null
@@ -94,7 +94,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
 
     private class Months(context: Context) {
 
-        private val months = ArrayList<String>(COUNT)
+        private val months = Array(COUNT) { "" }
 
         init {
             for (month in Calendar.JANUARY..Calendar.DECEMBER)
@@ -165,19 +165,19 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
 
         chart = view.findViewById(R.id.chart)
 
-        chart!!.description.text = ""
+        chart.description.text = ""
 
-        chart!!.setNoDataText("")
+        chart.setNoDataText("")
 
-        chart!!.setDrawBarShadow(false)
-        chart!!.setTouchEnabled(false)
-        chart!!.setScaleEnabled(false)
-        chart!!.isDoubleTapToZoomEnabled = false
-        chart!!.setPinchZoom(false)
-        chart!!.setDrawGridBackground(false)
-        chart!!.setDrawValueAboveBar(true)
+        chart.setDrawBarShadow(false)
+        chart.setTouchEnabled(false)
+        chart.setScaleEnabled(false)
+        chart.isDoubleTapToZoomEnabled = false
+        chart.setPinchZoom(false)
+        chart.setDrawGridBackground(false)
+        chart.setDrawValueAboveBar(true)
 
-        with(chart!!.xAxis) {
+        with(chart.xAxis) {
             position = XAxis.XAxisPosition.BOTTOM
             setDrawAxisLine(true)
             axisLineWidth = 1f
@@ -191,7 +191,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
             setDrawLimitLinesBehindData(true)
         }
 
-        with(chart!!.axisLeft) {
+        with(chart.axisLeft) {
             isEnabled = true
             setDrawAxisLine(true)
             setDrawGridLines(false)
@@ -200,10 +200,10 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
             setDrawLimitLinesBehindData(true)
         }
 
-        chart!!.axisRight.isEnabled = false
-        chart!!.legend.isEnabled = false
+        chart.axisRight.isEnabled = false
+        chart.legend.isEnabled = false
 
-        chart!!.setHardwareAccelerationEnabled(true)
+        chart.setHardwareAccelerationEnabled(true)
 
         if (savedInstanceState != null) {
             updateYears()
@@ -224,7 +224,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
 
         view.setOnTouchListener(onSwipeTouchListener)
         //todo: check
-//        chart!!.setOnTouchListener(onSwipeTouchListener)
+//        chart.setOnTouchListener(onSwipeTouchListener)
 
         return view
     }
@@ -385,28 +385,30 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
             val dataSets = ArrayList<IBarDataSet>()
             dataSets.add(sumsSet)
 
-            val sumsData = BarData(dataSets)
-            sumsData.setValueFormatter(floatFormatter)
-            sumsData.setValueTextSize(8f)
-            sumsData.barWidth = 0.8f
+            with(BarData(dataSets)) {
+                setValueFormatter(floatFormatter)
+                setValueTextSize(8f)
+                barWidth = 0.8f
 
-            chart!!.data = sumsData
+                chart.data = this
+            }
 
-            chart!!.axisLeft.removeAllLimitLines()
+            chart.axisLeft.removeAllLimitLines()
 
             if (chartCostModel!!.median > 0 && chartCostModel!!.isSumsNotEquals) {
-                val medianLine = LimitLine(chartCostModel!!.median)
-                medianLine.lineColor = Utils.getColor(R.color.chart_median)
-                medianLine.lineWidth = 0.5f
-                medianLine.enableDashedLine(8f, 2f, 0f)
+                with(LimitLine(chartCostModel!!.median)) {
+                    lineColor = Utils.getColor(R.color.chart_median)
+                    lineWidth = 0.5f
+                    enableDashedLine(8f, 2f, 0f)
 
-                chart!!.axisLeft.addLimitLine(medianLine)
+                    chart.axisLeft.addLimitLine(this)
+                }
             }
 
             val duration = Utils.getInteger(R.integer.animation_chart)
-            chart!!.animateXY(duration, duration)
+            chart.animateXY(duration, duration)
         } else {
-            chart!!.clear()
+            chart.clear()
 
             handler.postDelayed(runnableShowNoRecords, Utils.getInteger(R.integer.delayed_time_show_no_records).toLong())
         }

@@ -14,9 +14,9 @@ import ru.p3tr0vich.fuel.R
 class FragmentDialogMessage : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val title = arguments?.getString(TITLE)
-
         val builder = AlertDialog.Builder(activity!!)
+
+        val title = arguments?.getString(TITLE)
 
         if (!TextUtils.isEmpty(title)) {
             @SuppressLint("InflateParams")

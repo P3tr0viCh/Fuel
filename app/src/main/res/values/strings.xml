@@ -216,9 +216,9 @@
     <string name="pref_sync_enabled_on">Включена</string>
     <string name="pref_sync_enabled_off">Выключена</string>
 
-    <string name="pref_sync_yandex_disk_title">Синхронизация выполняется при помощи облачного
+    <string name="pref_sync_yandex_disk_title">Открыть Яндекс.Диск</string>
+    <string name="pref_sync_yandex_disk_summary_on">Синхронизация выполняется при помощи облачного
         хранилища Яндекс.Диск</string>
-    <string name="pref_sync_yandex_disk_summary_on">Открыть Яндекс.Диск</string>
 
     <string name="pref_sms_title">Отслеживание СМС</string>
     <string name="pref_sms_summary_on">Включено</string>

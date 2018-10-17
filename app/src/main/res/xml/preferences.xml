@@ -8,7 +8,7 @@
         android:negativeButtonText="@string/dialog_btn_cancel"
         android:positiveButtonText="@string/dialog_btn_done"
         android:summary=""
-        android:title="@string/pref_price"/>
+        android:title="@string/pref_price" />
     <PreferenceScreen
         android:icon="@drawable/ic_plus_circle"
         android:key="@string/pref_key_def"
@@ -22,7 +22,7 @@
             android:negativeButtonText="@string/dialog_btn_cancel"
             android:positiveButtonText="@string/dialog_btn_done"
             android:summary=""
-            android:title="@string/pref_def_cost"/>
+            android:title="@string/pref_def_cost" />
         <EditTextPreference
             android:dialogLayout="@layout/preference_number_decimal"
             android:imeOptions="flagNoExtractUi"
@@ -31,7 +31,7 @@
             android:negativeButtonText="@string/dialog_btn_cancel"
             android:positiveButtonText="@string/dialog_btn_done"
             android:summary=""
-            android:title="@string/pref_def_volume"/>
+            android:title="@string/pref_def_volume" />
     </PreferenceScreen>
 
     <PreferenceScreen
@@ -50,7 +50,7 @@
                 android:negativeButtonText="@string/dialog_btn_cancel"
                 android:positiveButtonText="@string/dialog_btn_done"
                 android:summary="@string/pref_summary_summer_city"
-                android:title="@string/city"/>
+                android:title="@string/city" />
             <EditTextPreference
                 android:dialogLayout="@layout/preference_number_decimal"
                 android:imeOptions="flagNoExtractUi"
@@ -59,7 +59,7 @@
                 android:negativeButtonText="@string/dialog_btn_cancel"
                 android:positiveButtonText="@string/dialog_btn_done"
                 android:summary="@string/pref_summary_summer_highway"
-                android:title="@string/highway"/>
+                android:title="@string/highway" />
             <EditTextPreference
                 android:dialogLayout="@layout/preference_number_decimal"
                 android:imeOptions="flagNoExtractUi"
@@ -68,7 +68,7 @@
                 android:negativeButtonText="@string/dialog_btn_cancel"
                 android:positiveButtonText="@string/dialog_btn_done"
                 android:summary="@string/pref_summary_summer_mixed"
-                android:title="@string/mixed"/>
+                android:title="@string/mixed" />
         </PreferenceCategory>
         <PreferenceCategory
             android:summary="@string/pref_summary_winter"
@@ -81,7 +81,7 @@
                 android:negativeButtonText="@string/dialog_btn_cancel"
                 android:positiveButtonText="@string/dialog_btn_done"
                 android:summary="@string/pref_summary_winter_city"
-                android:title="@string/city"/>
+                android:title="@string/city" />
             <EditTextPreference
                 android:dialogLayout="@layout/preference_number_decimal"
                 android:imeOptions="flagNoExtractUi"
@@ -90,7 +90,7 @@
                 android:negativeButtonText="@string/dialog_btn_cancel"
                 android:positiveButtonText="@string/dialog_btn_done"
                 android:summary="@string/pref_summary_winter_highway"
-                android:title="@string/highway"/>
+                android:title="@string/highway" />
             <EditTextPreference
                 android:dialogLayout="@layout/preference_number_decimal"
                 android:imeOptions="flagNoExtractUi"
@@ -99,14 +99,14 @@
                 android:negativeButtonText="@string/dialog_btn_cancel"
                 android:positiveButtonText="@string/dialog_btn_done"
                 android:summary="@string/pref_summary_winter_mixed"
-                android:title="@string/mixed"/>
+                android:title="@string/mixed" />
         </PreferenceCategory>
     </PreferenceScreen>
 
     <Preference
         android:icon="@drawable/ic_map"
         android:key="@string/pref_key_map_center_text"
-        android:title="@string/pref_yandex_map_title"/>
+        android:title="@string/pref_yandex_map_title" />
 
     <PreferenceScreen
         android:icon="@drawable/ic_sync"
@@ -116,13 +116,13 @@
         <android.support.v7.preference.SwitchPreferenceCompat
             android:key="@string/pref_key_sync_enabled"
             android:switchTextOff="@string/pref_sync_enabled_off"
-            android:switchTextOn="@string/pref_sync_enabled_on"/>
+            android:switchTextOn="@string/pref_sync_enabled_on" />
 
         <Preference
             android:icon="@mipmap/ic_yandex_disk_24dp"
             android:key="@string/pref_key_sync_yandex_disk"
             android:summary="@string/pref_sync_yandex_disk_summary_on"
-            android:title="@string/pref_sync_yandex_disk_title"/>
+            android:title="@string/pref_sync_yandex_disk_title" />
     </PreferenceScreen>
 
     <PreferenceScreen
@@ -133,16 +133,16 @@
         <android.support.v7.preference.SwitchPreferenceCompat
             android:key="@string/pref_key_sms_enabled"
             android:switchTextOff="@string/pref_sms_enabled_off"
-            android:switchTextOn="@string/pref_sms_enabled_on"/>
+            android:switchTextOn="@string/pref_sms_enabled_on" />
 
         <Preference
             android:dependency="@string/pref_key_sms_enabled"
             android:key="@string/pref_key_sms_address"
-            android:title="@string/pref_sms_address_title"/>
+            android:title="@string/pref_sms_address_title" />
 
         <Preference
             android:dependency="@string/pref_key_sms_enabled"
             android:key="@string/pref_key_sms_text_pattern"
-            android:title="@string/pref_sms_text_title"/>
+            android:title="@string/pref_sms_text_title" />
     </PreferenceScreen>
 </PreferenceScreen>

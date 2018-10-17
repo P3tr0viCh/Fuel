@@ -31,9 +31,9 @@ abstract class FragmentBase(override val fragmentId: Int) : Fragment(), Fragment
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
         preferencesHelper = PreferencesHelper.getInstance(context!!)
+
+        super.onCreate(savedInstanceState)
     }
 
     override fun onAttach(context: Context?) {

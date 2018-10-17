@@ -141,8 +141,8 @@ class ContentProviderHelper : ContentProvider() {
                 DATABASE_SYNC_ALL -> databaseHelper.getSyncRecords(false)
                 DATABASE_SYNC_CHANGED -> databaseHelper.getSyncRecords(true)
 
-                PREFERENCES -> preferencesHelper.preferences
-                PREFERENCES_ITEM -> preferencesHelper.getPreference(uri.lastPathSegment)
+                PREFERENCES -> preferencesHelper.getPreferencesCursor()
+                PREFERENCES_ITEM -> preferencesHelper.getPreferencesCursor(uri.lastPathSegment)
                 else -> {
                     UtilsLog.d(TAG, "query", "uriMatcher.match() == default, uri == $uri")
                     null

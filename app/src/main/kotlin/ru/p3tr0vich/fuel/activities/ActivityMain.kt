@@ -114,7 +114,7 @@ class ActivityMain : AppCompatActivity(),
 
             ContentObserverService.requestSync(this)
         } else {
-            currentFragmentId = FragmentFactory.intToFragmentId(savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID))
+            currentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID)
 
             if (currentFragmentId == FragmentFactory.Ids.PREFERENCES) {
                 fragmentHelper!!.fragmentPreferences?.let {
@@ -422,7 +422,7 @@ class ActivityMain : AppCompatActivity(),
     }
 
     override fun onFragmentChange(fragment: FragmentInterface) {
-        currentFragmentId = FragmentFactory.intToFragmentId(fragment.fragmentId)
+        currentFragmentId = fragment.fragmentId
 
         title = fragment.title
         toolbarMain?.subtitle = fragment.subtitle

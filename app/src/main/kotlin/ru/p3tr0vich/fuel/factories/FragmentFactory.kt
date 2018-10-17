@@ -43,13 +43,6 @@ object FragmentFactory {
         fragment.arguments = args
 
         return fragment
-//        return FragmentBase.newInstance(fragmentId, fragment, args)
-    }
-
-    @JvmStatic
-    @Ids.Id
-    fun intToFragmentId(id: Int): Int {
-        return id
     }
 
     @JvmStatic

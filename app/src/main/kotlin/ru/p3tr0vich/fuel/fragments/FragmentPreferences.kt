@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.support.v7.preference.EditTextPreference
 import android.support.v7.preference.Preference
 import android.support.v7.preference.PreferenceGroup
 import android.support.v7.preference.PreferenceScreen
@@ -11,6 +12,7 @@ import android.text.TextUtils
 import ru.p3tr0vich.fuel.ImplementException
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.factories.FragmentFactory
+import ru.p3tr0vich.fuel.utils.UtilsFormat
 import ru.p3tr0vich.fuel.utils.UtilsLog
 
 class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFERENCES),
@@ -55,20 +57,20 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
 
         updatePreference(key)
 
-        when (preferencesHelper.keys.getAsInt(key)) {
-//            PRICE -> {
-//                updatePreference(preferencesHelper.keys.defaultCost)
-//                updatePreference(preferencesHelper.keys.defaultVolume)
-//            }
-//            DEFAULT_COST -> updatePreference(preferencesHelper.keys.defaultVolume)
-//            DEFAULT_VOLUME -> updatePreference(preferencesHelper.keys.defaultCost)
-//            SYNC_ENABLED -> {
-//                updatePreference(preferencesHelper.keys.sync)
-//
-//                onPreferenceSyncEnabledChangeListener?.onPreferenceSyncEnabledChanged(
-//                        preferencesHelper.isSyncEnabled)
-//            }
-//            SMS_ENABLED -> updatePreference(preferencesHelper.keys.sms)
+        when (key) {
+            preferencesHelper.keys.price -> {
+                updatePreference(preferencesHelper.keys.defaultCost)
+                updatePreference(preferencesHelper.keys.defaultVolume)
+            }
+            preferencesHelper.keys.defaultCost -> updatePreference(preferencesHelper.keys.defaultVolume)
+            preferencesHelper.keys.defaultVolume -> updatePreference(preferencesHelper.keys.defaultCost)
+            preferencesHelper.keys.syncEnabled -> {
+                updatePreference(preferencesHelper.keys.sync)
+
+                onPreferenceSyncEnabledChangeListener?.onPreferenceSyncEnabledChanged(
+                        preferencesHelper.isSyncEnabled)
+            }
+            preferencesHelper.keys.smsEnabled -> updatePreference(preferencesHelper.keys.sms)
         }
     }
 
@@ -92,26 +94,6 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
             }
             else -> return false
         }
-        //todo
-//        when (preferencesHelper.keys.getAsInt(preference.key)) {
-//            MAP_CENTER_TEXT -> {
-//                onPreferenceClickListener?.onPreferenceMapCenterClick()
-//                return true
-//            }
-//            SYNC_YANDEX_DISK -> {
-//                onPreferenceClickListener?.onPreferenceSyncYandexDiskClick()
-//                return true
-//            }
-//            SMS_ADDRESS -> {
-//                onPreferenceClickListener?.onPreferenceSMSAddressClick()
-//                return true
-//            }
-//            SMS_TEXT_PATTERN -> {
-//                onPreferenceClickListener?.onPreferenceSMSTextPatternClick()
-//                return true
-//            }
-//            else -> return false
-//        }
     }
 
     override fun onCreatePreferences(bundle: Bundle?, s: String?) {
@@ -220,98 +202,93 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
     @SuppressLint("SwitchIntDef")
     private fun updatePreference(preference: Preference?) {
         if (LOG_ENABLED) {
-            UtilsLog.d(TAG, "updatePreference", "preference == " + preference!!)
+            UtilsLog.d(TAG, "updatePreference", "preference == $preference")
         }
 
-        if (preference == null) {
-            return
-        }
-
-        val key = preference.key ?: return
+        val key = preference?.key ?: return
 
         var title: String? = null
         var summary: String? = null
 
-        val intKey = preferencesHelper.keys.getAsInt(key)
+        when (key) {
+            preferencesHelper.keys.price -> summary = getValue(preferencesHelper.priceAsString, getString(R.string.pref_price_empty))
+            preferencesHelper.keys.defaultCost,
+            preferencesHelper.keys.defaultVolume -> {
+                val cost = preferencesHelper.defaultCost
+                val volume = preferencesHelper.defaultVolume
 
-//        when (intKey) {
-//            PRICE -> summary = getValue(preferencesHelper.priceAsString, getString(R.string.pref_price_empty))
-//            DEFAULT_COST, DEFAULT_VOLUME -> {
-//                val cost = preferencesHelper.defaultCost
-//                val volume = preferencesHelper.defaultVolume
-//
-//                if (cost == 0f && volume == 0f)
-//                    summary = if (intKey == DEFAULT_COST)
-//                        getString(R.string.pref_def_cost_empty)
-//                    else
-//                        getString(R.string.pref_def_volume_empty)
-//                else {
-//                    val price = preferencesHelper.price
-//
-//                    if (intKey == DEFAULT_COST) {
-//                        if (cost == 0f) {
-//                            summary = getString(R.string.pref_def_cost_calc)
-//
-//                            if (price != 0f) {
-//                                summary += " (" + UtilsFormat.floatToString(volume * price) + ")"
-//                            }
-//
-//                        }
-//                    } else {
-//                        if (volume == 0f) {
-//                            summary = getString(R.string.pref_def_volume_calc)
-//
-//                            if (price != 0f) {
-//                                summary += " (" + UtilsFormat.floatToString(cost / price) + ")"
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                if (TextUtils.isEmpty(summary)) {
-//                    summary = preferencesHelper.getString(key)
-//                }
-//            }
-//            MAP_CENTER_TEXT -> summary = preferencesHelper.mapCenterText
-//            SYNC -> summary = getString(if (preferencesHelper.isSyncEnabled)
-//                R.string.pref_sync_summary_on
-//            else
-//                R.string.pref_sync_summary_off)
-//            SYNC_ENABLED -> title = getString(if (preferencesHelper.isSyncEnabled)
-//                R.string.pref_sync_summary_on
-//            else
-//                R.string.pref_sync_summary_off)
-//            SMS -> summary = getString(if (preferencesHelper.isSMSEnabled)
-//                R.string.pref_sms_summary_on
-//            else
-//                R.string.pref_sms_summary_off)
-//            SMS_ENABLED -> title = getString(if (preferencesHelper.isSMSEnabled)
-//                R.string.pref_sms_summary_on
-//            else
-//                R.string.pref_sms_summary_off)
-//            SMS_ADDRESS -> summary = preferencesHelper.smsAddress
-//            SMS_TEXT_PATTERN -> {
-//                summary = preferencesHelper.smsTextPattern
-//                summary = summary.replace("[\\s]+".toRegex(), " ")
-//            }
-//            else -> if (preference is EditTextPreference) {
-//                var text: String? = preferencesHelper.getString(key)
-//
-//                preference.text = text
-//
-//                text = getValue(text, "0")
-//
-//                summary = preference.summary.toString()
-//
-//                val i = summary.lastIndexOf(" (")
-//
-//                if (i != -1) {
-//                    summary = summary.substring(0, i)
-//                }
-//
-//                summary += " ($text)"
-//            }
-//        }
+                if (cost == 0f && volume == 0f) {
+                    summary = if (key == preferencesHelper.keys.defaultCost)
+                        getString(R.string.pref_def_cost_empty)
+                    else
+                        getString(R.string.pref_def_volume_empty)
+                } else {
+                    val price = preferencesHelper.price
+
+                    if (key == preferencesHelper.keys.defaultCost) {
+                        if (cost == 0f) {
+                            summary = getString(R.string.pref_def_cost_calc)
+
+                            if (price != 0f) {
+                                summary += " (${UtilsFormat.floatToString(volume * price)})"
+                            }
+
+                        }
+                    } else {
+                        if (volume == 0f) {
+                            summary = getString(R.string.pref_def_volume_calc)
+
+                            if (price != 0f) {
+                                summary += " (${UtilsFormat.floatToString(cost / price)})"
+                            }
+                        }
+                    }
+                }
+
+                if (TextUtils.isEmpty(summary)) {
+                    summary = preferencesHelper.getString(key)
+                }
+            }
+            preferencesHelper.keys.mapCenterText -> summary = preferencesHelper.mapCenterText
+            preferencesHelper.keys.sync -> summary = getString(if (preferencesHelper.isSyncEnabled)
+                R.string.pref_sync_summary_on
+            else
+                R.string.pref_sync_summary_off)
+            preferencesHelper.keys.syncEnabled -> title = getString(if (preferencesHelper.isSyncEnabled)
+                R.string.pref_sync_summary_on
+            else
+                R.string.pref_sync_summary_off)
+            preferencesHelper.keys.sms -> summary = getString(if (preferencesHelper.isSMSEnabled)
+                R.string.pref_sms_summary_on
+            else
+                R.string.pref_sms_summary_off)
+            preferencesHelper.keys.smsEnabled -> title = getString(if (preferencesHelper.isSMSEnabled)
+                R.string.pref_sms_summary_on
+            else
+                R.string.pref_sms_summary_off)
+            preferencesHelper.keys.smsAddress -> summary = preferencesHelper.smsAddress
+            preferencesHelper.keys.smsTextPattern -> {
+                summary = preferencesHelper.smsTextPattern
+                summary = summary.replace("[\\s]+".toRegex(), " ")
+            }
+            else -> if (preference is EditTextPreference) {
+                var text: String? = preferencesHelper.getString(key)
+
+                preference.text = text
+
+                text = getValue(text, "0")
+
+                summary = preference.summary.toString()
+
+                val i = summary.lastIndexOf(" (")
+
+                if (i != -1) {
+                    summary = summary.substring(0, i)
+                }
+
+                summary += " ($text)"
+            }
+        }
 
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "updatePreference", "title == $title, summary == $summary")

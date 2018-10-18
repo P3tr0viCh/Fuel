@@ -90,7 +90,7 @@
         </service>
 
         <service
-            android:name=".SyncService"
+            android:name=".sync.SyncService"
             android:exported="false"
             android:process=":sync">
 

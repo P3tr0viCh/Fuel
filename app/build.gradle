@@ -2,22 +2,28 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 
+buildscript {
+    ext {
+        keystorePath = "D:\\android\\keystore"
+    }
+}
+
 Properties props = new Properties()
-props.load(new FileInputStream(file("c:\\android\\keystore\\ru.p3tr0vich.fuel.properties")))
+props.load(new FileInputStream(file("$keystorePath\\ru.p3tr0vich.fuel.properties")))
 
 android {
     signingConfigs {
         debug {
             keyAlias 'ru.p3tr0vich.fuel'
             keyPassword props['keyPassword']
-            storeFile file(props['storeFile'])
+            storeFile file("$keystorePath\\keystore.jks")
             storePassword props['storePassword']
         }
 
         release {
             keyAlias 'ru.p3tr0vich.fuel'
             keyPassword props['keyPassword']
-            storeFile file(props['storeFile'])
+            storeFile file("$keystorePath\\keystore.jks")
             storePassword props['storePassword']
         }
     }

@@ -7,8 +7,8 @@ import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import ru.p3tr0vich.fuel.ContentObserverService
 import ru.p3tr0vich.fuel.ContentObserverService.Companion.SYNC_ALL
-import ru.p3tr0vich.fuel.SyncAccount
-import ru.p3tr0vich.fuel.SyncYandexDisk
+import ru.p3tr0vich.fuel.sync.SyncAccount
+import ru.p3tr0vich.fuel.sync.SyncYandexDisk
 import ru.p3tr0vich.fuel.utils.UtilsLog
 import java.util.regex.Pattern
 

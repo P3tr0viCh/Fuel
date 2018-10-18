@@ -5,9 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.os.Parcelable
 import android.support.annotation.IntDef
-import kotlinx.android.parcel.Parcelize
 import ru.p3tr0vich.fuel.models.DatabaseModel
 import ru.p3tr0vich.fuel.models.FuelingRecord
 import ru.p3tr0vich.fuel.utils.Utils
@@ -23,14 +21,6 @@ class DatabaseHelper(context: Context) :
         @Retention(AnnotationRetention.SOURCE)
         @IntDef(MODE_ALL, MODE_CURRENT_YEAR, MODE_YEAR, MODE_DATES, MODE_TWO_LAST_RECORDS)
         annotation class Mode
-
-        companion object {
-            const val MODE_ALL = 0
-            const val MODE_CURRENT_YEAR = 1
-            const val MODE_YEAR = 2
-            const val MODE_DATES = 3
-            const val MODE_TWO_LAST_RECORDS = 4
-        }
 
         var dateFrom: Long = 0
         var dateTo: Long = 0
@@ -79,6 +69,14 @@ class DatabaseHelper(context: Context) :
         constructor(year: Int) : this() {
             this.year = year
             mode = MODE_YEAR
+        }
+
+        companion object {
+            const val MODE_ALL = 0
+            const val MODE_CURRENT_YEAR = 1
+            const val MODE_YEAR = 2
+            const val MODE_DATES = 3
+            const val MODE_TWO_LAST_RECORDS = 4
         }
     }
 

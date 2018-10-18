@@ -14,7 +14,7 @@ import android.os.Handler
  */
 open class ContentObserverBase private constructor(handler: Handler) : ContentObserver(handler) {
 
-    internal constructor() : this(Handler()) {}
+    internal constructor() : this(Handler())
 
     /**
      * Регистрирует наблюдатель.

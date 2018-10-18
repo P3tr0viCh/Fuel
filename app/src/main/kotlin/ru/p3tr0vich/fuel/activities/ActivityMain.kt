@@ -25,8 +25,8 @@ import android.view.animation.RotateAnimation
 import android.widget.*
 import ru.p3tr0vich.fuel.ContentObserverService
 import ru.p3tr0vich.fuel.R
-import ru.p3tr0vich.fuel.SyncAccount
-import ru.p3tr0vich.fuel.SyncYandexDisk
+import ru.p3tr0vich.fuel.sync.SyncAccount
+import ru.p3tr0vich.fuel.sync.SyncYandexDisk
 import ru.p3tr0vich.fuel.factories.FragmentFactory
 import ru.p3tr0vich.fuel.fragments.*
 import ru.p3tr0vich.fuel.helpers.ContactsHelper

@@ -96,7 +96,7 @@ class FragmentBackup : FragmentBase(FragmentFactory.Ids.BACKUP) {
             DatabaseBackupXmlHelper.RESULT_LOAD_OK -> {
                 Utils.toast(R.string.message_load_file_ok)
 
-                preferencesHelper.putFullSync(true)
+                preferencesHelper.isFullSync = true
             }
             else -> {
                 FragmentDialogMessage.show(activity!!, getString(R.string.title_message_error), resultMessage)

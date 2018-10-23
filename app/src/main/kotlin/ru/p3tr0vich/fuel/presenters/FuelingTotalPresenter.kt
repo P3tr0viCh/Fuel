@@ -4,31 +4,31 @@ import ru.p3tr0vich.fuel.models.FuelingRecord
 import ru.p3tr0vich.fuel.models.FuelingTotalModel
 import ru.p3tr0vich.fuel.views.FuelingTotalView
 
-class FuelingTotalPresenter(private val mFuelingTotalView: FuelingTotalView) {
-    private val mFuelingTotalModel: FuelingTotalModel = FuelingTotalModel()
+class FuelingTotalPresenter(private val fuelingTotalView: FuelingTotalView) {
+    private val fuelingTotalModel = FuelingTotalModel()
 
     init {
-        mFuelingTotalModel.onChangeListener = object : FuelingTotalModel.OnChangeListener {
+        fuelingTotalModel.onChangeListener = object : FuelingTotalModel.OnChangeListener {
             override fun onChange() {
-                mFuelingTotalView.setAverage(mFuelingTotalModel.average)
-                mFuelingTotalView.setCostSum(mFuelingTotalModel.costSum)
+                fuelingTotalView.setAverage(fuelingTotalModel.average)
+                fuelingTotalView.setCostSum(fuelingTotalModel.costSum)
             }
         }
     }
 
     fun onFuelingRecordsChanged(fuelingRecords: List<FuelingRecord>?) {
-        mFuelingTotalModel.setFuelingRecords(fuelingRecords)
+        fuelingTotalModel.setFuelingRecords(fuelingRecords)
     }
 
     fun onLastFuelingRecordsChanged(fuelingRecords: List<FuelingRecord>?) {
-        mFuelingTotalModel.setLastRecords(fuelingRecords)
+        fuelingTotalModel.setLastRecords(fuelingRecords)
 
-        mFuelingTotalView.setLastConsumption(mFuelingTotalModel.lastConsumption)
-        mFuelingTotalView.setEstimatedMileage(mFuelingTotalModel.estimatedMileage)
-        mFuelingTotalView.setEstimatedTotal(mFuelingTotalModel.estimatedTotal)
+        fuelingTotalView.setLastConsumption(fuelingTotalModel.lastConsumption)
+        fuelingTotalView.setEstimatedMileage(fuelingTotalModel.estimatedMileage)
+        fuelingTotalView.setEstimatedTotal(fuelingTotalModel.estimatedTotal)
     }
 
     fun onDestroy() {
-        mFuelingTotalModel.destroy()
+        fuelingTotalModel.destroy()
     }
 }

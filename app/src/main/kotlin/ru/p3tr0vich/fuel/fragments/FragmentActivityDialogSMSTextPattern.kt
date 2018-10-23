@@ -95,9 +95,10 @@ class FragmentActivityDialogSMSTextPattern : Fragment(), ActivityDialog.Activity
     }
 
     override fun onSaveClicked(): Boolean {
-        PreferencesHelper.getInstance(context!!).putSMSTextAndPattern(
-                editSMSText!!.text.toString(),
-                editSMSTextPattern!!.text.toString())
+        with(PreferencesHelper.getInstance(context!!)) {
+            smsText = editSMSText!!.text.toString()
+            smsTextPattern = editSMSTextPattern!!.text.toString()
+        }
 
         return true
     }

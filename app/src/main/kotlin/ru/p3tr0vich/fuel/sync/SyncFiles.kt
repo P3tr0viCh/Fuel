@@ -6,42 +6,24 @@ import java.io.File
 
 internal class SyncFiles(context: Context) {
 
-    val localDirPreferences: File
-    val localFilePreferences: File
-    val localFilePreferencesRevision: File
+    private val isDebuggable = Utils.isDebuggable
 
-    val serverDirPreferences: File
-    val serverFilePreferences: File
-    val serverFilePreferencesRevision: File
+    private val syncDir = File(context.cacheDir, DIR_SYNC)
 
-    val localDirDatabase: File
-    val localFileDatabase: File
-    val localFileDatabaseRevision: File
+    val localDirDatabase = File(syncDir, DIR_DATABASE)
+    val localFileDatabase = File(localDirDatabase, FILE_DATABASE)
+    val localFileDatabaseRevision = File(localDirDatabase, FILE_DATABASE_REVISION)
 
-    val serverDirDatabase: File
-    val serverFileDatabaseRevision: File
+    val localDirPreferences = File(syncDir, DIR_PREFERENCES)
+    val localFilePreferences = File(localDirPreferences, FILE_PREFERENCES)
+    val localFilePreferencesRevision = File(localDirPreferences, FILE_PREFERENCES_REVISION)
 
-    init {
-        val isDebuggable = Utils.isDebuggable
+    val serverDirPreferences = File(DIR_PREFERENCES + if (isDebuggable) DIR_DEBUG else "")
+    val serverFilePreferences = File(serverDirPreferences, FILE_PREFERENCES)
+    val serverFilePreferencesRevision = File(serverDirPreferences, FILE_PREFERENCES_REVISION)
 
-        val syncDir = File(context.cacheDir, DIR_SYNC)
-
-        localDirDatabase = File(syncDir, DIR_DATABASE)
-        localDirPreferences = File(syncDir, DIR_PREFERENCES)
-
-        localFileDatabase = File(localDirDatabase, FILE_DATABASE)
-        localFileDatabaseRevision = File(localDirDatabase, FILE_DATABASE_REVISION)
-
-        serverDirDatabase = File(DIR_DATABASE + if (isDebuggable) DIR_DEBUG else "")
-        serverFileDatabaseRevision = File(serverDirDatabase, FILE_DATABASE_REVISION)
-
-        localFilePreferences = File(localDirPreferences, FILE_PREFERENCES)
-        localFilePreferencesRevision = File(localDirPreferences, FILE_PREFERENCES_REVISION)
-
-        serverDirPreferences = File(DIR_PREFERENCES + if (isDebuggable) DIR_DEBUG else "")
-        serverFilePreferences = File(serverDirPreferences, FILE_PREFERENCES)
-        serverFilePreferencesRevision = File(serverDirPreferences, FILE_PREFERENCES_REVISION)
-    }
+    val serverDirDatabase = File(DIR_DATABASE + if (isDebuggable) DIR_DEBUG else "")
+    val serverFileDatabaseRevision = File(serverDirDatabase, FILE_DATABASE_REVISION)
 
     fun getServerFileDatabase(revision: Int): File {
         return File(serverDirDatabase, revision.toString())

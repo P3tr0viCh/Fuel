@@ -8,10 +8,10 @@ import java.util.*
 
 internal class SyncLocal(private val syncFiles: SyncFiles) {
 
-    val preferencesRevision: Int
+    val preferencesRevision
         get() = getRevision(syncFiles.localFilePreferencesRevision)
 
-    val databaseRevision: Int
+    val databaseRevision
         get() = getRevision(syncFiles.localFileDatabaseRevision)
 
     @Throws(IOException::class)
@@ -34,7 +34,7 @@ internal class SyncLocal(private val syncFiles: SyncFiles) {
 
             Integer.decode(strings[0])
         } catch (e: Exception) {
-            UtilsLog.d(TAG, "getRevision", "addAccountExplicitly == false")
+            UtilsLog.d(TAG, "getRevision", "e == $e")
             -1
         }
     }

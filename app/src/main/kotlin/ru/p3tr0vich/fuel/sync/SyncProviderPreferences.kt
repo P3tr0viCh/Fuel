@@ -61,21 +61,45 @@ internal class SyncProviderPreferences(context: Context, private val provider: C
             update(contentValues, null)
         }
 
-    val isChanged: Boolean
+    var isChanged: Boolean
         @Throws(RemoteException::class, FormatException::class)
         get() = query(preferencesHelper.keys.changed).getAsBoolean(preferencesHelper.keys.changed)!!
+        @Throws(RemoteException::class)
+        set(value) {
+            val contentValues = ContentValues()
 
-    val databaseRevision: Int
+            contentValues.put(preferencesHelper.keys.changed, value)
+
+            update(contentValues, preferencesHelper.keys.changed)
+        }
+
+    var databaseRevision: Int
         @Throws(RemoteException::class, FormatException::class)
         get() = getRevision(preferencesHelper.keys.databaseRevision)
+        @Throws(RemoteException::class)
+        set(value) {
+            putRevision(preferencesHelper.keys.databaseRevision, value)
+        }
 
-    val preferencesRevision: Int
+    var preferencesRevision: Int
         @Throws(RemoteException::class, FormatException::class)
         get() = getRevision(preferencesHelper.keys.preferencesRevision)
+        @Throws(RemoteException::class)
+        set(value) {
+            putRevision(preferencesHelper.keys.preferencesRevision, value)
+        }
 
-    val isDatabaseFullSync: Boolean
+    var isDatabaseFullSync: Boolean
         @Throws(RemoteException::class, FormatException::class)
         get() = query(preferencesHelper.keys.databaseFullSync).getAsBoolean(preferencesHelper.keys.databaseFullSync)!!
+        @Throws(RemoteException::class)
+        set(value) {
+            val contentValues = ContentValues()
+
+            contentValues.put(preferencesHelper.keys.databaseFullSync, value)
+
+            update(contentValues, preferencesHelper.keys.databaseFullSync)
+        }
 
     @Throws(RemoteException::class, FormatException::class)
     private fun query(preference: String?): ContentValues {
@@ -125,15 +149,6 @@ internal class SyncProviderPreferences(context: Context, private val provider: C
                 contentValues, null, null)
     }
 
-    @Throws(RemoteException::class)
-    fun putChangedFalse() {
-        val contentValues = ContentValues()
-
-        contentValues.put(preferencesHelper.keys.changed, false)
-
-        update(contentValues, preferencesHelper.keys.changed)
-    }
-
     @Throws(RemoteException::class, FormatException::class)
     private fun getRevision(keyRevision: String): Int {
         return query(keyRevision).getAsInteger(keyRevision)!!
@@ -149,16 +164,6 @@ internal class SyncProviderPreferences(context: Context, private val provider: C
     }
 
     @Throws(RemoteException::class)
-    fun putDatabaseRevision(revision: Int) {
-        putRevision(preferencesHelper.keys.databaseRevision, revision)
-    }
-
-    @Throws(RemoteException::class)
-    fun putPreferencesRevision(revision: Int) {
-        putRevision(preferencesHelper.keys.preferencesRevision, revision)
-    }
-
-    @Throws(RemoteException::class)
     fun putLastSync(dateTime: Long, hasError: Boolean) {
         val contentValues = ContentValues()
 
@@ -167,15 +172,6 @@ internal class SyncProviderPreferences(context: Context, private val provider: C
 
         update(contentValues, preferencesHelper.keys.lastSyncDateTime)
         update(contentValues, preferencesHelper.keys.lastSyncHasError)
-    }
-
-    @Throws(RemoteException::class)
-    fun putDatabaseFullSyncFalse() {
-        val contentValues = ContentValues()
-
-        contentValues.put(preferencesHelper.keys.databaseFullSync, false)
-
-        update(contentValues, preferencesHelper.keys.databaseFullSync)
     }
 
     companion object {

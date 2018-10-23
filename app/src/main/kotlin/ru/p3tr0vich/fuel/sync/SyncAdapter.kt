@@ -235,8 +235,8 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
             UtilsLog.d(TAG, "syncPreferencesSave", "syncYandexDisk.savePreferencesRevision() OK")
         }
 
-        syncProviderPreferences!!.putChangedFalse()
-        syncProviderPreferences!!.putPreferencesRevision(revision)
+        syncProviderPreferences!!.isChanged = false
+        syncProviderPreferences!!.preferencesRevision = revision
 
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "syncPreferencesSave", "finish")
@@ -271,8 +271,8 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
             UtilsLog.d(TAG, "syncPreferencesLoad", "syncProviderPreferences.setPreferences() OK")
         }
 
-        syncProviderPreferences!!.putChangedFalse()
-        syncProviderPreferences!!.putPreferencesRevision(revision)
+        syncProviderPreferences!!.isChanged = false
+        syncProviderPreferences!!.preferencesRevision = revision
 
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "syncPreferencesLoad", "finish")
@@ -379,7 +379,7 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
 
         syncDatabaseSave(revision, true, true)
 
-        syncProviderPreferences!!.putDatabaseFullSyncFalse()
+        syncProviderPreferences!!.isDatabaseFullSync = false
 
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "syncDatabaseFullSave", "finish")
@@ -456,7 +456,7 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
                 UtilsLog.d(TAG, "syncDatabaseSave", "syncProviderDatabase.syncChangedRecords() OK")
             }
 
-            syncProviderPreferences!!.putDatabaseRevision(rev)
+            syncProviderPreferences!!.databaseRevision = rev
         }
 
         if (LOG_ENABLED) {
@@ -500,7 +500,7 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
             UtilsLog.d(TAG, "syncDatabaseLoad", "syncProviderDatabase.updateDatabase() OK")
         }
 
-        syncProviderPreferences!!.putDatabaseRevision(serverRevision)
+        syncProviderPreferences!!.databaseRevision = serverRevision
 
         context.contentResolver.notifyChange(ContentProviderHelper.URI_DATABASE_SYNC, null, false)
 

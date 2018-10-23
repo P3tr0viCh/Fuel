@@ -108,8 +108,7 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
         view.findViewById<View>(R.id.text_volume).setOnClickListener(this)
         view.findViewById<View>(R.id.text_total).setOnClickListener(this)
 
-        calcStep = savedInstanceState?.getInt(STATE_KEY_CALC_STEP, CALC_STEP_DISABLED) ?:
-                if (fuelingRecord!!.id == 0L && price > 0) CALC_STEP_SELECT else CALC_STEP_DISABLED
+        calcStep = savedInstanceState?.getInt(STATE_KEY_CALC_STEP, CALC_STEP_DISABLED) ?: if (fuelingRecord!!.id == 0L && price > 0) CALC_STEP_SELECT else CALC_STEP_DISABLED
 
         return view
     }
@@ -253,7 +252,7 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
 
     private fun onSaveClicked(): Boolean {
         return if (saveRecord()) {
-            preferencesHelper.putLastTotal(fuelingRecord!!.total)
+            preferencesHelper.lastTotal = fuelingRecord!!.total
 
             activity!!.setResult(Activity.RESULT_OK)
 

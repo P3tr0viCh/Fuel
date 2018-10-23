@@ -25,8 +25,6 @@ import android.view.animation.RotateAnimation
 import android.widget.*
 import ru.p3tr0vich.fuel.ContentObserverService
 import ru.p3tr0vich.fuel.R
-import ru.p3tr0vich.fuel.sync.SyncAccount
-import ru.p3tr0vich.fuel.sync.SyncYandexDisk
 import ru.p3tr0vich.fuel.factories.FragmentFactory
 import ru.p3tr0vich.fuel.fragments.*
 import ru.p3tr0vich.fuel.helpers.ContactsHelper
@@ -34,8 +32,11 @@ import ru.p3tr0vich.fuel.helpers.DatabaseHelper
 import ru.p3tr0vich.fuel.helpers.FragmentHelper
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper
 import ru.p3tr0vich.fuel.models.FuelingRecord
+import ru.p3tr0vich.fuel.models.MapCenter
 import ru.p3tr0vich.fuel.receivers.BroadcastReceiverDatabaseChanged
 import ru.p3tr0vich.fuel.receivers.BroadcastReceiverLoading
+import ru.p3tr0vich.fuel.sync.SyncAccount
+import ru.p3tr0vich.fuel.sync.SyncYandexDisk
 import ru.p3tr0vich.fuel.utils.Utils
 import ru.p3tr0vich.fuel.utils.UtilsDate
 import ru.p3tr0vich.fuel.utils.UtilsLog
@@ -374,9 +375,7 @@ class ActivityMain : AppCompatActivity(),
                 }
             }
             REQUEST_CODE_ACTIVITY_MAP_CENTER -> {
-                val mapCenter = ActivityYandexMap.MapCenter(data)
-
-                preferencesHelper!!.putMapCenter(mapCenter.text, mapCenter.latitude, mapCenter.longitude)
+                preferencesHelper!!.mapCenter = MapCenter(data)
             }
             REQUEST_CODE_DIALOG_YANDEX_AUTH -> {
                 Utils.openUrl(this, SyncYandexDisk.URL.AUTH, null)
@@ -385,7 +384,7 @@ class ActivityMain : AppCompatActivity(),
                 val address = ContactsHelper.getPhoneNumber(this, data)
 
                 if (address != null) {
-                    preferencesHelper!!.putSMSAddress(address)
+                    preferencesHelper!!.smsAddress = address
                 }
             }
             REQUEST_CODE_REQUEST_SYNC -> {

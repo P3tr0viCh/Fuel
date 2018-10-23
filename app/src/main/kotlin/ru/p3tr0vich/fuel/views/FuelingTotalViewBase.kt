@@ -6,17 +6,17 @@ import ru.p3tr0vich.fuel.presenters.FuelingTotalPresenter
 abstract class FuelingTotalViewBase : FuelingTotalView {
 
     @Suppress("LeakingThis")
-    private val mFuelingTotalPresenter: FuelingTotalPresenter = FuelingTotalPresenter(this)
+    private val fuelingTotalPresenter = FuelingTotalPresenter(this)
 
     override fun onFuelingRecordsChanged(fuelingRecords: List<FuelingRecord>?) {
-        mFuelingTotalPresenter.onFuelingRecordsChanged(fuelingRecords)
+        fuelingTotalPresenter.onFuelingRecordsChanged(fuelingRecords)
     }
 
     override fun onLastFuelingRecordsChanged(fuelingRecords: List<FuelingRecord>?) {
-        mFuelingTotalPresenter.onLastFuelingRecordsChanged(fuelingRecords)
+        fuelingTotalPresenter.onLastFuelingRecordsChanged(fuelingRecords)
     }
 
     override fun destroy() {
-        mFuelingTotalPresenter.onDestroy()
+        fuelingTotalPresenter.onDestroy()
     }
 }

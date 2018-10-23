@@ -10,6 +10,10 @@ import android.preference.PreferenceManager
 import android.support.annotation.IntDef
 import android.text.TextUtils
 import ru.p3tr0vich.fuel.R
+import ru.p3tr0vich.fuel.models.MapCenter
+import ru.p3tr0vich.fuel.models.MapCenter.Companion.DEFAULT_MAP_CENTER_LATITUDE
+import ru.p3tr0vich.fuel.models.MapCenter.Companion.DEFAULT_MAP_CENTER_LONGITUDE
+import ru.p3tr0vich.fuel.models.MapCenter.Companion.DEFAULT_MAP_CENTER_TEXT
 import ru.p3tr0vich.fuel.utils.UtilsFormat
 import ru.p3tr0vich.fuel.utils.UtilsLog
 
@@ -19,8 +23,22 @@ class PreferencesHelper private constructor(private val context: Context) : Shar
 
     val keys = Keys(context)
 
-    private val isChanged: Boolean
+    private var isChanged: Boolean
         get() = sharedPreferences.getBoolean(keys.changed, true)
+        set(value) {
+            sharedPreferences
+                    .edit()
+                    .putBoolean(keys.changed, value)
+                    .apply()
+
+            if (LOG_ENABLED) {
+                UtilsLog.d(TAG, "putChanged", "value == $value")
+            }
+
+            if (value) {
+                context.contentResolver.notifyChange(ContentProviderHelper.URI_PREFERENCES, null, false)
+            }
+        }
 
     val isSyncEnabled: Boolean
         get() = sharedPreferences.getBoolean(keys.syncEnabled, false)
@@ -28,23 +46,59 @@ class PreferencesHelper private constructor(private val context: Context) : Shar
     val isSMSEnabled: Boolean
         get() = sharedPreferences.getBoolean(keys.smsEnabled, false)
 
-    val smsAddress: String
+    var smsAddress: String
         get() = getString(keys.smsAddress)
+        set(value) {
+            sharedPreferences
+                    .edit()
+                    .putString(keys.smsAddress, value)
+                    .apply()
+        }
 
-    val smsTextPattern: String
+    var smsTextPattern: String
         get() = getString(keys.smsTextPattern)
+        set(value) {
+            sharedPreferences
+                    .edit()
+                    .putString(keys.smsTextPattern, value)
+                    .apply()
+        }
 
-    val smsText: String
+    var smsText: String
         get() = getString(keys.smsText)
+        set(value) {
+            sharedPreferences
+                    .edit()
+                    .putString(keys.smsText, value)
+                    .apply()
+        }
 
-    private val isFullSync: Boolean
+    var isFullSync: Boolean
         get() = sharedPreferences.getBoolean(keys.databaseFullSync, false)
+        set(value) {
+            sharedPreferences
+                    .edit()
+                    .putBoolean(keys.databaseFullSync, value)
+                    .apply()
+        }
 
-    val lastSyncDateTime: Long
+    var lastSyncDateTime: Long
         get() = sharedPreferences.getLong(keys.lastSyncDateTime, SYNC_NONE)
+        set(value) {
+            sharedPreferences
+                    .edit()
+                    .putLong(keys.lastSyncDateTime, value)
+                    .apply()
+        }
 
-    val lastSyncHasError: Boolean
+    var lastSyncHasError: Boolean
         get() = sharedPreferences.getBoolean(keys.lastSyncHasError, false)
+        set(value) {
+            sharedPreferences
+                    .edit()
+                    .putBoolean(keys.lastSyncHasError, value)
+                    .apply()
+        }
 
     val filterDateFrom: Long
         get() = sharedPreferences.getLong(keys.filterDateFrom, System.currentTimeMillis())
@@ -58,8 +112,14 @@ class PreferencesHelper private constructor(private val context: Context) : Shar
     val defaultVolume: Float
         get() = UtilsFormat.stringToFloat(getString(keys.defaultVolume))
 
-    val lastTotal: Float
+    var lastTotal: Float
         get() = UtilsFormat.stringToFloat(getString(context.getString(R.string.pref_key_last_total)))
+        set(value) {
+            sharedPreferences
+                    .edit()
+                    .putString(context.getString(R.string.pref_key_last_total), value.toString())
+                    .apply()
+        }
 
     val calcDistance: String
         get() = getString(keys.distance)
@@ -96,18 +156,22 @@ class PreferencesHelper private constructor(private val context: Context) : Shar
     val calcSelectedSeason: Int
         get() = sharedPreferences.getInt(keys.season, 0)
 
-    val mapCenterText: String
-        get() = getString(keys.mapCenterText, DEFAULT_MAP_CENTER_TEXT)
-
-    val mapCenterLatitude: Double
-        get() = java.lang.Double.longBitsToDouble(sharedPreferences.getLong(
-                keys.mapCenterLatitude,
-                java.lang.Double.doubleToLongBits(DEFAULT_MAP_CENTER_LATITUDE)))
-
-    val mapCenterLongitude: Double
-        get() = java.lang.Double.longBitsToDouble(sharedPreferences.getLong(
-                keys.mapCenterLongitude,
-                java.lang.Double.doubleToLongBits(DEFAULT_MAP_CENTER_LONGITUDE)))
+    var mapCenter: MapCenter
+        get() = MapCenter(getString(keys.mapCenterText, DEFAULT_MAP_CENTER_TEXT),
+                java.lang.Double.longBitsToDouble(sharedPreferences.getLong(
+                        keys.mapCenterLatitude,
+                        java.lang.Double.doubleToLongBits(DEFAULT_MAP_CENTER_LATITUDE))),
+                java.lang.Double.longBitsToDouble(sharedPreferences.getLong(
+                        keys.mapCenterLongitude,
+                        java.lang.Double.doubleToLongBits(DEFAULT_MAP_CENTER_LONGITUDE))))
+        set(value) {
+            sharedPreferences
+                    .edit()
+                    .putString(keys.mapCenterText, value.text)
+                    .putLong(keys.mapCenterLatitude, java.lang.Double.doubleToRawLongBits(value.latitude))
+                    .putLong(keys.mapCenterLongitude, java.lang.Double.doubleToRawLongBits(value.longitude))
+                    .apply()
+        }
 
     @Retention(AnnotationRetention.SOURCE)
     @IntDef(PREFERENCE_TYPE_STRING, PREFERENCE_TYPE_INT, PREFERENCE_TYPE_LONG)
@@ -185,37 +249,8 @@ class PreferencesHelper private constructor(private val context: Context) : Shar
         }
 
         if (keys.isSyncKey(key)) {
-            putChanged(true)
+            isChanged = true
         }
-    }
-
-    private fun putChanged(changed: Boolean) {
-        sharedPreferences
-                .edit()
-                .putBoolean(keys.changed, changed)
-                .apply()
-
-        if (LOG_ENABLED) {
-            UtilsLog.d(TAG, "putChanged", "changed == $changed")
-        }
-
-        if (changed)
-            context.contentResolver.notifyChange(ContentProviderHelper.URI_PREFERENCES, null, false)
-    }
-
-    fun putSMSAddress(address: String) {
-        sharedPreferences
-                .edit()
-                .putString(keys.smsAddress, address)
-                .apply()
-    }
-
-    fun putSMSTextAndPattern(text: String, pattern: String) {
-        sharedPreferences
-                .edit()
-                .putString(keys.smsText, text)
-                .putString(keys.smsTextPattern, pattern)
-                .apply()
     }
 
     private fun getRevision(keyRevision: String?): Int {
@@ -228,28 +263,9 @@ class PreferencesHelper private constructor(private val context: Context) : Shar
                 .putInt(keyRevision, revision)
                 .apply()
 
-        if (LOG_ENABLED) UtilsLog.d(TAG, "putRevision", "$keyRevision == $revision")
-    }
-
-    fun putFullSync(fullSync: Boolean) {
-        sharedPreferences
-                .edit()
-                .putBoolean(keys.databaseFullSync, fullSync)
-                .apply()
-    }
-
-    private fun putLastSyncDateTime(dateTime: Long) {
-        sharedPreferences
-                .edit()
-                .putLong(keys.lastSyncDateTime, dateTime)
-                .apply()
-    }
-
-    private fun putLastSyncHasError(hasError: Boolean) {
-        sharedPreferences
-                .edit()
-                .putBoolean(keys.lastSyncHasError, hasError)
-                .apply()
+        if (LOG_ENABLED) {
+            UtilsLog.d(TAG, "putRevision", "$keyRevision == $revision")
+        }
     }
 
     fun putFilterDate(dateFrom: Long, dateTo: Long) {
@@ -257,13 +273,6 @@ class PreferencesHelper private constructor(private val context: Context) : Shar
                 .edit()
                 .putLong(keys.filterDateFrom, dateFrom)
                 .putLong(keys.filterDateTo, dateTo)
-                .apply()
-    }
-
-    fun putLastTotal(lastTotal: Float) {
-        sharedPreferences
-                .edit()
-                .putString(context.getString(R.string.pref_key_last_total), lastTotal.toString())
                 .apply()
     }
 
@@ -275,15 +284,6 @@ class PreferencesHelper private constructor(private val context: Context) : Shar
                 .putString(keys.volume, volume)
                 .putInt(keys.consumption, cons)
                 .putInt(keys.season, season)
-                .apply()
-    }
-
-    fun putMapCenter(text: String, latitude: Double, longitude: Double) {
-        sharedPreferences
-                .edit()
-                .putString(keys.mapCenterText, text)
-                .putLong(keys.mapCenterLatitude, java.lang.Double.doubleToRawLongBits(latitude))
-                .putLong(keys.mapCenterLongitude, java.lang.Double.doubleToRawLongBits(longitude))
                 .apply()
     }
 
@@ -385,15 +385,15 @@ class PreferencesHelper private constructor(private val context: Context) : Shar
             return preferences.size()
         } else {
             when (preference) {
-                keys.changed -> putChanged(preferences.getAsBoolean(preference))
+                keys.changed -> isChanged = preferences.getAsBoolean(preference)
 
                 keys.databaseRevision,
                 keys.preferencesRevision -> putRevision(preference, preferences.getAsInteger(preference))
 
-                keys.databaseFullSync -> putFullSync(preferences.getAsBoolean(preference))
+                keys.databaseFullSync -> isFullSync = preferences.getAsBoolean(preference)
 
-                keys.lastSyncDateTime -> putLastSyncDateTime(preferences.getAsLong(preference))
-                keys.lastSyncHasError -> putLastSyncHasError(preferences.getAsBoolean(preference))
+                keys.lastSyncDateTime -> lastSyncDateTime = preferences.getAsLong(preference)
+                keys.lastSyncHasError -> lastSyncHasError = preferences.getAsBoolean(preference)
 
                 else -> throw IllegalArgumentException("$TAG -- setPreferences: unhandled preference == $preference")
             }
@@ -428,19 +428,6 @@ class PreferencesHelper private constructor(private val context: Context) : Shar
         private var LOG_ENABLED = false
 
         const val SYNC_NONE = java.lang.Long.MIN_VALUE
-
-        /**
-         * Центр карты по умолчанию.
-         */
-        const val DEFAULT_MAP_CENTER_TEXT = "Москва, Кремль"
-        /**
-         * Широта центра карты по умолчанию.
-         */
-        const val DEFAULT_MAP_CENTER_LATITUDE = 55.752023
-        /**
-         * Долгота центра карты по умолчанию.
-         */
-        const val DEFAULT_MAP_CENTER_LONGITUDE = 37.617499
 
         const val PREFERENCE_TYPE_STRING = 0
         const val PREFERENCE_TYPE_INT = 1

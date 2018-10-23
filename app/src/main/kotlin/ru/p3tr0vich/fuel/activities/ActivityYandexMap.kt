@@ -23,12 +23,16 @@ import android.widget.FrameLayout
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.Status
 import com.pnikosis.materialishprogress.ProgressWheel
-import ru.p3tr0vich.fuel.fragments.FragmentDialogMessage
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.YandexMapJavascriptInterface
+import ru.p3tr0vich.fuel.fragments.FragmentDialogMessage
 import ru.p3tr0vich.fuel.helpers.ConnectivityHelper
 import ru.p3tr0vich.fuel.helpers.LocationHelper
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper
+import ru.p3tr0vich.fuel.models.MapCenter
+import ru.p3tr0vich.fuel.models.MapCenter.Companion.EXTRA_MAP_CENTER_LATITUDE
+import ru.p3tr0vich.fuel.models.MapCenter.Companion.EXTRA_MAP_CENTER_LONGITUDE
+import ru.p3tr0vich.fuel.models.MapCenter.Companion.EXTRA_MAP_CENTER_TEXT
 import ru.p3tr0vich.fuel.utils.Utils
 import ru.p3tr0vich.fuel.utils.UtilsDate
 import ru.p3tr0vich.fuel.utils.UtilsFormat
@@ -38,48 +42,6 @@ class ActivityYandexMap : AppCompatActivity(),
         View.OnClickListener, View.OnLongClickListener,
         YandexMapJavascriptInterface.YandexMap,
         LocationHelper.LocationHelperListener {
-
-    companion object {
-        private const val TAG = "ActivityYandexMap"
-
-        private var LOG_ENABLED = false
-
-        const val EXTRA_TYPE = "EXTRA_TYPE"
-        const val EXTRA_DISTANCE = "EXTRA_DISTANCE"
-        const val EXTRA_MAP_CENTER_TEXT = "EXTRA_MAP_CENTER_TEXT"
-        const val EXTRA_MAP_CENTER_LATITUDE = "EXTRA_MAP_CENTER_LATITUDE"
-        const val EXTRA_MAP_CENTER_LONGITUDE = "EXTRA_MAP_CENTER_LONGITUDE"
-
-        private const val PREFIX_RUSSIA = "Россия, "
-
-        private const val URL_YANDEX_MAP = "file:///android_asset/yandexMap.html?"
-
-        private const val URL_QUERY_MAP_TYPE_DISTANCE = "distance"
-        private const val URL_QUERY_MAP_TYPE_CENTER = "center"
-
-        private const val REQUEST_CODE_RESOLUTION_REQUIRED = 1000
-        private const val REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION = 1001
-
-        const val MAP_TYPE_DISTANCE = 0
-        const val MAP_TYPE_CENTER = 1
-
-        @JvmStatic
-        fun start(parent: FragmentActivity, @MapType mapType: Int, requestCode: Int) {
-            val connectedState = ConnectivityHelper.getConnectedState(parent.applicationContext)
-
-            if (LOG_ENABLED) {
-                UtilsLog.d(TAG, "start", "connectedState == $connectedState")
-            }
-
-            if (connectedState != ConnectivityHelper.DISCONNECTED) {
-                parent.startActivityForResult(Intent(parent, ActivityYandexMap::class.java)
-                        .putExtra(EXTRA_TYPE, mapType), requestCode)
-            } else {
-                FragmentDialogMessage.show(parent, null,
-                        parent.getString(R.string.message_error_no_internet))
-            }
-        }
-    }
 
     @MapType
     private var type: Int = 0
@@ -135,29 +97,6 @@ class ActivityYandexMap : AppCompatActivity(),
     @IntDef(MAP_TYPE_DISTANCE, MAP_TYPE_CENTER)
     annotation class MapType
 
-    /**
-     * Центр карты.
-     * @property text Полное наименование географической точки.
-     * @property latitude Широта.
-     * @property longitude Долгота.
-     */
-    class MapCenter() {
-        var text: String = PreferencesHelper.DEFAULT_MAP_CENTER_TEXT
-        var latitude: Double = PreferencesHelper.DEFAULT_MAP_CENTER_LATITUDE
-        var longitude: Double = PreferencesHelper.DEFAULT_MAP_CENTER_LONGITUDE
-
-        var title: String = ""
-        var subtitle: String = ""
-
-        constructor(data: Intent?) : this() {
-            if (data == null) return
-
-            text = data.getStringExtra(EXTRA_MAP_CENTER_TEXT)
-            latitude = data.getDoubleExtra(EXTRA_MAP_CENTER_LATITUDE, latitude)
-            longitude = data.getDoubleExtra(EXTRA_MAP_CENTER_LONGITUDE, longitude)
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "onCreate")
@@ -174,8 +113,10 @@ class ActivityYandexMap : AppCompatActivity(),
         val preferencesHelper = PreferencesHelper.getInstance(this)
 
         mapCenter.text = getString(R.string.yandex_map_map_center_title)
-        mapCenter.latitude = preferencesHelper.mapCenterLatitude
-        mapCenter.longitude = preferencesHelper.mapCenterLongitude
+        with(preferencesHelper.mapCenter) {
+            mapCenter.latitude = latitude
+            mapCenter.longitude = longitude
+        }
 
         locationHelper = LocationHelper(this, this,
                 REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION)
@@ -426,6 +367,7 @@ class ActivityYandexMap : AppCompatActivity(),
                 else {
                     Utils.toast(R.string.text_empty_distance)
                 }
+
                 true
             }
             MAP_TYPE_CENTER -> {
@@ -433,7 +375,9 @@ class ActivityYandexMap : AppCompatActivity(),
                         .putExtra(EXTRA_MAP_CENTER_TEXT, mapCenter.text)
                         .putExtra(EXTRA_MAP_CENTER_LATITUDE, mapCenter.latitude)
                         .putExtra(EXTRA_MAP_CENTER_LONGITUDE, mapCenter.longitude))
+
                 finish()
+
                 true
             }
             else -> false
@@ -602,6 +546,45 @@ class ActivityYandexMap : AppCompatActivity(),
             }
         } else {
             FragmentDialogMessage.show(this, R.string.title_message_error, R.string.message_need_permission_to_location)
+        }
+    }
+
+    companion object {
+        private const val TAG = "ActivityYandexMap"
+
+        private var LOG_ENABLED = false
+
+        const val EXTRA_TYPE = "EXTRA_TYPE"
+        const val EXTRA_DISTANCE = "EXTRA_DISTANCE"
+
+        private const val PREFIX_RUSSIA = "Россия, "
+
+        private const val URL_YANDEX_MAP = "file:///android_asset/yandexMap.html?"
+
+        private const val URL_QUERY_MAP_TYPE_DISTANCE = "distance"
+        private const val URL_QUERY_MAP_TYPE_CENTER = "center"
+
+        private const val REQUEST_CODE_RESOLUTION_REQUIRED = 1000
+        private const val REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION = 1001
+
+        const val MAP_TYPE_DISTANCE = 0
+        const val MAP_TYPE_CENTER = 1
+
+        @JvmStatic
+        fun start(parent: FragmentActivity, @MapType mapType: Int, requestCode: Int) {
+            val connectedState = ConnectivityHelper.getConnectedState(parent.applicationContext)
+
+            if (LOG_ENABLED) {
+                UtilsLog.d(TAG, "start", "connectedState == $connectedState")
+            }
+
+            if (connectedState != ConnectivityHelper.DISCONNECTED) {
+                parent.startActivityForResult(Intent(parent, ActivityYandexMap::class.java)
+                        .putExtra(EXTRA_TYPE, mapType), requestCode)
+            } else {
+                FragmentDialogMessage.show(parent, null,
+                        parent.getString(R.string.message_error_no_internet))
+            }
         }
     }
 }

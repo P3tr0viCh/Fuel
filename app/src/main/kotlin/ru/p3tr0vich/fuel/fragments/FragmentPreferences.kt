@@ -249,7 +249,7 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
                     summary = preferencesHelper.getString(key)
                 }
             }
-            preferencesHelper.keys.mapCenterText -> summary = preferencesHelper.mapCenterText
+            preferencesHelper.keys.mapCenterText -> summary = preferencesHelper.mapCenter.text
             preferencesHelper.keys.sync -> summary = getString(if (preferencesHelper.isSyncEnabled)
                 R.string.pref_sync_summary_on
             else

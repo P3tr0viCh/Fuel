@@ -1,6 +1,5 @@
 package ru.p3tr0vich.fuel.models
 
-import android.annotation.SuppressLint
 import android.os.AsyncTask
 
 /**
@@ -11,15 +10,15 @@ import android.os.AsyncTask
  * @property estimatedTotal Предполагаемый общий пробег после последней заправки.
  */
 class FuelingTotalModel {
-    var average: Float = 0f
+    var average = 0f
         private set
-    var costSum: Float = 0f
+    var costSum = 0f
         private set
-    var lastConsumption: Float = 0f
+    var lastConsumption = 0f
         private set
-    var estimatedMileage: Float = 0f
+    var estimatedMileage = 0f
         private set
-    var estimatedTotal: Float = 0f
+    var estimatedTotal = 0f
         private set
 
     var onChangeListener: OnChangeListener? = null
@@ -28,7 +27,7 @@ class FuelingTotalModel {
         fun onChange()
     }
 
-    private var mCalcTotalTask: CalcTotalTask? = null
+    private var calcTotalTask: CalcTotalTask? = null
 
     fun destroy() {
         cancel()
@@ -84,107 +83,110 @@ class FuelingTotalModel {
     }
 
     private fun cancel() {
-        mCalcTotalTask?.cancel(false)
+        calcTotalTask?.cancel(false)
     }
 
     fun setFuelingRecords(fuelingRecords: List<FuelingRecord>?) {
         cancel()
 
-        mCalcTotalTask = CalcTotalTask(fuelingRecords)
-        mCalcTotalTask?.execute()
+        calcTotalTask = CalcTotalTask(this, fuelingRecords)
+        calcTotalTask?.execute()
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private inner class CalcTotalTask(private val mFuelingRecords: List<FuelingRecord>?) : AsyncTask<Void, Void, Array<Float>>() {
+    companion object {
+        private class CalcTotalTask(private val fuelingTotalModel: FuelingTotalModel?, private val fuelingRecords: List<FuelingRecord>?) : AsyncTask<Void, Void, Array<Float>>() {
 
-        override fun doInBackground(vararg params: Void): Array<Float>? {
-            if (mFuelingRecords == null) return arrayOf(0f, 0f)
+            override fun doInBackground(vararg params: Void): Array<Float>? {
+                if (fuelingRecords == null) return arrayOf(0f, 0f)
 
-            var costSum = 0f
-            var volumeSum = 0f
-            var volume: Float
-            var total: Float
-            var firstTotal = 0f
-            var lastTotal = 0f
+                var costSum = 0f
+                var volumeSum = 0f
+                var volume: Float
+                var total: Float
+                var firstTotal = 0f
+                var lastTotal = 0f
 
-            var fuelingRecord: FuelingRecord
+                var fuelingRecord: FuelingRecord
 
-            var completeData = true // Во всех записях указаны объём заправки и текущий пробег
+                var completeData = true // Во всех записях указаны объём заправки и текущий пробег
 
-            val size = mFuelingRecords.size
+                val size = fuelingRecords.size
 
-            for (i in 0 until size) {
-
-                if (isCancelled) return null
-
-                fuelingRecord = mFuelingRecords[i]
-
-                costSum += fuelingRecord.cost
-
-                if (completeData) {
-                    volume = fuelingRecord.volume
-                    total = fuelingRecord.total
-
-                    if (volume == 0f || total == 0f) {
-                        completeData = false
-                    } else {
-                        // Сортировка записей по дате в обратном порядке
-                        // 0 -- последняя заправка
-                        // Последний (i == 0) объём заправки не нужен -- неизвестно, сколько на ней будет пробег,
-                        // в volumeSum не включается
-                        if (i == 0) {
-                            lastTotal = total
-                        } else {
-                            volumeSum += volume
-                            if (i == size - 1) firstTotal = total
-                        }
-                    }
-                }
-            }
-
-            var average: Float
-
-            if (completeData) {
-                average = if (volumeSum != 0f) volumeSum / (lastTotal - firstTotal) * 100 else 0f
-            } else {
-                average = 0f
-                var averageCount = 0
-
-                var i = 0
-                val count = size - 1
-                while (i < count) {
+                for (i in 0 until size) {
 
                     if (isCancelled) return null
 
-                    lastTotal = mFuelingRecords[i].total
+                    fuelingRecord = fuelingRecords[i]
 
-                    if (lastTotal != 0f) {
-                        fuelingRecord = mFuelingRecords[i + 1]
+                    costSum += fuelingRecord.cost
 
+                    if (completeData) {
                         volume = fuelingRecord.volume
                         total = fuelingRecord.total
 
-                        if (volume != 0f && total != 0f) {
-                            average += volume / (lastTotal - total) * 100
-                            averageCount++
+                        if (volume == 0f || total == 0f) {
+                            completeData = false
+                        } else {
+                            // Сортировка записей по дате в обратном порядке
+                            // 0 -- последняя заправка
+                            // Последний (i == 0) объём заправки не нужен -- неизвестно, сколько на ней будет пробег,
+                            // в volumeSum не включается
+                            if (i == 0) {
+                                lastTotal = total
+                            } else {
+                                volumeSum += volume
+                                if (i == size - 1) firstTotal = total
+                            }
                         }
                     }
-
-                    i++
                 }
 
-                average = if (averageCount != 0) average / averageCount else 0f
+                var average: Float
+
+                if (completeData) {
+                    average = if (volumeSum != 0f) volumeSum / (lastTotal - firstTotal) * 100 else 0f
+                } else {
+                    average = 0f
+                    var averageCount = 0
+
+                    var i = 0
+                    val count = size - 1
+                    while (i < count) {
+
+                        if (isCancelled) return null
+
+                        lastTotal = fuelingRecords[i].total
+
+                        if (lastTotal != 0f) {
+                            fuelingRecord = fuelingRecords[i + 1]
+
+                            volume = fuelingRecord.volume
+                            total = fuelingRecord.total
+
+                            if (volume != 0f && total != 0f) {
+                                average += volume / (lastTotal - total) * 100
+                                averageCount++
+                            }
+                        }
+
+                        i++
+                    }
+
+                    average = if (averageCount != 0) average / averageCount else 0f
+                }
+
+                return arrayOf(average, costSum)
             }
 
-            return arrayOf(average, costSum)
-        }
+            override fun onPostExecute(result: Array<Float>?) {
+                if (result != null) {
+                    fuelingTotalModel?.let {
+                        it.average = result[0]
+                        it.costSum = result[1]
 
-        override fun onPostExecute(result: Array<Float>?) {
-            if (result != null) {
-                average = result[0]
-                costSum = result[1]
-
-                onChangeListener?.onChange()
+                        it.onChangeListener?.onChange()
+                    }
+                }
             }
         }
     }

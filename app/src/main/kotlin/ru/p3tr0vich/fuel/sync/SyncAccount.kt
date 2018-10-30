@@ -3,7 +3,6 @@ package ru.p3tr0vich.fuel.sync
 import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
-import android.text.TextUtils
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper
 import ru.p3tr0vich.fuel.helpers.SystemServicesHelper
@@ -11,33 +10,26 @@ import ru.p3tr0vich.fuel.utils.UtilsLog
 
 class SyncAccount(context: Context) {
 
-    private val accountManager = SystemServicesHelper.getAccountManager(context)
+    private val accountManager = SystemServicesHelper.getAccountManager(context)!!
 
     val authority: String = context.getString(R.string.sync_authority)
 
     private val accountName = context.getString(R.string.sync_account_name)
     private val accountType = context.getString(R.string.sync_account_type)
 
-    val account: Account
+    val account = createAccount(context)
 
     val isSyncActive: Boolean
         get() = ContentResolver.isSyncActive(account, authority)
 
     var yandexDiskToken: String?
-        get() = getUserData(YANDEX_DISK_TOKEN)
-        set(token) = setUserData(YANDEX_DISK_TOKEN, token)
-
-    val isYandexDiskTokenEmpty: Boolean
-        get() = TextUtils.isEmpty(yandexDiskToken)
-
-    init {
-        account = createAccount(context)
-    }
+        get() = accountManager.getUserData(account, YANDEX_DISK_TOKEN)
+        set(value) = accountManager.setUserData(account, YANDEX_DISK_TOKEN, value)
 
     private fun createAccount(context: Context): Account {
         val account: Account
 
-        val accounts = accountManager!!.getAccountsByType(accountType)
+        val accounts = accountManager.getAccountsByType(accountType)
 
         if (accounts.isNotEmpty()) {
             account = accounts[0]
@@ -62,14 +54,6 @@ class SyncAccount(context: Context) {
 
     fun setIsSyncable(syncable: Boolean) {
         setIsSyncable(account, syncable)
-    }
-
-    private fun getUserData(key: String): String {
-        return accountManager!!.getUserData(account, key)
-    }
-
-    private fun setUserData(key: String, value: String?) {
-        accountManager!!.setUserData(account, key, value)
     }
 
     companion object {

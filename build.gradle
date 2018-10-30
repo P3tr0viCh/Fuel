@@ -5,7 +5,7 @@ buildscript {
         minSdkVer = 17
         targetSdkVer = 28
 
-        gradleVer = '3.3.0-alpha13'
+        gradleVer = '3.4.0-alpha02'
 
         kotlinVer = '1.2.71'
 

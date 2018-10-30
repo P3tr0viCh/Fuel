@@ -497,7 +497,7 @@ class ActivityMain : AppCompatActivity(),
             imgSync!!.startAnimation(animationSync)
         } else {
             if (preferencesHelper!!.isSyncEnabled) {
-                if (syncAccount!!.isYandexDiskTokenEmpty) {
+                if (syncAccount!!.yandexDiskToken.isNullOrEmpty()) {
                     btnSync!!.text = getString(R.string.sync_no_token)
                     imgSync!!.setImageResource(R.drawable.ic_sync_off)
                 } else {
@@ -529,7 +529,7 @@ class ActivityMain : AppCompatActivity(),
 
         updateSyncStatus()
 
-        if (enabled && syncAccount!!.isYandexDiskTokenEmpty) {
+        if (enabled && syncAccount!!.yandexDiskToken.isNullOrEmpty()) {
             showDialogNeedAuth()
         }
     }

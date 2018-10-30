@@ -37,8 +37,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVer
         targetSdkVersion rootProject.ext.targetSdkVer
 
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0"
 
         buildConfigField "long", "BUILD_DATE", System.currentTimeMillis() + "l"
 

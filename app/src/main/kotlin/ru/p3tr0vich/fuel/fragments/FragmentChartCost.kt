@@ -223,8 +223,6 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
         })
 
         view.setOnTouchListener(onSwipeTouchListener)
-        //todo: check
-//        chart.setOnTouchListener(onSwipeTouchListener)
 
         return view
     }

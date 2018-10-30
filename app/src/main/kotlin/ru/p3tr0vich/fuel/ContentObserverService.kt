@@ -193,7 +193,7 @@ class ContentObserverService : Service() {
 
         val syncAccount = SyncAccount(this)
 
-        if (syncAccount.isYandexDiskTokenEmpty) {
+        if (syncAccount.yandexDiskToken.isNullOrEmpty()) {
             if (LOG_ENABLED) {
                 UtilsLog.d(TAG, "requestSync", "Yandex.Disk token empty")
             }

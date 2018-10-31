@@ -37,8 +37,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVer
         targetSdkVersion rootProject.ext.targetSdkVer
 
-        versionCode 2
-        versionName "2.0"
+        versionCode 21
+        versionName "2.1"
 
         buildConfigField "long", "BUILD_DATE", System.currentTimeMillis() + "l"
 
@@ -131,7 +131,7 @@ dependencies {
 
     implementation "com.google.android.gms:play-services-location:16.0.0"
 
-    implementation "com.github.PhilJay:MPAndroidChart:v3.0.3"
+    implementation "com.github.PhilJay:MPAndroidChart:v3.1.0-alpha"
     implementation "com.yandex.android:disk-restapi-sdk:1.03"
 
     implementation project(':libs:fab')

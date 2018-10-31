@@ -7,7 +7,7 @@ buildscript {
 
         gradleVer = '3.4.0-alpha02'
 
-        kotlinVer = '1.2.71'
+        kotlinVer = '1.3.0'
 
         supportVer = '28.0.0'
     }

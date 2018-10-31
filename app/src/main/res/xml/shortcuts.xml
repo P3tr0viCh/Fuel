@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_plus_circle"
+        android:shortcutDisabledMessage="@string/compose_disabled_message"
+        android:shortcutId="addRecord"
+        android:shortcutLongLabel="@string/compose_shortcut_long_label"
+        android:shortcutShortLabel="@string/compose_shortcut_short_label">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="ru.p3tr0vich.fuel.activities.ActivityFuelingRecordChange"
+            android:targetPackage="ru.p3tr0vich.fuel" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+</shortcuts>

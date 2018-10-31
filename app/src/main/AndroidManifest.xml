@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="ru.p3tr0vich.fuel">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="ru.p3tr0vich.fuel">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
-    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
 
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
 
-    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_STATS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".ApplicationFuel"
@@ -37,11 +37,15 @@
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
 
             <intent-filter tools:ignore="GoogleAppIndexingWarning">
-                <action android:name="android.intent.action.VIEW"/>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <activity
@@ -49,30 +53,30 @@
             android:launchMode="singleTop"
             android:parentActivityName=".activities.ActivityMain"
             android:theme="@style/AppTheme.DialogWhenLarge"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
 
         <activity
             android:name=".activities.ActivityYandexMap"
             android:configChanges="screenSize|orientation"
             android:label="@string/title_yandex_map"
-            android:parentActivityName=".activities.ActivityMain"/>
+            android:parentActivityName=".activities.ActivityMain" />
 
         <activity
             android:name=".activities.ActivityDialog"
             android:parentActivityName=".activities.ActivityMain"
-            android:theme="@style/AppTheme.DialogWhenLarge"/>
+            android:theme="@style/AppTheme.DialogWhenLarge" />
 
         <activity android:name=".activities.ActivityTokenReceiver">
 
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
                     android:host="@string/host_yandex_disk"
-                    android:scheme="@string/scheme_yandex_disk"/>
+                    android:scheme="@string/scheme_yandex_disk" />
             </intent-filter>
         </activity>
 
@@ -81,12 +85,12 @@
             android:exported="false">
 
             <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator"/>
+                <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
 
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator"/>
+                android:resource="@xml/authenticator" />
         </service>
 
         <service
@@ -95,32 +99,31 @@
             android:process=":sync">
 
             <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
+                <action android:name="android.content.SyncAdapter" />
             </intent-filter>
 
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_adapter"/>
+                android:resource="@xml/sync_adapter" />
         </service>
 
         <service
             android:name=".ContentObserverService"
             android:enabled="true"
-            android:exported="false">
-        </service>
+            android:exported="false" />
 
         <provider
             android:name=".helpers.ContentProviderHelper"
             android:authorities="@string/sync_authority"
             android:exported="false"
-            android:syncable="true"/>
+            android:syncable="true" />
 
         <receiver
             android:name=".receivers.BroadcastReceiverSMS"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
 

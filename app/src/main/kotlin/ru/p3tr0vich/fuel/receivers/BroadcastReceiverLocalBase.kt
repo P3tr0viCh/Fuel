@@ -3,7 +3,7 @@ package ru.p3tr0vich.fuel.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.IntentFilter
-import android.support.v4.content.LocalBroadcastManager
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
 abstract class BroadcastReceiverLocalBase : BroadcastReceiver() {
 

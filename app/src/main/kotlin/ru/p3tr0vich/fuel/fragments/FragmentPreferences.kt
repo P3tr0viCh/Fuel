@@ -4,11 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.support.v7.preference.EditTextPreference
-import android.support.v7.preference.Preference
-import android.support.v7.preference.PreferenceGroup
-import android.support.v7.preference.PreferenceScreen
 import android.text.TextUtils
+import androidx.preference.EditTextPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceGroup
+import androidx.preference.PreferenceScreen
 import ru.p3tr0vich.fuel.ImplementException
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.factories.FragmentFactory
@@ -157,16 +157,15 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
         return goToRootScreen()
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
             onPreferenceScreenChangeListener = context as OnPreferenceScreenChangeListener?
             onPreferenceSyncEnabledChangeListener = context as OnPreferenceSyncEnabledChangeListener?
             onPreferenceClickListener = context as OnPreferenceClickListener?
         } catch (e: ClassCastException) {
-            throw ImplementException(context!!, arrayOf(OnPreferenceScreenChangeListener::class.java, OnPreferenceSyncEnabledChangeListener::class.java, OnPreferenceClickListener::class.java))
+            throw ImplementException(context, arrayOf(OnPreferenceScreenChangeListener::class.java, OnPreferenceSyncEnabledChangeListener::class.java, OnPreferenceClickListener::class.java))
         }
-
     }
 
     override fun onStart() {

@@ -5,11 +5,11 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import ru.p3tr0vich.fuel.AsyncTaskOperationXml
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.helpers.DatabaseBackupXmlHelper
@@ -55,7 +55,7 @@ class FragmentDialogProgress : DialogFragment() {
 
     override fun onDestroyView() {
         if (dialog != null && retainInstance) {
-            dialog.setDismissMessage(null)
+// TODO:           dialog.setDismissMessage(null)
         }
 
         super.onDestroyView()

@@ -3,8 +3,8 @@ package ru.p3tr0vich.fuel.fragments
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.support.v7.preference.PreferenceFragmentCompat
 import android.view.View
+import androidx.preference.PreferenceFragmentCompat
 import ru.p3tr0vich.fuel.DividerItemDecorationPreferences
 import ru.p3tr0vich.fuel.ImplementException
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper
@@ -43,14 +43,13 @@ abstract class FragmentPreferencesBase(override val fragmentId: Int) : Preferenc
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
             onFragmentChangeListener = context as FragmentInterface.OnFragmentChangeListener?
         } catch (e: ClassCastException) {
-            throw ImplementException(context!!, FragmentInterface.OnFragmentChangeListener::class.java)
+            throw ImplementException(context, FragmentInterface.OnFragmentChangeListener::class.java)
         }
-
     }
 
     override fun onStart() {

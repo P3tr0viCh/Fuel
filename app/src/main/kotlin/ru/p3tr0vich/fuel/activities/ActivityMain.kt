@@ -9,13 +9,6 @@ import android.content.Intent
 import android.content.SyncStatusObserver
 import android.content.res.Configuration
 import android.os.Bundle
-import android.support.design.widget.NavigationView
-import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.AppCompatSpinner
-import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.View
 import android.view.animation.Animation
@@ -23,6 +16,14 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import android.widget.*
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatSpinner
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+
 import ru.p3tr0vich.fuel.ContentObserverService
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.factories.FragmentFactory
@@ -302,7 +303,7 @@ class ActivityMain : AppCompatActivity(),
 
         fragmentHelper!!.getFragment(FragmentFactory.Ids.MAIN)?.let {
             if (!it.isVisible) {
-                supportFragmentManager?.popBackStack()
+                supportFragmentManager.popBackStack()
             }
         }
 
@@ -329,8 +330,8 @@ class ActivityMain : AppCompatActivity(),
                 return
             }
 
-            if (supportFragmentManager?.backStackEntryCount != 0) {
-                supportFragmentManager?.popBackStack()
+            if (supportFragmentManager.backStackEntryCount != 0) {
+                supportFragmentManager.popBackStack()
             } else {
                 super.onBackPressed()
             }
@@ -366,6 +367,8 @@ class ActivityMain : AppCompatActivity(),
 
     @SuppressLint("SwitchIntDef")
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
         if (resultCode != Activity.RESULT_OK) return
 
         when (requestCode) {

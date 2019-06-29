@@ -1,8 +1,8 @@
 package ru.p3tr0vich.fuel.factories
 
 import android.os.Bundle
-import android.support.annotation.IntDef
-import android.support.v4.app.Fragment
+import androidx.annotation.IntDef
+import androidx.fragment.app.Fragment
 import ru.p3tr0vich.fuel.fragments.*
 
 object FragmentFactory {

@@ -22,11 +22,12 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.wdullaer.materialdatetimepicker.R;
+
+import androidx.annotation.NonNull;
 
 /**
  * A text view which, when pressed or activated, displays a colored circle around the text.

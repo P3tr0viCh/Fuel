@@ -3,8 +3,8 @@ package ru.p3tr0vich.fuel.activities
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
+import androidx.appcompat.app.AppCompatActivity
 import ru.p3tr0vich.fuel.ContentObserverService
 import ru.p3tr0vich.fuel.ContentObserverService.Companion.SYNC_ALL
 import ru.p3tr0vich.fuel.sync.SyncAccount

@@ -112,8 +112,7 @@
         android:icon="@drawable/ic_sync"
         android:key="@string/pref_key_sync"
         android:title="@string/pref_sync_title">
-        <!--suppress AndroidElementNotAllowed -->
-        <android.support.v7.preference.SwitchPreferenceCompat
+        <androidx.preference.SwitchPreferenceCompat
             android:key="@string/pref_key_sync_enabled"
             android:switchTextOff="@string/pref_sync_enabled_off"
             android:switchTextOn="@string/pref_sync_enabled_on" />
@@ -129,8 +128,7 @@
         android:icon="@drawable/ic_sms"
         android:key="@string/pref_key_sms"
         android:title="@string/pref_sms_title">
-        <!--suppress AndroidElementNotAllowed -->
-        <android.support.v7.preference.SwitchPreferenceCompat
+        <androidx.preference.SwitchPreferenceCompat
             android:key="@string/pref_key_sms_enabled"
             android:switchTextOff="@string/pref_sms_enabled_off"
             android:switchTextOn="@string/pref_sms_enabled_on" />

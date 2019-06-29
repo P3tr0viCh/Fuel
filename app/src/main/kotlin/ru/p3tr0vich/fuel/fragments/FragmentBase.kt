@@ -2,7 +2,7 @@ package ru.p3tr0vich.fuel.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import ru.p3tr0vich.fuel.ImplementException
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper
 
@@ -36,12 +36,12 @@ abstract class FragmentBase(override val fragmentId: Int) : Fragment(), Fragment
         super.onCreate(savedInstanceState)
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
             onFragmentChangeListener = context as FragmentInterface.OnFragmentChangeListener?
         } catch (e: ClassCastException) {
-            throw ImplementException(context!!, FragmentInterface.OnFragmentChangeListener::class.java)
+            throw ImplementException(context, FragmentInterface.OnFragmentChangeListener::class.java)
         }
 
     }

@@ -1,7 +1,8 @@
 package ru.p3tr0vich.fuel.listeners
 
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import kotlin.math.abs
 
 internal abstract class OnRecyclerViewScrollListener(private val scrollThreshold: Int) : RecyclerView.OnScrollListener() {
 
@@ -23,7 +24,7 @@ internal abstract class OnRecyclerViewScrollListener(private val scrollThreshold
                 if (layoutManager.findLastCompletelyVisibleItemPosition() == adapter.itemCount - 1) {
                     onScrollUp()
                 } else {
-                    if (Math.abs(offset) > scrollThreshold) {
+                    if (abs(offset) > scrollThreshold) {
                         if (offset > 0) {
                             onScrollUp()
                         } else {

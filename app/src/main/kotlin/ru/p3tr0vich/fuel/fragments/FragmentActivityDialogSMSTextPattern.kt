@@ -1,8 +1,6 @@
 package ru.p3tr0vich.fuel.fragments
 
 import android.os.Bundle
-import android.support.annotation.ColorInt
-import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -10,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.fragment.app.Fragment
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.activities.ActivityDialog
 import ru.p3tr0vich.fuel.adapters.TextWatcherAdapter

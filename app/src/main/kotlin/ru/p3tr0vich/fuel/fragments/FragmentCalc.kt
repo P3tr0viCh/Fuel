@@ -3,13 +3,13 @@ package ru.p3tr0vich.fuel.fragments
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.support.annotation.IntDef
 import android.text.Editable
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.annotation.IntDef
 import ru.p3tr0vich.fuel.ImplementException
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.adapters.TextWatcherAdapter
@@ -54,12 +54,12 @@ class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemS
         fun onCalcDistanceButtonClick()
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
             onCalcDistanceButtonClickListener = context as OnCalcDistanceButtonClickListener?
         } catch (e: ClassCastException) {
-            throw ImplementException(context!!, OnCalcDistanceButtonClickListener::class.java)
+            throw ImplementException(context, OnCalcDistanceButtonClickListener::class.java)
         }
 
     }

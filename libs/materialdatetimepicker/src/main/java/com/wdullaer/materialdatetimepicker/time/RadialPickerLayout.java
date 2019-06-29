@@ -24,7 +24,6 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -41,6 +40,8 @@ import android.widget.FrameLayout;
 import com.wdullaer.materialdatetimepicker.R;
 
 import java.util.Calendar;
+
+import androidx.annotation.NonNull;
 
 /**
  * The primary layout to hold the circular picker, and the am/pm buttons. This view will measure

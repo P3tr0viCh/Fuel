@@ -2,12 +2,15 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Fuel.iml" filepath="$PROJECT_DIR$/Fuel.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libs/fab/fab.iml" filepath="$PROJECT_DIR$/libs/fab/fab.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libs/libs.iml" filepath="$PROJECT_DIR$/libs/libs.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libs/materialdatetimepicker/materialdatetimepicker.iml" filepath="$PROJECT_DIR$/libs/materialdatetimepicker/materialdatetimepicker.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libs/materialish-progress/materialish-progress.iml" filepath="$PROJECT_DIR$/libs/materialish-progress/materialish-progress.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Fuel.iml" filepath="$PROJECT_DIR$/Fuel.iml" group="Fuel" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Fuel/app" />
+      <module fileurl="file://$PROJECT_DIR$/libs/fab/fab.iml" filepath="$PROJECT_DIR$/libs/fab/fab.iml" group="Fuel/libs/fab" />
+      <module fileurl="file://$PROJECT_DIR$/libs/libs.iml" filepath="$PROJECT_DIR$/libs/libs.iml" group="Fuel/libs" />
+      <module fileurl="file://$PROJECT_DIR$/libs/fab/libs-fab.iml" filepath="$PROJECT_DIR$/libs/fab/libs-fab.iml" group="Fuel/libs/fab" />
+      <module fileurl="file://$PROJECT_DIR$/libs/materialdatetimepicker/libs-materialdatetimepicker.iml" filepath="$PROJECT_DIR$/libs/materialdatetimepicker/libs-materialdatetimepicker.iml" group="Fuel/libs/materialdatetimepicker" />
+      <module fileurl="file://$PROJECT_DIR$/libs/materialish-progress/libs-materialish-progress.iml" filepath="$PROJECT_DIR$/libs/materialish-progress/libs-materialish-progress.iml" group="Fuel/libs/materialish-progress" />
+      <module fileurl="file://$PROJECT_DIR$/libs/materialdatetimepicker/materialdatetimepicker.iml" filepath="$PROJECT_DIR$/libs/materialdatetimepicker/materialdatetimepicker.iml" group="Fuel/libs/materialdatetimepicker" />
+      <module fileurl="file://$PROJECT_DIR$/libs/materialish-progress/materialish-progress.iml" filepath="$PROJECT_DIR$/libs/materialish-progress/materialish-progress.iml" group="Fuel/libs/materialish-progress" />
     </modules>
   </component>
 </project>

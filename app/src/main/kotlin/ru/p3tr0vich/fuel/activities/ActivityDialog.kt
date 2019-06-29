@@ -3,15 +3,15 @@ package ru.p3tr0vich.fuel.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.IntDef
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentTransaction
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-import ru.p3tr0vich.fuel.fragments.FragmentActivityDialogSMSTextPattern
+import androidx.annotation.IntDef
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import ru.p3tr0vich.fuel.R
+import ru.p3tr0vich.fuel.fragments.FragmentActivityDialogSMSTextPattern
 
 class ActivityDialog : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +43,7 @@ class ActivityDialog : AppCompatActivity() {
         }
     }
 
-    override fun onAttachFragment(fragment: Fragment?) {
+    override fun onAttachFragment(fragment: Fragment) {
         title = (fragment as ActivityDialogFragment).title
     }
 

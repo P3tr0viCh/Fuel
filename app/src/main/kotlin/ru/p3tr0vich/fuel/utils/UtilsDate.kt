@@ -1,9 +1,9 @@
 package ru.p3tr0vich.fuel.utils
 
 import android.content.Context
-import android.support.annotation.Size
 import android.text.TextUtils
 import android.text.format.DateUtils
+import androidx.annotation.Size
 import ru.p3tr0vich.fuel.R
 import java.util.*
 

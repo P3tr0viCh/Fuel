@@ -7,8 +7,8 @@ import android.content.SharedPreferences
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.preference.PreferenceManager
-import android.support.annotation.IntDef
 import android.text.TextUtils
+import androidx.annotation.IntDef
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.models.MapCenter
 import ru.p3tr0vich.fuel.models.MapCenter.Companion.DEFAULT_MAP_CENTER_LATITUDE

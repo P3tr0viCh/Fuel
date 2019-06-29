@@ -2,12 +2,12 @@ package ru.p3tr0vich.fuel.fragments
 
 import android.app.Activity
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
+import androidx.fragment.app.Fragment
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.R.id.edit_cost
@@ -214,7 +214,7 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
         buttonDate!!.text = UtilsFormat.dateToString(fuelingRecord!!.dateTime, true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater!!.inflate(R.menu.menu_fueling_record, menu)
     }
@@ -264,8 +264,8 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item!!.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.action_save -> return onSaveClicked()
         }
 
@@ -287,7 +287,7 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
                     calendar.get(Calendar.DAY_OF_MONTH)
-            ).show(fragmentManager, null)
+            ).show(fragmentManager!!, null)
         } else {
             val edit = when (v.id) {
                 R.id.text_cost -> editCost

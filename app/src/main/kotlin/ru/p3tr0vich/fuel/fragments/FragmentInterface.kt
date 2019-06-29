@@ -1,6 +1,6 @@
 package ru.p3tr0vich.fuel.fragments
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 
 import ru.p3tr0vich.fuel.factories.FragmentFactory
 

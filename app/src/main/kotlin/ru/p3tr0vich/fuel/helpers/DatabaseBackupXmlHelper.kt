@@ -1,8 +1,8 @@
 package ru.p3tr0vich.fuel.helpers
 
 import android.os.Environment
-import android.support.annotation.IntDef
 import android.util.Xml
+import androidx.annotation.IntDef
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import org.xmlpull.v1.XmlPullParserFactory

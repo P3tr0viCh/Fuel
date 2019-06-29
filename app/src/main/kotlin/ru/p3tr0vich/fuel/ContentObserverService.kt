@@ -9,7 +9,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
-import android.support.annotation.IntDef
+import androidx.annotation.IntDef
 import ru.p3tr0vich.fuel.helpers.ConnectivityHelper
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper
 import ru.p3tr0vich.fuel.observers.DatabaseObserver
@@ -17,7 +17,6 @@ import ru.p3tr0vich.fuel.observers.PreferencesObserver
 import ru.p3tr0vich.fuel.sync.SyncAccount
 import ru.p3tr0vich.fuel.sync.SyncAdapter
 import ru.p3tr0vich.fuel.utils.UtilsLog
-
 
 /**
  * Сервис, инициализирующий наблюдатели ([android.database.ContentObserver])

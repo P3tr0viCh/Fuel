@@ -7,11 +7,7 @@ import android.content.pm.ApplicationInfo
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
-import android.support.annotation.ColorInt
-import android.support.annotation.ColorRes
-import android.support.annotation.IntegerRes
-import android.support.annotation.StringRes
-import android.support.v4.view.TintableBackgroundView
+import androidx.core.view.TintableBackgroundView
 import android.text.TextUtils
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -19,6 +15,10 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.IntegerRes
+import androidx.annotation.StringRes
 import ru.p3tr0vich.fuel.ApplicationFuel
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.helpers.SystemServicesHelper

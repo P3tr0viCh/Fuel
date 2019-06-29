@@ -3,8 +3,8 @@ package ru.p3tr0vich.fuel.sync
 import android.content.*
 import android.nfc.FormatException
 import android.os.RemoteException
-import android.support.v4.util.LongSparseArray
 import android.text.TextUtils
+import androidx.collection.LongSparseArray
 import ru.p3tr0vich.fuel.helpers.ContentProviderHelper
 import ru.p3tr0vich.fuel.helpers.DatabaseHelper
 import ru.p3tr0vich.fuel.models.DatabaseModel

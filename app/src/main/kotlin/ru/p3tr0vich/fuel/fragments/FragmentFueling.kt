@@ -7,17 +7,21 @@ import android.content.Context
 import android.database.Cursor
 import android.os.Bundle
 import android.os.Handler
-import android.support.design.widget.Snackbar
-import android.support.v4.app.LoaderManager
-import android.support.v4.content.CursorLoader
-import android.support.v4.content.Loader
-import android.support.v7.widget.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
+import androidx.appcompat.widget.Toolbar
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.CursorLoader
+import androidx.loader.content.Loader
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.melnykov.fab.FloatingActionButton
 import com.pnikosis.materialishprogress.ProgressWheel
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
@@ -544,16 +548,15 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
             onFilterChangeListener = context as OnFilterChangeListener?
             onRecordChangeListener = context as OnRecordChangeListener?
         } catch (e: ClassCastException) {
-            throw ImplementException(context!!,
+            throw ImplementException(context,
                     arrayOf(OnFilterChangeListener::class.java, OnRecordChangeListener::class.java))
         }
-
     }
 
     private fun setToolbarDatesVisible(visible: Boolean, animate: Boolean) {
@@ -766,7 +769,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
-        ).show(fragmentManager, null)
+        ).show(fragmentManager!!, null)
     }
 
     /**

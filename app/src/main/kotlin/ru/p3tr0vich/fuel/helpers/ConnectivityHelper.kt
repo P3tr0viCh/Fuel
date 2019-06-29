@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import android.support.annotation.IntDef
+import androidx.annotation.IntDef
 
 object ConnectivityHelper {
 

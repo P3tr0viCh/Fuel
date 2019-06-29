@@ -5,7 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.support.annotation.IntDef
+import androidx.annotation.IntDef
 import ru.p3tr0vich.fuel.models.DatabaseModel
 import ru.p3tr0vich.fuel.models.FuelingRecord
 import ru.p3tr0vich.fuel.utils.Utils

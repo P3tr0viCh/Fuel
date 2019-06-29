@@ -3,8 +3,8 @@ package ru.p3tr0vich.fuel
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 // TODO: не тестировалось с orientation != LinearLayoutManager.VERTICAL
 

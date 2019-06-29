@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
@@ -37,6 +36,8 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog.OnDateChangedLi
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 /**
  * Displays a selectable list of years.

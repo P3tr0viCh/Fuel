@@ -23,7 +23,6 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -44,6 +43,8 @@ import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout.OnValueSelect
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Locale;
+
+import androidx.annotation.NonNull;
 
 /**
  * Dialog to set a time.

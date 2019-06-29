@@ -3,12 +3,12 @@ package ru.p3tr0vich.fuel.fragments
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.FragmentActivity
-import android.support.v7.app.AlertDialog
 import android.text.TextUtils
 import android.widget.TextView
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentActivity
 import ru.p3tr0vich.fuel.R
 
 class FragmentDialogMessage : DialogFragment() {

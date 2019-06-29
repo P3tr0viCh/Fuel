@@ -1,7 +1,7 @@
 package ru.p3tr0vich.fuel
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 
 class DividerItemDecorationFueling(context: Context?) : DividerItemDecorationBase(context) {
 

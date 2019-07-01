@@ -142,7 +142,6 @@ dependencies {
 
     implementation project(':libs:fab')
     implementation project(':libs:materialish-progress')
-    implementation project(':libs:materialdatetimepicker')
 
     testImplementation 'junit:junit:4.12'
 }

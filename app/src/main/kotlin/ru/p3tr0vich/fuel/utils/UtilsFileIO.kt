@@ -55,7 +55,7 @@ object UtilsFileIO {
         }
 
         if (!dir.mkdirs()) {
-            throw IOException("UtilsFileIO -- makeDir: can not create dir " + dir.toString())
+            throw IOException("UtilsFileIO -- makeDir: can not create dir $dir")
         }
     }
 
@@ -67,7 +67,7 @@ object UtilsFileIO {
         }
 
         if (!file.delete()) {
-            throw IOException("UtilsFileIO -- deleteFile: can not delete file " + file.toString())
+            throw IOException("UtilsFileIO -- deleteFile: can not delete file $file")
         }
     }
 

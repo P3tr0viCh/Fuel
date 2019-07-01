@@ -3,6 +3,7 @@ package ru.p3tr0vich.fuel.fragments
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.content.Context
 import android.database.Cursor
 import android.os.Bundle
@@ -24,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.melnykov.fab.FloatingActionButton
 import com.pnikosis.materialishprogress.ProgressWheel
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import ru.p3tr0vich.fuel.DividerItemDecorationFueling
 import ru.p3tr0vich.fuel.ImplementException
 import ru.p3tr0vich.fuel.R
@@ -79,7 +79,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         override fun onDismissed(snackbar: Snackbar?, event: Int) {
             // Workaround for bug
 
-            if (event == Snackbar.Callback.DISMISS_EVENT_SWIPE)
+            if (event == DISMISS_EVENT_SWIPE)
                 floatingActionButton?.toggle(true, true, true)
         }
     }
@@ -756,8 +756,8 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     private fun showDateDialog(button: Button?) {
         val calendar = UtilsDate.getCalendarInstance(if (button == btnDateFrom) filter.dateFrom else filter.dateTo)
 
-        DatePickerDialog.newInstance(
-                { _, year, monthOfYear, dayOfMonth ->
+        DatePickerDialog(activity!!,
+                DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                     calendar.set(year, monthOfYear, dayOfMonth)
 
                     val date = calendar.timeInMillis
@@ -768,8 +768,23 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-        ).show(fragmentManager!!, null)
+                calendar.get(Calendar.DAY_OF_MONTH))
+                .show()
+
+//        DatePickerDialog.newInstance(
+//                { _, year, monthOfYear, dayOfMonth ->
+//                    calendar.set(year, monthOfYear, dayOfMonth)
+//
+//                    val date = calendar.timeInMillis
+//
+//                    updateFilterDateButton(button, date)
+//
+//                    setFilterDate(button == btnDateFrom, date)
+//                },
+//                calendar.get(Calendar.YEAR),
+//                calendar.get(Calendar.MONTH),
+//                calendar.get(Calendar.DAY_OF_MONTH)
+//        ).show(fragmentManager!!, null)
     }
 
     /**

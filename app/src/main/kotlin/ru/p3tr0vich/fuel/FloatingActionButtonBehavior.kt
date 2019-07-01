@@ -6,6 +6,7 @@ import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.snackbar.Snackbar
 import com.melnykov.fab.FloatingActionButton
+import kotlin.math.min
 
 class FloatingActionButtonBehavior(context: Context?, attrs: AttributeSet) :
         CoordinatorLayout.Behavior<FloatingActionButton>(context, attrs) {
@@ -34,7 +35,7 @@ class FloatingActionButtonBehavior(context: Context?, attrs: AttributeSet) :
 
         if (!child.isVisible) return false
 
-        val translationY = Math.min(0f, dependency.translationY - dependency.height + marginBottom - minDistance)
+        val translationY = min(0f, dependency.translationY - dependency.height + marginBottom - minDistance)
 
         child.translationY = translationY
 

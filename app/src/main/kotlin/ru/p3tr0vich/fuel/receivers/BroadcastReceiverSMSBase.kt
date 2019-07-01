@@ -83,7 +83,7 @@ abstract class BroadcastReceiverSMSBase : BroadcastReceiver() {
             messages[originatingAddress] = message
         }
 
-        if (!messages.isEmpty()) {
+        if (messages.isNotEmpty()) {
             onReceive(context, messages)
         }
     }

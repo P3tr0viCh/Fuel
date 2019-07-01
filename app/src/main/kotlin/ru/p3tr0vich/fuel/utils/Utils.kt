@@ -7,7 +7,6 @@ import android.content.pm.ApplicationInfo
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
-import androidx.core.view.TintableBackgroundView
 import android.text.TextUtils
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -19,6 +18,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
+import androidx.core.view.TintableBackgroundView
 import ru.p3tr0vich.fuel.ApplicationFuel
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.helpers.SystemServicesHelper
@@ -137,7 +137,7 @@ object Utils {
         try {
             context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         } catch (e: Exception) {
-            UtilsLog.d(TAG, "openUrl", "exception == " + e.toString())
+            UtilsLog.d(TAG, "openUrl", "exception == $e")
 
             if (!TextUtils.isEmpty(onErrorMessage)) {
                 toast(onErrorMessage!!)

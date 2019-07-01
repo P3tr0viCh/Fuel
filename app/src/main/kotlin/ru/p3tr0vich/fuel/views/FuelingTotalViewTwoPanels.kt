@@ -5,6 +5,7 @@ import android.widget.TextView
 
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.utils.UtilsFormat
+import kotlin.math.roundToInt
 
 class FuelingTotalViewTwoPanels(view: View) : FuelingTotalViewBase() {
 
@@ -49,7 +50,7 @@ class FuelingTotalViewTwoPanels(view: View) : FuelingTotalViewBase() {
     }
 
     override fun setEstimatedMileage(value: Float) {
-        estimatedMileage = Math.round(value).toString()
+        estimatedMileage = value.roundToInt().toString()
 
         estimatedMileageAndTotalCollapsed.text = String.format("%s/%s", estimatedMileage, estimatedTotal)
 
@@ -57,7 +58,7 @@ class FuelingTotalViewTwoPanels(view: View) : FuelingTotalViewBase() {
     }
 
     override fun setEstimatedTotal(value: Float) {
-        estimatedTotal = Math.round(value).toString()
+        estimatedTotal = value.roundToInt().toString()
 
         estimatedMileageAndTotalCollapsed.text = String.format("%s/%s", estimatedMileage, estimatedTotal)
 

@@ -238,7 +238,7 @@ class DatabaseHelper(context: Context) :
                              cost: Float,
                              volume: Float,
                              total: Float): ContentValues {
-            return getValues(id, dateTime, cost, volume, total, false, false, false)
+            return getValues(id, dateTime, cost, volume, total, changed = false, deleted = false, convertDate = false)
         }
 
         @JvmStatic
@@ -247,7 +247,7 @@ class DatabaseHelper(context: Context) :
                       cost: Float,
                       volume: Float,
                       total: Float): ContentValues {
-            return getValues(id, dateTime, cost, volume, total, true, false, true)
+            return getValues(id, dateTime, cost, volume, total, changed = true, deleted = false, convertDate = true)
         }
 
         @JvmStatic

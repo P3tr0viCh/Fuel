@@ -300,7 +300,7 @@ class DatabaseBackupXmlHelper {
         try {
             UtilsFileIO.makeDir(externalDirectory)
         } catch (e: IOException) {
-            UtilsLog.d(TAG, "save", "makeDir exception == " + e.toString())
+            UtilsLog.d(TAG, "save", "makeDir exception == $e")
             return RESULT_ERROR_MKDIRS
         }
 
@@ -309,7 +309,7 @@ class DatabaseBackupXmlHelper {
         try {
             UtilsFileIO.createFile(file)
         } catch (e: IOException) {
-            UtilsLog.d(TAG, "save", "createFile exception == " + e.toString())
+            UtilsLog.d(TAG, "save", "createFile exception == $e")
             return RESULT_ERROR_CREATE_FILE
         }
 
@@ -318,7 +318,7 @@ class DatabaseBackupXmlHelper {
         try {
             xmlString = createXml(fuelingRecordList)
         } catch (e: Exception) {
-            UtilsLog.d(TAG, "save", "createXml exception == " + e.toString())
+            UtilsLog.d(TAG, "save", "createXml exception == $e")
             return RESULT_ERROR_CREATE_XML
         }
 
@@ -329,7 +329,7 @@ class DatabaseBackupXmlHelper {
         try {
             fileChannel = FileOutputStream(file).channel
         } catch (e: FileNotFoundException) {
-            UtilsLog.d(TAG, "save", "getChannel exception == " + e.toString())
+            UtilsLog.d(TAG, "save", "getChannel exception == $e")
             return RESULT_ERROR_CREATE_FILE
         }
 
@@ -337,7 +337,7 @@ class DatabaseBackupXmlHelper {
             fileChannel.write(buff)
             fileChannel.close()
         } catch (e: IOException) {
-            UtilsLog.d(TAG, "save", "write exception == " + e.toString())
+            UtilsLog.d(TAG, "save", "write exception == $e")
             return RESULT_ERROR_SAVE_FILE
         }
 
@@ -369,10 +369,10 @@ class DatabaseBackupXmlHelper {
         try {
             parseXml(fileInputStream, fuelingRecordList)
         } catch (e: XmlPullParserException) {
-            UtilsLog.d(TAG, "load", "parseXml XmlPullParserException == " + e.toString())
+            UtilsLog.d(TAG, "load", "parseXml XmlPullParserException == $e")
             return RESULT_ERROR_PARSE_XML
         } catch (e: IOException) {
-            UtilsLog.d(TAG, "load", "parseXml IOException == " + e.toString())
+            UtilsLog.d(TAG, "load", "parseXml IOException == $e")
             return RESULT_ERROR_READ_FILE
         }
 

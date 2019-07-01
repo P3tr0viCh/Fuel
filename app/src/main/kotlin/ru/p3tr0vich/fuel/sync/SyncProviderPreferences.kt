@@ -123,7 +123,7 @@ internal class SyncProviderPreferences(context: Context, private val provider: C
         var key: String
 
         cursor.use {
-            if (it!!.moveToFirst())
+            if (it.moveToFirst())
                 do {
                     key = it.getString(0)
 

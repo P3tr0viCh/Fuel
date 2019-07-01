@@ -6,6 +6,7 @@ import android.text.format.DateUtils
 import androidx.annotation.Size
 import ru.p3tr0vich.fuel.R
 import java.util.*
+import kotlin.math.abs
 
 object UtilsDate {
 
@@ -78,8 +79,8 @@ object UtilsDate {
                     val calendarDateTime = getCalendarInstance(dateTime)
 
                     if (calendarNow.get(Calendar.YEAR) == calendarDateTime.get(Calendar.YEAR)) {
-                        val daysBetween = Math.abs(
-                                calendarNow.get(Calendar.DAY_OF_YEAR) - calendarDateTime.get(Calendar.DAY_OF_YEAR))
+                        val daysBetween = abs(calendarNow.get(Calendar.DAY_OF_YEAR) -
+                                calendarDateTime.get(Calendar.DAY_OF_YEAR))
 
                         when {
                             daysBetween == 0 -> result = context.getString(R.string.relative_date_time_today)

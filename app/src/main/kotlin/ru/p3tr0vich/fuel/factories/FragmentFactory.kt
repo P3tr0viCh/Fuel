@@ -48,7 +48,7 @@ object FragmentFactory {
     @JvmStatic
     fun fragmentIdToTag(@Ids.Id id: Int): String {
         when (id) {
-            Ids.ABOUT, Ids.BACKUP, Ids.CALC, Ids.CHART_COST, Ids.FUELING, Ids.PREFERENCES -> return "TAG_" + id.toString()
+            Ids.ABOUT, Ids.BACKUP, Ids.CALC, Ids.CHART_COST, Ids.FUELING, Ids.PREFERENCES -> return "TAG_$id"
             Ids.BAD_ID -> throw IllegalArgumentException("Fragment bad ID")
             else -> throw IllegalArgumentException("Fragment bad ID")
         }

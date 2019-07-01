@@ -384,7 +384,7 @@ class ContentObserverService : Service() {
          * @param pendingIntent Результат запуска.
          */
         fun requestSync(context: Context, pendingIntent: PendingIntent) {
-            requestSync(context, SYNC_ALL, false, false, pendingIntent)
+            requestSync(context, SYNC_ALL, startIfSyncActive = false, withDelay = false, pendingIntent = pendingIntent)
         }
 
         /**
@@ -394,7 +394,7 @@ class ContentObserverService : Service() {
          * @param context Контекст.
          */
         fun requestSync(context: Context) {
-            requestSync(context, SYNC_ALL, false, false, null)
+            requestSync(context, SYNC_ALL, startIfSyncActive = false, withDelay = false, pendingIntent = null)
         }
     }
 }

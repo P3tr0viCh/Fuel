@@ -27,7 +27,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_zoom_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
             app:fabSize="mini"
             tools:visibility="visible" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_zoom_out"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
             app:fabSize="mini"
             tools:visibility="visible" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_geolocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

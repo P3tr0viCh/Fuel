@@ -28,6 +28,6 @@ class PreferencesObserver : ContentObserverBase() {
         UtilsLog.d(TAG, "onChange", "selfChange == $selfChange, changeUri == $changeUri")
 
         ContentObserverService.requestSync(ApplicationFuel.context,
-                ContentObserverService.SYNC_PREFERENCES, true, true, null)
+                ContentObserverService.SYNC_PREFERENCES, startIfSyncActive = true, withDelay = true, pendingIntent = null)
     }
 }

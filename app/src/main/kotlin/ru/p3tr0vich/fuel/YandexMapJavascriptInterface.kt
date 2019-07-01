@@ -129,7 +129,7 @@ internal class YandexMapJavascriptInterface(private val activity: Activity, priv
     }
 
     fun setStartLocation(latitude: Double, longitude: Double) {
-        runJavaScript("setStartLocation(" + latitude.toString() + ", " + longitude.toString() + ")")
+        runJavaScript("setStartLocation($latitude, $longitude)")
     }
 
     fun setZoomIn() {

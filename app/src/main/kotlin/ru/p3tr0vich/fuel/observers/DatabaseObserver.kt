@@ -41,11 +41,11 @@ class DatabaseObserver : ContentObserverBase() {
                     id = ContentUris.parseId(changeUri)
 
                     ContentObserverService.requestSync(ApplicationFuel.context,
-                            ContentObserverService.SYNC_DATABASE, true, true, null)
+                            ContentObserverService.SYNC_DATABASE, startIfSyncActive = true, withDelay = true, pendingIntent = null)
                 }
                 ContentProviderHelper.DATABASE -> {
                     ContentObserverService.requestSync(ApplicationFuel.context,
-                            ContentObserverService.SYNC_DATABASE, true, true, null)
+                            ContentObserverService.SYNC_DATABASE, startIfSyncActive = true, withDelay = true, pendingIntent = null)
                 }
                 ContentProviderHelper.DATABASE_SYNC -> {
                     // Изменения произошли после синхронизации.

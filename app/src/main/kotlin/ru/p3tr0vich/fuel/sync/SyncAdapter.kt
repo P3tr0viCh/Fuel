@@ -84,7 +84,8 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
             }
 
             if (LOG_ENABLED || syncResult.hasError()) {
-                UtilsLog.d(TAG, "onPerformSync", "finish" + if (syncResult.hasError()) ", errors == " + syncResult.toString() else ", all ok")
+                UtilsLog.d(TAG, "onPerformSync",
+                        "finish" + if (syncResult.hasError()) ", errors == $syncResult" else ", all ok")
             }
 
             if (extras.getBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, false)) {
@@ -328,7 +329,7 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
 
                     syncDatabaseLoad(localRevision, serverRevision)
 
-                    syncDatabaseSave(serverRevision, false, false)
+                    syncDatabaseSave(serverRevision, saveAllRecords = false, addDeleteAll = false)
                 } else {
                     if (localRevision > serverRevision) {
                         // Файлы синхронизации были удалены (localRevision > -1 > serverRevision == -1).
@@ -338,7 +339,7 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
                             UtilsLog.d(TAG, "syncDatabase", "localRevision > serverRevision")
                         }
 
-                        syncDatabaseSave(localRevision, true, false)
+                        syncDatabaseSave(localRevision, saveAllRecords = true, addDeleteAll = false)
                     } else
                     /* localRevision == serverRevision */ {
                         // 1. Сихронизация выполняется в первый раз
@@ -377,7 +378,7 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
             UtilsLog.d(TAG, "syncDatabaseFullSave", "syncYandexDisk.deleteDirDatabase() OK")
         }
 
-        syncDatabaseSave(revision, true, true)
+        syncDatabaseSave(revision, saveAllRecords = true, addDeleteAll = true)
 
         syncProviderPreferences!!.isDatabaseFullSync = false
 

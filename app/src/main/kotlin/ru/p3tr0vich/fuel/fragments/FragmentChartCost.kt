@@ -35,6 +35,7 @@ import ru.p3tr0vich.fuel.utils.Utils
 import ru.p3tr0vich.fuel.utils.UtilsDate
 import ru.p3tr0vich.fuel.utils.UtilsFormat
 import java.util.*
+import kotlin.math.roundToInt
 
 class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -353,7 +354,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
     }
 
     private fun round(f: Float): Float {
-        return Math.round(f / 10f) * 10f
+        return (f / 10f).roundToInt() * 10f
     }
 
     private fun updateChart() {

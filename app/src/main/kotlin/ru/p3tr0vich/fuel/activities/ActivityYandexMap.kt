@@ -521,7 +521,7 @@ class ActivityYandexMap : AppCompatActivity(),
             status.startResolutionForResult(this, REQUEST_CODE_RESOLUTION_REQUIRED)
         } catch (e: Exception) {
             if (LOG_ENABLED) {
-                UtilsLog.d(TAG, "onResolutionRequired", "Exception e == " + e.toString())
+                UtilsLog.d(TAG, "onResolutionRequired", "Exception e == $e")
             }
         }
 

@@ -41,8 +41,8 @@ class BroadcastReceiverSMS : BroadcastReceiverSMSBase() {
         }
     }
 
-    public override fun onReceive(context: Context, messages: Map<String, BroadcastReceiverSMSBase.Message>) {
-        var message: BroadcastReceiverSMSBase.Message
+    public override fun onReceive(context: Context, messages: Map<String, Message>) {
+        var message: Message
         var cost: Float?
 
         for (entry in messages) {

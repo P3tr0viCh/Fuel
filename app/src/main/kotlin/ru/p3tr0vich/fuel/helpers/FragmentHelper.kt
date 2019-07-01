@@ -15,7 +15,7 @@ class FragmentHelper(private val fragmentActivity: FragmentActivity) {
 
     val currentFragment: FragmentInterface
         get() {
-            return fragmentActivity.supportFragmentManager?.findFragmentById(R.id.content_frame) as FragmentInterface
+            return fragmentActivity.supportFragmentManager.findFragmentById(R.id.content_frame) as FragmentInterface
         }
 
     val fragmentFueling: FragmentFueling?
@@ -28,25 +28,25 @@ class FragmentHelper(private val fragmentActivity: FragmentActivity) {
         get() = getFragment(FragmentFactory.Ids.PREFERENCES) as FragmentPreferences?
 
     fun getFragment(@FragmentFactory.Ids.Id fragmentId: Int): Fragment? {
-        return fragmentActivity.supportFragmentManager?.findFragmentByTag(FragmentFactory.fragmentIdToTag(fragmentId))
+        return fragmentActivity.supportFragmentManager.findFragmentByTag(FragmentFactory.fragmentIdToTag(fragmentId))
     }
 
     fun addMainFragment() {
-        fragmentActivity.supportFragmentManager?.beginTransaction()
-                ?.add(R.id.content_frame,
+        fragmentActivity.supportFragmentManager.beginTransaction()
+                .add(R.id.content_frame,
                         FragmentFactory.getFragmentNewInstance(FragmentFactory.Ids.MAIN),
                         FragmentFactory.fragmentIdToTag(FragmentFactory.Ids.MAIN))
-                ?.setTransition(FragmentTransaction.TRANSIT_NONE)
-                ?.commit()
+                .setTransition(FragmentTransaction.TRANSIT_NONE)
+                .commit()
     }
 
     fun replaceFragment(@FragmentFactory.Ids.Id fragmentId: Int, args: Bundle?) {
-        fragmentActivity.supportFragmentManager?.beginTransaction()
-                ?.replace(R.id.content_frame,
+        fragmentActivity.supportFragmentManager.beginTransaction()
+                .replace(R.id.content_frame,
                         FragmentFactory.getFragmentNewInstance(fragmentId, args),
                         FragmentFactory.fragmentIdToTag(fragmentId))
-                ?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                ?.addToBackStack(null)
-                ?.commit()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .addToBackStack(null)
+                .commit()
     }
 }

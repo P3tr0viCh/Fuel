@@ -193,7 +193,7 @@ class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemS
     private fun selectConsFromSpinners() {
         val cons = arrCons[spinnerSeason!!.selectedItemPosition][spinnerCons!!.selectedItemPosition]
 
-        if (java.lang.Float.compare(cons, UtilsFormat.editTextToFloat(editCons)) == 0) {
+        if (cons.compareTo(UtilsFormat.editTextToFloat(editCons)) == 0) {
             return
         }
 

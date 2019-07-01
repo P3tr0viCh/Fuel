@@ -1,6 +1,7 @@
 package ru.p3tr0vich.fuel.fragments
 
 import android.app.Activity
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,9 +9,7 @@ import android.view.*
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import ru.p3tr0vich.fuel.R
-import ru.p3tr0vich.fuel.R.id.edit_cost
 import ru.p3tr0vich.fuel.adapters.TextWatcherAdapter
 import ru.p3tr0vich.fuel.helpers.ContentResolverHelper
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper
@@ -66,7 +65,7 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
         setHasOptionsMenu(true)
 
         buttonDate = view.findViewById(R.id.btn_date)
-        editCost = view.findViewById(edit_cost)
+        editCost = view.findViewById(R.id.edit_cost)
         editVolume = view.findViewById(R.id.edit_volume)
         editTotal = view.findViewById(R.id.edit_total)
 
@@ -108,7 +107,8 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
         view.findViewById<View>(R.id.text_volume).setOnClickListener(this)
         view.findViewById<View>(R.id.text_total).setOnClickListener(this)
 
-        calcStep = savedInstanceState?.getInt(STATE_KEY_CALC_STEP, CALC_STEP_DISABLED) ?: if (fuelingRecord!!.id == 0L && price > 0) CALC_STEP_SELECT else CALC_STEP_DISABLED
+        calcStep = savedInstanceState?.getInt(STATE_KEY_CALC_STEP, CALC_STEP_DISABLED)
+                ?: if (fuelingRecord!!.id == 0L && price > 0) CALC_STEP_SELECT else CALC_STEP_DISABLED
 
         return view
     }
@@ -216,7 +216,7 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater!!.inflate(R.menu.menu_fueling_record, menu)
+        inflater.inflate(R.menu.menu_fueling_record, menu)
     }
 
     /**
@@ -276,8 +276,8 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
         if (v === buttonDate) {
             val calendar = UtilsDate.getCalendarInstance(fuelingRecord!!.dateTime)
 
-            DatePickerDialog.newInstance(
-                    { _, year, monthOfYear, dayOfMonth ->
+            DatePickerDialog(activity!!,
+                    DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                         calendar.set(year, monthOfYear, dayOfMonth)
 
                         fuelingRecord!!.dateTime = calendar.timeInMillis
@@ -286,8 +286,8 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
                     },
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)
-            ).show(fragmentManager!!, null)
+                    calendar.get(Calendar.DAY_OF_MONTH))
+                    .show()
         } else {
             val edit = when (v.id) {
                 R.id.text_cost -> editCost

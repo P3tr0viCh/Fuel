@@ -38,14 +38,14 @@ internal class SyncProviderDatabase(private val provider: ContentProviderClient)
 
                     result.add(
                             if (DatabaseHelper.getBoolean(cursor, DatabaseModel.TableFueling.Columns.DELETED_INDEX)) {
-                                DELETE + SEPARATOR + java.lang.Long.toString(fuelingRecord.id)
+                                DELETE + SEPARATOR + fuelingRecord.id.toString()
                             } else {
                                 INSERT + SEPARATOR +
-                                        java.lang.Long.toString(fuelingRecord.id) + SEPARATOR +
-                                        java.lang.Long.toString(fuelingRecord.dateTime) + SEPARATOR +
-                                        java.lang.Float.toString(fuelingRecord.cost) + SEPARATOR +
-                                        java.lang.Float.toString(fuelingRecord.volume) + SEPARATOR +
-                                        java.lang.Float.toString(fuelingRecord.total)
+                                        fuelingRecord.id.toString() + SEPARATOR +
+                                        fuelingRecord.dateTime.toString() + SEPARATOR +
+                                        fuelingRecord.cost.toString() + SEPARATOR +
+                                        fuelingRecord.volume.toString() + SEPARATOR +
+                                        fuelingRecord.total.toString()
                             })
                 } while (cursor.moveToNext())
             }

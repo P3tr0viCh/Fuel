@@ -8,8 +8,6 @@ buildscript {
         gradleVer = '3.6.0-alpha04'
 
         kotlinVer = '1.3.40'
-
-        supportVer = '28.0.0'
     }
 
     repositories {
@@ -20,7 +18,7 @@ buildscript {
 
     dependencies {
         classpath "com.android.tools.build:gradle:${gradleVer}"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVer"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVer}"
     }
 }
 

@@ -38,8 +38,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVer
         targetSdkVersion rootProject.ext.targetSdkVer
 
-        versionCode 31
-        versionName "3.1"
+        versionCode 30
+        versionName "3.0"
 
         buildConfigField "long", "BUILD_DATE", System.currentTimeMillis() + "l"
 
@@ -131,13 +131,13 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.1.0-alpha07'
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVer"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVer}"
 
     implementation "com.github.P3tr0viCh:ExpansionPanel:1.0.0"
 
     implementation "com.google.android.gms:play-services-location:17.0.0"
 
-    implementation "com.github.PhilJay:MPAndroidChart:v3.1.0-alpha"
+    implementation "com.github.PhilJay:MPAndroidChart:v3.1.0"
     implementation "com.yandex.android:disk-restapi-sdk:1.03"
 
     implementation project(':libs:fab')

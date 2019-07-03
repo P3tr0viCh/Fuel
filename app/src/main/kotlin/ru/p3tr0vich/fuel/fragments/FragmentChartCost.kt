@@ -19,11 +19,8 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
-import com.github.mikephil.charting.formatter.IValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
-import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.tabs.TabLayout
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.factories.FragmentFactory
@@ -86,8 +83,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
         override fun onSwipeBottom() {}
     }
 
-    private val floatFormatter = FloatFormatter()
-    private val monthFormatter = MonthFormatter()
+    private val chartFormatter = ChartFormatter()
 
     private val handler = Handler()
 
@@ -188,7 +184,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
             labelCount = Months.COUNT
             axisMinimum = -0.5f
             axisMaximum = Months.COUNT - 0.5f
-            valueFormatter = monthFormatter
+            valueFormatter = chartFormatter
             setDrawLimitLinesBehindData(true)
         }
 
@@ -339,16 +335,13 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
 
     override fun onLoaderReset(loader: Loader<Cursor>) {}
 
-    private class FloatFormatter : IValueFormatter {
+    private inner class ChartFormatter : ValueFormatter() {
 
-        override fun getFormattedValue(value: Float, entry: Entry, dataSetIndex: Int, viewPortHandler: ViewPortHandler): String {
-            return UtilsFormat.floatToString(value, false)
+        override fun getBarLabel(barEntry: BarEntry): String {
+            return UtilsFormat.floatToString(barEntry.y, false)
         }
-    }
 
-    private inner class MonthFormatter : IAxisValueFormatter {
-
-        override fun getFormattedValue(value: Float, axis: AxisBase): String {
+        override fun getAxisLabel(value: Float, axis: AxisBase): String {
             return months.getMonth(value.toInt())
         }
     }
@@ -385,7 +378,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
             dataSets.add(sumsSet)
 
             with(BarData(dataSets)) {
-                setValueFormatter(floatFormatter)
+                setValueFormatter(chartFormatter)
                 setValueTextSize(8f)
                 barWidth = 0.8f
 

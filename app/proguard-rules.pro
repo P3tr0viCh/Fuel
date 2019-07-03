@@ -33,7 +33,6 @@
 
 -dontnote com.melnykov.fab.**
 -dontnote com.pnikosis.materialishprogress.**
--dontnote com.wdullaer.materialdatetimepicker.**
 
 -keep class com.github.mikephil.charting.animation.ChartAnimator { *; }
 

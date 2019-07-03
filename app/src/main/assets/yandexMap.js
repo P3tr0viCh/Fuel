@@ -21,7 +21,6 @@ function init() {
                     noPlacemark: true,
                     noPopup: true,
                     suppressYandexSearch: true,
-                    provider: 'yandex#search',
                     placeholderContent: YandexMapJavascriptInterface.getStartSearchControlPlaceholderContent(),
                     size: 'large',
                     float: 'none',

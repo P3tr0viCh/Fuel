@@ -524,7 +524,6 @@ class ActivityYandexMap : AppCompatActivity(),
                 UtilsLog.d(TAG, "onResolutionRequired", "Exception e == $e")
             }
         }
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

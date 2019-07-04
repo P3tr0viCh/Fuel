@@ -133,7 +133,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVer}"
 
-    implementation "com.github.P3tr0viCh:ExpansionPanel:1.0.0"
+    implementation "com.github.P3tr0viCh:ExpansionPanel:2.0.0"
 
     implementation "com.google.android.gms:play-services-location:17.0.0"
 

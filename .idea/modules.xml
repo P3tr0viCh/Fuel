@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Fuel.iml" filepath="$PROJECT_DIR$/Fuel.iml" group="Fuel" />
+      <module fileurl="file://$PROJECT_DIR$/Android-Fuel.iml" filepath="$PROJECT_DIR$/Android-Fuel.iml" group="Fuel" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Fuel/app" />
-      <module fileurl="file://$PROJECT_DIR$/libs/fab/fab.iml" filepath="$PROJECT_DIR$/libs/fab/fab.iml" group="Fuel/libs/fab" />
       <module fileurl="file://$PROJECT_DIR$/libs/libs.iml" filepath="$PROJECT_DIR$/libs/libs.iml" group="Fuel/libs" />
       <module fileurl="file://$PROJECT_DIR$/libs/materialish-progress/materialish-progress.iml" filepath="$PROJECT_DIR$/libs/materialish-progress/materialish-progress.iml" group="Fuel/libs/materialish-progress" />
     </modules>

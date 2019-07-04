@@ -1,4 +1,4 @@
-package utils
+package ru.p3tr0vich.fuel
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

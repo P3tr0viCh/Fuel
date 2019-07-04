@@ -14,6 +14,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.loader.app.LoaderManager
@@ -22,8 +24,8 @@ import androidx.loader.content.Loader
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.melnykov.fab.FloatingActionButton
 import com.pnikosis.materialishprogress.ProgressWheel
 import ru.p3tr0vich.fuel.DividerItemDecorationFueling
 import ru.p3tr0vich.fuel.ImplementException
@@ -75,12 +77,12 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     private var idForScroll: Long = -1
 
     private var snackbar: Snackbar? = null
-    private val snackBarCallback = object : Snackbar.Callback() {
+    private val snackbarCallback = object : Snackbar.Callback() {
         override fun onDismissed(snackbar: Snackbar?, event: Int) {
             // Workaround for bug
 
             if (event == DISMISS_EVENT_SWIPE)
-                floatingActionButton?.toggle(true, true, true)
+                floatingActionButton?.show()
         }
     }
 
@@ -450,7 +452,6 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
             FUELING_CURSOR_LOADER_ID -> swapRecords(data)
             FUELING_TOTAL_CURSOR_LOADER_ID -> updateTotal(data)
         }
-
     }
 
     override fun onLoaderReset(loader: Loader<Cursor>) {
@@ -467,16 +468,6 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     private fun doPopup(v: View) {
         val popupMenu = PopupMenu(activity!!, v)
         popupMenu.inflate(R.menu.menu_fueling)
-
-        var menuHelper: Any? = null
-        try {
-            val fMenuHelper = PopupMenu::class.java.getDeclaredField("mPopup")
-            fMenuHelper.isAccessible = true
-            menuHelper = fMenuHelper.get(popupMenu)
-            menuHelper!!.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.javaPrimitiveType!!).invoke(menuHelper, true)
-        } catch (e: Exception) {
-            //
-        }
 
         val id = v.tag as Long
 
@@ -506,7 +497,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
                                         .make(layoutMain!!, R.string.message_record_deleted,
                                                 Snackbar.LENGTH_LONG)
                                         .setAction(R.string.dialog_btn_cancel, undoClickListener)
-                                        .addCallback(snackBarCallback)
+                                        .addCallback(snackbarCallback)
 
                                 snackbar!!.show()
                             }
@@ -518,24 +509,9 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
                 }
         )
 
-        popupMenu.show()
-
-        try {
-            if (menuHelper == null) return
-
-            val fListPopup = menuHelper.javaClass.getDeclaredField("mPopup")
-            fListPopup.isAccessible = true
-            val listPopup = fListPopup.get(menuHelper)
-            val listPopupClass = listPopup.javaClass
-
-            // Magic number
-            listPopupClass.getDeclaredMethod("setVerticalOffset", Int::class.javaPrimitiveType!!).invoke(listPopup, -v.height - 8)
-
-            listPopupClass.getDeclaredMethod("show").invoke(listPopup)
-        } catch (e: Exception) {
-            //
-        }
-
+        val menuHelper = MenuPopupHelper(activity!!, popupMenu.menu as MenuBuilder, v)
+        menuHelper.setForceShowIcon(true)
+        menuHelper.show()
     }
 
     fun setLoading(loading: Boolean) {
@@ -627,7 +603,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     }
 
     private fun setTotalAndFabVisible(visible: Boolean) {
-        floatingActionButton?.toggle(visible, true)
+        if (visible) floatingActionButton?.show() else floatingActionButton?.hide()
         setTotalPanelVisible(visible)
     }
 
@@ -719,38 +695,12 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         val popupMenu = PopupMenu(activity!!, v)
         popupMenu.inflate(R.menu.menu_dates)
 
-        var menuHelper: Any? = null
-        try {
-            val fMenuHelper = PopupMenu::class.java.getDeclaredField("mPopup")
-            fMenuHelper.isAccessible = true
-            menuHelper = fMenuHelper.get(popupMenu)
-        } catch (e: Exception) {
-            //
-        }
-
         popupMenu.setOnMenuItemClickListener { item ->
             setPopupFilterDate(button, item.itemId)
             true
         }
 
         popupMenu.show()
-
-        try {
-            if (menuHelper == null) return
-
-            val fListPopup = menuHelper.javaClass.getDeclaredField("mPopup")
-            fListPopup.isAccessible = true
-            val listPopup = fListPopup.get(menuHelper)
-            val listPopupClass = listPopup.javaClass
-
-            // Magic number
-            listPopupClass.getDeclaredMethod("setVerticalOffset", Int::class.javaPrimitiveType!!).invoke(listPopup, -v.height - 8)
-
-            listPopupClass.getDeclaredMethod("show").invoke(listPopup)
-        } catch (e: Exception) {
-            //
-        }
-
     }
 
     private fun showDateDialog(button: Button?) {
@@ -770,21 +720,6 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH))
                 .show()
-
-//        DatePickerDialog.newInstance(
-//                { _, year, monthOfYear, dayOfMonth ->
-//                    calendar.set(year, monthOfYear, dayOfMonth)
-//
-//                    val date = calendar.timeInMillis
-//
-//                    updateFilterDateButton(button, date)
-//
-//                    setFilterDate(button == btnDateFrom, date)
-//                },
-//                calendar.get(Calendar.YEAR),
-//                calendar.get(Calendar.MONTH),
-//                calendar.get(Calendar.DAY_OF_MONTH)
-//        ).show(fragmentManager!!, null)
     }
 
     /**

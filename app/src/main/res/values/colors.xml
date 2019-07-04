@@ -30,10 +30,6 @@
 
     <color name="menu_item_pressed">#EFEBEF</color>
 
-    <!-- DatePickerDialog -->
-    <color name="mdtp_accent_color">@color/accent</color>
-    <color name="mdtp_accent_color_dark">@color/primary_dark</color>
-
     <!-- Replace colors in ThemeOverlay.AppCompat.Light for ToolBar and Widget.AppCompat.PopupMenu -->
     <color name="background_material_light" tools:ignore="PrivateResource">
         @color/window_background

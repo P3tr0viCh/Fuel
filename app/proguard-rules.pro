@@ -9,29 +9,14 @@
    public *;
 }
 
--keepclassmembers class android.support.v7.widget.ListPopupWindow {
-    public void setVerticalOffset(int);
-    public void show();
-}
+-dontnote androidx.appcompat.app.**
+-dontnote androidx.appcompat.view.**
+-dontnote androidx.appcompat.text.**
+-dontnote androidx.appcompat.widget.**
+-dontnote androidx.appcompat.view.**
+-dontnote androidx.appcompat.widget.**
+-dontnote com.google.android.material.**
 
--keepclassmembers class android.support.v7.view.menu.MenuPopupHelper {
-    private android.support.v7.widget.ListPopupWindow mPopup;
-    public void setForceShowIcon(boolean);
-}
-
--keepclassmembers class android.support.v7.widget.PopupMenu {
-    private android.support.v7.view.menu.MenuPopupHelper mPopup;
-}
-
--dontnote android.support.v4.app.**
--dontnote android.support.v4.view.**
--dontnote android.support.v4.text.**
--dontnote android.support.v4.widget.**
--dontnote android.support.v7.view.**
--dontnote android.support.v7.widget.**
--dontnote android.support.design.widget.**
-
--dontnote com.melnykov.fab.**
 -dontnote com.pnikosis.materialishprogress.**
 
 -keep class com.github.mikephil.charting.animation.ChartAnimator { *; }

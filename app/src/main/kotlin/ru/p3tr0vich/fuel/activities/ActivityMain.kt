@@ -134,7 +134,7 @@ class ActivityMain : AppCompatActivity(),
     }
 
     private fun initToolbarSpinner() {
-        toolbarSpinner = AppCompatSpinner(supportActionBar?.themedContext)
+        toolbarSpinner = AppCompatSpinner(supportActionBar!!.themedContext)
 
         Utils.setBackgroundTint(toolbarSpinner, R.color.toolbar_title_text, R.color.primary_light)
 

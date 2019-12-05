@@ -107,8 +107,8 @@ class ChartCostModel : Parcelable {
     }
 
     override fun toString(): String {
-        return "hasData: " + hasData + ", years: " + Arrays.toString(years) +
-                ", year: " + year + ", sums: " + Arrays.toString(sums) +
+        return "hasData: " + hasData + ", years: " + years?.contentToString() +
+                ", year: " + year + ", sums: " + sums.contentToString() +
                 ", median: " + median + ", sum: " + sum + ", sumsNotEquals: " + isSumsNotEquals
     }
 }

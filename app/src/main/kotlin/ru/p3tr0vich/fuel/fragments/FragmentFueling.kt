@@ -465,6 +465,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         }
     }
 
+    @SuppressLint("RestrictedApi")
     private fun doPopup(v: View) {
         val popupMenu = PopupMenu(activity!!, v)
         popupMenu.inflate(R.menu.menu_fueling)

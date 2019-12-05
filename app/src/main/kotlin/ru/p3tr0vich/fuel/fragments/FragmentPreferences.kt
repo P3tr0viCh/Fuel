@@ -105,10 +105,10 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
 
         rootPreferenceScreen = preferenceScreen
 
-        findPreference(preferencesHelper.keys.mapCenterText).onPreferenceClickListener = this
-        findPreference(preferencesHelper.keys.syncYandexDisk).onPreferenceClickListener = this
-        findPreference(preferencesHelper.keys.smsAddress).onPreferenceClickListener = this
-        findPreference(preferencesHelper.keys.smsTextPattern).onPreferenceClickListener = this
+        findPreference<Preference>(preferencesHelper.keys.mapCenterText)!!.onPreferenceClickListener = this
+        findPreference<Preference>(preferencesHelper.keys.syncYandexDisk)!!.onPreferenceClickListener = this
+        findPreference<Preference>(preferencesHelper.keys.smsAddress)!!.onPreferenceClickListener = this
+        findPreference<Preference>(preferencesHelper.keys.smsTextPattern)!!.onPreferenceClickListener = this
 
         val keyPreferenceScreen: String? =
                 bundle?.getString(KEY_PREFERENCE_SCREEN)
@@ -117,7 +117,7 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
         if (TextUtils.isEmpty(keyPreferenceScreen)) {
             isInRoot = true
         } else {
-            navigateToScreen(findPreference(keyPreferenceScreen) as PreferenceScreen)
+            navigateToScreen(keyPreferenceScreen?.let { findPreference<PreferenceScreen>(it) })
         }
     }
 
@@ -150,7 +150,7 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
     }
 
     fun goToSyncScreen() {
-        navigateToScreen(findPreference(preferencesHelper.keys.sync) as PreferenceScreen)
+        navigateToScreen(findPreference(preferencesHelper.keys.sync))
     }
 
     override fun onBackPressed(): Boolean {
@@ -195,7 +195,7 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
     }
 
     private fun updatePreference(key: String) {
-        updatePreference(rootPreferenceScreen.findPreference(key))
+        updatePreference(rootPreferenceScreen.findPreference<Preference>(key))
     }
 
     @SuppressLint("SwitchIntDef")

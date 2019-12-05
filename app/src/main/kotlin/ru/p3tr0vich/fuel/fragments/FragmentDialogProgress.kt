@@ -53,13 +53,13 @@ class FragmentDialogProgress : DialogFragment() {
         super.dismiss()
     }
 
-    override fun onDestroyView() {
+/*    override fun onDestroyView() {
         if (dialog != null && retainInstance) {
 // TODO:           dialog.setDismissMessage(null)
         }
 
         super.onDestroyView()
-    }
+    }*/
 
     internal fun stopTask(@DatabaseBackupXmlHelper.BackupResult result: Int) {
         UtilsLog.d(TAG, "stopTask", "targetFragment == $targetFragment")

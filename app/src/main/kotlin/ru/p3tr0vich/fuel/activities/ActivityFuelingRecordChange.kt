@@ -79,7 +79,7 @@ class ActivityFuelingRecordChange : AppCompatActivity() {
             if (intent.hasExtra(EXTRA_FINISH)) {
                 super.finish()
             } else {
-                startActivity(ActivityFuelingRecordChange.getIntentForStart(this, null)
+                startActivity(getIntentForStart(this, null)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
                         .putExtra(EXTRA_FINISH, true))
             }

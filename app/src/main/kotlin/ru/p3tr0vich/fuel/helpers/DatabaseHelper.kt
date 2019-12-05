@@ -148,7 +148,7 @@ class DatabaseHelper(context: Context) :
 
     private fun query(columns: Array<String>, selection: String?, groupBy: String?, orderBy: String?, limit: String? = null): Cursor {
         if (LOG_ENABLED) {
-            UtilsLog.d(TAG, "query", "columns == " + Arrays.toString(columns) +
+            UtilsLog.d(TAG, "query", "columns == " + columns.contentToString() +
                     ", selection == " + selection + ", groupBy == " + groupBy +
                     ", orderBy == " + orderBy + ", limit == " + limit)
         }

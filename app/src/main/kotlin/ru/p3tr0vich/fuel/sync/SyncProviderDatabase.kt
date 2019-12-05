@@ -100,7 +100,7 @@ internal class SyncProviderDatabase(private val provider: ContentProviderClient)
                 try {
                     id = java.lang.Long.valueOf(stringValues[1])
                 } catch (e: Exception) {
-                    throw FormatException("$TAG -- updateDatabase: error id, syncRecord == ${Arrays.toString(stringValues)}")
+                    throw FormatException("$TAG -- updateDatabase: error id, syncRecord == ${stringValues.contentToString()}")
                 }
 
                 when (stringValues[0]) {
@@ -112,7 +112,7 @@ internal class SyncProviderDatabase(private val provider: ContentProviderClient)
                                     java.lang.Float.valueOf(stringValues[4]),
                                     java.lang.Float.valueOf(stringValues[5])))
                     DELETE -> records.put(id, null)
-                    else -> throw FormatException("$TAG -- updateDatabase: error stringValues[0] == ${stringValues[0]}, syncRecord == ${Arrays.toString(stringValues)}")
+                    else -> throw FormatException("$TAG -- updateDatabase: error stringValues[0] == ${stringValues[0]}, syncRecord == ${stringValues.contentToString()}")
                 }
             }
         }

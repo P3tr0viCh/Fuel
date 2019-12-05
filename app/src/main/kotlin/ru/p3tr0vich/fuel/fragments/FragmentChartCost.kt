@@ -114,7 +114,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
     private fun getPositionForYear(year: Int): Int {
         if (chartCostModel!!.years == null) return -1
 
-        for (i in 0 until chartCostModel!!.years!!.size) {
+        for (i in chartCostModel!!.years!!.indices) {
             if (chartCostModel!!.years!![i] == year) {
                 return i
             }

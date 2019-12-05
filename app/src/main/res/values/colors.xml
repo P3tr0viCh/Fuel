@@ -47,4 +47,5 @@
     <color name="chart_autumn">#EEB063</color>
 
     <color name="chart_median">#DE000000</color>
+    <color name="chart_average">#DE000000</color>
 </resources>

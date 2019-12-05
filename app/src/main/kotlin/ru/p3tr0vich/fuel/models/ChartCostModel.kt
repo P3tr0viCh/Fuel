@@ -30,6 +30,7 @@ class ChartCostModel : Parcelable {
 
             median = calcMedian(sums)
             sum = calcSum(sums)
+            average = calcAverage(sums)
 
             hasData = true
         }
@@ -41,6 +42,7 @@ class ChartCostModel : Parcelable {
 
         median = 0f
         sum = 0f
+        average = 0f
 
         hasData = false
         isSumsNotEquals = false
@@ -50,6 +52,9 @@ class ChartCostModel : Parcelable {
         private set
 
     var sum: Float = 0f
+        private set
+
+    var average: Float = 0f
         private set
 
     var hasData: Boolean = false
@@ -106,9 +111,23 @@ class ChartCostModel : Parcelable {
         return sum
     }
 
+    private fun calcAverage(sums: FloatArray): Float {
+        var average = 0f
+        var aboveZeroCount = 0
+        for (value in sums)
+            if (value > 0) {
+                average += value
+                aboveZeroCount++
+            }
+        return if (aboveZeroCount != 0) average / aboveZeroCount else 0f
+    }
+
     override fun toString(): String {
         return "hasData: " + hasData + ", years: " + years?.contentToString() +
                 ", year: " + year + ", sums: " + sums.contentToString() +
-                ", median: " + median + ", sum: " + sum + ", sumsNotEquals: " + isSumsNotEquals
+                ", median: " + median +
+                ", sum: " + sum +
+                ", average: " + average +
+                ", sumsNotEquals: " + isSumsNotEquals
     }
 }

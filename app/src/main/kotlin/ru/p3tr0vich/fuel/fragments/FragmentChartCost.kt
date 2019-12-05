@@ -41,6 +41,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
     private var textNoRecords: TextView? = null
     private var textMedian: TextView? = null
     private var textSum: TextView? = null
+    private var textAverage: TextView? = null
 
     private val colors = intArrayOf(
             R.color.chart_winter, R.color.chart_winter,
@@ -159,6 +160,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
 
         textMedian = view.findViewById(R.id.text_median)
         textSum = view.findViewById(R.id.text_sum)
+        textAverage = view.findViewById(R.id.text_average)
 
         chart = view.findViewById(R.id.chart)
 
@@ -387,13 +389,29 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
 
             chart.axisLeft.removeAllLimitLines()
 
-            if (chartCostModel!!.median > 0 && chartCostModel!!.isSumsNotEquals) {
-                with(LimitLine(chartCostModel!!.median)) {
-                    lineColor = Utils.getColor(R.color.chart_median)
-                    lineWidth = 0.5f
-                    enableDashedLine(8f, 2f, 0f)
+            with(chartCostModel!!) {
+                if (isSumsNotEquals) {
+                    if (median > 0) {
+                        with(LimitLine(median)) {
+                            lineColor = Utils.getColor(R.color.chart_median)
+                            lineWidth = 0.5f
 
-                    chart.axisLeft.addLimitLine(this)
+                            enableDashedLine(8f, 2f, 0f)
+
+                            chart.axisLeft.addLimitLine(this)
+                        }
+                    }
+
+                    if (average > 0) {
+                        with(LimitLine(average)) {
+                            lineColor = Utils.getColor(R.color.chart_average)
+                            lineWidth = 0.5f
+
+                            enableDashedLine(8f, 2f, 0f)
+
+                            chart.axisLeft.addLimitLine(this)
+                        }
+                    }
                 }
             }
 
@@ -409,8 +427,11 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
     }
 
     private fun updateTotal() {
-        UtilsFormat.floatToTextView(textMedian, round(chartCostModel!!.median), true)
-        UtilsFormat.floatToTextView(textSum, round(chartCostModel!!.sum), true)
+        with(chartCostModel!!) {
+            UtilsFormat.floatToTextView(textMedian, round(median), true)
+            UtilsFormat.floatToTextView(textSum, round(sum), true)
+            UtilsFormat.floatToTextView(textAverage, round(average), true)
+        }
     }
 
     companion object {

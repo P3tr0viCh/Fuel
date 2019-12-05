@@ -62,8 +62,9 @@
     <string name="text_total_estimated_mileage">Предп. пробег</string>
     <string name="text_total_estimated_total">Предп. общий пробег</string>
 
-    <string name="text_sum">Сумма</string>
-    <string name="text_median">Медиана</string>
+    <string name="text_sum">∑</string>
+    <string name="text_median">m̅</string>
+    <string name="text_average">x̅</string>
 
     <string name="text_backup_directory">Расположение файла</string>
     <string name="text_backup_file">Имя файла</string>

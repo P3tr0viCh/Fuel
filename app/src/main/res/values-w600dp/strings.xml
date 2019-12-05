@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="text_sum">Сумма</string>
+    <string name="text_median">Медиана</string>
+    <string name="text_average">Среднее</string>
+</resources>

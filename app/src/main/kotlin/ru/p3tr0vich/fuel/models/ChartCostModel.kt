@@ -2,7 +2,7 @@ package ru.p3tr0vich.fuel.models
 
 import android.os.Parcelable
 import androidx.annotation.Size
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import ru.p3tr0vich.fuel.utils.UtilsDate
 import java.util.*
 

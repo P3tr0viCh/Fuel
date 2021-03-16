@@ -53,8 +53,6 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
             UtilsLog.d(TAG, "onSharedPreferenceChanged", "key == $key")
         }
 
-        rootPreferenceScreen = preferenceScreen
-
         updatePreference(key)
 
         when (key) {
@@ -117,7 +115,7 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
         if (TextUtils.isEmpty(keyPreferenceScreen)) {
             isInRoot = true
         } else {
-            navigateToScreen(keyPreferenceScreen?.let { findPreference<PreferenceScreen>(it) })
+            navigateToScreen(keyPreferenceScreen?.let { findPreference(it) })
         }
     }
 
@@ -195,7 +193,7 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
     }
 
     private fun updatePreference(key: String) {
-        updatePreference(rootPreferenceScreen.findPreference<Preference>(key))
+        updatePreference(rootPreferenceScreen.findPreference(key))
     }
 
     @SuppressLint("SwitchIntDef")

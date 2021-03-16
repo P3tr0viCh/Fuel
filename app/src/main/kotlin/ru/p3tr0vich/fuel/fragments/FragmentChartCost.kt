@@ -127,12 +127,12 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        months = Months(context!!)
+        months = Months(requireContext())
 
         if (savedInstanceState == null) {
             chartCostModel = ChartCostModel()
 
-            loaderManager.initLoader(YEARS_CURSOR_LOADER_ID, null, this)
+            LoaderManager.getInstance(this).initLoader(YEARS_CURSOR_LOADER_ID, null, this)
         } else
             chartCostModel = savedInstanceState.getParcelable(ChartCostModel.NAME)
     }
@@ -258,7 +258,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
 
         chartCostModel!!.year = year
 
-        loaderManager.restartLoader(CHART_CURSOR_LOADER_ID, null, this)
+        LoaderManager.getInstance(this).restartLoader(CHART_CURSOR_LOADER_ID, null, this)
     }
 
     private class ChartCursorLoader(context: Context, private val year: Int) : CursorLoader(context) {
@@ -277,8 +277,8 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         return when (id) {
-            CHART_CURSOR_LOADER_ID -> ChartCursorLoader(context!!, chartCostModel!!.year)
-            YEARS_CURSOR_LOADER_ID -> YearsCursorLoader(context!!)
+            CHART_CURSOR_LOADER_ID -> ChartCursorLoader(requireContext(), chartCostModel!!.year)
+            YEARS_CURSOR_LOADER_ID -> YearsCursorLoader(requireContext())
             else -> throw IllegalArgumentException("Wrong Loader ID")
         }
     }
@@ -325,7 +325,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
 
                     updateYears()
 
-                    loaderManager.initLoader(CHART_CURSOR_LOADER_ID, null, this)
+                    LoaderManager.getInstance(this).initLoader(CHART_CURSOR_LOADER_ID, null, this)
                 } else {
                     chartCostModel!!.years = null
 

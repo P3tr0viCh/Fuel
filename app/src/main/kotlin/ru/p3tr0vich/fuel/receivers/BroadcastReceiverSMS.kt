@@ -67,7 +67,7 @@ class BroadcastReceiverSMS : BroadcastReceiverSMSBase() {
 
         val contentIntent = PendingIntent.getActivity(context, id,
                 ActivityFuelingRecordChange.getIntentForStart(context, fuelingRecord),
-                PendingIntent.FLAG_UPDATE_CURRENT)
+                PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_IMMUTABLE)
 
         NotificationsHelper(context)
                 .showNotification(CHANNEL_ID, context.getString(R.string.text_notification_sms_channel_name), id,

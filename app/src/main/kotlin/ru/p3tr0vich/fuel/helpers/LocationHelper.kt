@@ -6,7 +6,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.os.Build
 import android.os.Handler
 import androidx.core.content.ContextCompat
 import com.google.android.gms.common.GoogleApiAvailability
@@ -15,8 +14,6 @@ import com.google.android.gms.common.api.ResultCallback
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.*
 
-// todo
-@Suppress("DEPRECATION")
 class LocationHelper(private val activity: Activity,
                      private val locationHelperListener: LocationHelperListener,
                      private val requestCodePermissionAccessFineLocation: Int = 0) {
@@ -57,10 +54,6 @@ class LocationHelper(private val activity: Activity,
         get() = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(activity)
 
     private fun checkPermission(): Boolean {
-        if (Build.VERSION.SDK_INT < 23) {
-            return true
-        }
-
         if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             return true
         }

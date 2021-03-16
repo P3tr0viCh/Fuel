@@ -14,13 +14,13 @@ import ru.p3tr0vich.fuel.R
 class FragmentDialogMessage : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(activity!!)
+        val builder = AlertDialog.Builder(requireActivity())
 
         val title = arguments?.getString(TITLE)
 
         if (!TextUtils.isEmpty(title)) {
             @SuppressLint("InflateParams")
-            val customTitle = activity!!.layoutInflater
+            val customTitle = requireActivity().layoutInflater
                     .inflate(R.layout.apptheme_dialog_title, null, false) as TextView
 
             customTitle.text = title

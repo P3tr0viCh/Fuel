@@ -35,7 +35,7 @@ class FragmentActivityDialogSMSTextPattern : Fragment(), ActivityDialog.Activity
             textResult = findViewById(R.id.text_check_result)
 
             if (savedInstanceState == null) {
-                val preferencesHelper = PreferencesHelper.getInstance(context!!)
+                val preferencesHelper = PreferencesHelper.getInstance(requireContext())
 
                 editSMSText!!.setText(preferencesHelper.smsText)
                 editSMSTextPattern!!.setText(preferencesHelper.smsTextPattern)
@@ -95,7 +95,7 @@ class FragmentActivityDialogSMSTextPattern : Fragment(), ActivityDialog.Activity
     }
 
     override fun onSaveClicked(): Boolean {
-        with(PreferencesHelper.getInstance(context!!)) {
+        with(PreferencesHelper.getInstance(requireContext())) {
             smsText = editSMSText!!.text.toString()
             smsTextPattern = editSMSTextPattern!!.text.toString()
         }

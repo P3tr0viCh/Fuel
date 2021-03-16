@@ -1,0 +1,191 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+repositories {
+}
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    testOptions {
+        unitTests {
+            all {
+                jvmArgs '-noverify'
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.3.0-beta01'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.hamcrest:hamcrest-all:1.3'
+    testImplementation 'org.robolectric:robolectric:4.2.1'
+    testImplementation 'com.google.guava:guava:24.1-jre'
+}
+
+group = 'com.yandex.android'
+version = '2.0-SNAPSHOT'
+
+ext.getBooleanWithDefault = { String propertyName, boolean defaultValue ->
+    boolean result = defaultValue
+    if (project.hasProperty(propertyName)) {
+        result = (project[propertyName] == 'true')
+    }
+    return result
+}
+
+def isMavenCentralBuild = getBooleanWithDefault('mavenCentral', false)
+def isTeamcityBuild = project.properties.containsKey('teamcity')
+
+if (isMavenCentralBuild) {
+
+    if (isTeamcityBuild) {
+        signing {
+            project.ext["signing.keyId"] = teamcity['signing.keyId']
+            project.ext["signing.password"] = teamcity['signing.password']
+            project.ext["signing.secretKeyRingFile"] = teamcity['signing.secretKeyRingFile']
+
+            sign configurations.archives
+        }
+    } else {
+        task signArchives {
+            // do nothing
+        }
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                pom.project {
+
+                    parent {
+                        groupId 'org.sonatype.oss'
+                        artifactId 'oss-parent'
+                        version '7'
+                    }
+
+                    modelVersion '4.0.0'
+                    name 'Yandex.Disk Java SDK for REST API'
+                    description 'The Java SDK for Yandex.Disk REST API is intended for applications that work with the files of Yandex.Disk users or store their own files and settings on Yandex.Disk.'
+                    url 'http://disk.yandex.com/'
+
+                    licenses {
+                        license {
+                            name 'Terms of Use of Yandex.Disk service'
+                            url 'http://legal.yandex.com/disk_termsofuse/'
+                            distribution 'repo'
+                        }
+                    }
+
+                    scm {
+                        connection 'scm:git://github.com/yandex-disk/yandex-disk-restapi-java.git'
+                        developerConnection 'scm:git:git@github.com/yandex-disk/yandex-disk-restapi-java.git'
+                        url 'https://github.com/yandex-disk/yandex-disk-restapi-java.git'
+                    }
+
+                    developers {
+                        developer {
+                            name 'Yandex'
+                            url 'http://api.yandex.com/disk/'
+                            roles {
+                                role 'Developer'
+                                role 'Contributor'
+                            }
+                        }
+                    }
+                }
+
+                if (isTeamcityBuild) {
+                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                    ext.auth = {
+                        authentication(userName: teamcity['maven.username'], password: teamcity['maven.password'])
+                    }
+
+                    repository(url: teamcity['maven.repository'], auth)
+                    snapshotRepository(url: teamcity['maven.snapshotRepository'], auth)
+                } else {
+                    def userHome = System.properties['user.home']
+                    repository(url: "file:///$userHome/.m2/repository/")
+                }
+            }
+        }
+    }
+
+} else {
+
+    uploadArchives {
+        repositories {
+            if (isTeamcityBuild) {
+                mavenDeployer {
+                    ext.auth = {
+                        authentication(userName: teamcity['maven.username'], password: teamcity['maven.password'])
+                    }
+                    repository(url: 'http://artifactory.yandex.net/artifactory/yandex_mobile_releases/', auth)
+                    snapshotRepository(url: 'http://artifactory.yandex.net/artifactory/yandex_mobile_snapshots/', auth)
+                }
+            } else {
+                mavenDeployer {
+                    def userHome = System.properties['user.home']
+                    repository(url: "file:///$userHome/.m2/repository/")
+                }
+            }
+        }
+    }
+
+}
+
+uploadArchives.doFirst {
+    // Debug printing all artifacts
+    configurations.archives.artifacts.each {
+        println "-------"
+        println "name: $it.name"
+        println "file: $it.file"
+        println "type: $it.type"
+        println "extension: $it.extension"
+        println "classifier: $it.classifier"
+    }
+}
+
+/*
+TODO resolve before publish next version
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+*/

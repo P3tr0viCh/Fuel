@@ -3,7 +3,6 @@ package ru.p3tr0vich.fuel.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.provider.Telephony
 import android.telephony.SmsMessage
 import java.util.*
@@ -34,22 +33,7 @@ abstract class BroadcastReceiverSMSBase : BroadcastReceiver() {
             return
         }
 
-        var smsMessages: Array<SmsMessage?>? = null
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            smsMessages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
-        } else {
-            val pduArray = intent.extras?.get("pdus") as Array<*>?
-
-            if (pduArray != null) {
-                smsMessages = arrayOfNulls(pduArray.size)
-
-                for (i in pduArray.indices) {
-                    @Suppress("DEPRECATION")
-                    smsMessages[i] = SmsMessage.createFromPdu(pduArray[i] as ByteArray)
-                }
-            }
-        }
+        val smsMessages: Array<SmsMessage?>? = Telephony.Sms.Intents.getMessagesFromIntent(intent)
 
         if (smsMessages == null || smsMessages.isEmpty()) return
 

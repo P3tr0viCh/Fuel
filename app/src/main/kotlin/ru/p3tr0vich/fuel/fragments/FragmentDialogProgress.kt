@@ -79,11 +79,11 @@ class FragmentDialogProgress : DialogFragment() {
         UtilsLog.d(TAG, "onCreateDialog")
 
         @SuppressLint("InflateParams")
-        val rootView = activity!!.layoutInflater.inflate(R.layout.dialog_progress, null, false)
+        val rootView = requireActivity().layoutInflater.inflate(R.layout.dialog_progress, null, false)
 
         (rootView.findViewById<View>(R.id.text_message) as TextView).text = arguments?.getString(MESSAGE)
 
-        return AlertDialog.Builder(activity!!).setView(rootView).create()
+        return AlertDialog.Builder(requireActivity()).setView(rootView).create()
     }
 
     companion object {
@@ -98,14 +98,14 @@ class FragmentDialogProgress : DialogFragment() {
                  doSave: Boolean) {
             val fragmentDialogProgress = FragmentDialogProgress()
 
-            fragmentDialogProgress.asyncTaskOperationXml = AsyncTaskOperationXml(parent.context!!, databaseBackupXmlHelper, doSave)
+            fragmentDialogProgress.asyncTaskOperationXml = AsyncTaskOperationXml(parent.requireContext(), databaseBackupXmlHelper, doSave)
             fragmentDialogProgress.setTargetFragment(parent, requestCode)
 
             val args = Bundle()
             args.putString(MESSAGE, parent.getString(if (doSave) R.string.message_progress_save else R.string.message_progress_load))
             fragmentDialogProgress.arguments = args
 
-            fragmentDialogProgress.show(parent.fragmentManager!!, TAG)
+            fragmentDialogProgress.show(parent.parentFragmentManager, TAG)
         }
 
         @DatabaseBackupXmlHelper.BackupResult

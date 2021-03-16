@@ -2,10 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Android-Fuel.iml" filepath="$PROJECT_DIR$/Android-Fuel.iml" group="Fuel" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Fuel/app" />
-      <module fileurl="file://$PROJECT_DIR$/libs/libs.iml" filepath="$PROJECT_DIR$/libs/libs.iml" group="Fuel/libs" />
-      <module fileurl="file://$PROJECT_DIR$/libs/materialish-progress/materialish-progress.iml" filepath="$PROJECT_DIR$/libs/materialish-progress/materialish-progress.iml" group="Fuel/libs/materialish-progress" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Fuel.iml" filepath="$PROJECT_DIR$/.idea/modules/Fuel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Fuel.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Fuel.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libs/Fuel.libs.iml" filepath="$PROJECT_DIR$/.idea/modules/libs/Fuel.libs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libs/disk-restapi-sdk/Fuel.libs.disk-restapi-sdk.iml" filepath="$PROJECT_DIR$/.idea/modules/libs/disk-restapi-sdk/Fuel.libs.disk-restapi-sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libs/materialish-progress/Fuel.libs.materialish-progress.iml" filepath="$PROJECT_DIR$/.idea/modules/libs/materialish-progress/Fuel.libs.materialish-progress.iml" />
     </modules>
   </component>
 </project>

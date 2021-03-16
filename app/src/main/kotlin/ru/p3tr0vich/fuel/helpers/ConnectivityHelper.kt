@@ -1,9 +1,7 @@
 package ru.p3tr0vich.fuel.helpers
 
 import android.content.Context
-import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 import androidx.annotation.IntDef
 
 object ConnectivityHelper {
@@ -25,42 +23,19 @@ object ConnectivityHelper {
 
         val activeNetworkInfo = connectivityManager.activeNetworkInfo ?: return DISCONNECTED
 
-        if (!activeNetworkInfo.isConnected) {
-            return DISCONNECTED
-        }
+        if (!activeNetworkInfo.isConnected) return DISCONNECTED
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val activeNetwork = connectivityManager.activeNetwork ?: return DISCONNECTED
+        val activeNetwork = connectivityManager.activeNetwork ?: return DISCONNECTED
 
-            val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
-                    ?: return DISCONNECTED
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
+                ?: return DISCONNECTED
 
-            if (!networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_ROAMING)) {
-                return CONNECTED_ROAMING
-            }
-
-            if (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                return CONNECTED_WIFI
-            }
-
-            if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED) &&
-                    networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
-                return CONNECTED
-            }
-
-            return DISCONNECTED
-        } else {
-            @Suppress("DEPRECATION")
-            if (activeNetworkInfo.isRoaming) {
-                return CONNECTED_ROAMING
-            }
-
-            @Suppress("DEPRECATION")
-            if (activeNetworkInfo.type == ConnectivityManager.TYPE_WIFI) {
-                return CONNECTED_WIFI
-            }
-
-            return CONNECTED
+        return when {
+            !networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_ROAMING) -> CONNECTED_ROAMING
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> CONNECTED_WIFI
+            networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED) &&
+                    networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) -> CONNECTED
+            else -> DISCONNECTED
         }
     }
 }

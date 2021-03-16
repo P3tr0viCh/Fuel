@@ -45,7 +45,8 @@ import ru.p3tr0vich.fuel.utils.UtilsLog
 import ru.p3tr0vich.fuel.views.FuelingTotalView
 import java.util.*
 
-class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager.LoaderCallbacks<Cursor> {
+class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING),
+    LoaderManager.LoaderCallbacks<Cursor> {
 
     private var toolbarDates: Toolbar? = null
     private var toolbarShadow: View? = null
@@ -89,7 +90,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     private var deletedFuelingRecord: FuelingRecord? = null
 
     private val undoClickListener = View.OnClickListener {
-        ContentResolverHelper.insertRecord(context!!, deletedFuelingRecord)
+        ContentResolverHelper.insertRecord(requireContext(), deletedFuelingRecord)
 
         deletedFuelingRecord = null
     }
@@ -102,9 +103,11 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     private val recyclerViewLayoutManager: LinearLayoutManager
         get() = recyclerView!!.layoutManager as LinearLayoutManager
 
-    private val runnableShowNoRecords = Runnable { Utils.setViewVisibleAnimate(textNoRecords, true) }
+    private val runnableShowNoRecords =
+        Runnable { Utils.setViewVisibleAnimate(textNoRecords, true) }
 
-    private val runnableShowProgressWheelFueling = Runnable { Utils.setViewVisibleAnimate(progressWheel, true) }
+    private val runnableShowProgressWheelFueling =
+        Runnable { Utils.setViewVisibleAnimate(progressWheel, true) }
 
     private class AnimationDuration {
         val layoutTotalShow = Utils.getInteger(R.integer.animation_duration_layout_total_show)
@@ -139,8 +142,11 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         }
     }
 
-    @SuppressLint("InflateParams")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "onCreateView")
         }
@@ -167,12 +173,13 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         recyclerView!!.addItemDecoration(itemDecoration)
 
         recyclerView!!.layoutManager = LinearLayoutManager(context)
-        fuelingAdapter = FuelingAdapter(View.OnClickListener { v -> doPopup(v) }, isPhone, !isPhone)
+        fuelingAdapter = FuelingAdapter({ v -> doPopup(v) }, isPhone, !isPhone)
         recyclerView!!.adapter = fuelingAdapter
 
         if (isPhone)
             recyclerView!!.addOnScrollListener(object : OnRecyclerViewScrollListener(
-                    resources.getDimensionPixelOffset(R.dimen.recycler_view_scroll_threshold)) {
+                resources.getDimensionPixelOffset(R.dimen.recycler_view_scroll_threshold)
+            ) {
 
                 override fun onScrollUp() {
                     setTotalAndFabVisible(false)
@@ -222,18 +229,20 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         return view
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         if (LOG_ENABLED) {
-            UtilsLog.d(TAG, "onActivityCreated", "savedInstanceState " +
-                    (if (savedInstanceState == null) "=" else "!") + "= null")
+            UtilsLog.d(
+                TAG, "onViewCreated", "savedInstanceState " +
+                        (if (savedInstanceState == null) "=" else "!") + "= null"
+            )
         }
 
         doSetFilterMode(filter.mode)
 
-        loaderManager.initLoader(FUELING_CURSOR_LOADER_ID, null, this)
-        loaderManager.initLoader(FUELING_TOTAL_CURSOR_LOADER_ID, null, this)
+        LoaderManager.getInstance(this).initLoader(FUELING_CURSOR_LOADER_ID, null, this)
+        LoaderManager.getInstance(this).initLoader(FUELING_TOTAL_CURSOR_LOADER_ID, null, this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -290,7 +299,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
 
             doSetFilterMode(filterMode)
 
-            loaderManager.restartLoader(FUELING_CURSOR_LOADER_ID, null, this)
+            LoaderManager.getInstance(this).restartLoader(FUELING_CURSOR_LOADER_ID, null, this)
 
             setTotalAndFabVisible(true)
 
@@ -339,7 +348,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         var forceLoad = true
 
         if (id != -1L) {
-            val fuelingRecord = ContentResolverHelper.getFuelingRecord(context!!, id)
+            val fuelingRecord = ContentResolverHelper.getFuelingRecord(requireContext(), id)
 
             if (fuelingRecord != null) {
                 forceLoad = checkDateTime(fuelingRecord.dateTime)
@@ -347,16 +356,19 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         }
 
         if (forceLoad) {
-            loaderManager.getLoader<FuelingCursorLoader>(FUELING_CURSOR_LOADER_ID)?.forceLoad()
+            LoaderManager.getInstance(this).getLoader<FuelingCursorLoader>(FUELING_CURSOR_LOADER_ID)
+                ?.forceLoad()
         }
 
-        loaderManager.getLoader<FuelingTotalCursorLoader>(FUELING_TOTAL_CURSOR_LOADER_ID)?.forceLoad()
+        LoaderManager.getInstance(this)
+            .getLoader<FuelingTotalCursorLoader>(FUELING_TOTAL_CURSOR_LOADER_ID)
+            ?.forceLoad()
     }
 
     private fun markRecordAsDeleted(fuelingRecord: FuelingRecord): Boolean {
         val id = fuelingRecord.id
 
-        return if (ContentResolverHelper.markRecordAsDeleted(context!!, id)) {
+        return if (ContentResolverHelper.markRecordAsDeleted(requireContext(), id)) {
             true
         } else {
             Utils.toast(R.string.message_error_delete_record)
@@ -367,9 +379,9 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
 
     private fun isItemVisible(position: Int): Boolean {
         val firstVisibleItem = recyclerViewLayoutManager
-                .findFirstCompletelyVisibleItemPosition()
+            .findFirstCompletelyVisibleItemPosition()
         val lastVisibleItem = recyclerViewLayoutManager
-                .findLastCompletelyVisibleItemPosition()
+            .findLastCompletelyVisibleItemPosition()
 
         return firstVisibleItem != RecyclerView.NO_POSITION &&
                 lastVisibleItem != RecyclerView.NO_POSITION &&
@@ -396,7 +408,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         filter.dateFrom = dateFrom
         filter.dateTo = dateTo
 
-        loaderManager.restartLoader(FUELING_CURSOR_LOADER_ID, null, this)
+        LoaderManager.getInstance(this).restartLoader(FUELING_CURSOR_LOADER_ID, null, this)
     }
 
     private fun setFilterDate(setDateFrom: Boolean, date: Long) {
@@ -406,13 +418,13 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
             filter.dateTo = date
         }
 
-        loaderManager.restartLoader(FUELING_CURSOR_LOADER_ID, null, this)
+        LoaderManager.getInstance(this).restartLoader(FUELING_CURSOR_LOADER_ID, null, this)
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         return when (id) {
-            FUELING_CURSOR_LOADER_ID -> FuelingCursorLoader(context!!, filter)
-            FUELING_TOTAL_CURSOR_LOADER_ID -> FuelingTotalCursorLoader(context!!)
+            FUELING_CURSOR_LOADER_ID -> FuelingCursorLoader(requireContext(), filter)
+            FUELING_TOTAL_CURSOR_LOADER_ID -> FuelingTotalCursorLoader(requireContext())
             else -> throw IllegalArgumentException("Wrong Loader ID")
         }
     }
@@ -423,7 +435,10 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         val records = DatabaseHelper.getFuelingRecords(data)
 
         if (records?.isEmpty() == true) {
-            handler.postDelayed(runnableShowNoRecords, Utils.getInteger(R.integer.delayed_time_show_no_records).toLong())
+            handler.postDelayed(
+                runnableShowNoRecords,
+                Utils.getInteger(R.integer.delayed_time_show_no_records).toLong()
+            )
         } else {
             textNoRecords!!.visibility = View.GONE
         }
@@ -465,52 +480,56 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         }
     }
 
-    @SuppressLint("RestrictedApi")
+    @SuppressLint("RestrictedApi", "ShowToast")
     private fun doPopup(v: View) {
-        val popupMenu = PopupMenu(activity!!, v)
+        val popupMenu = PopupMenu(requireActivity(), v)
         popupMenu.inflate(R.menu.menu_fueling)
 
         val id = v.tag as Long
 
         popupMenu.setOnMenuItemClickListener(
-                PopupMenu.OnMenuItemClickListener { item ->
-                    val fuelingRecord = ContentResolverHelper.getFuelingRecord(context!!, id)
+            PopupMenu.OnMenuItemClickListener { item ->
+                val fuelingRecord = ContentResolverHelper.getFuelingRecord(requireContext(), id)
 
-                    if (fuelingRecord == null) {
-                        UtilsLog.d(TAG, "onMenuItemClick",
-                                "ContentProviderHelper.getFuelingRecord() == null")
+                if (fuelingRecord == null) {
+                    UtilsLog.d(
+                        TAG, "onMenuItemClick",
+                        "ContentProviderHelper.getFuelingRecord() == null"
+                    )
 
-                        updateList(-1)
+                    updateList(-1)
 
-                        return@OnMenuItemClickListener true
-                    }
-
-                    when (item.itemId) {
-                        R.id.action_fueling_update -> {
-                            onRecordChangeListener?.onRecordChange(fuelingRecord)
-                            true
-                        }
-                        R.id.action_fueling_delete -> {
-                            deletedFuelingRecord = fuelingRecord
-
-                            if (markRecordAsDeleted(fuelingRecord)) {
-                                snackbar = Snackbar
-                                        .make(layoutMain!!, R.string.message_record_deleted,
-                                                Snackbar.LENGTH_LONG)
-                                        .setAction(R.string.dialog_btn_cancel, undoClickListener)
-                                        .addCallback(snackbarCallback)
-
-                                snackbar!!.show()
-                            }
-
-                            true
-                        }
-                        else -> false
-                    }
+                    return@OnMenuItemClickListener true
                 }
+
+                when (item.itemId) {
+                    R.id.action_fueling_update -> {
+                        onRecordChangeListener?.onRecordChange(fuelingRecord)
+                        true
+                    }
+                    R.id.action_fueling_delete -> {
+                        deletedFuelingRecord = fuelingRecord
+
+                        if (markRecordAsDeleted(fuelingRecord)) {
+                            snackbar = Snackbar
+                                .make(
+                                    layoutMain!!, R.string.message_record_deleted,
+                                    Snackbar.LENGTH_LONG
+                                )
+                                .setAction(R.string.dialog_btn_cancel, undoClickListener)
+                                .addCallback(snackbarCallback)
+
+                            snackbar!!.show()
+                        }
+
+                        true
+                    }
+                    else -> false
+                }
+            }
         )
 
-        val menuHelper = MenuPopupHelper(activity!!, popupMenu.menu as MenuBuilder, v)
+        val menuHelper = MenuPopupHelper(requireActivity(), popupMenu.menu as MenuBuilder, v)
         menuHelper.setForceShowIcon(true)
         menuHelper.show()
     }
@@ -519,7 +538,10 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         handler.removeCallbacks(runnableShowProgressWheelFueling)
 
         if (loading) {
-            handler.postDelayed(runnableShowProgressWheelFueling, Utils.getInteger(R.integer.delayed_time_show_progress_wheel).toLong())
+            handler.postDelayed(
+                runnableShowProgressWheelFueling,
+                Utils.getInteger(R.integer.delayed_time_show_progress_wheel).toLong()
+            )
         } else {
             Utils.setViewVisibleAnimate(progressWheel, false)
         }
@@ -531,8 +553,10 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
             onFilterChangeListener = context as OnFilterChangeListener?
             onRecordChangeListener = context as OnRecordChangeListener?
         } catch (e: ClassCastException) {
-            throw ImplementException(context,
-                    arrayOf(OnFilterChangeListener::class.java, OnRecordChangeListener::class.java))
+            throw ImplementException(
+                context,
+                arrayOf(OnFilterChangeListener::class.java, OnRecordChangeListener::class.java)
+            )
         }
     }
 
@@ -543,29 +567,47 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
 
         toolbarDatesVisible = visible
 
-        val toolbarDatesTopHidden = -Utils.getSupportActionBarSize(context!!) // minus!
+        val toolbarDatesTopHidden = -Utils.getSupportActionBarSize(requireContext()) // minus!
         val toolbarShadowHeight = resources.getDimensionPixelSize(R.dimen.toolbar_shadow_height)
 
         if (animate) {
             val valueAnimatorShadowShow = ValueAnimator.ofInt(0, toolbarShadowHeight)
             valueAnimatorShadowShow
-                    .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar_shadow).toLong())
-                    .addUpdateListener { animation -> Utils.setViewHeight(toolbarShadow!!, animation.animatedValue as Int) }
+                .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar_shadow).toLong())
+                .addUpdateListener { animation ->
+                    Utils.setViewHeight(
+                        toolbarShadow!!,
+                        animation.animatedValue as Int
+                    )
+                }
 
             val valueAnimatorShadowHide = ValueAnimator.ofInt(toolbarShadowHeight, 0)
             valueAnimatorShadowHide
-                    .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar_shadow).toLong())
-                    .addUpdateListener { animation -> Utils.setViewHeight(toolbarShadow!!, animation.animatedValue as Int) }
+                .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar_shadow).toLong())
+                .addUpdateListener { animation ->
+                    Utils.setViewHeight(
+                        toolbarShadow!!,
+                        animation.animatedValue as Int
+                    )
+                }
 
             val valueAnimatorToolbar = ValueAnimator.ofInt(
-                    if (visible) toolbarDatesTopHidden else 0, if (visible) 0 else toolbarDatesTopHidden)
+                if (visible) toolbarDatesTopHidden else 0, if (visible) 0 else toolbarDatesTopHidden
+            )
             valueAnimatorToolbar
-                    .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar).toLong())
-                    .addUpdateListener { animation -> Utils.setViewTopMargin(toolbarDates!!, animation.animatedValue as Int) }
+                .setDuration(Utils.getInteger(R.integer.animation_duration_toolbar).toLong())
+                .addUpdateListener { animation ->
+                    Utils.setViewTopMargin(
+                        toolbarDates!!,
+                        animation.animatedValue as Int
+                    )
+                }
 
             with(AnimatorSet()) {
-                playSequentially(valueAnimatorShadowShow,
-                        valueAnimatorToolbar, valueAnimatorShadowHide)
+                playSequentially(
+                    valueAnimatorShadowShow,
+                    valueAnimatorToolbar, valueAnimatorShadowHide
+                )
 
                 start()
             }
@@ -580,25 +622,28 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         totalPanelVisible = visible
 
         val valueAnimator = ValueAnimator.ofInt(
-                totalPanel!!.translationY.toInt(), if (visible) 0 else totalPanel!!.height)
+            totalPanel!!.translationY.toInt(), if (visible) 0 else totalPanel!!.height
+        )
 
         valueAnimator
-                .setDuration((if (visible)
+            .setDuration(
+                (if (visible)
                     animationDuration!!.layoutTotalShow
                 else
-                    animationDuration!!.layoutTotalHide).toLong())
+                    animationDuration!!.layoutTotalHide).toLong()
+            )
 
-                .addUpdateListener(object : ValueAnimator.AnimatorUpdateListener {
-                    var translationY: Int = 0
+            .addUpdateListener(object : ValueAnimator.AnimatorUpdateListener {
+                var translationY: Int = 0
 
-                    override fun onAnimationUpdate(animation: ValueAnimator) {
-                        translationY = animation.animatedValue as Int
+                override fun onAnimationUpdate(animation: ValueAnimator) {
+                    translationY = animation.animatedValue as Int
 
-                        totalPanel!!.translationY = translationY.toFloat()
+                    totalPanel!!.translationY = translationY.toFloat()
 
-                        Utils.setViewTopMargin(totalPanel, -translationY)
-                    }
-                })
+                    Utils.setViewTopMargin(totalPanel, -translationY)
+                }
+            })
 
         valueAnimator.start()
     }
@@ -611,7 +656,8 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     fun setFabVisible(visible: Boolean) {
         val value = if (visible) 1.0f else 0.0f
 
-        floatingActionButton?.animate()?.setStartDelay(animationDuration!!.startDelayFab.toLong())?.scaleX(value)?.scaleY(value)
+        floatingActionButton?.animate()?.setStartDelay(animationDuration!!.startDelayFab.toLong())
+            ?.scaleX(value)?.scaleY(value)
     }
 
     private fun updateFilterDateButton(button: Button?, date: Long) {
@@ -622,7 +668,8 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         when (menuId) {
             R.id.action_dates_start_of_year,
             R.id.action_dates_end_of_year -> {
-                val calendar = UtilsDate.getCalendarInstance(if (button == btnDateFrom) filter.dateFrom else filter.dateTo)
+                val calendar =
+                    UtilsDate.getCalendarInstance(if (button == btnDateFrom) filter.dateFrom else filter.dateTo)
 
                 when (menuId) {
                     R.id.action_dates_start_of_year -> {
@@ -649,7 +696,8 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
 
                 when (menuId) {
                     R.id.action_dates_winter, R.id.action_dates_summer -> {
-                        calendarFrom.timeInMillis = if (button == btnDateFrom) filter.dateFrom else filter.dateTo
+                        calendarFrom.timeInMillis =
+                            if (button == btnDateFrom) filter.dateFrom else filter.dateTo
 
                         year = calendarFrom.get(Calendar.YEAR)
                     }
@@ -665,8 +713,10 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
                         calendarFrom.set(year - 1, Calendar.DECEMBER, 1)
                         calendarTo.set(Calendar.YEAR, year)
                         calendarTo.set(Calendar.MONTH, Calendar.FEBRUARY)
-                        calendarTo.set(Calendar.DAY_OF_MONTH,
-                                calendarTo.getActualMaximum(Calendar.DAY_OF_MONTH))
+                        calendarTo.set(
+                            Calendar.DAY_OF_MONTH,
+                            calendarTo.getActualMaximum(Calendar.DAY_OF_MONTH)
+                        )
                     }
                     R.id.action_dates_summer -> {
                         calendarFrom.set(year, Calendar.JUNE, 1)
@@ -693,7 +743,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     }
 
     private fun doPopupDate(v: View, button: Button?) {
-        val popupMenu = PopupMenu(activity!!, v)
+        val popupMenu = PopupMenu(requireActivity(), v)
         popupMenu.inflate(R.menu.menu_dates)
 
         popupMenu.setOnMenuItemClickListener { item ->
@@ -705,22 +755,25 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
     }
 
     private fun showDateDialog(button: Button?) {
-        val calendar = UtilsDate.getCalendarInstance(if (button == btnDateFrom) filter.dateFrom else filter.dateTo)
+        val calendar =
+            UtilsDate.getCalendarInstance(if (button == btnDateFrom) filter.dateFrom else filter.dateTo)
 
-        DatePickerDialog(activity!!,
-                DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                    calendar.set(year, monthOfYear, dayOfMonth)
+        DatePickerDialog(
+            requireActivity(),
+            { _, year, monthOfYear, dayOfMonth ->
+                calendar.set(year, monthOfYear, dayOfMonth)
 
-                    val date = calendar.timeInMillis
+                val date = calendar.timeInMillis
 
-                    updateFilterDateButton(button, date)
+                updateFilterDateButton(button, date)
 
-                    setFilterDate(button == btnDateFrom, date)
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH))
-                .show()
+                setFilterDate(button == btnDateFrom, date)
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+            .show()
     }
 
     /**
@@ -746,7 +799,8 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING), LoaderManager
         fun onRecordChange(fuelingRecord: FuelingRecord?)
     }
 
-    private class FuelingCursorLoader(context: Context, private val filter: DatabaseHelper.Filter) : CursorLoader(context) {
+    private class FuelingCursorLoader(context: Context, private val filter: DatabaseHelper.Filter) :
+        CursorLoader(context) {
 
         override fun loadInBackground(): Cursor? {
             if (LOG_ENABLED) {

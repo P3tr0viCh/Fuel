@@ -3,7 +3,7 @@ package ru.p3tr0vich.fuel.models
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * @property id

@@ -17,10 +17,10 @@ class FragmentDialogQuestion : DialogFragment() {
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(activity!!)
+        val builder = AlertDialog.Builder(requireActivity())
 
         arguments?.getInt(TITLE)?.let {
-            val view = activity!!.layoutInflater
+            val view = requireActivity().layoutInflater
                     .inflate(R.layout.apptheme_dialog_title, null, false) as TextView
 
             view.setText(it)
@@ -88,7 +88,7 @@ class FragmentDialogQuestion : DialogFragment() {
 
             dialogQuestion.setTargetFragment(parent, requestCode)
 
-            dialogQuestion.show(parent.fragmentManager!!, TAG)
+            dialogQuestion.show(parent.parentFragmentManager, TAG)
         }
 
         fun show(parent: AppCompatActivity,

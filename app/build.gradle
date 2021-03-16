@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-parcelize'
 
 buildscript {
     ext {
@@ -29,17 +29,17 @@ android {
         }
     }
 
-    compileSdkVersion rootProject.ext.compileSdkVer
-    buildToolsVersion rootProject.ext.buildToolsVer
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         applicationId "ru.p3tr0vich.fuel"
 
-        minSdkVersion rootProject.ext.minSdkVer
-        targetSdkVersion rootProject.ext.targetSdkVer
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
 
-        versionCode 31
-        versionName "3.1"
+        versionCode 32
+        versionName "3.2"
 
         buildConfigField "long", "BUILD_DATE", System.currentTimeMillis() + "l"
 
@@ -80,25 +80,18 @@ android {
         exclude '.readme'
     }
 
-    dataBinding {
-        enabled = true
+    buildFeatures {
+        viewBinding true
+        dataBinding true
     }
 
     testOptions {
-        unitTests.returnDefaultValues = true
+        unitTests.returnDefaultValues true
     }
 
     lintOptions {
         checkReleaseBuilds false
         abortOnError false
-    }
-
-    androidExtensions {
-        experimental = true
-    }
-
-    kapt {
-        generateStubs = true
     }
 
     sourceSets {
@@ -123,26 +116,26 @@ static def appendVersionName(variant, defaultConfig) {
 
 dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.2.0-alpha01'
-    implementation 'androidx.preference:preference:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0-beta01'
+    implementation 'androidx.preference:preference-ktx:1.1.1'
     implementation 'androidx.legacy:legacy-preference-v14:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
 
-    implementation 'com.google.android.material:material:1.2.0-alpha02'
+    implementation 'com.google.android.material:material:1.4.0-alpha01'
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVer}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion}"
 
     implementation "com.github.P3tr0viCh:ExpansionPanel:2.0.0"
 
-    implementation "com.google.android.gms:play-services-location:17.0.0"
+    implementation "com.google.android.gms:play-services-location:18.0.0"
 
     implementation "com.github.PhilJay:MPAndroidChart:v3.1.0"
-    implementation "com.yandex.android:disk-restapi-sdk:1.03"
 
     implementation project(':libs:materialish-progress')
+    implementation project(':libs:disk-restapi-sdk')
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
 }
 
 repositories {

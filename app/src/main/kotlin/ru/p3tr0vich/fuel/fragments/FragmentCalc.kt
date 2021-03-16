@@ -82,12 +82,12 @@ class FragmentCalc : FragmentBase(FragmentFactory.Ids.CALC), AdapterView.OnItemS
         layoutPriceEmpty = view.findViewById(R.id.layout_price_empty)
         layoutConsEmpty = view.findViewById(R.id.layout_cons_empty)
 
-        val adapterCons = ArrayAdapter.createFromResource(activity!!,
+        val adapterCons = ArrayAdapter.createFromResource(requireActivity(),
                 R.array.spinner_consumption, R.layout.spinner_item)
         adapterCons.setDropDownViewResource(R.layout.spinner_dropdown_item)
         spinnerCons!!.adapter = adapterCons
 
-        val adapterSeason = ArrayAdapter.createFromResource(activity!!,
+        val adapterSeason = ArrayAdapter.createFromResource(requireActivity(),
                 R.array.spinner_season, R.layout.spinner_item)
         adapterSeason.setDropDownViewResource(R.layout.spinner_dropdown_item)
         spinnerSeason!!.adapter = adapterSeason

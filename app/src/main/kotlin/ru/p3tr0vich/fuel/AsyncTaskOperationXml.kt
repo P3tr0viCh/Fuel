@@ -21,7 +21,7 @@ internal class AsyncTaskOperationXml(val context: Context,
             field = value
         }
 
-    override fun doInBackground(vararg params: Void): Int? {
+    override fun doInBackground(vararg params: Void): Int {
         val fuelingRecordList: List<FuelingRecord>
 
         @DatabaseBackupXmlHelper.BackupResult

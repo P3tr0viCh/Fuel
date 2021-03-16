@@ -1,11 +1,8 @@
 package ru.p3tr0vich.fuel.fragments
 
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
-import android.view.View
 import androidx.preference.PreferenceFragmentCompat
-import ru.p3tr0vich.fuel.DividerItemDecorationPreferences
 import ru.p3tr0vich.fuel.ImplementException
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper
 
@@ -28,19 +25,9 @@ abstract class FragmentPreferencesBase(override val fragmentId: Int) : Preferenc
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        preferencesHelper = PreferencesHelper.getInstance(context!!)
+        preferencesHelper = PreferencesHelper.getInstance(requireContext())
 
         super.onCreate(savedInstanceState)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // TODO: check
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            setDivider(null)
-            listView.addItemDecoration(DividerItemDecorationPreferences(context))
-        }
     }
 
     override fun onAttach(context: Context) {

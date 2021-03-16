@@ -1,10 +1,8 @@
 package ru.p3tr0vich.fuel
 
 import android.app.Activity
-import android.os.Build
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-
 import ru.p3tr0vich.fuel.utils.UtilsLog
 
 @Suppress("unused")
@@ -121,11 +119,7 @@ internal class YandexMapJavascriptInterface(private val activity: Activity, priv
             UtilsLog.d(NAME, "runJavaScript", "script == $js")
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            webView.evaluateJavascript(js, null)
-        } else {
-            webView.loadUrl(js)
-        }
+        webView.evaluateJavascript(js, null)
     }
 
     fun setStartLocation(latitude: Double, longitude: Double) {

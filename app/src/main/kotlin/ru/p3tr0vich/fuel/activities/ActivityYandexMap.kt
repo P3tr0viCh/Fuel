@@ -539,6 +539,8 @@ class ActivityYandexMap : AppCompatActivity(),
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             when (requestCode) {
                 REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION -> btnGeolocation?.callOnClick()

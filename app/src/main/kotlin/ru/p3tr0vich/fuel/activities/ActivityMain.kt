@@ -2,7 +2,6 @@ package ru.p3tr0vich.fuel.activities
 
 import android.animation.Animator
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
@@ -23,7 +22,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
-
 import ru.p3tr0vich.fuel.ContentObserverService
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.factories.FragmentFactory
@@ -43,14 +41,14 @@ import ru.p3tr0vich.fuel.utils.UtilsDate
 import ru.p3tr0vich.fuel.utils.UtilsLog
 
 class ActivityMain : AppCompatActivity(),
-        SyncStatusObserver,
-        FragmentFueling.OnFilterChangeListener,
-        FragmentFueling.OnRecordChangeListener,
-        FragmentCalc.OnCalcDistanceButtonClickListener,
-        FragmentInterface.OnFragmentChangeListener,
-        FragmentPreferences.OnPreferenceScreenChangeListener,
-        FragmentPreferences.OnPreferenceSyncEnabledChangeListener,
-        FragmentPreferences.OnPreferenceClickListener {
+    SyncStatusObserver,
+    FragmentFueling.OnFilterChangeListener,
+    FragmentFueling.OnRecordChangeListener,
+    FragmentCalc.OnCalcDistanceButtonClickListener,
+    FragmentInterface.OnFragmentChangeListener,
+    FragmentPreferences.OnPreferenceScreenChangeListener,
+    FragmentPreferences.OnPreferenceSyncEnabledChangeListener,
+    FragmentPreferences.OnPreferenceClickListener {
 
     private var toolbarMain: Toolbar? = null
     private var toolbarSpinner: Spinner? = null
@@ -63,8 +61,10 @@ class ActivityMain : AppCompatActivity(),
     private var syncMonitor: Any? = null
 
     private var imgSync: ImageView? = null
-    private var animationSync = RotateAnimation(360.0f, 0.0f,
-            Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
+    private var animationSync = RotateAnimation(
+        360.0f, 0.0f,
+        Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f
+    )
 
     private var btnSync: TextView? = null
 
@@ -98,7 +98,8 @@ class ActivityMain : AppCompatActivity(),
 
         fragmentHelper = FragmentHelper(this)
 
-        syncMonitor = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this)
+        syncMonitor =
+            ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this)
 
         initToolbar()
         initToolbarSpinner()
@@ -140,7 +141,11 @@ class ActivityMain : AppCompatActivity(),
 
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        val adapter = ArrayAdapter.createFromResource(this, R.array.filter_dates, R.layout.toolbar_spinner_item)
+        val adapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.filter_dates,
+            R.layout.toolbar_spinner_item
+        )
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
 
         toolbarSpinner!!.adapter = adapter
@@ -150,7 +155,12 @@ class ActivityMain : AppCompatActivity(),
         toolbarMain!!.addView(toolbarSpinner)
 
         toolbarSpinner!!.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 fragmentHelper?.fragmentFueling?.let {
                     if (it.isVisible) {
                         it.setFilterMode(positionToFilterMode(position))
@@ -165,8 +175,10 @@ class ActivityMain : AppCompatActivity(),
     private fun initDrawer() {
         drawerLayout = findViewById(R.id.drawer_layout)
 
-        drawerToggle = object : ActionBarDrawerToggle(this,
-                drawerLayout, toolbarMain, R.string.app_name, R.string.app_name) {
+        drawerToggle = object : ActionBarDrawerToggle(
+            this,
+            drawerLayout, toolbarMain, R.string.app_name, R.string.app_name
+        ) {
 
             override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
@@ -197,7 +209,8 @@ class ActivityMain : AppCompatActivity(),
 
         drawerLayout!!.addDrawerListener(drawerToggle!!)
         drawerToggle!!.syncState()
-        drawerToggle!!.toolbarNavigationClickListener = View.OnClickListener { fragmentHelper!!.currentFragment.onBackPressed() }
+        drawerToggle!!.toolbarNavigationClickListener =
+            View.OnClickListener { fragmentHelper!!.currentFragment.onBackPressed() }
 
         navigationView = findViewById(R.id.drawer_navigation_view)
         navigationView!!.setNavigationItemSelectedListener { menuItem ->
@@ -205,7 +218,10 @@ class ActivityMain : AppCompatActivity(),
             openPreferenceSync = false
             // Если текущий фрагмент -- настройки, может отображаться стрелка влево.
             // Если нажат другой пункт меню, показывается значок меню.
-            if (currentFragmentId == FragmentFactory.Ids.PREFERENCES && currentFragmentId != menuIdToFragmentId(clickedMenuId)) {
+            if (currentFragmentId == FragmentFactory.Ids.PREFERENCES && currentFragmentId != menuIdToFragmentId(
+                    clickedMenuId
+                )
+            ) {
                 drawerToggle!!.isDrawerIndicatorEnabled = true
             }
 
@@ -219,8 +235,10 @@ class ActivityMain : AppCompatActivity(),
 
         btnSync = findViewById(R.id.btn_sync)
         btnSync!!.setOnClickListener {
-            ContentObserverService.requestSync(this@ActivityMain,
-                    createPendingResult(REQUEST_CODE_REQUEST_SYNC, Intent(), 0))
+            ContentObserverService.requestSync(
+                this@ActivityMain,
+                createPendingResult(REQUEST_CODE_REQUEST_SYNC, Intent(), 0)
+            )
         }
     }
 
@@ -314,7 +332,10 @@ class ActivityMain : AppCompatActivity(),
         val bundle = Bundle()
 
         if (openPreferenceSync) {
-            bundle.putString(FragmentPreferences.KEY_PREFERENCE_SCREEN, preferencesHelper!!.keys.sync)
+            bundle.putString(
+                FragmentPreferences.KEY_PREFERENCE_SCREEN,
+                preferencesHelper!!.keys.sync
+            )
 
             openPreferenceSync = false
         }
@@ -365,7 +386,6 @@ class ActivityMain : AppCompatActivity(),
         startActivity(ActivityFuelingRecordChange.getIntentForStart(this, fuelingRecord))
     }
 
-    @SuppressLint("SwitchIntDef")
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -393,7 +413,11 @@ class ActivityMain : AppCompatActivity(),
             REQUEST_CODE_REQUEST_SYNC -> {
                 when (ContentObserverService.getResult(data)) {
                     ContentObserverService.RESULT_INTERNET_DISCONNECTED -> {
-                        FragmentDialogMessage.show(this, null, getString(R.string.message_error_no_internet))
+                        FragmentDialogMessage.show(
+                            this,
+                            null,
+                            getString(R.string.message_error_no_internet)
+                        )
                     }
                     ContentObserverService.RESULT_TOKEN_EMPTY -> {
                         showDialogNeedAuth()
@@ -429,7 +453,8 @@ class ActivityMain : AppCompatActivity(),
         title = fragment.title
         toolbarMain?.subtitle = fragment.subtitle
 
-        toolbarSpinner?.visibility = if (currentFragmentId == FragmentFactory.Ids.FUELING) View.VISIBLE else View.GONE
+        toolbarSpinner?.visibility =
+            if (currentFragmentId == FragmentFactory.Ids.FUELING) View.VISIBLE else View.GONE
 
         navigationView?.menu?.findItem(fragmentIdToMenuId(currentFragmentId))?.isChecked = true
     }
@@ -451,8 +476,10 @@ class ActivityMain : AppCompatActivity(),
         toggleDrawer(drawerToggle, drawerLayout, !isInRoot)
     }
 
-    private fun toggleDrawer(actionBarDrawerToggle: ActionBarDrawerToggle?, drawerLayout: DrawerLayout?,
-                             showArrow: Boolean) {
+    private fun toggleDrawer(
+        actionBarDrawerToggle: ActionBarDrawerToggle?, drawerLayout: DrawerLayout?,
+        showArrow: Boolean
+    ) {
         if (drawerToggle == null || drawerToggle?.isDrawerIndicatorEnabled != showArrow) return
 
         val start: Float
@@ -468,7 +495,14 @@ class ActivityMain : AppCompatActivity(),
 
         val anim = ValueAnimator.ofFloat(start, end)
 
-        anim.addUpdateListener { valueAnimator -> drawerLayout?.let { actionBarDrawerToggle?.onDrawerSlide(it, valueAnimator.animatedValue as Float) } }
+        anim.addUpdateListener { valueAnimator ->
+            drawerLayout?.let {
+                actionBarDrawerToggle?.onDrawerSlide(
+                    it,
+                    valueAnimator.animatedValue as Float
+                )
+            }
+        }
         anim.addListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
                 if (!showArrow) {
@@ -511,8 +545,10 @@ class ActivityMain : AppCompatActivity(),
                         val dateTime = preferencesHelper!!.lastSyncDateTime
 
                         btnSync!!.text = if (dateTime != PreferencesHelper.SYNC_NONE)
-                            getString(R.string.sync_done,
-                                    UtilsDate.getRelativeDateTime(this, dateTime))
+                            getString(
+                                R.string.sync_done,
+                                UtilsDate.getRelativeDateTime(this, dateTime)
+                            )
                         else
                             getString(R.string.sync_not_performed)
                         imgSync!!.setImageResource(R.drawable.ic_sync)
@@ -542,10 +578,12 @@ class ActivityMain : AppCompatActivity(),
     }
 
     private fun showDialogNeedAuth() {
-        FragmentDialogQuestion.show(this, REQUEST_CODE_DIALOG_YANDEX_AUTH,
-                R.string.dialog_caption_auth,
-                R.string.message_dialog_auth,
-                R.string.dialog_btn_agree, R.string.dialog_btn_disagree)
+        FragmentDialogQuestion.show(
+            this, REQUEST_CODE_DIALOG_YANDEX_AUTH,
+            R.string.dialog_caption_auth,
+            R.string.message_dialog_auth,
+            R.string.dialog_btn_agree, R.string.dialog_btn_disagree
+        )
     }
 
     private fun startYandexMap(@ActivityYandexMap.MapType mapType: Int) {
@@ -567,7 +605,11 @@ class ActivityMain : AppCompatActivity(),
     }
 
     override fun onPreferenceSyncYandexDiskClick() {
-        Utils.openUrl(this, SyncYandexDisk.URL.WWW, getString(R.string.message_error_yandex_disk_browser_open))
+        Utils.openUrl(
+            this,
+            SyncYandexDisk.URL.WWW,
+            getString(R.string.message_error_yandex_disk_browser_open)
+        )
     }
 
     override fun onPreferenceSMSAddressClick() {

@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.res.ColorStateList
 import android.net.Uri
-import android.os.Build
 import android.text.TextUtils
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -51,7 +50,7 @@ object Utils {
             it.selectAll()
 
             SystemServicesHelper.getInputMethodManager(it.context)
-                    ?.showSoftInput(it, InputMethodManager.SHOW_IMPLICIT)
+                ?.showSoftInput(it, InputMethodManager.SHOW_IMPLICIT)
         }
     }
 
@@ -59,7 +58,7 @@ object Utils {
     fun hideKeyboard(activity: Activity?) {
         activity?.currentFocus?.let {
             SystemServicesHelper.getInputMethodManager(it.context)
-                    ?.hideSoftInputFromWindow(it.windowToken, 0)
+                ?.hideSoftInputFromWindow(it.windowToken, 0)
         }
     }
 
@@ -103,18 +102,14 @@ object Utils {
     @JvmStatic
     @ColorInt
     fun getColor(@ColorRes id: Int): Int {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ApplicationFuel.context.resources.getColor(id, null)
-        } else {
-            @Suppress("DEPRECATION")
-            ApplicationFuel.context.resources.getColor(id)
-        }
+        return ApplicationFuel.context.resources.getColor(id, null)
     }
 
     @JvmStatic
     fun getSupportActionBarSize(context: Context): Int {
         val a = context.theme.obtainStyledAttributes(
-                intArrayOf(android.R.attr.actionBarSize))
+            intArrayOf(android.R.attr.actionBarSize)
+        )
         try {
             return a.getDimensionPixelSize(0, 0)
         } finally {
@@ -150,8 +145,12 @@ object Utils {
     fun setBackgroundTint(view: View?, @ColorRes defaultColor: Int, @ColorRes pressedColor: Int) {
         if (view is TintableBackgroundView) {
             (view as TintableBackgroundView).supportBackgroundTintList = ColorStateList(
-                    arrayOf(intArrayOf(-android.R.attr.state_pressed, -android.R.attr.state_checked), intArrayOf()),
-                    intArrayOf(getColor(defaultColor), getColor(pressedColor)))
+                arrayOf(
+                    intArrayOf(-android.R.attr.state_pressed, -android.R.attr.state_checked),
+                    intArrayOf()
+                ),
+                intArrayOf(getColor(defaultColor), getColor(pressedColor))
+            )
         }
     }
 

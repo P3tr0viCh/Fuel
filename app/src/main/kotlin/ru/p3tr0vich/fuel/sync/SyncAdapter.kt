@@ -71,7 +71,6 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
                     } catch (e: IOException) {
                         handleException(e, syncResult)
                     }
-
                 }
             } catch (e: Exception) {
                 handleException(e, syncResult)
@@ -147,7 +146,7 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
 
             if (LOG_ENABLED) {
                 UtilsLog.d(TAG, "syncPreferences",
-                        "serverRevision == $serverRevision, localRevision == $localRevision , preference changed == $isChanged")
+                        "serverRevision == $serverRevision, localRevision == $localRevision, preference changed == $isChanged")
             }
 
             if (localRevision < serverRevision) {
@@ -483,7 +482,7 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
         for (revision in localRevision + 1..serverRevision) {
             loadResult = syncYandexDisk!!.loadDatabase(revision)
             if (LOG_ENABLED) {
-                UtilsLog.d(TAG, "syncDatabaseLoad", "syncYandexDisk.loadDatabase(revision == $revision , loadResult == $loadResult) OK")
+                UtilsLog.d(TAG, "syncDatabaseLoad", "syncYandexDisk.loadDatabase(revision == $revision, loadResult == $loadResult) OK")
             }
 
             if (loadResult) {

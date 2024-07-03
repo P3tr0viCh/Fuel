@@ -1,13 +1,14 @@
 buildscript {
     ext {
-        compileSdkVersion = 28
-        buildToolsVersion = '30.0.2'
+        compileSdkVersion = 34
+        buildToolsVersion = '34.0.0'
+
         minSdkVersion = 28
         targetSdkVersion = 28
 
-        gradleVersion = '7.0.0-alpha08'
+        gradleVersion = '8.5.0'
 
-        kotlinVersion = '1.4.30'
+        kotlinVersion = '2.0.0'
     }
 
     repositories {
@@ -29,6 +30,6 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+tasks.register('clean', Delete) {
+    delete rootProject.layout.buildDirectory
 }

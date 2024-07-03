@@ -243,7 +243,7 @@ class PreferencesHelper private constructor(private val context: Context) : Shar
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "onSharedPreferenceChanged", "key == $key")
         }

@@ -155,10 +155,10 @@ class ContentProviderHelper : ContentProvider() {
         }
     }
 
-    override fun insert(uri: Uri, values: ContentValues): Uri? {
+    override fun insert(uri: Uri, values: ContentValues?): Uri? {
         return try {
             when (uriMatcher.match(uri)) {
-                DATABASE -> ContentUris.withAppendedId(URI_DATABASE, databaseHelper.insert(values))
+                DATABASE -> ContentUris.withAppendedId(URI_DATABASE, databaseHelper.insert(values!!))
                 else -> {
                     UtilsLog.d(TAG, "insert", "uriMatcher.match() == default, uri == $uri")
                     null

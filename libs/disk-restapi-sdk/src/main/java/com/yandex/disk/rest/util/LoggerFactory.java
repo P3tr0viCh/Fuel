@@ -10,8 +10,6 @@ package com.yandex.disk.rest.util;
 
 import android.util.Log;
 
-import com.yandex.android.rest.BuildConfig;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -24,7 +22,7 @@ public class LoggerFactory {
 
             @Override
             public boolean isDebugEnabled() {
-                return BuildConfig.DEBUG;
+                return false;
             }
 
             @Override

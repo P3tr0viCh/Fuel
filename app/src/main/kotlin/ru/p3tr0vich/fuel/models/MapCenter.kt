@@ -25,7 +25,7 @@ class MapCenter() {
     constructor(data: Intent?) : this() {
         if (data == null) return
 
-        text = data.getStringExtra(EXTRA_MAP_CENTER_TEXT)
+        text = data.getStringExtra(EXTRA_MAP_CENTER_TEXT)!!
         latitude = data.getDoubleExtra(EXTRA_MAP_CENTER_LATITUDE, latitude)
         longitude = data.getDoubleExtra(EXTRA_MAP_CENTER_LONGITUDE, longitude)
     }

@@ -22,9 +22,9 @@ internal abstract class OnSwipeTouchListener(context: Context?) : OnTouchListene
             return true
         }
 
-        override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+        override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
             try {
-                val diffX = e2.x - e1.x
+                val diffX = e2.x - e1!!.x
                 val diffY = e2.y - e1.y
 
                 if (abs(diffX) > abs(diffY)) {

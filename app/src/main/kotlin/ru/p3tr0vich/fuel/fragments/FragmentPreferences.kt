@@ -48,12 +48,12 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
         fun onPreferenceSyncEnabledChanged(enabled: Boolean)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "onSharedPreferenceChanged", "key == $key")
         }
 
-        updatePreference(key)
+        updatePreference(key!!)
 
         when (key) {
             preferencesHelper.keys.price -> {
@@ -175,7 +175,7 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
 
         init(rootPreferenceScreen)
 
-        rootPreferenceScreen.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        rootPreferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onStop() {
@@ -183,7 +183,7 @@ class FragmentPreferences : FragmentPreferencesBase(FragmentFactory.Ids.PREFEREN
             UtilsLog.d(TAG, "onStop")
         }
 
-        rootPreferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        rootPreferenceScreen.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
 
         super.onStop()
     }

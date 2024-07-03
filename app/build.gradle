@@ -1,18 +1,36 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-parcelize'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
+}
 
-buildscript {
-    ext {
-        keystorePath = "C:\\android\\keystore"
-    }
+ext {
+    keystorePath = "y:\\Документы\\keystore"
 }
 
 Properties props = new Properties()
 props.load(new FileInputStream(file("$keystorePath\\ru.p3tr0vich.fuel.properties")))
 
 android {
+    namespace "ru.p3tr0vich.fuel"
+
+    defaultConfig {
+        applicationId "ru.p3tr0vich.fuel"
+
+        compileSdk rootProject.ext.compileSdkVersion
+
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        versionCode 33
+        versionName "3.3"
+
+        buildConfigField "long", "BUILD_DATE", System.currentTimeMillis() + "l"
+
+        buildConfigField "String", "YANDEX_DISK_CLIENT_ID", "\"${props['yandexDiskClientId']}\""
+    }
+
     signingConfigs {
         debug {
             keyAlias 'ru.p3tr0vich.fuel'
@@ -27,23 +45,6 @@ android {
             storeFile file("$keystorePath\\keystore.jks")
             storePassword props['storePassword']
         }
-    }
-
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
-
-    defaultConfig {
-        applicationId "ru.p3tr0vich.fuel"
-
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-
-        versionCode 32
-        versionName "3.2"
-
-        buildConfigField "long", "BUILD_DATE", System.currentTimeMillis() + "l"
-
-        buildConfigField "String", "YANDEX_DISK_CLIENT_ID", "\"${props['yandexDiskClientId']}\""
     }
 
     buildTypes {
@@ -80,9 +81,19 @@ android {
         exclude '.readme'
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
     buildFeatures {
         viewBinding true
         dataBinding true
+        buildConfig true
     }
 
     testOptions {
@@ -110,25 +121,25 @@ afterEvaluate {
 
 static def appendVersionName(variant, defaultConfig) {
     variant.outputs.all { output ->
-        outputFileName = "${defaultConfig.applicationId}-${variant.versionName}-${variant.name}.apk"
+        outputFileName = "${defaultConfig.applicationId}-${variant.versionName}.apk"
     }
 }
 
 dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.3.0-beta01'
-    implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation 'androidx.legacy:legacy-preference-v14:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
 
-    implementation 'com.google.android.material:material:1.4.0-alpha01'
+    implementation 'com.google.android.material:material:1.12.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion}"
 
-    implementation "com.github.P3tr0viCh:ExpansionPanel:2.0.0"
+    implementation "com.github.P3tr0viCh:ExpansionPanel:2.1.0"
 
-    implementation "com.google.android.gms:play-services-location:18.0.0"
+    implementation "com.google.android.gms:play-services-location:21.3.0"
 
     implementation "com.github.PhilJay:MPAndroidChart:v3.1.0"
 

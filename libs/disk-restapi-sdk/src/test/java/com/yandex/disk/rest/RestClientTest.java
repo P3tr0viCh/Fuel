@@ -8,13 +8,9 @@
 
 package com.yandex.disk.rest;
 
-import android.os.Build;
-import android.support.annotation.NonNull;
-
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.yandex.android.rest.BuildConfig;
 import com.yandex.disk.rest.exceptions.CancelledDownloadException;
 import com.yandex.disk.rest.exceptions.CancelledUploadingException;
 import com.yandex.disk.rest.exceptions.ServerIOException;
@@ -35,7 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import java.io.File;
@@ -51,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import androidx.annotation.NonNull;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
@@ -68,9 +64,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class,
-        sdk = Build.VERSION_CODES.LOLLIPOP
-)
+
 public class RestClientTest {
 
     private static final Logger logger = LoggerFactory.getLogger(RestClientTest.class);

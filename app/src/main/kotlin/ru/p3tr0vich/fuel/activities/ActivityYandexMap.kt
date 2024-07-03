@@ -175,7 +175,8 @@ class ActivityYandexMap : AppCompatActivity(),
 
             yandexMapJavascriptInterface = YandexMapJavascriptInterface(this, webView!!)
 
-            webView?.addJavascriptInterface(yandexMapJavascriptInterface,
+            webView?.addJavascriptInterface(
+                yandexMapJavascriptInterface!!,
                     YandexMapJavascriptInterface.NAME)
 
             webView?.webChromeClient = object : WebChromeClient() {

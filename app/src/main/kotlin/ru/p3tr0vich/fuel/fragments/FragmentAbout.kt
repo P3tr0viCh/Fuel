@@ -19,7 +19,7 @@ class FragmentAbout : FragmentBase(FragmentFactory.Ids.ABOUT) {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         val versionName: String = try {
-            activity?.packageManager?.getPackageInfo(activity?.packageName, 0)?.versionName ?: "0.0"
+            activity?.packageManager?.getPackageInfo(requireActivity().packageName, 0)?.versionName ?: "0.0"
         } catch (e: PackageManager.NameNotFoundException) {
             "0.0"
         }

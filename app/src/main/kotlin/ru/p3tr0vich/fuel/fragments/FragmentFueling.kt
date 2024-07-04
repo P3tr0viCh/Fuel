@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.view.menu.MenuBuilder
@@ -66,7 +67,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING),
 
     private var recyclerView: RecyclerView? = null
 
-    private var progressWheel: ProgressWheel? = null
+    private var progressBar: ProgressBar? = null
     private var textNoRecords: TextView? = null
 
     private var floatingActionButton: FloatingActionButton? = null
@@ -107,7 +108,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING),
         Runnable { Utils.setViewVisibleAnimate(textNoRecords, true) }
 
     private val runnableShowProgressWheelFueling =
-        Runnable { Utils.setViewVisibleAnimate(progressWheel, true) }
+        Runnable { Utils.setViewVisibleAnimate(progressBar, true) }
 
     private class AnimationDuration {
         val layoutTotalShow = Utils.getInteger(R.integer.animation_duration_layout_total_show)
@@ -191,8 +192,8 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING),
                 }
             })
 
-        progressWheel = view.findViewById(R.id.progress_wheel)
-        progressWheel!!.visibility = View.GONE
+        progressBar = view.findViewById(R.id.progress_bar)
+        progressBar!!.visibility = View.GONE
         textNoRecords = view.findViewById(R.id.text_no_records)
         textNoRecords!!.visibility = View.GONE
 
@@ -507,6 +508,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING),
                         onRecordChangeListener?.onRecordChange(fuelingRecord)
                         true
                     }
+
                     R.id.action_fueling_delete -> {
                         deletedFuelingRecord = fuelingRecord
 
@@ -524,6 +526,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING),
 
                         true
                     }
+
                     else -> false
                 }
             }
@@ -543,7 +546,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING),
                 Utils.getInteger(R.integer.delayed_time_show_progress_wheel).toLong()
             )
         } else {
-            Utils.setViewVisibleAnimate(progressWheel, false)
+            Utils.setViewVisibleAnimate(progressBar, false)
         }
     }
 
@@ -676,6 +679,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING),
                         calendar.set(Calendar.MONTH, Calendar.JANUARY)
                         calendar.set(Calendar.DAY_OF_MONTH, 1)
                     }
+
                     R.id.action_dates_end_of_year -> {
                         calendar.set(Calendar.MONTH, Calendar.DECEMBER)
                         calendar.set(Calendar.DAY_OF_MONTH, 31)
@@ -688,6 +692,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING),
 
                 setFilterDate(button == btnDateFrom, date)
             }
+
             R.id.action_dates_winter, R.id.action_dates_summer, R.id.action_dates_curr_year, R.id.action_dates_prev_year -> {
                 val calendarFrom = Calendar.getInstance()
                 val calendarTo = Calendar.getInstance()
@@ -701,6 +706,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING),
 
                         year = calendarFrom.get(Calendar.YEAR)
                     }
+
                     R.id.action_dates_curr_year, R.id.action_dates_prev_year -> {
                         year = UtilsDate.currentYear
                         if (menuId == R.id.action_dates_prev_year) year--
@@ -718,10 +724,12 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING),
                             calendarTo.getActualMaximum(Calendar.DAY_OF_MONTH)
                         )
                     }
+
                     R.id.action_dates_summer -> {
                         calendarFrom.set(year, Calendar.JUNE, 1)
                         calendarTo.set(year, Calendar.AUGUST, 31)
                     }
+
                     R.id.action_dates_curr_year, R.id.action_dates_prev_year -> {
                         calendarFrom.set(year, Calendar.JANUARY, 1)
                         calendarTo.set(year, Calendar.DECEMBER, 31)

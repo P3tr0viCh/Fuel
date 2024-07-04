@@ -22,7 +22,7 @@ object ContactsHelper {
 
         cursor.use {
             return when {
-                it.moveToFirst() -> it.getString(it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                it.moveToFirst() -> it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
                 else -> null
             }
         }

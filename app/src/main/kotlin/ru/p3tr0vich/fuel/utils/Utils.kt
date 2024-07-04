@@ -138,7 +138,6 @@ object Utils {
                 toast(onErrorMessage!!)
             }
         }
-
     }
 
     @JvmStatic

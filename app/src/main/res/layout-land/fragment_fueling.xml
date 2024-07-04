@@ -33,7 +33,7 @@
                 android:choiceMode="none"
                 tools:listitem="@layout/fueling_list_item" />
 
-            <include layout="@layout/partial_progress_wheel" />
+            <include layout="@layout/partial_progress_bar" />
 
             <include layout="@layout/partial_text_no_records" />
         </RelativeLayout>

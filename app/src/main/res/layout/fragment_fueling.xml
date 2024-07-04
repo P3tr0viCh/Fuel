@@ -10,34 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/toolbar_dates"
-            layout="@layout/partial_toolbar_dates" />
-
-        <View
-            android:id="@+id/view_toolbar_shadow"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@drawable/toolbar_shadow" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/total_panel"
-            android:layout_below="@+id/toolbar_dates">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:choiceMode="none"
-                tools:listitem="@layout/fueling_list_item" />
-
-            <include layout="@layout/partial_progress_wheel" />
-
-            <include layout="@layout/partial_text_no_records" />
-        </RelativeLayout>
-
         <FrameLayout
             android:id="@+id/total_panel"
             android:layout_width="match_parent"
@@ -54,6 +26,34 @@
                 app:collapsedLayout="@layout/partial_fueling_total_collapsed"
                 app:expandedLayout="@layout/partial_fueling_total_expanded" />
         </FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/total_panel"
+            android:layout_below="@+id/toolbar_dates">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:choiceMode="none"
+                tools:listitem="@layout/fueling_list_item" />
+
+            <include layout="@layout/partial_progress_bar" />
+
+            <include layout="@layout/partial_text_no_records" />
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/view_toolbar_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/toolbar_shadow" />
+
+        <include
+            android:id="@+id/toolbar_dates"
+            layout="@layout/partial_toolbar_dates" />
 
         <include
             android:id="@+id/fab"

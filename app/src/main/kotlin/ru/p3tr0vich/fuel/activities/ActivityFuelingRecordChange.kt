@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.FragmentTransaction
@@ -30,8 +31,16 @@ class ActivityFuelingRecordChange : AppCompatActivity() {
             finish()
         }
 
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+
         if (savedInstanceState == null) {
             addFragment(intent)
+        }
+    }
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            finish()
         }
     }
 
@@ -62,12 +71,14 @@ class ActivityFuelingRecordChange : AppCompatActivity() {
         val fuelingRecord = if (intent.hasExtra(FuelingRecord.NAME)) FuelingRecord(intent) else null
 
         supportFragmentManager.beginTransaction()
-                .replace(R.id.content_frame,
-                        FragmentFuelingRecordChange.newInstance(fuelingRecord),
-                        FragmentFuelingRecordChange.TAG)
-                .setTransition(FragmentTransaction.TRANSIT_NONE)
-                .addToBackStack(null)
-                .commit()
+            .replace(
+                R.id.content_frame,
+                FragmentFuelingRecordChange.newInstance(fuelingRecord),
+                FragmentFuelingRecordChange.TAG
+            )
+            .setTransition(FragmentTransaction.TRANSIT_NONE)
+            .addToBackStack(null)
+            .commit()
     }
 
     override fun finish() {
@@ -79,15 +90,13 @@ class ActivityFuelingRecordChange : AppCompatActivity() {
             if (intent.hasExtra(EXTRA_FINISH)) {
                 super.finish()
             } else {
-                startActivity(getIntentForStart(this, null)
+                startActivity(
+                    getIntentForStart(this, null)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
-                        .putExtra(EXTRA_FINISH, true))
+                        .putExtra(EXTRA_FINISH, true)
+                )
             }
         }
-    }
-
-    override fun onBackPressed() {
-        finish()
     }
 
     companion object {

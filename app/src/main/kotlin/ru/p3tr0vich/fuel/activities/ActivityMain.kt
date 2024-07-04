@@ -15,6 +15,8 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSpinner
@@ -111,6 +113,8 @@ class ActivityMain : AppCompatActivity(),
 
         initLoadingStatusReceiver()
         initDatabaseChangedReceiver()
+
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         if (savedInstanceState == null) {
             fragmentHelper!!.addMainFragment()
@@ -343,18 +347,18 @@ class ActivityMain : AppCompatActivity(),
         fragmentHelper!!.replaceFragment(fragmentId, bundle)
     }
 
-    override fun onBackPressed() {
-        if (drawerLayout!!.isDrawerVisible(GravityCompat.START)) {
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (drawerLayout!!.isDrawerVisible(GravityCompat.START)) {
             drawerLayout!!.closeDrawer(GravityCompat.START)
-        } else {
-            if (fragmentHelper!!.currentFragment.onBackPressed()) {
-                return
-            }
-
-            if (supportFragmentManager.backStackEntryCount != 0) {
-                supportFragmentManager.popBackStack()
             } else {
-                super.onBackPressed()
+                if (fragmentHelper!!.currentFragment.onBackPressed()) {
+                    return
+                }
+
+                if (supportFragmentManager.backStackEntryCount != 0) {
+                    supportFragmentManager.popBackStack()
+                }
             }
         }
     }
@@ -402,13 +406,6 @@ class ActivityMain : AppCompatActivity(),
             }
             REQUEST_CODE_DIALOG_YANDEX_AUTH -> {
                 Utils.openUrl(this, SyncYandexDisk.URL.AUTH, null)
-            }
-            REQUEST_CODE_ACTIVITY_CONTACTS -> {
-                val address = ContactsHelper.getPhoneNumber(this, data)
-
-                if (address != null) {
-                    preferencesHelper!!.smsAddress = address
-                }
             }
             REQUEST_CODE_REQUEST_SYNC -> {
                 when (ContentObserverService.getResult(data)) {
@@ -616,11 +613,24 @@ class ActivityMain : AppCompatActivity(),
         val intent = ContactsHelper.intent
 
         if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent, REQUEST_CODE_ACTIVITY_CONTACTS)
+            getActivityContacts.launch(intent)
         } else {
             Utils.toast(R.string.message_error_no_contacts_activity)
         }
     }
+
+    private val getActivityContacts =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val address = ContactsHelper.getPhoneNumber(this, it.data)
+
+                if (address != null) {
+                    preferencesHelper!!.smsAddress = address
+                }
+            }
+        }
 
     override fun onPreferenceSMSTextPatternClick() {
         ActivityDialog.start(this, ActivityDialog.DIALOG_SMS_TEXT_PATTERN)
@@ -635,8 +645,6 @@ class ActivityMain : AppCompatActivity(),
         private const val REQUEST_CODE_ACTIVITY_MAP_CENTER = 101
 
         private const val REQUEST_CODE_DIALOG_YANDEX_AUTH = 200
-
-        private const val REQUEST_CODE_ACTIVITY_CONTACTS = 300
 
         private const val REQUEST_CODE_REQUEST_SYNC = 400
 

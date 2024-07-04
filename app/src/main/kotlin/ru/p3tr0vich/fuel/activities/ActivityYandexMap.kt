@@ -1,13 +1,11 @@
 package ru.p3tr0vich.fuel.activities
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.location.Location
-import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.Menu
@@ -15,6 +13,7 @@ import android.view.MenuItem
 import android.view.View
 import android.webkit.*
 import android.widget.FrameLayout
+import android.widget.ProgressBar
 import androidx.annotation.IntDef
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -53,7 +52,7 @@ class ActivityYandexMap : AppCompatActivity(),
     private val mapCenter = MapCenter()
 
     private var toolbarYandexMap: Toolbar? = null
-    private var progressWheel: ProgressWheel? = null
+    private var progressBar: ProgressBar? = null
     private var webViewPlaceholder: FrameLayout? = null
     private var menu: Menu? = null
 
@@ -152,7 +151,7 @@ class ActivityYandexMap : AppCompatActivity(),
                     mapCenter.longitude)
         }
 
-        progressWheel = findViewById(R.id.progress_wheel)
+        progressBar = findViewById(R.id.progress_bar)
 
         btnZoomIn = findViewById(R.id.btn_zoom_in)
         btnZoomIn?.setOnClickListener(this)
@@ -203,16 +202,6 @@ class ActivityYandexMap : AppCompatActivity(),
                     return true
                 }
 
-                @Suppress("OverridingDeprecatedMember")
-                override fun onReceivedError(view: WebView, errorCode: Int, description: String, failingUrl: String) {
-                    if (LOG_ENABLED) {
-                        UtilsLog.d(TAG, "onReceivedError", "errorCode == $errorCode, description == $description")
-                    }
-
-                    Utils.toast(String.format(getString(R.string.text_error_webview), description))
-                }
-
-                @TargetApi(Build.VERSION_CODES.M)
                 override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
                     super.onReceivedError(view, request, error)
                     if (LOG_ENABLED) {
@@ -234,9 +223,10 @@ class ActivityYandexMap : AppCompatActivity(),
         }
 
         if (loading) {
-            progressWheel?.visibility = View.VISIBLE
+            progressBar?.visibility = View.VISIBLE
         } else {
-            progressWheel?.visibility = View.GONE
+            progressBar?.visibility = View.GONE
+
             setButtonsVisible()
         }
 
@@ -471,7 +461,7 @@ class ActivityYandexMap : AppCompatActivity(),
 
         loading = false
 
-        progressWheel!!.visibility = View.GONE
+        progressBar!!.visibility = View.GONE
 
         if (!hasError) {
             setButtonsVisible()

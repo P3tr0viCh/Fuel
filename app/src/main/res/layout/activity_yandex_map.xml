@@ -16,7 +16,9 @@
         <FrameLayout
             android:id="@+id/web_view_placeholder"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent" >
+
+        </FrameLayout>
 
         <Space
             android:id="@+id/space_center"
@@ -68,6 +70,6 @@
             app:backgroundTint="@color/transparent_button_light"
             tools:visibility="visible" />
 
-        <include layout="@layout/partial_progress_wheel" />
+        <include layout="@layout/partial_progress_bar" />
     </RelativeLayout>
 </LinearLayout>

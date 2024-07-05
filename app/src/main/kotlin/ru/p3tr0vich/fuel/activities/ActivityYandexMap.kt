@@ -21,7 +21,6 @@ import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.Status
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.pnikosis.materialishprogress.ProgressWheel
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.YandexMapJavascriptInterface
 import ru.p3tr0vich.fuel.fragments.FragmentDialogMessage
@@ -38,9 +37,9 @@ import ru.p3tr0vich.fuel.utils.UtilsFormat
 import ru.p3tr0vich.fuel.utils.UtilsLog
 
 class ActivityYandexMap : AppCompatActivity(),
-        View.OnClickListener, View.OnLongClickListener,
-        YandexMapJavascriptInterface.YandexMap,
-        LocationHelper.LocationHelperListener {
+    View.OnClickListener, View.OnLongClickListener,
+    YandexMapJavascriptInterface.YandexMap,
+    LocationHelper.LocationHelperListener {
 
     @MapType
     private var type: Int = 0
@@ -117,8 +116,10 @@ class ActivityYandexMap : AppCompatActivity(),
             mapCenter.longitude = longitude
         }
 
-        locationHelper = LocationHelper(this, this,
-                REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION)
+        locationHelper = LocationHelper(
+            this, this,
+            REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION
+        )
 
         initUI()
     }
@@ -144,11 +145,12 @@ class ActivityYandexMap : AppCompatActivity(),
         when (type) {
             MAP_TYPE_DISTANCE -> onRouteChange(distance, time)
             MAP_TYPE_CENTER -> onMapCenterChange(
-                    mapCenter.text,
-                    mapCenter.title,
-                    mapCenter.subtitle,
-                    mapCenter.latitude,
-                    mapCenter.longitude)
+                mapCenter.text,
+                mapCenter.title,
+                mapCenter.subtitle,
+                mapCenter.latitude,
+                mapCenter.longitude
+            )
         }
 
         progressBar = findViewById(R.id.progress_bar)
@@ -176,17 +178,25 @@ class ActivityYandexMap : AppCompatActivity(),
 
             webView?.addJavascriptInterface(
                 yandexMapJavascriptInterface!!,
-                    YandexMapJavascriptInterface.NAME)
+                YandexMapJavascriptInterface.NAME
+            )
 
             webView?.webChromeClient = object : WebChromeClient() {
                 override fun onConsoleMessage(cm: ConsoleMessage): Boolean {
                     if (LOG_ENABLED) {
-                        UtilsLog.d(TAG, "onConsoleMessage", cm.message() + " [line " + cm.lineNumber() + "]")
+                        UtilsLog.d(
+                            TAG,
+                            "onConsoleMessage",
+                            cm.message() + " [line " + cm.lineNumber() + "]"
+                        )
                     }
                     return true
                 }
 
-                override fun onGeolocationPermissionsShowPrompt(origin: String, callback: GeolocationPermissions.Callback) {
+                override fun onGeolocationPermissionsShowPrompt(
+                    origin: String,
+                    callback: GeolocationPermissions.Callback
+                ) {
                     if (LOG_ENABLED) {
                         UtilsLog.d(TAG, "onGeolocationPermissionsShowPrompt", "origin == $origin")
                     }
@@ -197,18 +207,33 @@ class ActivityYandexMap : AppCompatActivity(),
             webView?.webViewClient = object : WebViewClient() {
                 @Suppress("OverridingDeprecatedMember")
                 override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                    this@ActivityYandexMap.runOnUiThread { Utils.openUrl(this@ActivityYandexMap, url, null) }
+                    this@ActivityYandexMap.runOnUiThread {
+                        Utils.openUrl(
+                            this@ActivityYandexMap,
+                            url,
+                            null
+                        )
+                    }
 
                     return true
                 }
 
-                override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
+                override fun onReceivedError(
+                    view: WebView,
+                    request: WebResourceRequest,
+                    error: WebResourceError
+                ) {
                     super.onReceivedError(view, request, error)
                     if (LOG_ENABLED) {
                         UtilsLog.d(TAG, "onReceivedError", "request == $request, error == $error")
                     }
 
-                    Utils.toast(String.format(getString(R.string.text_error_webview), error.description))
+                    Utils.toast(
+                        String.format(
+                            getString(R.string.text_error_webview),
+                            error.description
+                        )
+                    )
                 }
             }
 
@@ -332,10 +357,12 @@ class ActivityYandexMap : AppCompatActivity(),
                 yandexMapJavascriptInterface!!.setZoomToHouses()
                 true
             }
+
             R.id.btn_zoom_out -> {
                 yandexMapJavascriptInterface!!.setZoomToCities()
                 true
             }
+
             else -> false
         }
     }
@@ -347,11 +374,18 @@ class ActivityYandexMap : AppCompatActivity(),
                     when (item.itemId) {
                         R.id.action_done_x2 -> {
                             distance *= 2
-                            setResult(Activity.RESULT_OK, Intent().putExtra(EXTRA_DISTANCE, distance))
+                            setResult(
+                                Activity.RESULT_OK,
+                                Intent().putExtra(EXTRA_DISTANCE, distance)
+                            )
                             finish()
                         }
+
                         R.id.action_done -> {
-                            setResult(Activity.RESULT_OK, Intent().putExtra(EXTRA_DISTANCE, distance))
+                            setResult(
+                                Activity.RESULT_OK,
+                                Intent().putExtra(EXTRA_DISTANCE, distance)
+                            )
                             finish()
                         }
                     }
@@ -361,16 +395,20 @@ class ActivityYandexMap : AppCompatActivity(),
 
                 true
             }
+
             MAP_TYPE_CENTER -> {
-                setResult(Activity.RESULT_OK, Intent()
+                setResult(
+                    Activity.RESULT_OK, Intent()
                         .putExtra(EXTRA_MAP_CENTER_TEXT, mapCenter.text)
                         .putExtra(EXTRA_MAP_CENTER_LATITUDE, mapCenter.latitude)
-                        .putExtra(EXTRA_MAP_CENTER_LONGITUDE, mapCenter.longitude))
+                        .putExtra(EXTRA_MAP_CENTER_LONGITUDE, mapCenter.longitude)
+                )
 
                 finish()
 
                 true
             }
+
             else -> false
         }
     }
@@ -400,8 +438,10 @@ class ActivityYandexMap : AppCompatActivity(),
         }
 
         if (LOG_ENABLED) {
-            UtilsLog.d(TAG, "onRouteChange",
-                    "title == $title, subTitle == $subtitle")
+            UtilsLog.d(
+                TAG, "onRouteChange",
+                "title == $title, subTitle == $subtitle"
+            )
         }
 
         supportActionBar?.title = title
@@ -412,8 +452,10 @@ class ActivityYandexMap : AppCompatActivity(),
         return if (text.startsWith(PREFIX_RUSSIA)) text.substring(PREFIX_RUSSIA.length) else text
     }
 
-    override fun onMapCenterChange(text: String?, title: String?, subtitle: String?,
-                                   latitude: Double, longitude: Double) {
+    override fun onMapCenterChange(
+        text: String?, title: String?, subtitle: String?,
+        latitude: Double, longitude: Double
+    ) {
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "onMapCenterChange", "text == $text")
         }
@@ -494,14 +536,16 @@ class ActivityYandexMap : AppCompatActivity(),
     override fun onLastLocationReturn(location: Location?) {
         if (location != null) {
             yandexMapJavascriptInterface!!.setStartLocation(
-                    location.latitude, location.longitude)
+                location.latitude, location.longitude
+            )
         }
     }
 
     override fun onUpdatedLocationReturn(location: Location?) {
         if (location != null) {
             yandexMapJavascriptInterface!!.setStartLocation(
-                    location.latitude, location.longitude)
+                location.latitude, location.longitude
+            )
         } else {
             onErrorGeolocation()
         }
@@ -522,14 +566,23 @@ class ActivityYandexMap : AppCompatActivity(),
             REQUEST_CODE_RESOLUTION_REQUIRED -> when (resultCode) {
                 Activity.RESULT_OK -> btnGeolocation?.callOnClick()
                 Activity.RESULT_CANCELED -> if (LOG_ENABLED) {
-                    UtilsLog.d(TAG, "onActivityResult", "REQUEST_CODE_RESOLUTION_REQUIRED result == RESULT_CANCELED")
+                    UtilsLog.d(
+                        TAG,
+                        "onActivityResult",
+                        "REQUEST_CODE_RESOLUTION_REQUIRED result == RESULT_CANCELED"
+                    )
                 }
             }
+
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -537,7 +590,11 @@ class ActivityYandexMap : AppCompatActivity(),
                 REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION -> btnGeolocation?.callOnClick()
             }
         } else {
-            FragmentDialogMessage.show(this, R.string.title_message_error, R.string.message_need_permission_to_location)
+            FragmentDialogMessage.show(
+                this,
+                R.string.title_message_error,
+                R.string.message_need_permission_to_location
+            )
         }
     }
 
@@ -571,11 +628,15 @@ class ActivityYandexMap : AppCompatActivity(),
             }
 
             if (connectedState != ConnectivityHelper.DISCONNECTED) {
-                parent.startActivityForResult(Intent(parent, ActivityYandexMap::class.java)
-                        .putExtra(EXTRA_TYPE, mapType), requestCode)
+                parent.startActivityForResult(
+                    Intent(parent, ActivityYandexMap::class.java)
+                        .putExtra(EXTRA_TYPE, mapType), requestCode
+                )
             } else {
-                FragmentDialogMessage.show(parent, null,
-                        parent.getString(R.string.message_error_no_internet))
+                FragmentDialogMessage.show(
+                    parent, null,
+                    parent.getString(R.string.message_error_no_internet)
+                )
             }
         }
     }

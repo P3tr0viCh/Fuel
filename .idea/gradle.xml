@@ -12,7 +12,6 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/libs" />
             <option value="$PROJECT_DIR$/libs/disk-restapi-sdk" />
-            <option value="$PROJECT_DIR$/libs/materialish-progress" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

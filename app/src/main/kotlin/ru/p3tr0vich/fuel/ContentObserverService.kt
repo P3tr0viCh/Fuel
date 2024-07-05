@@ -9,11 +9,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import androidx.annotation.IntDef
 import ru.p3tr0vich.fuel.helpers.ConnectivityHelper
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper
 import ru.p3tr0vich.fuel.observers.DatabaseObserver
 import ru.p3tr0vich.fuel.observers.PreferencesObserver
+import ru.p3tr0vich.fuel.receivers.BroadcastReceiverRequestSync
 import ru.p3tr0vich.fuel.sync.SyncAccount
 import ru.p3tr0vich.fuel.sync.SyncAdapter
 import ru.p3tr0vich.fuel.utils.UtilsLog
@@ -29,10 +31,10 @@ import ru.p3tr0vich.fuel.utils.UtilsLog
  */
 class ContentObserverService : Service() {
 
-    private val handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
 
-    private var databaseObserver: DatabaseObserver? = null
-    private var preferencesObserver: PreferencesObserver? = null
+    private val databaseObserver = DatabaseObserver()
+    private val preferencesObserver = PreferencesObserver()
 
     private val runnable = RequestSyncRunnable()
 
@@ -59,7 +61,14 @@ class ContentObserverService : Service() {
      * @see .RESULT_SYNC_DELAYED_REQUEST
      */
     @Retention(AnnotationRetention.SOURCE)
-    @IntDef(RESULT_REQUEST_DONE, RESULT_SYNC_DISABLED, RESULT_SYNC_ACTIVE, RESULT_TOKEN_EMPTY, RESULT_INTERNET_DISCONNECTED, RESULT_SYNC_DELAYED_REQUEST)
+    @IntDef(
+        RESULT_REQUEST_DONE,
+        RESULT_SYNC_DISABLED,
+        RESULT_SYNC_ACTIVE,
+        RESULT_TOKEN_EMPTY,
+        RESULT_INTERNET_DISCONNECTED,
+        RESULT_SYNC_DELAYED_REQUEST
+    )
     annotation class Result
 
     override fun onCreate() {
@@ -69,11 +78,9 @@ class ContentObserverService : Service() {
 
         super.onCreate()
 
-        databaseObserver = DatabaseObserver()
-        databaseObserver?.register(this)
+        databaseObserver.register(this)
 
-        preferencesObserver = PreferencesObserver()
-        preferencesObserver?.register(this)
+        preferencesObserver.register(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -98,8 +105,6 @@ class ContentObserverService : Service() {
             if (sync != SYNC_NONE) {
                 // Отмена предыдущей задачи.
                 handler.removeCallbacks(runnable)
-
-                val pendingIntent = intent.getParcelableExtra<PendingIntent>(EXTRA_NAME_PENDING)
 
                 // Запуск после задержки.
                 if (intent.getBooleanExtra(EXTRA_NAME_WITH_DELAY, false)) {
@@ -131,16 +136,15 @@ class ContentObserverService : Service() {
 
                     runnable.sync = runnableSync
                     runnable.startIfActive = startIfActive
-                    runnable.pendingIntent = pendingIntent
 
                     handler.postDelayed(runnable, START_SYNC_DELAY)
 
-                    sendResult(pendingIntent, RESULT_SYNC_DELAYED_REQUEST)
+                    sendResult(RESULT_SYNC_DELAYED_REQUEST)
                 } else {
                     // Запуск синхронизации без задержки.
                     val result = performRequestSync(sync, startIfActive)
 
-                    sendResult(pendingIntent, result)
+                    sendResult(result)
                 }
             }
         }
@@ -154,12 +158,10 @@ class ContentObserverService : Service() {
 
         var startIfActive = false
 
-        var pendingIntent: PendingIntent? = null
-
         override fun run() {
             val result = performRequestSync(sync, startIfActive)
 
-            sendResult(pendingIntent, result)
+            sendResult(result)
 
             sync = SYNC_NONE
         }
@@ -228,22 +230,12 @@ class ContentObserverService : Service() {
         return RESULT_REQUEST_DONE
     }
 
-    /**
-     * Отправляет результат в PendingIntent.
-     *
-     * @param pendingIntent Получатель результата.
-     * @param resultCode    Результат ([Result]).
-     */
-    private fun sendResult(pendingIntent: PendingIntent?, @Result resultCode: Int) {
-        if (pendingIntent != null) {
-            val result = Intent().putExtra(EXTRA_NAME_RESULT, resultCode)
-
-            try {
-                pendingIntent.send(this, Activity.RESULT_OK, result)
-            } catch (e: PendingIntent.CanceledException) {
-                e.printStackTrace()
-            }
+    private fun sendResult(@Result resultCode: Int) {
+        if (LOG_ENABLED) {
+            UtilsLog.d(TAG, "sendResult", resultCode.toString())
         }
+
+        BroadcastReceiverRequestSync.send(this, resultCode)
     }
 
     override fun onDestroy() {
@@ -251,8 +243,8 @@ class ContentObserverService : Service() {
             UtilsLog.d(TAG, "onDestroy")
         }
 
-        preferencesObserver?.unregister(this)
-        databaseObserver?.unregister(this)
+        preferencesObserver.unregister(this)
+        databaseObserver.unregister(this)
 
         super.onDestroy()
     }
@@ -265,14 +257,11 @@ class ContentObserverService : Service() {
     companion object {
         private const val TAG = "ContentObserverService"
 
-        private var LOG_ENABLED = false
+        private val LOG_ENABLED = false
 
         private const val EXTRA_NAME_SYNC = "EXTRA_NAME_SYNC"
         private const val EXTRA_NAME_START_IF_ACTIVE = "EXTRA_NAME_START_IF_ACTIVE"
         private const val EXTRA_NAME_WITH_DELAY = "EXTRA_NAME_WITH_DELAY"
-
-        private const val EXTRA_NAME_PENDING = "EXTRA_NAME_PENDING"
-        private const val EXTRA_NAME_RESULT = "EXTRA_NAME_RESULT"
 
         private const val START_SYNC_DELAY = 10000L
 
@@ -327,18 +316,6 @@ class ContentObserverService : Service() {
         const val RESULT_SYNC_DELAYED_REQUEST = 4
 
         /**
-         * Извлекает результат запуска синхронизации из интента.
-         *
-         * @param data Интент.
-         * @return Результат запуска синхронизации ([Result]).
-         */
-        @Result
-        fun getResult(data: Intent?): Int {
-            return data?.getIntExtra(EXTRA_NAME_RESULT, RESULT_REQUEST_DONE)
-                    ?: RESULT_REQUEST_DONE
-        }
-
-        /**
          * Запускает сервис.
          *
          * @param context Контекст.
@@ -361,17 +338,16 @@ class ContentObserverService : Service() {
          * @param withDelay         Запустить синхронизацию после задержки
          * @param pendingIntent     Результат запуска.
          */
-        fun requestSync(context: Context, @Sync sync: Int = SYNC_ALL,
-                        startIfSyncActive: Boolean = false, withDelay: Boolean = false,
-                        pendingIntent: PendingIntent? = null) {
+        fun requestSync(
+            context: Context, @Sync sync: Int = SYNC_ALL,
+            startIfSyncActive: Boolean = false, withDelay: Boolean = false
+        ) {
             val intent = Intent(context, ContentObserverService::class.java)
-                    .putExtra(EXTRA_NAME_SYNC, sync)
-                    .putExtra(EXTRA_NAME_START_IF_ACTIVE, startIfSyncActive)
-                    .putExtra(EXTRA_NAME_WITH_DELAY, withDelay)
+                .putExtra(EXTRA_NAME_SYNC, sync)
+                .putExtra(EXTRA_NAME_START_IF_ACTIVE, startIfSyncActive)
+                .putExtra(EXTRA_NAME_WITH_DELAY, withDelay)
 
-            if (pendingIntent != null) {
-                intent.putExtra(EXTRA_NAME_PENDING, pendingIntent)
-            }
+            UtilsLog.d(TAG, "requestSync")
 
             context.startService(intent)
         }
@@ -381,20 +357,14 @@ class ContentObserverService : Service() {
          * только если синхронизация уже не запущена.
          *
          * @param context       Контекст.
-         * @param pendingIntent Результат запуска.
-         */
-        fun requestSync(context: Context, pendingIntent: PendingIntent) {
-            requestSync(context, SYNC_ALL, startIfSyncActive = false, withDelay = false, pendingIntent = pendingIntent)
-        }
-
-        /**
-         * Запускает синхронизацию всех объектов без задержки и без возврата результата,
-         * только если синхронизация уже не запущена.
-         *
-         * @param context Контекст.
          */
         fun requestSync(context: Context) {
-            requestSync(context, SYNC_ALL, startIfSyncActive = false, withDelay = false, pendingIntent = null)
+            requestSync(
+                context,
+                SYNC_ALL,
+                startIfSyncActive = false,
+                withDelay = false
+            )
         }
     }
 }

@@ -2,6 +2,6 @@
 <ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/progress_bar"
     style="?android:attr/progressBarStyle"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="@dimen/progress_wheel_size"
+    android:layout_height="@dimen/progress_wheel_size"
     android:layout_centerInParent="true" />

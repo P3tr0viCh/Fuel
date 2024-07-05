@@ -35,6 +35,13 @@ import ru.p3tr0vich.fuel.utils.Utils
 import ru.p3tr0vich.fuel.utils.UtilsDate
 import ru.p3tr0vich.fuel.utils.UtilsFormat
 import ru.p3tr0vich.fuel.utils.UtilsLog
+import android.net.Uri
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import ru.p3tr0vich.fuel.helpers.ContactsHelper
+
 
 class ActivityYandexMap : AppCompatActivity(),
     View.OnClickListener, View.OnLongClickListener,
@@ -101,6 +108,7 @@ class ActivityYandexMap : AppCompatActivity(),
         }
 
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_yandex_map)
 
         when (intent.getIntExtra(EXTRA_TYPE, -1)) {
@@ -205,12 +213,13 @@ class ActivityYandexMap : AppCompatActivity(),
             }
 
             webView?.webViewClient = object : WebViewClient() {
-                @Suppress("OverridingDeprecatedMember")
-                override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?, request: WebResourceRequest
+                ): Boolean {
                     this@ActivityYandexMap.runOnUiThread {
                         Utils.openUrl(
                             this@ActivityYandexMap,
-                            url,
+                            request.url,
                             null
                         )
                     }
@@ -219,11 +228,10 @@ class ActivityYandexMap : AppCompatActivity(),
                 }
 
                 override fun onReceivedError(
-                    view: WebView,
-                    request: WebResourceRequest,
-                    error: WebResourceError
+                    view: WebView, request: WebResourceRequest, error: WebResourceError
                 ) {
                     super.onReceivedError(view, request, error)
+
                     if (LOG_ENABLED) {
                         UtilsLog.d(TAG, "onReceivedError", "request == $request, error == $error")
                     }
@@ -376,7 +384,9 @@ class ActivityYandexMap : AppCompatActivity(),
                             distance *= 2
                             setResult(
                                 Activity.RESULT_OK,
-                                Intent().putExtra(EXTRA_DISTANCE, distance)
+                                Intent()
+                                    .putExtra(EXTRA_TYPE, type)
+                                    .putExtra(EXTRA_DISTANCE, distance)
                             )
                             finish()
                         }
@@ -384,7 +394,9 @@ class ActivityYandexMap : AppCompatActivity(),
                         R.id.action_done -> {
                             setResult(
                                 Activity.RESULT_OK,
-                                Intent().putExtra(EXTRA_DISTANCE, distance)
+                                Intent()
+                                    .putExtra(EXTRA_TYPE, type)
+                                    .putExtra(EXTRA_DISTANCE, distance)
                             )
                             finish()
                         }
@@ -399,6 +411,7 @@ class ActivityYandexMap : AppCompatActivity(),
             MAP_TYPE_CENTER -> {
                 setResult(
                     Activity.RESULT_OK, Intent()
+                        .putExtra(EXTRA_TYPE, type)
                         .putExtra(EXTRA_MAP_CENTER_TEXT, mapCenter.text)
                         .putExtra(EXTRA_MAP_CENTER_LATITUDE, mapCenter.latitude)
                         .putExtra(EXTRA_MAP_CENTER_LONGITUDE, mapCenter.longitude)
@@ -553,7 +566,7 @@ class ActivityYandexMap : AppCompatActivity(),
 
     override fun onResolutionRequired(status: Status) {
         try {
-            status.startResolutionForResult(this, REQUEST_CODE_RESOLUTION_REQUIRED)
+            status.startResolutionForResult(resolutionActivity)
         } catch (e: Exception) {
             if (LOG_ENABLED) {
                 UtilsLog.d(TAG, "onResolutionRequired", "Exception e == $e")
@@ -561,9 +574,11 @@ class ActivityYandexMap : AppCompatActivity(),
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            REQUEST_CODE_RESOLUTION_REQUIRED -> when (resultCode) {
+    private val resolutionActivity =
+        registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult()
+        ) {
+            when (it.resultCode) {
                 Activity.RESULT_OK -> btnGeolocation?.callOnClick()
                 Activity.RESULT_CANCELED -> if (LOG_ENABLED) {
                     UtilsLog.d(
@@ -573,10 +588,7 @@ class ActivityYandexMap : AppCompatActivity(),
                     )
                 }
             }
-
-            else -> super.onActivityResult(requestCode, resultCode, data)
         }
-    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -601,7 +613,7 @@ class ActivityYandexMap : AppCompatActivity(),
     companion object {
         private const val TAG = "ActivityYandexMap"
 
-        private var LOG_ENABLED = false
+        private var LOG_ENABLED = true
 
         const val EXTRA_TYPE = "EXTRA_TYPE"
         const val EXTRA_DISTANCE = "EXTRA_DISTANCE"
@@ -618,26 +630,5 @@ class ActivityYandexMap : AppCompatActivity(),
 
         const val MAP_TYPE_DISTANCE = 0
         const val MAP_TYPE_CENTER = 1
-
-        @JvmStatic
-        fun start(parent: FragmentActivity, @MapType mapType: Int, requestCode: Int) {
-            val connectedState = ConnectivityHelper.getConnectedState(parent.applicationContext)
-
-            if (LOG_ENABLED) {
-                UtilsLog.d(TAG, "start", "connectedState == $connectedState")
-            }
-
-            if (connectedState != ConnectivityHelper.DISCONNECTED) {
-                parent.startActivityForResult(
-                    Intent(parent, ActivityYandexMap::class.java)
-                        .putExtra(EXTRA_TYPE, mapType), requestCode
-                )
-            } else {
-                FragmentDialogMessage.show(
-                    parent, null,
-                    parent.getString(R.string.message_error_no_internet)
-                )
-            }
-        }
     }
 }

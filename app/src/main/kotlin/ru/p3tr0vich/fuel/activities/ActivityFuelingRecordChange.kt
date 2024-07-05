@@ -19,9 +19,11 @@ class ActivityFuelingRecordChange : AppCompatActivity() {
         UtilsLog.d(TAG, "onCreate")
 
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_fueling_record_change)
 
         val toolbarRecord = findViewById<Toolbar>(R.id.toolbar_record)
+
         setSupportActionBar(toolbarRecord)
 
         toolbarRecord?.setNavigationIcon(R.drawable.ic_close)

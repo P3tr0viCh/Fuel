@@ -13,11 +13,11 @@ object UtilsLog {
         var msgLog = msg
 
         if (!TextUtils.isEmpty(tag)) {
-            msgLog = "$tag -- $msgLog"
+            msgLog = "$tag: $msgLog"
         }
 
         if (!TextUtils.isEmpty(extMsg)) {
-            msgLog = "$msgLog: $extMsg"
+            msgLog = "$msgLog. $extMsg"
         }
 
         Log.d(LOG_TAG, msgLog)

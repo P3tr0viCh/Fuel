@@ -6,7 +6,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import ru.p3tr0vich.fuel.BuildConfig
 
 abstract class BroadcastReceiverLoading : BroadcastReceiverLocalBase() {
-
     override val action: String
         get() = ACTION
 
@@ -22,8 +21,7 @@ abstract class BroadcastReceiverLoading : BroadcastReceiverLocalBase() {
 
         @JvmStatic
         fun send(context: Context, loading: Boolean) {
-            LocalBroadcastManager.getInstance(context)
-                    .sendBroadcast(Intent(ACTION).putExtra(EXTRA_LOADING, loading))
+            send(context, Intent(ACTION).putExtra(EXTRA_LOADING, loading))
         }
     }
 }

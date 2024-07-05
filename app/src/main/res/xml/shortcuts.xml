@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shortcuts xmlns:tools="http://schemas.android.com/tools"
-           xmlns:android="http://schemas.android.com/apk/res/android">
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <shortcut
         android:enabled="true"
         android:icon="@drawable/ic_shortcut_add"
         android:shortcutDisabledMessage="@string/shortcut_add_record_disabled_message"
         android:shortcutId="addRecord"
         android:shortcutLongLabel="@string/shortcut_add_record_long_label"
-        android:shortcutShortLabel="@string/shortcut_add_record_short_label"
-        tools:targetApi="n_mr1">
+        android:shortcutShortLabel="@string/shortcut_add_record_short_label">
 
+        <categories android:name="android.shortcut.conversation" />
         <intent
             android:action="android.intent.action.VIEW"
             android:targetClass="ru.p3tr0vich.fuel.activities.ActivityFuelingRecordChange"
             android:targetPackage="ru.p3tr0vich.fuel" />
-        <categories android:name="android.shortcut.conversation" />
     </shortcut>
 </shortcuts>

@@ -18,9 +18,11 @@ import ru.p3tr0vich.fuel.fragments.FragmentActivityDialogSMSTextPattern
 class ActivityDialog : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_dialog)
 
         val toolbarDialog = findViewById<Toolbar>(R.id.toolbar_dialog)
+
         setSupportActionBar(toolbarDialog)
 
         toolbarDialog?.setNavigationIcon(R.drawable.ic_close)

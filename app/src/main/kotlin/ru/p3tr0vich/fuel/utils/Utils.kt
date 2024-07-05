@@ -128,9 +128,9 @@ object Utils {
     }
 
     @JvmStatic
-    fun openUrl(context: Context, url: String, onErrorMessage: String?) {
+    fun openUrl(context: Context, uri: Uri, onErrorMessage: String?) {
         try {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            context.startActivity(Intent(Intent.ACTION_VIEW, uri))
         } catch (e: Exception) {
             UtilsLog.d(TAG, "openUrl", "exception == $e")
 
@@ -138,6 +138,11 @@ object Utils {
                 toast(onErrorMessage!!)
             }
         }
+    }
+
+    @JvmStatic
+    fun openUrl(context: Context, url: String, onErrorMessage: String?) {
+        openUrl(context, Uri.parse(url), onErrorMessage)
     }
 
     @JvmStatic

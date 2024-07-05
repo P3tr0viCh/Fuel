@@ -3,8 +3,11 @@ package ru.p3tr0vich.fuel.activities
 import android.animation.Animator
 import android.animation.ValueAnimator
 import android.app.Activity
+import android.app.PendingIntent
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SyncStatusObserver
 import android.content.res.Configuration
 import android.os.Bundle
@@ -23,11 +26,16 @@ import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.FragmentResultListener
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.navigation.NavigationView
 import ru.p3tr0vich.fuel.ContentObserverService
+import ru.p3tr0vich.fuel.ContentObserverService.Companion
 import ru.p3tr0vich.fuel.R
+import ru.p3tr0vich.fuel.activities.ActivityYandexMap.Companion.EXTRA_TYPE
 import ru.p3tr0vich.fuel.factories.FragmentFactory
 import ru.p3tr0vich.fuel.fragments.*
+import ru.p3tr0vich.fuel.helpers.ConnectivityHelper
 import ru.p3tr0vich.fuel.helpers.ContactsHelper
 import ru.p3tr0vich.fuel.helpers.DatabaseHelper
 import ru.p3tr0vich.fuel.helpers.FragmentHelper
@@ -36,6 +44,7 @@ import ru.p3tr0vich.fuel.models.FuelingRecord
 import ru.p3tr0vich.fuel.models.MapCenter
 import ru.p3tr0vich.fuel.receivers.BroadcastReceiverDatabaseChanged
 import ru.p3tr0vich.fuel.receivers.BroadcastReceiverLoading
+import ru.p3tr0vich.fuel.receivers.BroadcastReceiverRequestSync
 import ru.p3tr0vich.fuel.sync.SyncAccount
 import ru.p3tr0vich.fuel.sync.SyncYandexDisk
 import ru.p3tr0vich.fuel.utils.Utils
@@ -70,12 +79,13 @@ class ActivityMain : AppCompatActivity(),
 
     private var btnSync: TextView? = null
 
-    private var broadcastReceiverLoading: BroadcastReceiverLoading? = null
-    private var broadcastReceiverDatabaseChanged: BroadcastReceiverDatabaseChanged? = null
+    private lateinit var broadcastReceiverLoading: BroadcastReceiverLoading
+    private lateinit var broadcastReceiverDatabaseChanged: BroadcastReceiverDatabaseChanged
+    private lateinit var broadcastReceiverRequestSync: BroadcastReceiverRequestSync
 
-    private var preferencesHelper: PreferencesHelper? = null
+    private lateinit var preferencesHelper: PreferencesHelper
 
-    private var fragmentHelper: FragmentHelper? = null
+    private lateinit var fragmentHelper: FragmentHelper
 
     @FragmentFactory.Ids.Id
     private var currentFragmentId = 0
@@ -92,6 +102,7 @@ class ActivityMain : AppCompatActivity(),
         UtilsLog.d(TAG, "onCreate")
 
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
 
         syncAccount = SyncAccount(this)
@@ -113,18 +124,25 @@ class ActivityMain : AppCompatActivity(),
 
         initLoadingStatusReceiver()
         initDatabaseChangedReceiver()
+        initRequestSyncReceiver()
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
+        supportFragmentManager.setFragmentResultListener(
+            DIALOG_REQUEST_KEY,
+            this,
+            fragmentResultListener
+        )
+
         if (savedInstanceState == null) {
-            fragmentHelper!!.addMainFragment()
+            fragmentHelper.addMainFragment()
 
             ContentObserverService.requestSync(this)
         } else {
             currentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID)
 
             if (currentFragmentId == FragmentFactory.Ids.PREFERENCES) {
-                fragmentHelper!!.fragmentPreferences?.let {
+                fragmentHelper.fragmentPreferences?.let {
                     drawerToggle?.isDrawerIndicatorEnabled = it.isInRoot
                 }
             }
@@ -165,7 +183,7 @@ class ActivityMain : AppCompatActivity(),
                 position: Int,
                 id: Long
             ) {
-                fragmentHelper?.fragmentFueling?.let {
+                fragmentHelper.fragmentFueling?.let {
                     if (it.isVisible) {
                         it.setFilterMode(positionToFilterMode(position))
                     }
@@ -187,7 +205,7 @@ class ActivityMain : AppCompatActivity(),
             override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
 
-                fragmentHelper?.fragmentFueling?.let {
+                fragmentHelper.fragmentFueling?.let {
                     if (it.isVisible) {
                         it.setFabVisible(false)
                     }
@@ -201,7 +219,7 @@ class ActivityMain : AppCompatActivity(),
             override fun onDrawerClosed(drawerView: View) {
                 super.onDrawerClosed(drawerView)
 
-                fragmentHelper?.fragmentFueling?.let {
+                fragmentHelper.fragmentFueling?.let {
                     if (it.isVisible) {
                         it.setFabVisible(true)
                     }
@@ -214,7 +232,7 @@ class ActivityMain : AppCompatActivity(),
         drawerLayout!!.addDrawerListener(drawerToggle!!)
         drawerToggle!!.syncState()
         drawerToggle!!.toolbarNavigationClickListener =
-            View.OnClickListener { fragmentHelper!!.currentFragment.onBackPressed() }
+            View.OnClickListener { fragmentHelper.currentFragment.onBackPressed() }
 
         navigationView = findViewById(R.id.drawer_navigation_view)
         navigationView!!.setNavigationItemSelectedListener { menuItem ->
@@ -238,11 +256,21 @@ class ActivityMain : AppCompatActivity(),
         imgSync = findViewById(R.id.image_sync)
 
         btnSync = findViewById(R.id.btn_sync)
+
         btnSync!!.setOnClickListener {
-            ContentObserverService.requestSync(
-                this@ActivityMain,
-                createPendingResult(REQUEST_CODE_REQUEST_SYNC, Intent(), 0)
-            )
+            if (preferencesHelper.isSyncEnabled) {
+                ContentObserverService.requestSync(this@ActivityMain)
+            } else {
+                clickedMenuId = R.id.action_preferences
+
+                openPreferenceSync = true
+
+                if (drawerLayout!!.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout!!.closeDrawer(GravityCompat.START)
+                } else {
+                    selectItem(clickedMenuId)
+                }
+            }
         }
     }
 
@@ -250,7 +278,7 @@ class ActivityMain : AppCompatActivity(),
     private fun initLoadingStatusReceiver() {
         broadcastReceiverLoading = object : BroadcastReceiverLoading() {
             override fun onReceive(loading: Boolean) {
-                val fragmentFueling = fragmentHelper!!.fragmentFueling
+                val fragmentFueling = fragmentHelper.fragmentFueling
 
                 if (fragmentFueling != null)
                     fragmentFueling.setLoading(loading)
@@ -258,16 +286,44 @@ class ActivityMain : AppCompatActivity(),
                     UtilsLog.d(TAG, "broadcastReceiverLoading.onReceive", "fragmentFueling == null")
             }
         }
-        broadcastReceiverLoading!!.register(this)
+        broadcastReceiverLoading.register(this)
     }
 
     private fun initDatabaseChangedReceiver() {
         broadcastReceiverDatabaseChanged = object : BroadcastReceiverDatabaseChanged() {
             override fun onReceive(id: Long) {
-                fragmentHelper!!.fragmentFueling?.updateList(id)
+                fragmentHelper.fragmentFueling?.updateList(id)
             }
         }
-        broadcastReceiverDatabaseChanged!!.register(this)
+        broadcastReceiverDatabaseChanged.register(this)
+    }
+
+    private fun initRequestSyncReceiver() {
+        broadcastReceiverRequestSync = object : BroadcastReceiverRequestSync() {
+            override fun onReceive(resultCode: Int) {
+                UtilsLog.d(BroadcastReceiverRequestSync::class.simpleName, resultCode.toString())
+
+                when (resultCode) {
+                    ContentObserverService.RESULT_INTERNET_DISCONNECTED -> {
+                        FragmentDialogMessage.show(
+                            this@ActivityMain,
+                            null,
+                            getString(R.string.message_error_no_internet)
+                        )
+                    }
+
+                    ContentObserverService.RESULT_TOKEN_EMPTY -> {
+                        showDialogNeedAuth()
+                    }
+
+                    ContentObserverService.RESULT_SYNC_DISABLED -> {
+                        UtilsLog.d(TAG, "RESULT_SYNC_DISABLED")
+                    }
+                }
+            }
+        }
+
+        broadcastReceiverRequestSync.register(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -311,7 +367,7 @@ class ActivityMain : AppCompatActivity(),
 
         if (currentFragmentId == fragmentId) {
             if (currentFragmentId == FragmentFactory.Ids.PREFERENCES) {
-                fragmentHelper!!.fragmentPreferences?.let {
+                fragmentHelper.fragmentPreferences?.let {
                     if (openPreferenceSync) {
                         it.goToSyncScreen()
                     } else {
@@ -323,7 +379,7 @@ class ActivityMain : AppCompatActivity(),
             return
         }
 
-        fragmentHelper!!.getFragment(FragmentFactory.Ids.MAIN)?.let {
+        fragmentHelper.getFragment(FragmentFactory.Ids.MAIN)?.let {
             if (!it.isVisible) {
                 supportFragmentManager.popBackStack()
             }
@@ -338,21 +394,30 @@ class ActivityMain : AppCompatActivity(),
         if (openPreferenceSync) {
             bundle.putString(
                 FragmentPreferences.KEY_PREFERENCE_SCREEN,
-                preferencesHelper!!.keys.sync
+                preferencesHelper.keys.sync
             )
 
             openPreferenceSync = false
         }
 
-        fragmentHelper!!.replaceFragment(fragmentId, bundle)
+        fragmentHelper.replaceFragment(fragmentId, bundle)
+    }
+
+    private val fragmentResultListener = object : FragmentResultListener {
+        override fun onFragmentResult(requestKey: String, result: Bundle) {
+            when (result.getInt(DIALOG_TYPE)) {
+                DIALOG_TYPE_YANDEX_AUTH ->
+                    Utils.openUrl(this@ActivityMain, SyncYandexDisk.URL.AUTH, null)
+            }
+        }
     }
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             if (drawerLayout!!.isDrawerVisible(GravityCompat.START)) {
-            drawerLayout!!.closeDrawer(GravityCompat.START)
+                drawerLayout!!.closeDrawer(GravityCompat.START)
             } else {
-                if (fragmentHelper!!.currentFragment.onBackPressed()) {
+                if (fragmentHelper.currentFragment.onBackPressed()) {
                     return
                 }
 
@@ -376,8 +441,9 @@ class ActivityMain : AppCompatActivity(),
     override fun onDestroy() {
         ContentResolver.removeStatusChangeListener(syncMonitor)
 
-        broadcastReceiverDatabaseChanged?.unregister(this)
-        broadcastReceiverLoading?.unregister(this)
+        broadcastReceiverDatabaseChanged.unregister(this)
+        broadcastReceiverLoading.unregister(this)
+        broadcastReceiverRequestSync.unregister(this)
 
         super.onDestroy()
     }
@@ -388,52 +454,6 @@ class ActivityMain : AppCompatActivity(),
 
     override fun onRecordChange(fuelingRecord: FuelingRecord?) {
         startActivity(ActivityFuelingRecordChange.getIntentForStart(this, fuelingRecord))
-    }
-
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode != Activity.RESULT_OK) return
-
-        when (requestCode) {
-            REQUEST_CODE_ACTIVITY_MAP_DISTANCE -> {
-                data?.getIntExtra(ActivityYandexMap.EXTRA_DISTANCE, 0)?.let {
-                    fragmentHelper!!.fragmentCalc?.setDistance(it)
-                }
-            }
-            REQUEST_CODE_ACTIVITY_MAP_CENTER -> {
-                preferencesHelper!!.mapCenter = MapCenter(data)
-            }
-            REQUEST_CODE_DIALOG_YANDEX_AUTH -> {
-                Utils.openUrl(this, SyncYandexDisk.URL.AUTH, null)
-            }
-            REQUEST_CODE_REQUEST_SYNC -> {
-                when (ContentObserverService.getResult(data)) {
-                    ContentObserverService.RESULT_INTERNET_DISCONNECTED -> {
-                        FragmentDialogMessage.show(
-                            this,
-                            null,
-                            getString(R.string.message_error_no_internet)
-                        )
-                    }
-                    ContentObserverService.RESULT_TOKEN_EMPTY -> {
-                        showDialogNeedAuth()
-                    }
-                    ContentObserverService.RESULT_SYNC_DISABLED -> {
-                        clickedMenuId = R.id.action_preferences
-                        openPreferenceSync = true
-
-                        if (drawerLayout!!.isDrawerOpen(GravityCompat.START)) {
-                            drawerLayout!!.closeDrawer(GravityCompat.START)
-                        } else {
-                            selectItem(clickedMenuId)
-                        }
-                    }
-                    else -> {
-                    }
-                }
-            }
-        }
     }
 
     override fun onFilterChange(@DatabaseHelper.Filter.Mode filterMode: Int) {
@@ -530,16 +550,16 @@ class ActivityMain : AppCompatActivity(),
 
             imgSync!!.startAnimation(animationSync)
         } else {
-            if (preferencesHelper!!.isSyncEnabled) {
+            if (preferencesHelper.isSyncEnabled) {
                 if (syncAccount!!.yandexDiskToken.isNullOrEmpty()) {
                     btnSync!!.text = getString(R.string.sync_no_token)
                     imgSync!!.setImageResource(R.drawable.ic_sync_off)
                 } else {
-                    if (preferencesHelper!!.lastSyncHasError) {
+                    if (preferencesHelper.lastSyncHasError) {
                         btnSync!!.text = getString(R.string.sync_error)
                         imgSync!!.setImageResource(R.drawable.ic_sync_alert)
                     } else {
-                        val dateTime = preferencesHelper!!.lastSyncDateTime
+                        val dateTime = preferencesHelper.lastSyncDateTime
 
                         btnSync!!.text = if (dateTime != PreferencesHelper.SYNC_NONE)
                             getString(
@@ -576,21 +596,51 @@ class ActivityMain : AppCompatActivity(),
 
     private fun showDialogNeedAuth() {
         FragmentDialogQuestion.show(
-            this, REQUEST_CODE_DIALOG_YANDEX_AUTH,
+            this,
+            DIALOG_TYPE_YANDEX_AUTH,
             R.string.dialog_caption_auth,
             R.string.message_dialog_auth,
             R.string.dialog_btn_agree, R.string.dialog_btn_disagree
         )
     }
 
-    private fun startYandexMap(@ActivityYandexMap.MapType mapType: Int) {
-        val requestCode = when (mapType) {
-            ActivityYandexMap.MAP_TYPE_DISTANCE -> REQUEST_CODE_ACTIVITY_MAP_DISTANCE
-            ActivityYandexMap.MAP_TYPE_CENTER -> REQUEST_CODE_ACTIVITY_MAP_CENTER
-            else -> return
+    private val activityYandexMap =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val data = it.data
+
+                when (data?.getIntExtra(ActivityYandexMap.EXTRA_TYPE, 0)) {
+                    ActivityYandexMap.MAP_TYPE_DISTANCE -> {
+                        data.getIntExtra(ActivityYandexMap.EXTRA_DISTANCE, 0).let {
+                            fragmentHelper.fragmentCalc?.setDistance(it)
+                        }
+                    }
+
+                    ActivityYandexMap.MAP_TYPE_CENTER -> {
+                        preferencesHelper.mapCenter = MapCenter(data)
+                    }
+                }
+            }
         }
 
-        ActivityYandexMap.start(this, mapType, requestCode)
+    private fun startYandexMap(@ActivityYandexMap.MapType mapType: Int) {
+        val connectedState = ConnectivityHelper.getConnectedState(applicationContext)
+
+        UtilsLog.d(TAG, "startYandexMap", "connectedState == $connectedState")
+
+        if (connectedState != ConnectivityHelper.DISCONNECTED) {
+            activityYandexMap.launch(
+                Intent(this, ActivityYandexMap::class.java)
+                    .putExtra(EXTRA_TYPE, mapType)
+            )
+        } else {
+            FragmentDialogMessage.show(
+                this, null,
+                parent.getString(R.string.message_error_no_internet)
+            )
+        }
     }
 
     override fun onCalcDistanceButtonClick() {
@@ -627,7 +677,7 @@ class ActivityMain : AppCompatActivity(),
                 val address = ContactsHelper.getPhoneNumber(this, it.data)
 
                 if (address != null) {
-                    preferencesHelper!!.smsAddress = address
+                    preferencesHelper.smsAddress = address
                 }
             }
         }
@@ -641,10 +691,9 @@ class ActivityMain : AppCompatActivity(),
 
         private const val KEY_CURRENT_FRAGMENT_ID = "KEY_CURRENT_FRAGMENT_ID"
 
-        private const val REQUEST_CODE_ACTIVITY_MAP_DISTANCE = 100
-        private const val REQUEST_CODE_ACTIVITY_MAP_CENTER = 101
-
-        private const val REQUEST_CODE_DIALOG_YANDEX_AUTH = 200
+        public const val DIALOG_REQUEST_KEY = "DIALOG_REQUEST_KEY"
+        public const val DIALOG_TYPE = "DIALOG_TYPE"
+        public const val DIALOG_TYPE_YANDEX_AUTH = 100
 
         private const val REQUEST_CODE_REQUEST_SYNC = 400
 

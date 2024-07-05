@@ -54,12 +54,12 @@ class ActivityTokenReceiver : AppCompatActivity() {
         startActivity(Intent(applicationContext, ActivityMain::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP))
 
-        ContentObserverService.requestSync(this, SYNC_ALL, startIfSyncActive = true, withDelay = false, pendingIntent = null)
+        ContentObserverService.requestSync(this, SYNC_ALL, startIfSyncActive = true, withDelay = false)
     }
 
     companion object {
         private const val TAG = "ActivityTokenReceiver"
 
-        private var LOG_ENABLED = false
+        private val LOG_ENABLED = false
     }
 }

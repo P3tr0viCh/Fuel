@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.telephony.PhoneNumberUtils
 import android.text.TextUtils
+import ru.p3tr0vich.fuel.ApplicationFuel
 import ru.p3tr0vich.fuel.BuildConfig
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.activities.ActivityFuelingRecordChange
@@ -37,7 +38,8 @@ class BroadcastReceiverSMS : BroadcastReceiverSMSBase() {
             price = it.price
             total = it.lastTotal
 
-            isEnabled = !(TextUtils.isEmpty(address) || TextUtils.isEmpty(pattern)) && it.isSMSEnabled
+            isEnabled =
+                !(TextUtils.isEmpty(address) || TextUtils.isEmpty(pattern)) && it.isSMSEnabled
         }
     }
 
@@ -65,17 +67,23 @@ class BroadcastReceiverSMS : BroadcastReceiverSMSBase() {
 
         val fuelingRecord = FuelingRecord(cost, volume, total)
 
-        val contentIntent = PendingIntent.getActivity(context, id,
-                ActivityFuelingRecordChange.getIntentForStart(context, fuelingRecord),
-                PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_IMMUTABLE)
+        val contentIntent = PendingIntent.getActivity(
+            context, id,
+            ActivityFuelingRecordChange.getIntentForStart(context, fuelingRecord),
+            PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_IMMUTABLE
+        )
 
         NotificationsHelper(context)
-                .showNotification(CHANNEL_ID, context.getString(R.string.text_notification_sms_channel_name), id,
-                        context.getString(R.string.text_notification_sms_title),
-                        context.getString(R.string.text_notification_sms_text,
-                                UtilsFormat.floatToString(cost),
-                                UtilsFormat.floatToString(volume)),
-                        contentIntent)
+            .showNotification(
+                CHANNEL_ID, context.getString(R.string.text_notification_sms_channel_name), id,
+                context.getString(R.string.text_notification_sms_title),
+                context.getString(
+                    R.string.text_notification_sms_text,
+                    UtilsFormat.floatToString(cost),
+                    UtilsFormat.floatToString(volume)
+                ),
+                contentIntent
+            )
     }
 
     companion object {

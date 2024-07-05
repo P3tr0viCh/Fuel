@@ -8,6 +8,7 @@ import android.content.Context
 import android.database.Cursor
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -71,7 +72,7 @@ class FragmentFueling : FragmentBase(FragmentFactory.Ids.FUELING),
 
     private var floatingActionButton: FloatingActionButton? = null
 
-    private val handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
 
     private var fuelingTotalView: FuelingTotalView? = null
 

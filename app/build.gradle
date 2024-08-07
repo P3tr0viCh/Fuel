@@ -73,12 +73,10 @@ android {
 
     productFlavors {
     }
-
-    //noinspection GroovyMissingReturnStatement
     packagingOptions {
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-        exclude '.readme'
+        resources {
+            excludes += ['META-INF/LICENSE.txt', 'META-INF/NOTICE.txt', '.readme']
+        }
     }
 
     compileOptions {
@@ -100,19 +98,20 @@ android {
         unitTests.returnDefaultValues true
     }
 
-    lintOptions {
-        checkReleaseBuilds false
-        abortOnError false
-    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
     }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
 }
 
 afterEvaluate {
-    android.sourceSets.all { sourceSet ->
+    android.sourceSets.configureEach { sourceSet ->
         if (!sourceSet.name.startsWith("test")) {
             sourceSet.kotlin.setSrcDirs([])
         }

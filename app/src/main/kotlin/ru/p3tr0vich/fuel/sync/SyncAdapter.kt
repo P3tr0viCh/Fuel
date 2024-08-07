@@ -10,6 +10,7 @@ import com.yandex.disk.rest.exceptions.ServerException
 import com.yandex.disk.rest.exceptions.ServerIOException
 import com.yandex.disk.rest.exceptions.http.HttpCodeException
 import ru.p3tr0vich.fuel.helpers.ContentProviderHelper
+import ru.p3tr0vich.fuel.utils.Utils
 import ru.p3tr0vich.fuel.utils.UtilsLog
 import java.io.IOException
 import java.util.*
@@ -19,24 +20,24 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
     private var syncProviderDatabase: SyncProviderDatabase? = null
     private var syncProviderPreferences: SyncProviderPreferences? = null
 
-    private var syncAccount: SyncAccount? = null
-
     private var syncLocal: SyncLocal? = null
     private var syncYandexDisk: SyncYandexDisk? = null
 
-    override fun onPerformSync(account: Account, extras: Bundle, authority: String,
-                               provider: ContentProviderClient, syncResult: SyncResult) {
+    override fun onPerformSync(
+        account: Account, extras: Bundle, authority: String,
+        provider: ContentProviderClient, syncResult: SyncResult
+    ) {
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "onPerformSync", "start")
         }
 
-        try { // finally
+        try {
             syncProviderDatabase = SyncProviderDatabase(provider)
             syncProviderPreferences = SyncProviderPreferences(context, provider)
 
-            syncAccount = SyncAccount(context)
+            val syncAccount = SyncAccount(context)
 
-            val yandexDiskToken = syncAccount!!.yandexDiskToken
+            val yandexDiskToken = syncAccount.yandexDiskToken
 
             if (TextUtils.isEmpty(yandexDiskToken)) {
                 syncResult.stats.numAuthExceptions++
@@ -54,37 +55,36 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
 
             syncYandexDisk = SyncYandexDisk(syncFiles, yandexDiskToken!!)
 
-            try { // catch
-                syncLocal!!.makeDirs()
+            syncLocal!!.makeDirs()
 
-                try {
-                    if (extras.getBoolean(SYNC_DATABASE, true)) {
-                        syncDatabase()
-                    }
-
-                    if (extras.getBoolean(SYNC_PREFERENCES, true)) {
-                        syncPreferences()
-                    }
-                } finally {
-                    try {
-                        syncLocal!!.deleteFiles()
-                    } catch (e: IOException) {
-                        handleException(e, syncResult)
-                    }
+            try {
+                if (extras.getBoolean(SYNC_DATABASE, true)) {
+                    syncDatabase()
                 }
-            } catch (e: Exception) {
-                handleException(e, syncResult)
+
+                if (extras.getBoolean(SYNC_PREFERENCES, true)) {
+                    syncPreferences()
+                }
+            } finally {
+                syncLocal!!.deleteFiles()
             }
+        } catch (e: Exception) {
+            handleException(e, syncResult)
         } finally {
             try {
-                syncProviderPreferences!!.putLastSync(System.currentTimeMillis(), syncResult.hasError())
+                syncProviderPreferences!!.putLastSync(
+                    System.currentTimeMillis(),
+                    syncResult.hasError()
+                )
             } catch (e: RemoteException) {
                 handleException(e, syncResult)
             }
 
             if (LOG_ENABLED || syncResult.hasError()) {
-                UtilsLog.d(TAG, "onPerformSync",
-                        "finish" + if (syncResult.hasError()) ", errors == $syncResult" else ", all ok")
+                UtilsLog.d(
+                    TAG, "onPerformSync",
+                    "finish" + if (syncResult.hasError()) ", errors == $syncResult" else ", all ok"
+                )
             }
 
             if (extras.getBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, false)) {
@@ -93,7 +93,6 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
 
             syncYandexDisk = null
             syncLocal = null
-            syncAccount = null
             syncProviderPreferences = null
             syncProviderDatabase = null
         }
@@ -107,20 +106,29 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
             is HttpCodeException -> {
                 if (e.code == SyncYandexDisk.HTTP_CODE_UNAUTHORIZED) {
                     syncResult.stats.numAuthExceptions++
-                    syncAccount!!.yandexDiskToken = null
+
+                    SyncAccount(context).yandexDiskToken = null
                 } else {
                     syncResult.stats.numIoExceptions++
                 }
             }
+
             is ServerIOException -> syncResult.stats.numIoExceptions++
             is ServerException -> syncResult.stats.numIoExceptions++
             else -> syncResult.databaseError = true
         }
 
+        e.message?.let { Utils.toast(it) }
+
         UtilsLog.d(TAG, "handleException", "error  == $e")
     }
 
-    @Throws(IOException::class, ServerException::class, RemoteException::class, FormatException::class)
+    @Throws(
+        IOException::class,
+        ServerException::class,
+        RemoteException::class,
+        FormatException::class
+    )
     private fun syncPreferences() {
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "syncPreferences", "start")
@@ -145,8 +153,10 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
             val isChanged = syncProviderPreferences!!.isChanged
 
             if (LOG_ENABLED) {
-                UtilsLog.d(TAG, "syncPreferences",
-                        "serverRevision == $serverRevision, localRevision == $localRevision, preference changed == $isChanged")
+                UtilsLog.d(
+                    TAG, "syncPreferences",
+                    "serverRevision == $serverRevision, localRevision == $localRevision, preference changed == $isChanged"
+                )
             }
 
             if (localRevision < serverRevision) {
@@ -193,7 +203,12 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
         }
     }
 
-    @Throws(IOException::class, RemoteException::class, FormatException::class, ServerException::class)
+    @Throws(
+        IOException::class,
+        RemoteException::class,
+        FormatException::class,
+        ServerException::class
+    )
     private fun syncPreferencesSave(revision: Int) {
         // 1) Сохранить настройки в файл в папке кэша.
         // 2) Сохранить номер ревизии в файл в папке кэша.
@@ -279,7 +294,12 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
         }
     }
 
-    @Throws(IOException::class, ServerException::class, RemoteException::class, FormatException::class)
+    @Throws(
+        IOException::class,
+        ServerException::class,
+        RemoteException::class,
+        FormatException::class
+    )
     private fun syncDatabase() {
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "syncDatabase", "start")
@@ -301,7 +321,11 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
             // или файлы синхронизации отсутствуют на сервере.
 
             if (LOG_ENABLED) {
-                UtilsLog.d(TAG, "syncDatabase", "serverRevision == $serverRevision, localRevision == $localRevision")
+                UtilsLog.d(
+                    TAG,
+                    "syncDatabase",
+                    "serverRevision == $serverRevision, localRevision == $localRevision"
+                )
             }
 
             // Проверить, что данные на этом устройстве были загружены из резервной копии.
@@ -406,8 +430,10 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
 
         val syncRecords = syncProviderDatabase!!.getSyncRecords(saveAllRecords, addDeleteAll)
         if (LOG_ENABLED) {
-            UtilsLog.d(TAG, "syncDatabaseSave",
-                    "syncProviderDatabase.getSyncRecords(saveAllRecords == $saveAllRecords, addDeleteAll == $addDeleteAll) OK")
+            UtilsLog.d(
+                TAG, "syncDatabaseSave",
+                "syncProviderDatabase.getSyncRecords(saveAllRecords == $saveAllRecords, addDeleteAll == $addDeleteAll) OK"
+            )
         }
 
         val size = syncRecords.size
@@ -464,7 +490,12 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
         }
     }
 
-    @Throws(IOException::class, ServerException::class, RemoteException::class, FormatException::class)
+    @Throws(
+        IOException::class,
+        ServerException::class,
+        RemoteException::class,
+        FormatException::class
+    )
     private fun syncDatabaseLoad(localRevision: Int, serverRevision: Int) {
         // 1) Получить файлы БД с сервера и сохранить в папку кэша.
         // 2) Прочитать записи из файлов в папке кэша.
@@ -482,7 +513,11 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
         for (revision in localRevision + 1..serverRevision) {
             loadResult = syncYandexDisk!!.loadDatabase(revision)
             if (LOG_ENABLED) {
-                UtilsLog.d(TAG, "syncDatabaseLoad", "syncYandexDisk.loadDatabase(revision == $revision, loadResult == $loadResult) OK")
+                UtilsLog.d(
+                    TAG,
+                    "syncDatabaseLoad",
+                    "syncYandexDisk.loadDatabase(revision == $revision, loadResult == $loadResult) OK"
+                )
             }
 
             if (loadResult) {
@@ -496,13 +531,14 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
         //        for (String record : syncRecords) if (LOG_ENABLED) UtilsLog.d(TAG, record);
 
         syncProviderDatabase!!.updateDatabase(syncRecords)
+
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "syncDatabaseLoad", "syncProviderDatabase.updateDatabase() OK")
         }
 
         syncProviderPreferences!!.databaseRevision = serverRevision
 
-        context.contentResolver.notifyChange(ContentProviderHelper.URI_DATABASE_SYNC, null, false)
+        context.contentResolver.notifyChange(ContentProviderHelper.URI_DATABASE_SYNC, null)
 
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "syncDatabaseLoad", "finish")
@@ -512,7 +548,7 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
     companion object {
         private const val TAG = "SyncAdapter"
 
-        private var LOG_ENABLED = false
+        private var LOG_ENABLED = true
 
         const val SYNC_DATABASE = "SYNC_DATABASE"
         const val SYNC_PREFERENCES = "SYNC_PREFERENCES"

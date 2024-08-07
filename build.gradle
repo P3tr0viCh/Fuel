@@ -6,9 +6,9 @@ buildscript {
         minSdkVersion = 28
         targetSdkVersion = 28
 
-        gradleVersion = '8.5.0'
+        gradleVersion = '8.5.1'
 
-        kotlinVersion = '2.0.0'
+        kotlinVersion = '2.0.10'
     }
 
     repositories {

@@ -3,11 +3,8 @@ package ru.p3tr0vich.fuel.activities
 import android.animation.Animator
 import android.animation.ValueAnimator
 import android.app.Activity
-import android.app.PendingIntent
 import android.content.ContentResolver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.SyncStatusObserver
 import android.content.res.Configuration
 import android.os.Bundle
@@ -17,7 +14,11 @@ import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -27,14 +28,16 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentResultListener
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.navigation.NavigationView
 import ru.p3tr0vich.fuel.ContentObserverService
-import ru.p3tr0vich.fuel.ContentObserverService.Companion
 import ru.p3tr0vich.fuel.R
-import ru.p3tr0vich.fuel.activities.ActivityYandexMap.Companion.EXTRA_TYPE
 import ru.p3tr0vich.fuel.factories.FragmentFactory
-import ru.p3tr0vich.fuel.fragments.*
+import ru.p3tr0vich.fuel.fragments.FragmentCalc
+import ru.p3tr0vich.fuel.fragments.FragmentDialogMessage
+import ru.p3tr0vich.fuel.fragments.FragmentDialogQuestion
+import ru.p3tr0vich.fuel.fragments.FragmentFueling
+import ru.p3tr0vich.fuel.fragments.FragmentInterface
+import ru.p3tr0vich.fuel.fragments.FragmentPreferences
 import ru.p3tr0vich.fuel.helpers.ConnectivityHelper
 import ru.p3tr0vich.fuel.helpers.ContactsHelper
 import ru.p3tr0vich.fuel.helpers.DatabaseHelper
@@ -403,27 +406,29 @@ class ActivityMain : AppCompatActivity(),
         fragmentHelper.replaceFragment(fragmentId, bundle)
     }
 
-    private val fragmentResultListener = object : FragmentResultListener {
-        override fun onFragmentResult(requestKey: String, result: Bundle) {
+    private val fragmentResultListener =
+        FragmentResultListener { _, result ->
             when (result.getInt(DIALOG_TYPE)) {
                 DIALOG_TYPE_YANDEX_AUTH ->
                     Utils.openUrl(this@ActivityMain, SyncYandexDisk.URL.AUTH, null)
             }
         }
-    }
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             if (drawerLayout!!.isDrawerVisible(GravityCompat.START)) {
                 drawerLayout!!.closeDrawer(GravityCompat.START)
-            } else {
-                if (fragmentHelper.currentFragment.onBackPressed()) {
-                    return
-                }
+                return
+            }
 
-                if (supportFragmentManager.backStackEntryCount != 0) {
-                    supportFragmentManager.popBackStack()
-                }
+            if (fragmentHelper.currentFragment.onBackPressed()) {
+                return
+            }
+
+            if (supportFragmentManager.backStackEntryCount == 0) {
+                finishAffinity()
+            } else {
+                supportFragmentManager.popBackStack()
             }
         }
     }
@@ -607,9 +612,9 @@ class ActivityMain : AppCompatActivity(),
     private val activityYandexMap =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
-        ) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                val data = it.data
+        ) { activityResult ->
+            if (activityResult.resultCode == Activity.RESULT_OK) {
+                val data = activityResult.data
 
                 when (data?.getIntExtra(ActivityYandexMap.EXTRA_TYPE, 0)) {
                     ActivityYandexMap.MAP_TYPE_DISTANCE -> {
@@ -633,7 +638,7 @@ class ActivityMain : AppCompatActivity(),
         if (connectedState != ConnectivityHelper.DISCONNECTED) {
             activityYandexMap.launch(
                 Intent(this, ActivityYandexMap::class.java)
-                    .putExtra(EXTRA_TYPE, mapType)
+                    .putExtra(ActivityYandexMap.EXTRA_TYPE, mapType)
             )
         } else {
             FragmentDialogMessage.show(
@@ -691,11 +696,9 @@ class ActivityMain : AppCompatActivity(),
 
         private const val KEY_CURRENT_FRAGMENT_ID = "KEY_CURRENT_FRAGMENT_ID"
 
-        public const val DIALOG_REQUEST_KEY = "DIALOG_REQUEST_KEY"
-        public const val DIALOG_TYPE = "DIALOG_TYPE"
-        public const val DIALOG_TYPE_YANDEX_AUTH = 100
-
-        private const val REQUEST_CODE_REQUEST_SYNC = 400
+        const val DIALOG_REQUEST_KEY = "DIALOG_REQUEST_KEY"
+        const val DIALOG_TYPE = "DIALOG_TYPE"
+        const val DIALOG_TYPE_YANDEX_AUTH = 100
 
         @DatabaseHelper.Filter.Mode
         private fun positionToFilterMode(position: Int): Int {

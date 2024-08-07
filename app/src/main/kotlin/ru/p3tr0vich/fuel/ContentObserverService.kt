@@ -257,7 +257,7 @@ class ContentObserverService : Service() {
     companion object {
         private const val TAG = "ContentObserverService"
 
-        private val LOG_ENABLED = false
+        private val LOG_ENABLED = true
 
         private const val EXTRA_NAME_SYNC = "EXTRA_NAME_SYNC"
         private const val EXTRA_NAME_START_IF_ACTIVE = "EXTRA_NAME_START_IF_ACTIVE"

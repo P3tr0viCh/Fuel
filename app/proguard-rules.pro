@@ -63,3 +63,6 @@
 -dontnote com.google.gson.internal.**
 -dontnote retrofit.**
 -dontnote okio.**
+
+-dontwarn org.conscrypt.Conscrypt
+-dontwarn org.conscrypt.OpenSSLProvider

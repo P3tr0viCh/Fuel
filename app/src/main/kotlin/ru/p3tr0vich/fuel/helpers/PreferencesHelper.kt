@@ -456,9 +456,7 @@ class PreferencesHelper private constructor(private val context: Context) :
             }
 
             keys.filterDateFrom, keys.filterDateTo,
-            keys.mapCenterLatitude, keys.mapCenterLongitude,
-            keys.summerCity, keys.summerHighway, keys.summerMixed,
-            keys.winterCity, keys.winterHighway, keys.winterMixed -> {
+            keys.mapCenterLatitude, keys.mapCenterLongitude -> {
                 PREFERENCE_TYPE_LONG
             }
 

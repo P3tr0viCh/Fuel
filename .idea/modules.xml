@@ -7,11 +7,6 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Fuel.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Fuel.app.androidTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Fuel.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Fuel.app.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Fuel.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Fuel.app.unitTest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libs/Fuel.libs.iml" filepath="$PROJECT_DIR$/.idea/modules/libs/Fuel.libs.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libs/disk-restapi-sdk/Fuel.libs.disk-restapi-sdk.iml" filepath="$PROJECT_DIR$/.idea/modules/libs/disk-restapi-sdk/Fuel.libs.disk-restapi-sdk.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libs/disk-restapi-sdk/Fuel.libs.disk-restapi-sdk.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/libs/disk-restapi-sdk/Fuel.libs.disk-restapi-sdk.androidTest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libs/disk-restapi-sdk/Fuel.libs.disk-restapi-sdk.main.iml" filepath="$PROJECT_DIR$/.idea/modules/libs/disk-restapi-sdk/Fuel.libs.disk-restapi-sdk.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libs/disk-restapi-sdk/Fuel.libs.disk-restapi-sdk.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/libs/disk-restapi-sdk/Fuel.libs.disk-restapi-sdk.unitTest.iml" />
     </modules>
   </component>
 </project>

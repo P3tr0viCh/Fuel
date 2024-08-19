@@ -34,6 +34,7 @@ object UtilsFormat {
     @JvmStatic
     fun stringToFloat(value: String): Float {
         if (TextUtils.isEmpty(value)) return 0f
+
         return try {
             java.lang.Float.parseFloat(value)
         } catch (e: Exception) {

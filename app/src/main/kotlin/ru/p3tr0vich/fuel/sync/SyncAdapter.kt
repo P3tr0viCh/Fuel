@@ -99,10 +99,15 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
     }
 
     private fun handleException(e: Exception, syncResult: SyncResult) {
+        if (LOG_ENABLED) {
+            UtilsLog.d(TAG, "handleException", "error == ${e.toString()}")
+        }
+
         when (e) {
             is RemoteException -> syncResult.databaseError = true
             is IOException -> syncResult.stats.numIoExceptions++
             is FormatException -> syncResult.stats.numParseExceptions++
+            is NumberFormatException -> syncResult.stats.numParseExceptions++
             is HttpCodeException -> {
                 if (e.code == SyncYandexDisk.HTTP_CODE_UNAUTHORIZED) {
                     syncResult.stats.numAuthExceptions++
@@ -123,12 +128,6 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
         UtilsLog.d(TAG, "handleException", "error  == $e")
     }
 
-    @Throws(
-        IOException::class,
-        ServerException::class,
-        RemoteException::class,
-        FormatException::class
-    )
     private fun syncPreferences() {
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "syncPreferences", "start")
@@ -203,12 +202,6 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
         }
     }
 
-    @Throws(
-        IOException::class,
-        RemoteException::class,
-        FormatException::class,
-        ServerException::class
-    )
     private fun syncPreferencesSave(revision: Int) {
         // 1) Сохранить настройки в файл в папке кэша.
         // 2) Сохранить номер ревизии в файл в папке кэша.
@@ -247,7 +240,11 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
 
         syncYandexDisk!!.savePreferencesRevision()
         if (LOG_ENABLED) {
-            UtilsLog.d(TAG, "syncPreferencesSave", "syncYandexDisk.savePreferencesRevision() OK")
+            UtilsLog.d(
+                TAG,
+                "syncPreferencesSave",
+                "syncYandexDisk.savePreferencesRevision() OK"
+            )
         }
 
         syncProviderPreferences!!.isChanged = false
@@ -258,7 +255,6 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
         }
     }
 
-    @Throws(IOException::class, RemoteException::class, ServerException::class)
     private fun syncPreferencesLoad(revision: Int) {
         // 1) Получить файл настроек с сервера и сохранить в папку кэша.
         // 2) Прочитать значения из файла в папке кэша.
@@ -294,12 +290,6 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
         }
     }
 
-    @Throws(
-        IOException::class,
-        ServerException::class,
-        RemoteException::class,
-        FormatException::class
-    )
     private fun syncDatabase() {
         if (LOG_ENABLED) {
             UtilsLog.d(TAG, "syncDatabase", "start")
@@ -386,7 +376,6 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
         }
     }
 
-    @Throws(IOException::class, ServerException::class, RemoteException::class)
     private fun syncDatabaseFullSave(revision: Int) {
         // 1) Удалить все файлы с сервера.
         // 2) Сохранить полную копию БД с признаком полного обновления БД на сервер.
@@ -410,7 +399,6 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
         }
     }
 
-    @Throws(IOException::class, RemoteException::class, ServerException::class)
     private fun syncDatabaseSave(revision: Int, saveAllRecords: Boolean, addDeleteAll: Boolean) {
         var rev = revision
         // 1) Сохранить БД в файл в папке кэша.
@@ -490,12 +478,6 @@ internal class SyncAdapter(context: Context) : AbstractThreadedSyncAdapter(conte
         }
     }
 
-    @Throws(
-        IOException::class,
-        ServerException::class,
-        RemoteException::class,
-        FormatException::class
-    )
     private fun syncDatabaseLoad(localRevision: Int, serverRevision: Int) {
         // 1) Получить файлы БД с сервера и сохранить в папку кэша.
         // 2) Прочитать записи из файлов в папке кэша.

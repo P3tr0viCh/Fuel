@@ -322,6 +322,10 @@ class ActivityMain : AppCompatActivity(),
                     ContentObserverService.RESULT_SYNC_DISABLED -> {
                         UtilsLog.d(TAG, "RESULT_SYNC_DISABLED")
                     }
+
+                    ContentObserverService.RESULT_REQUEST_DONE -> {
+                        UtilsLog.d(TAG, "RESULT_REQUEST_DONE")
+                    }
                 }
             }
         }

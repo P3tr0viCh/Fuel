@@ -9,15 +9,18 @@ import android.os.RemoteException
 import android.text.TextUtils
 import ru.p3tr0vich.fuel.helpers.ContentProviderHelper
 import ru.p3tr0vich.fuel.helpers.PreferencesHelper
+import ru.p3tr0vich.fuel.utils.UtilsFormat
 import ru.p3tr0vich.fuel.utils.UtilsString
 import java.util.*
 
-internal class SyncProviderPreferences(context: Context, private val provider: ContentProviderClient) {
+internal class SyncProviderPreferences(
+    context: Context,
+    private val provider: ContentProviderClient
+) {
 
     private val preferencesHelper = PreferencesHelper.getInstance(context)
 
     var preferences: List<String>
-        @Throws(RemoteException::class, FormatException::class)
         get() {
             val contentValues = query(null)
 
@@ -25,14 +28,27 @@ internal class SyncProviderPreferences(context: Context, private val provider: C
 
             for (key in contentValues.keySet())
                 when (preferencesHelper.getPreferenceType(key)) {
-                    PreferencesHelper.PREFERENCE_TYPE_STRING -> result.add(key + SEPARATOR + UtilsString.encodeLineBreaks(contentValues.getAsString(key)))
-                    PreferencesHelper.PREFERENCE_TYPE_INT -> result.add(key + SEPARATOR + contentValues.getAsInteger(key).toString())
-                    PreferencesHelper.PREFERENCE_TYPE_LONG -> result.add(key + SEPARATOR + contentValues.getAsLong(key).toString())
+                    PreferencesHelper.PREFERENCE_TYPE_STRING -> result.add(
+                        key + SEPARATOR + UtilsString.encodeLineBreaks(
+                            contentValues.getAsString(key)
+                        )
+                    )
+
+                    PreferencesHelper.PREFERENCE_TYPE_INT -> result.add(
+                        key + SEPARATOR + contentValues.getAsInteger(
+                            key
+                        ).toString()
+                    )
+
+                    PreferencesHelper.PREFERENCE_TYPE_LONG -> result.add(
+                        key + SEPARATOR + contentValues.getAsLong(
+                            key
+                        ).toString()
+                    )
                 }
 
             return result
         }
-        @Throws(RemoteException::class)
         set(preferences) {
             val contentValues = ContentValues()
 
@@ -52,9 +68,20 @@ internal class SyncProviderPreferences(context: Context, private val provider: C
                 value = preference.substring(index + 1)
 
                 when (preferencesHelper.getPreferenceType(key)) {
-                    PreferencesHelper.PREFERENCE_TYPE_STRING -> contentValues.put(key, UtilsString.decodeLineBreaks(value))
-                    PreferencesHelper.PREFERENCE_TYPE_INT -> contentValues.put(key, Integer.decode(value))
-                    PreferencesHelper.PREFERENCE_TYPE_LONG -> contentValues.put(key, java.lang.Long.decode(value))
+                    PreferencesHelper.PREFERENCE_TYPE_STRING -> contentValues.put(
+                        key,
+                        UtilsString.decodeLineBreaks(value)
+                    )
+
+                    PreferencesHelper.PREFERENCE_TYPE_INT -> contentValues.put(
+                        key,
+                        Integer.decode(value)
+                    )
+
+                    PreferencesHelper.PREFERENCE_TYPE_LONG -> contentValues.put(
+                        key,
+                        java.lang.Long.decode(value)
+                    )
                 }
             }
 
@@ -101,14 +128,14 @@ internal class SyncProviderPreferences(context: Context, private val provider: C
             update(contentValues, preferencesHelper.keys.databaseFullSync)
         }
 
-    @Throws(RemoteException::class, FormatException::class)
     private fun query(preference: String?): ContentValues {
         val cursor = provider.query(
-                if (TextUtils.isEmpty(preference)) {
-                    ContentProviderHelper.URI_PREFERENCES
-                } else {
-                    Uri.withAppendedPath(ContentProviderHelper.URI_PREFERENCES, preference)
-                }, null, null, null, null)
+            if (TextUtils.isEmpty(preference)) {
+                ContentProviderHelper.URI_PREFERENCES
+            } else {
+                Uri.withAppendedPath(ContentProviderHelper.URI_PREFERENCES, preference)
+            }, null, null, null, null
+        )
 
         if (cursor == null) {
             throw FormatException("$TAG -- query: cursor == null")
@@ -138,23 +165,21 @@ internal class SyncProviderPreferences(context: Context, private val provider: C
         return result
     }
 
-    @Throws(RemoteException::class)
     private fun update(contentValues: ContentValues, preference: String?) {
         provider.update(
-                if (TextUtils.isEmpty(preference)) {
-                    ContentProviderHelper.URI_PREFERENCES
-                } else {
-                    Uri.withAppendedPath(ContentProviderHelper.URI_PREFERENCES, preference)
-                },
-                contentValues, null, null)
+            if (TextUtils.isEmpty(preference)) {
+                ContentProviderHelper.URI_PREFERENCES
+            } else {
+                Uri.withAppendedPath(ContentProviderHelper.URI_PREFERENCES, preference)
+            },
+            contentValues, null, null
+        )
     }
 
-    @Throws(RemoteException::class, FormatException::class)
     private fun getRevision(keyRevision: String): Int {
         return query(keyRevision).getAsInteger(keyRevision)!!
     }
 
-    @Throws(RemoteException::class)
     private fun putRevision(keyRevision: String, revision: Int) {
         val contentValues = ContentValues()
 
@@ -163,7 +188,6 @@ internal class SyncProviderPreferences(context: Context, private val provider: C
         update(contentValues, keyRevision)
     }
 
-    @Throws(RemoteException::class)
     fun putLastSync(dateTime: Long, hasError: Boolean) {
         val contentValues = ContentValues()
 

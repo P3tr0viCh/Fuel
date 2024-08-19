@@ -21,6 +21,7 @@ internal class AsyncTaskOperationXml(val context: Context,
             field = value
         }
 
+    @Deprecated("Deprecated in Java")
     override fun doInBackground(vararg params: Void): Int {
         val fuelingRecordList: List<FuelingRecord>
 
@@ -44,6 +45,7 @@ internal class AsyncTaskOperationXml(val context: Context,
         return result
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onPostExecute(result: Int?) {
         UtilsLog.d(TAG, "onPostExecute",
                 "fragmentDialogProgress == $fragmentDialogProgress")

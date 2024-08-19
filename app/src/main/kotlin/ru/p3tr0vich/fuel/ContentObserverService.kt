@@ -142,6 +142,10 @@ class ContentObserverService : Service() {
                     sendResult(RESULT_SYNC_DELAYED_REQUEST)
                 } else {
                     // Запуск синхронизации без задержки.
+                    if (LOG_ENABLED) {
+                        UtilsLog.d(TAG, "requestSync", "start")
+                    }
+
                     val result = performRequestSync(sync, startIfActive)
 
                     sendResult(result)

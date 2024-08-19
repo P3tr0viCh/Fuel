@@ -78,7 +78,7 @@ object SMSTextPatternHelper {
 
         return if (matcher.find() && matcher.groupCount() > 0)
             try {
-                java.lang.Float.valueOf(matcher.group(1).replace(',', '.'))
+                java.lang.Float.valueOf(matcher.group(1)?.replace(',', '.')!!)
             } catch (e: Exception) {
                 null
             }

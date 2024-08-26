@@ -23,8 +23,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
 
-        versionCode 33
-        versionName "3.3"
+        versionCode 34
+        versionName "3.4"
 
         buildConfigField "long", "BUILD_DATE", System.currentTimeMillis() + "l"
 
@@ -90,9 +90,9 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
-        dataBinding true
-        buildConfig true
+        viewBinding = true
+        dataBinding = true
+        buildConfig = true
     }
 
     testOptions {

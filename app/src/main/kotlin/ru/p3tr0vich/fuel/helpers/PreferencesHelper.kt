@@ -254,13 +254,17 @@ class PreferencesHelper private constructor(private val context: Context) :
                 changed, databaseRevision, preferencesRevision,
                 lastSyncDateTime, lastSyncHasError, databaseFullSync -> false
 
-                consumption, cost, defaultCost, defaultVolume, distance,
-                filterDateFrom, filterDateTo,
-                mapCenterLatitude, mapCenterLongitude, mapCenterText,
-                price, season,
+                consumption, cost, defaultCost, defaultVolume, distance -> true
+
+                filterDateFrom, filterDateTo -> true
+
+                mapCenterLatitude, mapCenterLongitude, mapCenterText -> true
+
+                price, season -> true
                 summerCity, summerHighway, summerMixed,
-                winterCity, winterHighway, winterMixed,
-                smsAddress, smsTextPattern, smsText, sms,
+                winterCity, winterHighway, winterMixed -> true
+
+                smsAddress, smsTextPattern, smsText, sms -> true
                 syncYandexDisk, sync, volume -> true
 
                 else -> false

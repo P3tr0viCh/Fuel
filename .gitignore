@@ -2,9 +2,6 @@
 .gradle
 .kotlin
 /local.properties
-/.idea/workspace.xml
-/.idea/dictionaries
-/.idea/libraries
-/.idea/caches
+/.idea
 .DS_Store
 /build

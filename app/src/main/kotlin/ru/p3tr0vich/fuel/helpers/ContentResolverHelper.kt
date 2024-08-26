@@ -16,8 +16,10 @@ object ContentResolverHelper {
 
     @JvmStatic
     fun getAll(context: Context, filter: DatabaseHelper.Filter): Cursor? {
-        return context.contentResolver.query(URI_DATABASE, null,
-                filter.selection, null, null, null)
+        return context.contentResolver.query(
+            URI_DATABASE, null,
+            filter.selection, null, null, null
+        )
     }
 
     @JvmStatic
@@ -28,12 +30,24 @@ object ContentResolverHelper {
     @JvmStatic
     fun getSumByMonthsForYear(context: Context, year: Int): Cursor? {
         return context.contentResolver.query(
-                ContentUris.withAppendedId(URI_DATABASE_SUM_BY_MONTHS, year.toLong()), null, null, null, null)
+            ContentUris.withAppendedId(URI_DATABASE_SUM_BY_MONTHS, year.toLong()),
+            null,
+            null,
+            null,
+            null
+        )
     }
 
     @JvmStatic
     fun getTwoLastRecords(context: Context): Cursor? {
-        return context.contentResolver.query(URI_DATABASE_TWO_LAST_RECORDS, null, null, null, null, null)
+        return context.contentResolver.query(
+            URI_DATABASE_TWO_LAST_RECORDS,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
     }
 
     @JvmStatic
@@ -51,27 +65,29 @@ object ContentResolverHelper {
             fuelingRecord = fuelingRecordList[i]
 
             values[i] = DatabaseHelper.getValues(
-                    fuelingRecord.dateTime,
-                    fuelingRecord.dateTime,
-                    fuelingRecord.cost,
-                    fuelingRecord.volume,
-                    fuelingRecord.total)
+                fuelingRecord.dateTime,
+                fuelingRecord.dateTime,
+                fuelingRecord.cost,
+                fuelingRecord.volume,
+                fuelingRecord.total
+            )
         }
 
         context.contentResolver.bulkInsert(URI_DATABASE, values)
 
-        context.contentResolver.notifyChange(URI_DATABASE, null, false)
+        context.contentResolver.notifyChange(URI_DATABASE, null)
     }
 
     @JvmStatic
     fun getFuelingRecord(context: Context, id: Long): FuelingRecord? {
         context.contentResolver.query(
-                ContentUris.withAppendedId(URI_DATABASE, id), null, null, null, null, null)
-                ?.use {
-                    if (it.moveToFirst()) {
-                        return DatabaseHelper.getFuelingRecord(it)
-                    }
+            ContentUris.withAppendedId(URI_DATABASE, id), null, null, null, null, null
+        )
+            ?.use {
+                if (it.moveToFirst()) {
+                    return DatabaseHelper.getFuelingRecord(it)
                 }
+            }
 
         return null
     }
@@ -80,15 +96,17 @@ object ContentResolverHelper {
     fun getAllRecordsList(context: Context): List<FuelingRecord> {
         val fuelingRecords = ArrayList<FuelingRecord>()
 
-        context.contentResolver.query(URI_DATABASE, null,
-                DatabaseModel.Where.RECORD_NOT_DELETED, null, null, null)
-                ?.use {
-                    if (it.moveToFirst()) {
-                        do
-                            fuelingRecords.add(DatabaseHelper.getFuelingRecord(it))
-                        while (it.moveToNext())
-                    }
+        context.contentResolver.query(
+            URI_DATABASE, null,
+            DatabaseModel.Where.RECORD_NOT_DELETED, null, null, null
+        )
+            ?.use {
+                if (it.moveToFirst()) {
+                    do
+                        fuelingRecords.add(DatabaseHelper.getFuelingRecord(it))
+                    while (it.moveToNext())
                 }
+            }
 
         return fuelingRecords
     }
@@ -98,15 +116,17 @@ object ContentResolverHelper {
         if (fuelingRecord == null) return false
 
         val result = context.contentResolver.insert(
-                URI_DATABASE,
-                DatabaseHelper.getValues(
-                        fuelingRecord.dateTime,
-                        fuelingRecord.dateTime,
-                        fuelingRecord.cost,
-                        fuelingRecord.volume,
-                        fuelingRecord.total)) ?: return false
+            URI_DATABASE,
+            DatabaseHelper.getValues(
+                fuelingRecord.dateTime,
+                fuelingRecord.dateTime,
+                fuelingRecord.cost,
+                fuelingRecord.volume,
+                fuelingRecord.total
+            )
+        ) ?: return false
 
-        context.contentResolver.notifyChange(result, null, false)
+        context.contentResolver.notifyChange(result, null)
 
         return true
     }
@@ -115,16 +135,20 @@ object ContentResolverHelper {
     fun updateRecord(context: Context, fuelingRecord: FuelingRecord): Boolean {
         val uri = ContentUris.withAppendedId(URI_DATABASE, fuelingRecord.id)
 
-        val result = context.contentResolver.update(uri,
-                DatabaseHelper.getValues(null,
-                        fuelingRecord.dateTime,
-                        fuelingRecord.cost,
-                        fuelingRecord.volume,
-                        fuelingRecord.total), null, null)
+        val result = context.contentResolver.update(
+            uri,
+            DatabaseHelper.getValues(
+                null,
+                fuelingRecord.dateTime,
+                fuelingRecord.cost,
+                fuelingRecord.volume,
+                fuelingRecord.total
+            ), null, null
+        )
 
         if (result == -1) return false
 
-        context.contentResolver.notifyChange(uri, null, false)
+        context.contentResolver.notifyChange(uri, null)
 
         return true
     }
@@ -133,12 +157,14 @@ object ContentResolverHelper {
     fun markRecordAsDeleted(context: Context, id: Long): Boolean {
         val uri = ContentUris.withAppendedId(URI_DATABASE, id)
 
-        val result = context.contentResolver.update(uri,
-                DatabaseHelper.valuesMarkAsDeleted, null, null)
+        val result = context.contentResolver.update(
+            uri,
+            DatabaseHelper.valuesMarkAsDeleted, null, null
+        )
 
         if (result == -1) return false
 
-        context.contentResolver.notifyChange(uri, null, false)
+        context.contentResolver.notifyChange(uri, null)
 
         return true
     }

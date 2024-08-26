@@ -4,10 +4,12 @@ import android.content.Context
 import android.database.Cursor
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.os.BundleCompat
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
@@ -86,7 +88,7 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
 
     private val chartFormatter = ChartFormatter()
 
-    private val handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
 
     private val runnableShowNoRecords = Runnable { Utils.setViewVisibleAnimate(textNoRecords!!, true) }
 
@@ -134,7 +136,9 @@ class FragmentChartCost : FragmentBase(FragmentFactory.Ids.CHART_COST), LoaderMa
 
             LoaderManager.getInstance(this).initLoader(YEARS_CURSOR_LOADER_ID, null, this)
         } else
-            chartCostModel = savedInstanceState.getParcelable(ChartCostModel.NAME)
+        {
+            chartCostModel = BundleCompat.getParcelable(savedInstanceState, ChartCostModel.NAME, ChartCostModel::class.java)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

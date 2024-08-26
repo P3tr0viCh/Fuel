@@ -8,6 +8,8 @@ import android.text.TextWatcher
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import ru.p3tr0vich.fuel.R
 import ru.p3tr0vich.fuel.adapters.TextWatcherAdapter
@@ -19,7 +21,7 @@ import ru.p3tr0vich.fuel.utils.UtilsDate
 import ru.p3tr0vich.fuel.utils.UtilsFormat
 import java.util.*
 
-class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
+class FragmentFuelingRecordChange : Fragment(), View.OnClickListener, MenuProvider {
 
     private var fuelingRecord: FuelingRecord? = null
 
@@ -64,7 +66,7 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_fueling_record_change, container, false)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this)
 
         buttonDate = view.findViewById(R.id.btn_date)
         editCost = view.findViewById(R.id.edit_cost)
@@ -223,8 +225,7 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
         buttonDate!!.text = UtilsFormat.dateToString(fuelingRecord!!.dateTime, true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_fueling_record, menu)
     }
 
@@ -273,12 +274,12 @@ class FragmentFuelingRecordChange : Fragment(), View.OnClickListener {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_save -> return onSaveClicked()
         }
 
-        return super.onOptionsItemSelected(item)
+        return false
     }
 
     override fun onClick(v: View) {

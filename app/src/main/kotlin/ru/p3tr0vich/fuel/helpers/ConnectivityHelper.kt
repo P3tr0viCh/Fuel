@@ -21,10 +21,6 @@ object ConnectivityHelper {
         val connectivityManager = SystemServicesHelper.getConnectivityManager(context)
                 ?: return DISCONNECTED
 
-        val activeNetworkInfo = connectivityManager.activeNetworkInfo ?: return DISCONNECTED
-
-        if (!activeNetworkInfo.isConnected) return DISCONNECTED
-
         val activeNetwork = connectivityManager.activeNetwork ?: return DISCONNECTED
 
         val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork)

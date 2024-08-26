@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.database.Cursor
 import android.database.MatrixCursor
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.text.TextUtils
 import androidx.annotation.IntDef
 import ru.p3tr0vich.fuel.R
@@ -39,8 +39,7 @@ class PreferencesHelper private constructor(private val context: Context) :
             if (value) {
                 context.contentResolver.notifyChange(
                     ContentProviderHelper.URI_PREFERENCES,
-                    null,
-                    false
+                    null
                 )
             }
         }

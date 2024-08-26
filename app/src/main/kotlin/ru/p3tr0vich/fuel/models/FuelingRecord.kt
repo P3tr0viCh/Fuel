@@ -3,6 +3,8 @@ package ru.p3tr0vich.fuel.models
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.core.content.IntentCompat
+import androidx.core.os.BundleCompat
 import kotlinx.parcelize.Parcelize
 
 /**
@@ -18,17 +20,25 @@ import kotlinx.parcelize.Parcelize
  * @property total Общий пробег.
  */
 @Parcelize
-data class FuelingRecord constructor(var id: Long = 0,
-                                     var dateTime: Long = 0,
-                                     var cost: Float = 0f,
-                                     var volume: Float = 0f,
-                                     var total: Float = 0f) : Parcelable {
+data class FuelingRecord constructor(
+    var id: Long = 0,
+    var dateTime: Long = 0,
+    var cost: Float = 0f,
+    var volume: Float = 0f,
+    var total: Float = 0f
+) : Parcelable {
 
     companion object {
         const val NAME = "FUELING_RECORD"
     }
 
-    constructor(cost: Float, volume: Float, total: Float) : this(0, System.currentTimeMillis(), cost, volume, total)
+    constructor(cost: Float, volume: Float, total: Float) : this(
+        0,
+        System.currentTimeMillis(),
+        cost,
+        volume,
+        total
+    )
 
     internal constructor(fuelingRecord: FuelingRecord?) : this() {
         if (fuelingRecord != null) {
@@ -40,9 +50,21 @@ data class FuelingRecord constructor(var id: Long = 0,
         }
     }
 
-    constructor(intent: Intent) : this(intent.getParcelableExtra<Parcelable>(NAME) as FuelingRecord)
+    constructor(intent: Intent) : this(
+        IntentCompat.getParcelableExtra(
+            intent,
+            NAME,
+            Parcelable::class.java
+        ) as FuelingRecord
+    )
 
-    constructor(bundle: Bundle) : this(bundle.getParcelable<Parcelable>(NAME) as FuelingRecord)
+    constructor(bundle: Bundle) : this(
+        BundleCompat.getParcelable(
+            bundle,
+            NAME,
+            Parcelable::class.java
+        ) as FuelingRecord
+    )
 
     fun toIntent(intent: Intent): Intent {
         intent.putExtra(NAME, this)

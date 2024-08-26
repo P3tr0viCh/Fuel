@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Handler
+import android.os.Looper
 
 /**
  * Базовый наблюдатель.
@@ -14,7 +15,7 @@ import android.os.Handler
  */
 open class ContentObserverBase private constructor(handler: Handler) : ContentObserver(handler) {
 
-    internal constructor() : this(Handler())
+    internal constructor() : this(Handler(Looper.getMainLooper()))
 
     /**
      * Регистрирует наблюдатель.

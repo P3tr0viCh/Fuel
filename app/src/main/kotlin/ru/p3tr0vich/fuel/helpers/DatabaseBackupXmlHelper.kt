@@ -99,7 +99,7 @@ class DatabaseBackupXmlHelper {
                 SimpleDateFormat(DATE_TEMPLATE, Locale.getDefault()).parse(dateTime)
             }
 
-            return date.time
+            return date!!.time
         }
 
         fun format(date: Long): String {
